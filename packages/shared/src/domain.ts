@@ -89,14 +89,28 @@ export const ProfileSchema = z.object({
 });
 export type Profile = z.infer<typeof ProfileSchema>;
 
-/** Survey answer to "when was it last done", before the user gives an exact date */
-export const LastDoneAnswerSchema = z.enum(['within_1y', '1_3y', 'over_3y', 'never', 'unknown']);
+/**
+ * Survey answer to "when was it last done", relative to the exam's interval: within the first
+ * half of it, within the second half, or longer ago. Lives only in the onboarding draft — saving
+ * the survey turns the dated buckets into an assumed date (`assumedLastDone` in packages/rules).
+ */
+export const LastDoneAnswerSchema = z.enum([
+  'within_half_interval',
+  'within_interval',
+  'over_interval',
+  'never',
+  'unknown',
+]);
 export type LastDoneAnswer = z.infer<typeof LastDoneAnswerSchema>;
+
+/** Last-done answers a record keeps without a date. */
+export const UndatedLastDoneSchema = z.enum(['over_interval', 'never', 'unknown']);
+export type UndatedLastDone = z.infer<typeof UndatedLastDoneSchema>;
 
 export const ExamRecordSchema = z.object({
   profileId: z.string(),
   examId: z.string(),
-  lastDone: z.union([ISODateSchema, LastDoneAnswerSchema]).optional(),
+  lastDone: z.union([ISODateSchema, UndatedLastDoneSchema]).optional(),
   status: z.enum(['none', 'booked', 'done']),
   bookedFor: ISODateSchema.optional(),
   updatedAt: ISODateSchema,

@@ -242,7 +242,7 @@ describe('visitPrepSummary — edge cases', () => {
         {
           profileId: 'mama',
           examId: 'dental_checkup',
-          lastDone: 'within_1y',
+          lastDone: 'over_interval',
           status: 'done',
           updatedAt: TODAY,
         },

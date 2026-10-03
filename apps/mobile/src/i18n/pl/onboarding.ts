@@ -145,10 +145,25 @@ export const onboarding = {
     lastExams: {
       title: 'Kiedy ostatnio?',
       hint: 'Pytamy tylko o badania, które dotyczą tej osoby.',
+      // Buckets follow each exam's interval (last-done-labels.ts picks the unit and plural).
       answers: {
-        within_1y: 'W ostatnim roku',
-        '1_3y': '1–3 lata temu',
-        over_3y: 'Dawniej',
+        withinHalf: {
+          oneYear: 'W ostatnim roku',
+          years: 'W ciągu ostatnich {{n}} lat',
+          months: 'W ciągu ostatnich {{n}} miesięcy',
+        },
+        withinInterval: {
+          years: { few: '{{from}}–{{to}} lata temu', many: '{{from}}–{{to}} lat temu' },
+          months: { few: '{{from}}–{{to}} miesiące temu', many: '{{from}}–{{to}} miesięcy temu' },
+        },
+        overInterval: {
+          years: {
+            one: 'Ponad rok temu',
+            few: 'Ponad {{n}} lata temu',
+            many: 'Ponad {{n}} lat temu',
+          },
+          months: { few: 'Ponad {{n}} miesiące temu', many: 'Ponad {{n}} miesięcy temu' },
+        },
         never: 'Nigdy',
         unknown: 'Nie pamiętam',
       },

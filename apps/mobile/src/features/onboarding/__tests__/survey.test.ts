@@ -9,6 +9,7 @@ import {
   examsToAsk,
   isBirthYearValid,
   isForRelative,
+  lastExamQuestions,
   parseStepParam,
   skipLabel,
   skipPatch,
@@ -249,6 +250,33 @@ describe('draftToProfile — only answers that still apply', () => {
 });
 
 describe('examsToAsk / draftToRecords', () => {
+  it('stores interval buckets as an assumed date from the interval of that exam', () => {
+    const draft = mamaDraft({
+      lastDone: {
+        colonoscopy_screening: 'within_half_interval', // 10 years → 30 months ago
+        dental_checkup: 'within_interval', // 12 months → 9 months ago
+        mammography: 'over_interval',
+      },
+    });
+    const profile = draftToProfile(draft, { id: 'p1', today: TODAY, selfName: 'Ja' });
+    if (!profile) throw new Error('profile expected');
+    const byExam = Object.fromEntries(
+      draftToRecords(draft, profile, TODAY).map((r) => [r.examId, r.lastDone]),
+    );
+    expect(byExam).toEqual({
+      colonoscopy_screening: '2024-04-04',
+      dental_checkup: '2026-01-04',
+      mammography: 'over_interval',
+    });
+  });
+
+  it('asks with the interval that applies to this person', () => {
+    const intervals = Object.fromEntries(
+      lastExamQuestions(mamaDraft(), TODAY).map((q) => [q.rule.id, q.intervalMonths]),
+    );
+    expect(intervals).toMatchObject({ colonoscopy_screening: 120, health_check_adult: 36 });
+  });
+
   it('asks about colonoscopy for a 58-year-old woman with colorectal cancer in the family', () => {
     const ids = examsToAsk(mamaDraft(), TODAY).map((r) => r.id);
     expect(ids).toContain('colonoscopy_screening');
@@ -261,7 +289,7 @@ describe('examsToAsk / draftToRecords', () => {
 
   it('creates records only for answered exams that still apply', () => {
     const draft = mamaDraft({
-      lastDone: { colonoscopy_screening: 'never', psa_discussion: 'within_1y' },
+      lastDone: { colonoscopy_screening: 'never', psa_discussion: 'within_half_interval' },
     });
     const profile = draftToProfile(draft, { id: 'p1', today: TODAY, selfName: 'Ja' });
     if (!profile) throw new Error('profile expected');

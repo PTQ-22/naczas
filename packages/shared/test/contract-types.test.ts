@@ -60,13 +60,15 @@ namespace Doc {
     createdAt: ISODate;
   }
 
-  export type LastDoneAnswer = 'within_1y' | '1_3y' | 'over_3y' | 'never' | 'unknown';
+  export type LastDoneAnswer =
+    'within_half_interval' | 'within_interval' | 'over_interval' | 'never' | 'unknown';
+  export type UndatedLastDone = 'over_interval' | 'never' | 'unknown';
 
   export interface ExamRecord {
     profileId: string;
     examId: string;
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- verbatim doc copy; ISODate is a string alias
-    lastDone?: ISODate | LastDoneAnswer;
+    lastDone?: ISODate | UndatedLastDone;
     status: 'none' | 'booked' | 'done';
     bookedFor?: ISODate;
     updatedAt: ISODate;
@@ -184,6 +186,7 @@ describe('types match docs/03-contracts.md', () => {
     expectTypeOf<S.ActivityLevel>().toEqualTypeOf<Doc.ActivityLevel>();
     expectTypeOf<S.Profile>().toEqualTypeOf<Doc.Profile>();
     expectTypeOf<S.LastDoneAnswer>().toEqualTypeOf<Doc.LastDoneAnswer>();
+    expectTypeOf<S.UndatedLastDone>().toEqualTypeOf<Doc.UndatedLastDone>();
     expectTypeOf<S.ExamRecord>().toEqualTypeOf<Doc.ExamRecord>();
   });
 

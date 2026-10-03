@@ -81,7 +81,7 @@ export function mockPlan(options: { today?: ISODate; profileId?: string } = {}):
       reasons: ['Po 40. roku życia zalecana jest regularna kontrola wzroku.'],
       overdue: false,
     }),
-    // 'within_1y' → assumed done today − 6 mo.; program lead time = 21 days.
+    // Done 30 months ago (5-year interval); program lead time = 21 days.
     item({
       examId: 'cervical_screening',
       due: addMonths(today, 30),

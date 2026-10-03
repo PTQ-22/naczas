@@ -131,7 +131,7 @@ export function visitPrepSummary(input: {
     .filter((r) => r.profileId === profile.id && r.status === 'done')
     .flatMap((r) => {
       const rule = byId.get(r.examId);
-      // Survey answers ('within_1y', …) have no date to show the doctor.
+      // Undated answers ('over_interval', …) have nothing to show the doctor.
       const date = ISODateSchema.safeParse(r.lastDone);
       return rule && date.success ? [{ examId: rule.id, name: rule.name, date: date.data }] : [];
     })

@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware';
 
 import { ExamRecordSchema, type ExamRecord, type ISODate } from '@naczas/shared';
 
+import { migrateRecordsV1 } from './last-done-migration';
 import { validatedPersist } from './persist';
 import { currentToday } from './use-today';
 
@@ -117,7 +118,8 @@ export const useRecordsStore = create<RecordsState>()(
     },
     validatedPersist<RecordsState, PersistedRecords>({
       name: 'records',
-      version: 1,
+      version: 2,
+      migrations: { 1: migrateRecordsV1 },
       schema: PersistedRecordsSchema,
       partialize: ({ records, intervalOverrides }) => ({ records, intervalOverrides }),
     }),

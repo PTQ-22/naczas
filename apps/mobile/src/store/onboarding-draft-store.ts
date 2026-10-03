@@ -13,6 +13,7 @@ import {
   type LastDoneAnswer,
 } from '@naczas/shared';
 
+import { migrateDraftV2 } from './last-done-migration';
 import { validatedPersist } from './persist';
 import { migrateDraftV1 } from './survey-v2-migration';
 
@@ -36,7 +37,7 @@ export const OnboardingDraftSchema = z.object({
   quitOver15y: z.boolean().nullable(),
   otherLungRisk: z.boolean().nullable(),
   activity: ActivityLevelSchema.nullable(),
-  /** examId → answer from step 7 */
+  /** examId → answer from the last step, relative to that exam's interval */
   lastDone: z.record(z.string(), LastDoneAnswerSchema),
 });
 export type OnboardingDraft = z.infer<typeof OnboardingDraftSchema>;
@@ -89,8 +90,8 @@ export const useOnboardingDraftStore = create<OnboardingDraftState>()(
     }),
     validatedPersist<OnboardingDraftState, PersistedDraft>({
       name: 'onboarding-draft',
-      version: 2,
-      migrations: { 1: migrateDraftV1 },
+      version: 3,
+      migrations: { 1: migrateDraftV1, 2: migrateDraftV2 },
       schema: PersistedDraftSchema,
       partialize: ({ draft }) => ({ draft }),
     }),

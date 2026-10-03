@@ -37,7 +37,7 @@ Jeden temat na ekran, duże przyciski. **Każde pytanie zmienia plan, podsumowan
 | 6c | POChP (palący 40–65 lub ścieżka TK 50–54) | wyłącza spirometrię; liczy się jako czynnik ryzyka do TK w wieku 50–54 |
 | 6d | Inny czynnik ryzyka raka płuca (50–54 lata, ≥ 20 paczkolat, bez POChP) | tak → **+ TK płuc** |
 | 6e | Aktywność fizyczna | Wskazówka w karcie „Ruch” (nie zmienia badań) |
-| 7 | **Kiedy ostatnio?** — tylko badania z planu | Termin następnego badania |
+| 7 | **Kiedy ostatnio?** — tylko badania z planu; przedziały z interwału badania (np. kolonoskopia: „W ciągu ostatnich 5 lat / 5–10 lat temu / Ponad 10 lat temu”) | Termin następnego badania (`docs/05-scheduling-algorithm.md` §1) |
 
 Usunięte w wersji 2 (nic nie zmieniały): nadciśnienie, „inne” choroby, rak prostaty i zawał/udar w rodzinie, wzrost i waga. Zapisane wcześniej odpowiedzi usuwa migracja store'ów (v1 → v2).
 

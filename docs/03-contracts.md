@@ -45,13 +45,16 @@ export interface Profile {
   createdAt: ISODate;
 }
 
-/** Odpowiedź z ankiety „kiedy ostatnio”, zanim użytkownik poda dokładną datę */
-export type LastDoneAnswer = 'within_1y' | '1_3y' | 'over_3y' | 'never' | 'unknown';
+/** Odpowiedź z ankiety „kiedy ostatnio” — przedziały względem interwału badania (tylko w szkicu ankiety) */
+export type LastDoneAnswer =
+  | 'within_half_interval' | 'within_interval' | 'over_interval' | 'never' | 'unknown';
+/** Co rekord trzyma bez daty; przedziały z ankiety zapisujemy jako przyjętą datę (05-scheduling-algorithm §1) */
+export type UndatedLastDone = 'over_interval' | 'never' | 'unknown';
 
 export interface ExamRecord {
   profileId: string;
   examId: string;
-  lastDone?: ISODate | LastDoneAnswer;
+  lastDone?: ISODate | UndatedLastDone;
   status: 'none' | 'booked' | 'done';
   bookedFor?: ISODate;
   updatedAt: ISODate;
@@ -59,6 +62,8 @@ export interface ExamRecord {
 ```
 
 ## Reguły badań (format `packages/rules/data/exams.json`)
+
+> **Zmiana 2026-10-04 (przedziały „kiedy ostatnio”):** `LastDoneAnswer` liczone od interwału badania; `ExamRecord.lastDone` to data albo `UndatedLastDone`. Rekordy migrowane v1 → v2.
 
 > **Zmiana 2026-10-04 (ankieta v2):** `excludesAny` w `eligibility` (np. ChUK nie dla osób z cukrzycą). Czynniki wyliczane z profilu (`DerivedFactor`, `profileFactors` w `packages/rules`): `smoker_20py` (palący lub rzucone ≤ 15 lat, ≥ 20 paczkolat), `smoker_20py_lung_risk` (+ POChP lub inny czynnik ryzyka), `current_smoker`, `current_smoker_no_copd`. Zmiana niezgodna wstecz dla `Condition` / `FamilyHistory` / `Profile` — zapisane dane migruje store (v1 → v2).
 

@@ -1,4 +1,4 @@
-import { ageAt, eligibleExams } from '@naczas/rules';
+import { ageAt, assumedLastDone, effectiveIntervalMonths, eligibleExams } from '@naczas/rules';
 import type { Condition, ExamRecord, ExamRule, ISODate, Profile } from '@naczas/shared';
 
 import type { MessageKey } from '@/i18n';
@@ -200,13 +200,29 @@ export function draftToProfile(
 
 /** The last step asks only about exams that apply to this person (from the rules engine). */
 export function examsToAsk(draft: OnboardingDraft, today: ISODate): ExamRule[] {
+  return lastExamQuestions(draft, today).map((q) => q.rule);
+}
+
+/**
+ * Exams for the last step with the interval that applies to this person — the answer buckets
+ * are drawn from it (e.g. Moje Zdrowie: 5 years before 50, 3 years after).
+ */
+export function lastExamQuestions(
+  draft: OnboardingDraft,
+  today: ISODate,
+): { rule: ExamRule; intervalMonths: number }[] {
   const profile = draftToProfile(draft, { id: 'draft', today, selfName: '' });
-  return profile ? eligibleExams(profile, today) : [];
+  if (!profile) return [];
+  return eligibleExams(profile, today).map((rule) => ({
+    rule,
+    intervalMonths: effectiveIntervalMonths(rule, profile, today),
+  }));
 }
 
 /**
  * One record per answered exam that still applies. Unanswered exams get no record —
- * computePlan treats that exactly like "nie pamiętam".
+ * computePlan treats that exactly like "nie pamiętam". Interval buckets become an assumed date
+ * from today, using the same interval the question was asked with.
  */
 export function draftToRecords(
   draft: OnboardingDraft,
@@ -220,7 +236,7 @@ export function draftToRecords(
       {
         profileId: profile.id,
         examId: rule.id,
-        lastDone: answer,
+        lastDone: assumedLastDone(answer, effectiveIntervalMonths(rule, profile, today), today),
         status: 'none',
         updatedAt: today,
       },

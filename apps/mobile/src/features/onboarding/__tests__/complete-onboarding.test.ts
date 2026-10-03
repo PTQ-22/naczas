@@ -35,7 +35,7 @@ function answerWholeSurvey() {
   draft().update({ smoking: 'never', activity: 'low' }); // 6
   const asked = examsToAsk(draft().draft!, TODAY);
   asked.forEach((rule) => draft().setLastDone(rule.id, 'unknown')); // 7
-  draft().setLastDone('colonoscopy_screening', 'over_3y');
+  draft().setLastDone('colonoscopy_screening', 'over_interval');
   return asked;
 }
 
@@ -65,7 +65,7 @@ describe('completeOnboarding — full survey', () => {
     expect(records.find((r) => r.examId === 'colonoscopy_screening')).toEqual({
       profileId: 'p1',
       examId: 'colonoscopy_screening',
-      lastDone: 'over_3y',
+      lastDone: 'over_interval',
       status: 'none',
       updatedAt: TODAY,
     });

@@ -7,6 +7,7 @@ import {
   DEFAULT_QUEUE_DAYS,
   LEAD_TIME_MAX_DAYS,
   LEAD_TIME_MIN_DAYS,
+  assumedLastDone,
   dueDate,
   effectiveIntervalMonths,
   getExamRule,
@@ -155,22 +156,56 @@ describe('dueDate', () => {
     ['never', TODAY, false],
     ['unknown', TODAY, false],
     [undefined, TODAY, false],
-    ['over_3y', TODAY, true],
+    ['over_interval', TODAY, true],
   ] as const)('%s → %s, overdue %s', (lastDone, due, overdue) => {
     expect(dueDate(lastDone, 24, TODAY)).toEqual({ dueDate: due, overdue });
-  });
-
-  it('within_1y assumes today − 6 months', () => {
-    expect(dueDate('within_1y', 24, TODAY)).toEqual({ dueDate: '2028-04-03', overdue: false });
-  });
-
-  it('1_3y assumes today − 24 months', () => {
-    expect(dueDate('1_3y', 12, TODAY)).toEqual({ dueDate: '2025-10-03', overdue: true });
   });
 
   it('exact date + interval; overdue when in the past', () => {
     expect(dueDate('2020-01-15', 24, TODAY)).toEqual({ dueDate: '2022-01-15', overdue: true });
     expect(dueDate('2026-01-15', 12, TODAY)).toEqual({ dueDate: '2027-01-15', overdue: false });
+  });
+});
+
+describe('assumedLastDone — survey buckets relative to the exam interval', () => {
+  it('within half the interval → middle of that half (interval / 4 ago)', () => {
+    expect(assumedLastDone('within_half_interval', 120, TODAY)).toBe('2024-04-03'); // 30 mo.
+    expect(assumedLastDone('within_half_interval', 12, TODAY)).toBe('2026-07-03'); // 3 mo.
+  });
+
+  it('half to full interval ago → middle of that range (3/4 of the interval ago)', () => {
+    expect(assumedLastDone('within_interval', 120, TODAY)).toBe('2019-04-03'); // 90 mo.
+    expect(assumedLastDone('within_interval', 24, TODAY)).toBe('2025-04-03'); // 18 mo.
+  });
+
+  it('keeps answers without a date', () => {
+    expect(assumedLastDone('over_interval', 24, TODAY)).toBe('over_interval');
+    expect(assumedLastDone('never', 24, TODAY)).toBe('never');
+    expect(assumedLastDone('unknown', 24, TODAY)).toBe('unknown');
+  });
+
+  it('colonoscopy done 5 years ago is not overdue (the bug this replaced)', () => {
+    const last = assumedLastDone('within_half_interval', 120, TODAY);
+    expect(dueDate(last, 120, TODAY).overdue).toBe(false);
+  });
+
+  it('every dated bucket is due within the interval, in order', () => {
+    for (const interval of [12, 24, 36, 60, 120]) {
+      const recent = dueDate(
+        assumedLastDone('within_half_interval', interval, TODAY),
+        interval,
+        TODAY,
+      );
+      const older = dueDate(assumedLastDone('within_interval', interval, TODAY), interval, TODAY);
+      expect(older.dueDate < recent.dueDate).toBe(true);
+      expect(older.overdue).toBe(false);
+      expect(recent.dueDate <= iso(addMonths(parseISO(TODAY), interval))).toBe(true);
+    }
+  });
+
+  it('is anchored to the answer day: the due date does not move as time passes', () => {
+    const last = assumedLastDone('within_half_interval', 12, '2026-01-10');
+    expect(dueDate(last, 12, '2026-01-10').dueDate).toBe(dueDate(last, 12, TODAY).dueDate);
   });
 });
 
