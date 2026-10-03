@@ -8,9 +8,9 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 ## Zadania
 
 ### WS4-1 · Theme (≤ 45 min, odblokowuje WS3)
-- [ ] `theme/tokens.ts`: kolory (light/dark), spacing (4-pt grid), radius, typografia w dwóch skalach: `normal` i `senior` (×1.3)
-- [ ] Kolory semantyczne: `urgent`, `soon`, `later`, `done`, `booked` + kontrast AA na tle (sprawdzone narzędziem)
-- [ ] `useTheme()` czyta `seniorMode`/`darkMode` ze store'u WS3 (do tego czasu: lokalny stan)
+- [x] `theme/tokens.ts`: kolory (light/dark), spacing (4-pt grid), radius, typografia w dwóch skalach: `normal` i `senior` (×1.3)
+- [x] Kolory semantyczne: `urgent`, `soon`, `later`, `done`, `booked` + kontrast AA na tle (sprawdzone narzędziem)
+- [x] `useTheme()` czyta `seniorMode`/`darkMode` ze store'u WS3 (do tego czasu: lokalny stan)
 
 ### WS4-2 · Komponenty bazowe
 - [ ] `Button` (primary/secondary/ghost, loading, min. 44 pt), `Card`, `Chip`/`Badge`, `Screen` (safe area + scroll), `Text` (warianty z tokenów), `ProgressBar`, `OptionTile` (duży wybór w ankiecie), `ProfileSwitcher`, `EmptyState`, `Disclaimer`
