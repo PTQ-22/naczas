@@ -5,7 +5,7 @@ export const onboarding = {
       'Podpowiemy, jakie badania profilaktyczne warto zrobić i kiedy zacząć szukać terminu.',
     privacy: 'Twoje odpowiedzi zostają na tym urządzeniu. Nie wysyłamy danych o zdrowiu.',
     disclaimer:
-      'NaCzas przypomina i edukuje — nie stawia diagnozy i nie zastępuje lekarza. Zalecenia opierają się na programach profilaktycznych NFZ i wytycznych.',
+      'Aplikacja przypomina o badaniach profilaktycznych i pomaga je zaplanować, ale nie stawia diagnozy i nie zastępuje lekarza. Jeśli coś Cię niepokoi albo masz objawy, porozmawiaj z lekarzem rodzinnym.',
     start: 'Zaczynamy',
     loadDemo: 'Wczytaj profil demo',
   },
