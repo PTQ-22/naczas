@@ -96,6 +96,8 @@ function parseSnapshot(text: string): SnapshotEntry | null {
 }
 
 export function createSnapshotStore(dir: string): SnapshotStore {
+  let latest: Promise<string | null> | undefined;
+
   async function readFileEntry(file: string): Promise<SnapshotEntry | null> {
     try {
       return parseSnapshot(await readFile(file, 'utf8'));
@@ -124,9 +126,16 @@ export function createSnapshotStore(dir: string): SnapshotStore {
       return entries.filter((e) => e !== null);
     },
 
-    async latestFetchedAt() {
-      const dates = (await this.readAll()).map((e) => e.fetchedAt.slice(0, 10)).sort();
-      return dates.at(-1) ?? null;
+    latestFetchedAt() {
+      // The snapshot is a committed file set — read it once, /health may be polled often.
+      latest ??= this.readAll().then(
+        (entries) =>
+          entries
+            .map((e) => e.fetchedAt.slice(0, 10))
+            .sort()
+            .at(-1) ?? null,
+      );
+      return latest;
     },
   };
 }
