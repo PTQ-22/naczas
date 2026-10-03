@@ -46,7 +46,7 @@ describe('rehydration', () => {
   it('restores valid persisted state', async () => {
     const profile = makeProfile();
     await storeRaw(
-      JSON.stringify({ state: { profiles: [profile], activeProfileId: profile.id }, version: 1 }),
+      JSON.stringify({ state: { profiles: [profile], activeProfileId: profile.id }, version: 2 }),
     );
 
     expect(useProfilesStore.getState().profiles).toEqual([profile]);
@@ -58,7 +58,7 @@ describe('rehydration', () => {
     await storeRaw(
       JSON.stringify({
         state: { profiles: [{ id: 'x', birthYear: 'nineteen' }], activeProfileId: 'x' },
-        version: 1,
+        version: 2,
       }),
     );
 

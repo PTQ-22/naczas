@@ -19,7 +19,7 @@ const profile: Profile = {
   birthYear: 1968,
   sex: 'female',
   location: { province: '07', lat: 52.23, lng: 21.01, label: 'Warszawa' },
-  conditions: ['hypertension'],
+  conditions: ['diabetes'],
   familyHistory: ['colorectal_cancer'],
   smoking: { status: 'never' },
   activity: 'medium',

@@ -30,7 +30,7 @@ function answerWholeSurvey() {
     postalCode: '00-950',
     location: { province: '07', lat: 52.23, lng: 21.01, label: 'mazowieckie' },
   }); // 3
-  draft().update({ conditions: ['hypertension'] }); // 4
+  draft().update({ conditions: ['diabetes'] }); // 4
   draft().update({ familyHistory: ['colorectal_cancer'] }); // 5
   draft().update({ smoking: 'never', activity: 'low' }); // 6
   const asked = examsToAsk(draft().draft!, TODAY);
@@ -52,7 +52,7 @@ describe('completeOnboarding — full survey', () => {
       birthYear: 1968,
       sex: 'female',
       location: { province: '07', lat: 52.23, lng: 21.01, label: 'mazowieckie' },
-      conditions: ['hypertension'],
+      conditions: ['diabetes'],
       familyHistory: ['colorectal_cancer'],
       smoking: { status: 'never' },
       activity: 'low',

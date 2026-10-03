@@ -46,6 +46,19 @@ Pewność:
 | `psa_discussion` | M 45+ przy obciążeniu rodzinnym / interwał 24 mies. | — | — | NIEZWERYFIKOWANE |
 | `psa_discussion` | skierowanie: w programie zlecenie z POZ po ankiecie | https://pacjent.gov.pl/program-moje-zdrowie | „Przychodnia POZ wystawi zlecenie (nie skierowanie) na badania na podstawie wypełnionej przez Ciebie ankiety” | wysoka |
 
+## Ankieta v2 — czynniki, które zmieniają plan (2026-10-04)
+
+| examId / skutek | wartość | URL | cytat ≤1 zdanie | pewność |
+|---|---|---|---|---|
+| `cervical_screening` | co 12 mies. przy HIV lub lekach immunosupresyjnych | https://api.sejm.gov.pl/eli/acts/DU/2025/298/text.pdf | „co 12 miesięcy dla kobiet obciążonych czynnikami ryzyka (zakażonych wirusem HIV, przyjmujących leki immunosupresyjne)” | wysoka |
+| `lung_ldct` | 50–54 z czynnikiem ryzyka: POChP, ekspozycja zawodowa, radon, rak płuca u krewnego I st., wybrane przebyte nowotwory; wyłączenie: TK klatki w ciągu 12 mies. | https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/ | „zdiagnozowany rak płuca u krewnego pierwszego stopnia” | wysoka |
+| `tobacco_program` | palący 18+; 40–65 spirometria, jeśli brak POChP i spirometrii w programie w ciągu 36 mies. | https://pacjent.gov.pl/program-profilaktyczny/program-profilaktyki-chorob-odtytoniowych | „jeżeli palisz papierosy lub inne wyroby tytoniowe” | wysoka |
+| `cardiovascular_check` | 35–65; bez cukrzycy, przewlekłej choroby nerek, rodzinnej hipercholesterolemii, niektórych chorób układu krążenia; co 5 lat | https://pacjent.gov.pl/program-profilaktyczny/profilaktyka-chorob-ukladu-krazenia-chuk | „nie korzystałeś lub nie korzystałaś z badań w ramach tego programu w ciągu ostatnich 5 lat” | wysoka |
+| poradnia genetyczna (pytanie do lekarza, nie badanie) | opieka nad rodzinami wysokiego ryzyka: rak piersi lub jajnika, rak jelita grubego lub trzonu macicy; skierowanie od POZ | https://pacjent.gov.pl/print/pdf/node/5456 | „zgłoś się do lekarza podstawowej opieki zdrowotnej lub do specjalisty” | wysoka |
+| `colonoscopy_screening` | 40–49 przy raku jelita grubego u krewnego I stopnia | https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/program-badan-przesiewowych-raka-jelita-grubego/ | „od 40 do 49 lat, jeśli u najbliższych krewnych pacjenta, rozpoznano nowotwór jelita grubego” | wysoka |
+
+Bez wpływu na żaden program (usunięte z ankiety): nadciśnienie (nie wyklucza z ChUK), rak prostaty w rodzinie (PSA w „Moje Zdrowie” od 50 r.ż. bez względu na rodzinę), zawał/udar u krewnych (ChUK zależy tylko od wieku), wzrost i waga (zbiera je ankieta „Moje Zdrowie”).
+
 ## Rozbieżności względem hipotez z tabeli D
 
 - `health_check_adult` — granica przedziałów: **50+** co 3 lata (wg pacjent.gov.pl, liczone rocznikowo); hipoteza „50+” zgodna. gov.pl pisze „powyżej 49 roku życia” — to samo.

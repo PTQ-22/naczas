@@ -28,15 +28,27 @@ export const ProvinceCodeSchema = z.enum([
 ]);
 export type ProvinceCode = z.infer<typeof ProvinceCodeSchema>;
 
-export const ConditionSchema = z.enum(['diabetes', 'hypertension', 'heart_disease', 'other']);
+/**
+ * Only diagnoses that change an NFZ program (docs/01-user-journey.md §Ankieta):
+ * the first four exclude ChUK, 'copd' excludes spirometry and counts for lung LDCT at 50–54,
+ * 'immunosuppression' (HIV or immunosuppressive drugs) shortens the HPV test interval.
+ */
+export const ConditionSchema = z.enum([
+  'diabetes',
+  'chronic_kidney_disease',
+  'familial_hypercholesterolemia',
+  'heart_disease',
+  'copd',
+  'immunosuppression',
+]);
 export type Condition = z.infer<typeof ConditionSchema>;
 
+/** Cancers in parents, siblings or children; each one has an NFZ consequence. */
 export const FamilyHistorySchema = z.enum([
-  'breast_cancer',
   'colorectal_cancer',
-  'prostate_cancer',
+  'breast_cancer',
   'ovarian_cancer',
-  'early_cardiovascular', // heart attack/stroke in a 1st-degree relative < 60 y.o.
+  'endometrial_cancer',
 ]);
 export type FamilyHistory = z.infer<typeof FamilyHistorySchema>;
 
@@ -63,10 +75,15 @@ export const ProfileSchema = z.object({
     .optional(),
   conditions: z.array(ConditionSchema),
   familyHistory: z.array(FamilyHistorySchema),
-  smoking: z.object({ status: SmokingStatusSchema, packYears: z.number().optional() }),
+  smoking: z.object({
+    status: SmokingStatusSchema,
+    packYears: z.number().optional(),
+    /** Former smokers only: lung LDCT requires quitting at most 15 years ago. */
+    quitOver15y: z.boolean().optional(),
+    /** Occupational exposure, radon, lung cancer in a 1st-degree relative or selected past cancers. */
+    otherLungRisk: z.boolean().optional(),
+  }),
   activity: ActivityLevelSchema.optional(),
-  heightCm: z.number().optional(),
-  weightKg: z.number().optional(),
   subscribedExams: z.array(z.string()).optional(),
   createdAt: ISODateSchema,
 });

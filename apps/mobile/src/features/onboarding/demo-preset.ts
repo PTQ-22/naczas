@@ -78,6 +78,10 @@ export function buildDemoPreset(today: ISODate): { profiles: Profile[]; records:
       lastDone: toISO(subMonths(now, 12)),
       status: 'done',
     }),
+    record(DEMO_MAMA_ID, 'cardiovascular_check', {
+      lastDone: toISO(subMonths(now, 30)),
+      status: 'done',
+    }),
     // An exact date 14 months back is still "1–3 years ago" but, unlike the '1_3y' answer
     // (assumed 24 months), doesn't make the eye exam due today and red next to colonoscopy.
     record(DEMO_MAMA_ID, 'eye_exam', { lastDone: toISO(subMonths(now, 14)), status: 'none' }),

@@ -61,7 +61,9 @@ Priorytet źródeł: 1) programy MZ/NFZ (pacjent.gov.pl, nfz.gov.pl), 2) rekomen
 | `cervical_screening` | Cytologia / test HPV | K 25–64 | 36 mies. (do weryfikacji wariant HPV) | program | nie | — |
 | `mammography` | Mammografia | K 45–74 | 24 mies. | program | nie | — |
 | `colonoscopy_screening` | Kolonoskopia przesiewowa | 50–65; obciążenie rodzinne: od 40 | 120 mies. | queue | do weryfikacji (program vs. AOS) | `KOLONOSKOPIA` |
-| `lung_ldct` | Niskodawkowa TK płuc | 55–74 + palacze ≥ 20 paczkolat | 12 mies. | program | do weryfikacji | — |
+| `lung_ldct` | Niskodawkowa TK płuc | 55–74 + ≥ 20 paczkolat, abstynencja ≤ 15 lat; 50–54 z dodatkowym czynnikiem ryzyka | 12 mies. | program | nie | — |
+| `tobacco_program` | Program profilaktyki chorób odtytoniowych | palący 18+ (spirometria: 40–65 bez POChP) | 36 mies. (przerwa między spirometriami) | program | nie | — |
+| `cardiovascular_check` | Profilaktyka chorób układu krążenia (ChUK) | 35–65, bez cukrzycy, PChN, FH, chorób układu krążenia | 60 mies. | program | nie | — |
 | `eye_exam` | Badanie okulistyczne (jaskra) | 40+ | 24 mies. | queue | nie | `ŚWIADCZENIA Z ZAKRESU OKULISTYKI` (zweryfikować nazwę poradni) |
 | `skin_check` | Kontrola znamion | 18+ | 12 mies. | queue | do weryfikacji | do znalezienia w `/benefits` |
 | `psa_discussion` | Rozmowa o PSA z lekarzem | M 50+ (45+ przy obciążeniu) | 24 mies. | walk_in | — | — (decyzja indywidualna — tylko „porozmawiaj z lekarzem”) |
@@ -77,6 +79,8 @@ Priorytet źródeł: 1) programy MZ/NFZ (pacjent.gov.pl, nfz.gov.pl), 2) rekomen
 - [x] Dokładne nazwy świadczeń w `/benefits`
 - [x] Link „gdzie zrobić” dla programów
 - [ ] `eye_exam`, `skin_check`: wiek i interwał bez oficjalnego źródła (`verified: false`)
-- [ ] `lung_ldct` wariant 50–54 z czynnikami ryzyka i abstynencja ≤ 15 lat — poza modelem `Profile` (MVP: tylko 55–74 + ≥ 20 paczkolat)
+- [x] `lung_ldct` wariant 50–54 z czynnikami ryzyka i abstynencja ≤ 15 lat (ankieta v2)
+- [ ] `tobacco_program`: interwał 36 mies. pochodzi z przerwy między spirometriami (40–65); dla porady antytytoniowej u osób < 40 lat źródło nie podaje interwału
+- [ ] `cardiovascular_check`: warunek „brak badań w »Moje Zdrowie« w ostatnich 12 mies.” jest tylko w opisie, silnik go nie sprawdza; „niektóre choroby układu krążenia” — o udziale decyduje lekarz
 - [ ] `psa_discussion` wariant 45+ przy obciążeniu rodzinnym — brak źródła
 - [ ] `blood_basic`, `blood_pressure` — tylko w ramach „Moje Zdrowie”, nie są osobnymi regułami

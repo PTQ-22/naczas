@@ -8,10 +8,18 @@ export type BookingType = z.infer<typeof BookingTypeSchema>;
 /** Inclusive [from, to] age range */
 const AgeRangeSchema = z.tuple([z.number(), z.number()]);
 
+/** Derived from the profile by `profileFactors` in packages/rules. */
+const DerivedFactorSchema = z.enum([
+  'smoker_20py', // current or former (quit ≤ 15 y) with ≥ 20 pack-years
+  'smoker_20py_lung_risk', // smoker_20py + COPD or another lung cancer risk factor
+  'current_smoker',
+  'current_smoker_no_copd',
+]);
+
 const EligibilityFactorSchema = z.union([
   ConditionSchema,
   FamilyHistorySchema,
-  z.literal('smoker_20py'),
+  DerivedFactorSchema,
 ]);
 const ModifierTriggerSchema = z.union([EligibilityFactorSchema, z.literal('low_activity')]);
 
@@ -24,6 +32,7 @@ export const ExamRuleSchema = z.object({
     sex: SexSchema.optional(),
     age: AgeRangeSchema.optional(),
     requiresAny: z.array(EligibilityFactorSchema).optional(),
+    excludesAny: z.array(EligibilityFactorSchema).optional(),
   }),
   modifiers: z
     .array(
