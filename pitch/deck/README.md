@@ -18,7 +18,7 @@ Ręcznie: otwórz `deck.html` w Chrome → Drukuj (⌘P / Ctrl+P) → *Zapisz ja
 
 | Co | Gdzie |
 |---|---|
-| Nazwa produktu `{NAZWA}` | **jedno miejsce:** `--app-name` w `:root` na górze `deck.html` (wszystkie slajdy czytają ją przez klasę `.app-name`) |
+| Nazwa produktu (obecnie „NaCzas”) | tylko jeśli zespół wybierze inną: **jedno miejsce** — `--app-name` w `:root` na górze `deck.html` (wszystkie slajdy czytają ją przez klasę `.app-name`); poza deckiem także `README.md` (repo) i `pitch/script.md` |
 | Nazwa zespołu, imiona | slajd 1 — elementy `.todo` |
 | Screenshoty (po M3) | ramki `.shot` na slajdach 4, 6, 7 — zamień `<div class="shot phone">…</div>` na `<img class="shot phone" src="screens/plan.png" alt="…">` (wymiar ramki zostaje); pliki w `pitch/deck/screens/` |
 | Wartości z demo | slajd 5 `{N} tyg.`, slajd 8 liczba testów i pokrycie (stan 2026-10-03: rules 123 / 100% linii, API 74 — zaktualizować z `pnpm test`), slajd 6 „Karta aktywności” — usunąć, jeśli nie działa |
@@ -27,7 +27,7 @@ Ręcznie: otwórz `deck.html` w Chrome → Drukuj (⌘P / Ctrl+P) → *Zapisz ja
 Wszystkie placeholdery mają klasę `.todo`, `.shot` lub `.qr` — przed eksportem finalnym nie powinno ich być:
 
 ```bash
-grep -nE 'class="(todo|shot|qr)|\{NAZWA\}' pitch/deck/deck.html
+grep -nE 'class="(todo|shot|qr)' pitch/deck/deck.html
 ```
 
 ## Sprawdzone (2026-10-03)

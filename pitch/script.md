@@ -23,7 +23,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 ## 0:30–2:15 · Demo na żywo  [SLAJD 3 na 5 s, potem ekran aplikacji]
 
 **P (na slajdzie 3, 5 s):**
-> Dlatego zrobiliśmy {NAZWA}: mówi, co zbadać, kiedy zacząć to organizować i gdzie zrobić to najszybciej na NFZ.
+> Dlatego zrobiliśmy NaCzas: mówi, co zbadać, kiedy zacząć to organizować i gdzie zrobić to najszybciej na NFZ.
 
 **0:35–1:15 · Onboarding mamy**
 [AKCJA] D: „Dodaj bliską osobę” → Mama, 1968, kobieta → lokalizacja → historia rodzinna: rak jelita grubego → ostatnie badania: „nie pamiętam”.
@@ -56,7 +56,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 
 **P:**
 > Następny krok to wspólny plan opiekuna i rodzica oraz współpraca z NFZ i samorządami — to może być publiczne, otwarte narzędzie.
-> {NAZWA}: wiesz co, kiedy i gdzie — zanim będzie za późno. Dziękujemy.
+> NaCzas: wiesz co, kiedy i gdzie — zanim będzie za późno. Dziękujemy.
 
 (~40 słów)
 

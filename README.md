@@ -1,7 +1,7 @@
-# {NAZWA} — planer profilaktyki z dostępnością NFZ
+# NaCzas — planer profilaktyki z dostępnością NFZ
 
 > HackYeah 2026 · Open Task **SPORT & HEALTHCARE** · zespół **{NAZWA ZESPOŁU}**
-> Nazwa robocza w kodzie: `naczas`. Propozycje nazwy: [pitch/naming.md](pitch/naming.md).
+> Nazwa „NaCzas” może się jeszcze zmienić — alternatywy: [pitch/naming.md](pitch/naming.md).
 
 **Demo (web):** {LINK DO DEMO} · **Expo Go:** {QR / LINK} · **Wideo:** {LINK DO WIDEO}
 
@@ -11,7 +11,7 @@
 
 ## Problem i rozwiązanie
 
-Ludzie odkładają badania profilaktyczne, bo nie pamiętają, kiedy je robili, nie wiedzą, które ich dotyczą, i przypominają sobie za późno — a na kolonoskopię w połowie placówek NFZ czeka się średnio ponad 4,5 miesiąca ([skąd ta liczba](pitch/slides-outline.md)). {NAZWA} na podstawie krótkiej ankiety układa indywidualny plan badań dla Ciebie i Twoich bliskich, z uzasadnieniem i źródłem każdego zalecenia. Na podstawie realnych kolejek NFZ w okolicy mówi, **kiedy zacząć organizować** badanie, żeby zdążyć, i **gdzie** zrobić je najszybciej.
+Ludzie odkładają badania profilaktyczne, bo nie pamiętają, kiedy je robili, nie wiedzą, które ich dotyczą, i przypominają sobie za późno — a na kolonoskopię w połowie placówek NFZ czeka się średnio ponad 4,5 miesiąca ([skąd ta liczba](pitch/slides-outline.md)). NaCzas na podstawie krótkiej ankiety układa indywidualny plan badań dla Ciebie i Twoich bliskich, z uzasadnieniem i źródłem każdego zalecenia. Na podstawie realnych kolejek NFZ w okolicy mówi, **kiedy zacząć organizować** badanie, żeby zdążyć, i **gdzie** zrobić je najszybciej.
 
 > Aplikacja edukuje i przypomina — **nie diagnozuje i nie zastępuje lekarza**.
 

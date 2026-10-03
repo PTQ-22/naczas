@@ -58,7 +58,7 @@
 
 Na slajd (uproszczona; ✓/✗/? tylko tam, gdzie mamy URL — szczegóły i cytaty w tabeli pełnej niżej):
 
-| | Doctor Robert | IKP / mojeIKP | **{NAZWA}** |
+| | Doctor Robert | IKP / mojeIKP | **NaCzas** |
 |---|---|---|---|
 | Plan badań wg profilu | ✓ | ✓ jednorazowy bilans („Moje Zdrowie”) | ✓ ciągły plan |
 | Przypomnienia o badaniach | ✓ | ✗¹ (leki i wizyty z e-rejestracji) | ✓ |
