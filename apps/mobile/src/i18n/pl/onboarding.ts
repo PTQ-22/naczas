@@ -136,6 +136,11 @@ export const onboarding = {
       empty: 'Na razie nie ma badań do uzupełnienia.',
     },
   },
+  notFound: {
+    title: 'Nie ma takiej strony',
+    body: 'Ten adres jest nieaktualny albo zawiera błąd.',
+    cta: 'Przejdź do planu',
+  },
   demo: {
     mamaName: 'Mama',
     kasiaName: 'Kasia',
