@@ -1,0 +1,878 @@
+{
+ "_source": "GET https://api.nfz.gov.pl/app-umw-api/swagger/v1.2/swagger.json",
+ "_fetched": "2026-10-03",
+ "paths": {
+  "/months/{id}": [
+   {
+    "name": "id",
+    "in": "path",
+    "required": true,
+    "description": "Unikalny identyfikator miesiąca w planie umowy"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie\r\n{sortDirection} - opcjonalny parametr kierunku sortowania\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/plans/{id}": [
+   {
+    "name": "id",
+    "in": "path",
+    "required": true,
+    "description": "Unikalny identyfikator planu umowy"
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie\r\n{sortDirection} - opcjonalny parametr kierunku sortowania\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "strona miesięcy w planie umowy"
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Ilość miesięcy na stronę"
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa format odpowiedzi.\r\njson — JavaScript object notation\r\nxml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/agreements": [
+   {
+    "name": "year",
+    "in": "query",
+    "required": true,
+    "description": "Rok podpisania umowy"
+   },
+   {
+    "name": "branch",
+    "in": "query",
+    "required": true,
+    "description": "Numer oddziału NFZ z którym została podpisana umowa:\r\n            01 - Dolnonośląski\r\n            02 - Kujawsko-Pomorski\r\n            03 - Lubelski\r\n            04 - Lubuski\r\n            05 - Łódzki\r\n            06 - Małopolski\r\n            07 - Mazowiecki\r\n            08 - Opolski\r\n            09 - Podkarpacki\r\n            10 - Podlaski\r\n            11 - Pomorski\r\n            12 - Śląski\r\n            13 - Świętokrzyski\r\n            14 - Warmińsko-Mazurski\r\n            15 - Wielkopolski\r\n            16 - Zachodniopomorski"
+   },
+   {
+    "name": "serviceType",
+    "in": "query",
+    "required": false,
+    "description": "Kod rodzaju świadczenia"
+   },
+   {
+    "name": "productCode",
+    "in": "query",
+    "required": false,
+    "description": "Kod produktu kontraktowego lub środka ortopedycznego"
+   },
+   {
+    "name": "providerCode",
+    "in": "query",
+    "required": false,
+    "description": "Kod świadczeniodawcy"
+   },
+   {
+    "name": "providerName",
+    "in": "query",
+    "required": false,
+    "description": "Nazwa świadczeniodawcy"
+   },
+   {
+    "name": "place",
+    "in": "query",
+    "required": false,
+    "description": "Miejscowość"
+   },
+   {
+    "name": "nip",
+    "in": "query",
+    "required": false,
+    "description": "NIP świadczeniodawcy"
+   },
+   {
+    "name": "regon",
+    "in": "query",
+    "required": false,
+    "description": "REGON świadczeniodawcy"
+   },
+   {
+    "name": "updatedAt",
+    "in": "query",
+    "required": false,
+    "description": "Data aktualizacji umowy. Zwrócone zostąną umowy z datą aktualizacji równą lub większą przekazanej datcie"
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie - domyślnie \"origin-code\"\r\n{sortDirection} - opcjonalny parametr kierunku sortowania  - domyślnie \"asc\"\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/agreements/{id}": [
+   {
+    "name": "id",
+    "in": "path",
+    "required": true,
+    "description": "Unikalny identyfikator umowy"
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie\r\n{sortDirection} - opcjonalny parametr kierunku sortowania\r\nDostępne wartośći:\r\nASC - Rosnąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/available-years": [
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/contract-products": [
+   {
+    "name": "year",
+    "in": "query",
+    "required": true,
+    "description": "rok"
+   },
+   {
+    "name": "code",
+    "in": "query",
+    "required": false,
+    "description": "kod produktu kontraktowego"
+   },
+   {
+    "name": "name",
+    "in": "query",
+    "required": false,
+    "description": "nazwa produktu kontraktowego"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie - domyślnie \"name\"\r\n{sortDirection} - opcjonalny parametr kierunku sortowania  - domyślnie \"asc\"\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/orthopedic-supplies": [
+   {
+    "name": "year",
+    "in": "query",
+    "required": true,
+    "description": "rok."
+   },
+   {
+    "name": "code",
+    "in": "query",
+    "required": false,
+    "description": "kod środka ortopedycznego."
+   },
+   {
+    "name": "name",
+    "in": "query",
+    "required": false,
+    "description": "nazwa środka ortopedycznego."
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie - domyślnie \"name\"\r\n{sortDirection} - opcjonalny parametr kierunku sortowania  - domyślnie \"asc\"\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/providers": [
+   {
+    "name": "year",
+    "in": "query",
+    "required": false,
+    "description": "Rok."
+   },
+   {
+    "name": "branch",
+    "in": "query",
+    "required": false,
+    "description": "Numer oddziału NFZ z którym została podpisana umowa:\r\n            01 - Dolnonośląski\r\n            02 - Kujawsko-Pomorski\r\n            03 - Lubelski\r\n            04 - Lubuski\r\n            05 - Łódzki\r\n            06 - Małopolski\r\n            07 - Mazowiecki\r\n            08 - Opolski\r\n            09 - Podkarpacki\r\n            10 - Podlaski\r\n            11 - Pomorski\r\n            12 - Śląski\r\n            13 - Świętokrzyski\r\n            14 - Warmińsko-Mazurski\r\n            15 - Wielkopolski\r\n            16 - Zachodniopomorski"
+   },
+   {
+    "name": "code",
+    "in": "query",
+    "required": false,
+    "description": "Kod świadczeniodawcy."
+   },
+   {
+    "name": "name",
+    "in": "query",
+    "required": false,
+    "description": "Nazwa świadczeniodawcy."
+   },
+   {
+    "name": "nip",
+    "in": "query",
+    "required": false,
+    "description": "NIP świadczeniodawcy."
+   },
+   {
+    "name": "regon",
+    "in": "query",
+    "required": false,
+    "description": "REGON świadczeniodawcy."
+   },
+   {
+    "name": "postCode",
+    "in": "query",
+    "required": false,
+    "description": "Kod pocztowy świadczeniodawcy."
+   },
+   {
+    "name": "street",
+    "in": "query",
+    "required": false,
+    "description": "Ulica świadczeniodawcy."
+   },
+   {
+    "name": "place",
+    "in": "query",
+    "required": false,
+    "description": "Miejscowość świadczeniodawcy."
+   },
+   {
+    "name": "phone",
+    "in": "query",
+    "required": false,
+    "description": "Numer telefonu świadczeniodawcy."
+   },
+   {
+    "name": "commune",
+    "in": "query",
+    "required": false,
+    "description": "Gmina."
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie - domyślnie \"name\"\r\n{sortDirection} - opcjonalny parametr kierunku sortowania  - domyślnie \"asc\"\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/service-types": [
+   {
+    "name": "year",
+    "in": "query",
+    "required": true,
+    "description": "rok."
+   },
+   {
+    "name": "code",
+    "in": "query",
+    "required": false,
+    "description": "kod rodzaju świadczenia."
+   },
+   {
+    "name": "name",
+    "in": "query",
+    "required": false,
+    "description": "nazwa rodzaju świadczenia."
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie - domyślnie \"name\"\r\n{sortDirection} - opcjonalny parametr kierunku sortowania  - domyślnie \"asc\"\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (domyślnie 10; maks. 25)."
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę.\r\n            Określa format odpowiedzi.\r\n            json — JavaScript object notation\r\n            xml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/providers/{year}": [
+   {
+    "name": "year",
+    "in": "path",
+    "required": true,
+    "description": "Rok podpisania umowy"
+   },
+   {
+    "name": "branch",
+    "in": "query",
+    "required": false,
+    "description": "Numer oddziału z którym została podpisana umowa"
+   },
+   {
+    "name": "productCode",
+    "in": "query",
+    "required": false,
+    "description": "Kod produktu jednostkowego lub środka ortopedycznego"
+   },
+   {
+    "name": "serviceType",
+    "in": "query",
+    "required": false,
+    "description": "Kod rodzaju świadczenia"
+   },
+   {
+    "name": "code",
+    "in": "query",
+    "required": false,
+    "description": "Kod świadczeniodawcy"
+   },
+   {
+    "name": "name",
+    "in": "query",
+    "required": false,
+    "description": "Nazwa świadczeniodawcy"
+   },
+   {
+    "name": "postCode",
+    "in": "query",
+    "required": false,
+    "description": "Kod pocztowy"
+   },
+   {
+    "name": "street",
+    "in": "query",
+    "required": false,
+    "description": "Ulica"
+   },
+   {
+    "name": "place",
+    "in": "query",
+    "required": false,
+    "description": "Miejscowość"
+   },
+   {
+    "name": "nip",
+    "in": "query",
+    "required": false,
+    "description": "Numer NIP"
+   },
+   {
+    "name": "regon",
+    "in": "query",
+    "required": false,
+    "description": "Regon"
+   },
+   {
+    "name": "phone",
+    "in": "query",
+    "required": false,
+    "description": "Numer telefony"
+   },
+   {
+    "name": "commune",
+    "in": "query",
+    "required": false,
+    "description": "Gmina"
+   },
+   {
+    "name": "sort",
+    "in": "query",
+    "required": false,
+    "description": "Parametr umożliwa sortowanie po wskazanym atrybucie.\r\nSkładnia: {attributeName}[:{sortDirection}]\r\n{attributeName} - atrybut po którym ma nastąpić sortowanie - domyślnie \"provider-name\"\r\n{sortDirection} - opcjonalny parametr kierunku sortowania  - domyślnie \"asc\"\r\nDostępne wartośći:\r\nASC - Rosnąco\r\nDESC - Malejąco"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (maks. 25)"
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa format odpowiedzi.\r\njson — JavaScript object notation\r\nxml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/providers/{year}/{code}": [
+   {
+    "name": "year",
+    "in": "path",
+    "required": true,
+    "description": ""
+   },
+   {
+    "name": "branch",
+    "in": "query",
+    "required": true,
+    "description": ""
+   },
+   {
+    "name": "code",
+    "in": "path",
+    "required": true,
+    "description": "Kod świadczeniodawcy"
+   },
+   {
+    "name": "updatedAt",
+    "in": "query",
+    "required": false,
+    "description": "Data aktualizacji umowy. Zwrócone zostąną umowy z datą aktualizacji równą lub większą przekazanej datcie"
+   },
+   {
+    "name": "page",
+    "in": "query",
+    "required": false,
+    "description": "Określa aktualnie wyświetlaną stronę."
+   },
+   {
+    "name": "limit",
+    "in": "query",
+    "required": false,
+    "description": "Określa liczbę pozycji wyświetlanych na stronie (maks. 25)"
+   },
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": "Określa format odpowiedzi.\r\njson — JavaScript object notation\r\nxml — Extensible markup language"
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ],
+  "/version": [
+   {
+    "name": "format",
+    "in": "query",
+    "required": false,
+    "description": ""
+   },
+   {
+    "name": "api-version",
+    "in": "query",
+    "required": false,
+    "description": "The requested API version"
+   }
+  ]
+ },
+ "schemas": {
+  "agreement-attributes": {
+   "code": {
+    "type": "string",
+    "description": "Kod umowy"
+   },
+   "technical-code": {
+    "type": "string",
+    "description": "Techniczny kod umowy przekazywany w ramach UMX, używany w ramach wymiany danych z NFZ"
+   },
+   "origin-code": {
+    "type": "string",
+    "description": "Kod pierwotny umowy"
+   },
+   "service-type": {
+    "type": "string",
+    "description": "Rodzaj świadczenia"
+   },
+   "service-name": {
+    "type": "string",
+    "description": "Nazwa rodzaju świadczenia"
+   },
+   "amount": {
+    "type": "number",
+    "description": "Kwota"
+   },
+   "updated-at": {
+    "type": "string",
+    "description": "Data aktualizacji danych w centrali"
+   },
+   "provider-code": {
+    "type": "string",
+    "description": "Kod świadczeniodawcy"
+   },
+   "provider-nip": {
+    "type": "string",
+    "description": "Numer NIP"
+   },
+   "provider-regon": {
+    "type": "string",
+    "description": "Numer REGON"
+   },
+   "provider-registry-number": {
+    "type": "string",
+    "description": "Numer księgi rejestrowej"
+   },
+   "provider-name": {
+    "type": "string",
+    "description": "Nazwa świadczeniodawcy"
+   },
+   "provider-place": {
+    "type": "string",
+    "description": "Miejscowość świadczeniodawcy"
+   },
+   "year": {
+    "type": "integer",
+    "description": "Rok"
+   },
+   "branch": {
+    "type": "string",
+    "description": "Oddział świadczeniodawcy"
+   }
+  },
+  "provider-attributes": {
+   "branch": {
+    "type": "string",
+    "description": "Oddział Wojewódzki"
+   },
+   "code": {
+    "type": "string",
+    "description": "Kod świadczniodawcy"
+   },
+   "name": {
+    "type": "string",
+    "description": "Nazwa świadczeniodawcy"
+   },
+   "nip": {
+    "type": "string",
+    "description": "Numer NIP"
+   },
+   "regon": {
+    "type": "string",
+    "description": "Regon"
+   },
+   "registry-number": {
+    "type": "string",
+    "description": "Numer księgi rejestrowej"
+   },
+   "post-code": {
+    "type": "string",
+    "description": "Kod pocztowy"
+   },
+   "street": {
+    "type": "string",
+    "description": "Ulica"
+   },
+   "place": {
+    "type": "string",
+    "description": "Miejscowość"
+   },
+   "phone": {
+    "type": "string",
+    "description": "Numer telefonu"
+   },
+   "commune": {
+    "type": "string",
+    "description": "Gmina"
+   },
+   "amount": {
+    "type": "number",
+    "description": "Sumaryczna kwota zobowiązań"
+   }
+  },
+  "dictionary-provider-entry-attributes": {
+   "branch": {
+    "type": "string",
+    "description": "Oddział Wojewódzki NFZ"
+   },
+   "code": {
+    "type": "string",
+    "description": "Kod świadczeniodawcy"
+   },
+   "name": {
+    "type": "string",
+    "description": "Nazwa świadczeniodawcy"
+   },
+   "nip": {
+    "type": "string",
+    "description": "Numer NIP"
+   },
+   "regon": {
+    "type": "string",
+    "description": "Numer REGON"
+   },
+   "registry-number": {
+    "type": "string",
+    "description": "Numer księgi rejestrowej"
+   },
+   "post-code": {
+    "type": "string",
+    "description": "Kod pocztowy"
+   },
+   "street": {
+    "type": "string",
+    "description": "Ulica"
+   },
+   "place": {
+    "type": "string",
+    "description": "Miejscowość"
+   },
+   "phone": {
+    "type": "string",
+    "description": "Numer telefonu"
+   },
+   "commune": {
+    "type": "string",
+    "description": "Gmina"
+   }
+  },
+  "dictionary-entry-attributes": {
+   "code": {
+    "type": "string",
+    "description": "Kod pozycji"
+   },
+   "name": {
+    "type": "string",
+    "description": "Nazwa pozycji"
+   },
+   "year": {
+    "type": "integer",
+    "description": "Rok"
+   }
+  },
+  "agreement-plan-attributes": {
+   "product-code": {
+    "type": "string",
+    "description": "Kod produktu kontraktowego"
+   },
+   "product-name": {
+    "type": "string",
+    "description": "Nazwa produktu kontraktowego"
+   },
+   "order": {
+    "type": "integer",
+    "description": "Wyróżnik produktu w planie umowy"
+   },
+   "unit-count": {
+    "type": "number",
+    "description": "Sumaryczna liczba kontraktu dla produktu"
+   },
+   "price": {
+    "type": "number",
+    "description": "Sumaryczna kwota kontraktu dla produktu"
+   },
+   "avg-price": {
+    "type": "number",
+    "description": "Średnia cena produktu"
+   },
+   "date-from": {
+    "type": "string",
+    "description": "Data początku obowiązywania produktu kontraktowego w planie umowy"
+   },
+   "date-to": {
+    "type": "string",
+    "description": "Data końca obowiązywania produktu kontraktowego w planie umowy"
+   }
+  },
+  "agreement-plan-month-attributes": {
+   "unit-count": {
+    "type": "number",
+    "description": "Sumaryczna liczba kontraktu dla produktu"
+   },
+   "month": {
+    "type": "integer",
+    "description": "Miesiąc"
+   },
+   "price": {
+    "type": "number",
+    "description": "Sumaryczna kwota kontraktu dla produktu"
+   },
+   "avg-price": {
+    "type": "number",
+    "description": "Średnia cena produktu"
+   },
+   "packages-type": {
+    "type": "string",
+    "description": "Typ pakietów"
+   }
+  }
+ }
+}

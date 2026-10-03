@@ -1,0 +1,801 @@
+{
+ "_source": "GET https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczneSearch?specjalizacja=1243&wojewodztwo=07 + ProgramyProfilaktycznePage?Page=2..N&PageSize=10 (cookie sesji); HTML sparsowany skryptem, pola 1:1 z kart wyników",
+ "_fetched": "2026-10-03",
+ "_note": "Odpowiedź źródłowa to HTML (~440 KB/strona, 10 kart). lat/lng z ukrytych <input name=lat|long> — w większości puste.",
+ "totalCount": 61,
+ "items": [
+  {
+   "provider": "CENTRALNA WOJSKOWA PRZYCHODNIA LEKARSKA \"CEPELEK\" SP ZOZ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.KOSZYKOWA 78, 00-911 Śródmieście",
+   "phoneRegistration": "459595071",
+   "phoneInfo": "459595071",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "CENTRUM MEDYCZNE DAMIANA HOLDING SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.WAŁBRZYSKA 46, 02-739 Warszawa",
+   "phoneRegistration": "22/566 22 22",
+   "phoneInfo": "22/566 22 22",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA RENTGENODIAGNOSTYKI OGÓLNEJ (RTG,MAMMOGRAF)",
+   "address": "ul.KLEEBERGA 2, 08-110 Siedlce",
+   "phoneRegistration": "(25) 6335041",
+   "phoneInfo": "(25) 6333555",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.DĄBRÓWKI 52, 05-300 Mińsk Mazowiecki",
+   "phoneRegistration": "25 6333555",
+   "phoneInfo": "25 6333555",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.LIPOWA 1A, 08-320 Sterdyń",
+   "phoneRegistration": "256333555",
+   "phoneInfo": "256333555",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.ARMII KRAJOWEJ 5, 05-410 Józefów",
+   "phoneRegistration": "+48 22 789 89 89",
+   "phoneInfo": "+48 22 789 89 89",
+   "website": "//www.centrum.med.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "CENTRUM ZDROWIA ADAM MUSZYŃSKI SPÓŁKA KOMANDYTOWO-AKCYJNA",
+   "place": "PORADNIA PROMOCJI ZDROWIA",
+   "address": "ul.POMORSKA 1, 05-500 Piaseczno",
+   "phoneRegistration": "600471700",
+   "phoneInfo": "600471700",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "DORADZTWO I ZARZĄDZANIE W OPIECE ZDROWOTNEJ A.K. SP. Z.O.O",
+   "place": "PORADNIA PROFILAKTYKI CHORÓB PIERSI",
+   "address": "ul.MIĘDZYNARODOWA 56, 03-922 Praga-Południe",
+   "phoneRegistration": "22 610 10 57",
+   "phoneInfo": "22 671 63 13",
+   "website": "//www.cm-saska-kepa.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "EUROPEJSKIE CENTRUM ZDROWIA OTWOCK SP. Z O.O.",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.BOROWA 14/18, 05-400 Otwock",
+   "phoneRegistration": "227103010",
+   "phoneInfo": "227103010",
+   "website": "//www.ecz-otwock.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "GENEVA TRUST POLSKA SP. Z O.O.",
+   "place": "PRACOWNIA DIAGNOSTYKI OBRAZOWEJ",
+   "address": "ul.PŁK. JANA PAŁUBICKIEGO 6A, 80-175 Gdańsk",
+   "phoneRegistration": "+48 58 767 34 44",
+   "phoneInfo": "+48 58 767 34 06",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "GENEVA TRUST POLSKA SP. Z O.O.",
+   "place": "STACJONARNA PRACOWNIA MAMMOGRAFII W GRODZISKU MAZOWIECKIM",
+   "address": "ul.DALEKA 11, 05-825 Grodzisk Mazowiecki",
+   "phoneRegistration": "58 7673444",
+   "phoneInfo": "58 7673400",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "JERZY PETZ MEDIQ NIEPUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA RENTGENODIAGNOSTYKI OGÓLNEJ",
+   "address": "ul.PIŁSUDSKIEGO 20, 05-120 Legionowo",
+   "phoneRegistration": "22 774-26-40",
+   "phoneInfo": "22 774-26-40",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "KLINIKI NEURORADIOCHIRURGII SP. Z.O.O.",
+   "place": "PORADNIA PROFILAKTYKI CHORÓB PIERSI",
+   "address": "ul.UNIWERSYTECKA 6A, 26-600 Radom",
+   "phoneRegistration": "48 377 90 20",
+   "phoneInfo": "48 377 90 20",
+   "website": "//www.onkologiaradom.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "KRAJOWE CENTRUM OSTEOPOROZY",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.SYROKOMLI 32, 03-335 Warszawa",
+   "phoneRegistration": "022 811 70 60, 022 811 90 19",
+   "phoneInfo": "022 811 70 60, 022 811 90 19",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "LUX MED ONKOLOGIA SPÓŁKA Z O.O.",
+   "place": "PORADNIA PROFILAKTYKI CHORÓB PIERSI",
+   "address": "ul.GEN. AUGUSTA EMILA FIELDORFA \"NILA\" 40, 04-125 Praga-Południe",
+   "phoneRegistration": "22 430 87 00",
+   "phoneInfo": "22 430 87 00",
+   "website": "HTTPS://ONKOLOGIA.LUXMED.PL/",
+   "lat": 52.23368,
+   "lng": 21.098213,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "LUX MED ONKOLOGIA SPÓŁKA Z O.O.",
+   "place": "PORADNIA PROFILAKTYKI CHORÓB PIERSI",
+   "address": "ul.ŚW. WINCENTEGO 103, 03-291 Warszawa",
+   "phoneRegistration": "22 430 87 00",
+   "phoneInfo": "22 430 87 00",
+   "website": "////www.https//onkologia.luxmed.pl/",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "LUX MED ONKOLOGIA SPÓŁKA Z O.O.",
+   "place": "PRACOWNIA RENTGENODIAGNOSTYKI OGÓLNEJ",
+   "address": "ul.SEWERYNA GOSZCZYŃSKIEGO 1, 01-748 Mokotów",
+   "phoneRegistration": "+48 22 150 24 31",
+   "phoneInfo": "+48 22 469 83 50",
+   "website": "//www.onkologia.luxmed.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "LUX MED SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA DIAGNOSTYKI OBRAZOWEJ CHORÓB PIERSI(MAMMOGRAFIA Z OPISOWNIĄ) GDYNIA NOCZNICKIEGO 8A",
+   "address": "ul.NOCZNICKIEGO 8A, 81-454 Gdynia",
+   "phoneRegistration": "(58) 666 24 44",
+   "phoneInfo": "(58) 666 24 55",
+   "website": "////www.fado.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "LUX MED SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.CEGŁOWSKA 80, 01-809 Bielany",
+   "phoneRegistration": "(58)6662444",
+   "phoneInfo": "(58)6662455",
+   "website": "////www.luxmed.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "LUX MED SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA DIAGNOSTYKI OBRAZOWEJ CHORÓB PIERSI (MAMMOGRAFIA)",
+   "address": "ul.ŻWIRKI I WIGURY 39, 02-091 Warszawa",
+   "phoneRegistration": "58 666 24 44",
+   "phoneInfo": "58 666 24 55",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAMMOGRAFIA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PORADNIA PROFILAKTYKI CHORÓB PIERSI",
+   "address": "ul.SUCHA 2/13, 26-600 Radom",
+   "phoneRegistration": "691090985",
+   "phoneInfo": "483869033",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAMMO-MED SP. Z O. O.",
+   "place": "MOBILNA PRACOWNIA BADAŃ DIAGNOSTYCZNYCH",
+   "address": "ul.GRUNWALDZKA 56, 80-241 Gdańsk",
+   "phoneRegistration": "+48 58 325 76 02",
+   "phoneInfo": "+48 58 325 76 02",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL BRÓDNOWSKI SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.GÓRCZEWSKA 89, 01-401 Wola",
+   "phoneRegistration": "22 321 12 10",
+   "phoneInfo": "22 321 12 10",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL ONKOLOGICZNY SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "ZAKŁAD DIAGNOSTYKI OBRAZOWEJ",
+   "address": "ul.KOŚCIELNA 61, 05-135 Wieliszew",
+   "phoneRegistration": "+22 766 15 00",
+   "phoneInfo": "+22 766 15 00",
+   "website": "//www.szpitalonkologiczny.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL SPECJALISTYCZNY IM. DR JÓZEFA PSARSKIEGO W OSTROŁĘCE",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.JANA PAWŁA II 120A, 07-410 Ostrołęka",
+   "phoneRegistration": "29 7652182",
+   "phoneInfo": "29 7652260",
+   "website": "////www.szpital.ostroleka.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL SPECJALISTYCZNY SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.J. ALEKSANDROWICZA 5, 26-617 Radom",
+   "phoneRegistration": "48 361-32-06",
+   "phoneInfo": "48 361-32-06",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL WOJEWÓDZKI IM. ŚW. JANA PAWŁA II W SIEDLCACH SP. Z O.O.",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.PONIATOWSKIEGO 26, 08-110 Siedlce",
+   "phoneRegistration": "25 4303 310",
+   "phoneInfo": "25 6403 585",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MEDICA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ SPÓŁKA KOMANDYTOWA",
+   "place": "PRACOWNIA MAMMOGRAFII ŻYRARDÓW",
+   "address": "ul.STANISŁAWA WYSPIAŃSKIEGO 6B, 96-300 Żyrardów",
+   "phoneRegistration": "042 254 64 10",
+   "phoneInfo": "042 254 64 10",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MEDICA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ SPÓŁKA KOMANDYTOWA",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.SZPARAGOWA 10, 91-211 Łódź-Bałuty",
+   "phoneRegistration": "422546410",
+   "phoneInfo": "422546410",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MEDICA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ SPÓŁKA KOMANDYTOWA",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.GABRIELA NARUTOWICZA 20, 06-400 Ciechanów",
+   "phoneRegistration": "42 2546410",
+   "phoneInfo": "42 2546410",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MIĘDZYLESKI SZPITAL SPECJALISTYCZNY W WARSZAWIE",
+   "place": "PRACOWNIE RADIOLOGII",
+   "address": "ul.BURSZTYNOWA 2, 04-749 Wawer",
+   "phoneRegistration": "+48 22 473 53 65",
+   "phoneInfo": "+48 22 473 53 83",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "MIEJSKIE CENTRUM MEDYCZNE W PIASECZNIE SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.FABRYCZNA 1, 05-500 Piaseczno",
+   "phoneRegistration": "22 7562111; 22 7567373",
+   "phoneInfo": "22 7562111; 22 7567373",
+   "website": "//www.zozpiaseczno.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "NARODOWY INSTYTUT ONKOLOGII IM. MARII SKŁODOWSKIEJ-CURIE - PAŃSTWOWY INSTYTUT BADAWCZY",
+   "place": "PORADNIA PROFILAKTYKI CHORÓB PIERSI",
+   "address": "ul.ROENTGENA 5, 02-781 Ursynów",
+   "phoneRegistration": "+48 22 546 20 00 wew. 5",
+   "phoneInfo": "+48 22 546 20 00 wew. 5",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "PAŃSTWOWY INSTYTUT MEDYCZNY MINISTERSTWA SPRAW WEWNĘTRZNYCH I ADMINISTRACJI",
+   "place": "PRACOWNIA USG ZAKŁADU DIAGNOSTYKI RADIOLOGICZNEJ",
+   "address": "ul.WOŁOSKA 137, 02-507 Mokotów",
+   "phoneRegistration": "+48 477 221 106",
+   "phoneInfo": "+48 477 221 106",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "PAŃSTWOWY INSTYTUT MEDYCZNY MINISTERSTWA SPRAW WEWNĘTRZNYCH I ADMINISTRACJI",
+   "place": "PRACOWNIA RENTGENODIAGNOSTYKI OGÓLNEJ ZAKŁADU DIAGNOSTYKI RADIOLOGICZNEJ",
+   "address": "ul.WOŁOSKA 137, 02-507 Mokotów",
+   "phoneRegistration": "+48 477 221 562",
+   "phoneInfo": "+48 477 221 562",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "POWIATOWE CENTRUM ZDROWIA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA DIAGNOSTYKI OBRAZOWEJ RTG",
+   "address": "ul.BATOREGO 44, 05-400 Otwock",
+   "phoneRegistration": "(22) 778-26-00",
+   "phoneInfo": "(22) 778-26-00",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "RADOMSKI SZPITAL SPECJALISTYCZNY IM. DR TYTUSA CHAŁUBIŃSKIEGO",
+   "place": "PRACOWNIA MAMOGRAFII",
+   "address": "ul.TOCHTERMANA 1, 26-610 Radom",
+   "phoneRegistration": "048 36 15 551",
+   "phoneInfo": "048 36 15 551",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ WARSZAWA-URSYNÓW",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.NA UBOCZU 5, 02-791 Ursynów",
+   "phoneRegistration": "+48 22 334 46 35",
+   "phoneInfo": "+48 22 334 46 35",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ W GARWOLINIE",
+   "place": "PRACOWNIA MAMMOGRAFII - LUBELSKA",
+   "address": "ul.LUBELSKA 50, 08-400 Garwolin",
+   "phoneRegistration": "25 68-44-812, 68-44-825",
+   "phoneInfo": "25 68-44-812, 68-44-825",
+   "website": "//www.spzozgarwolin.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ W ŁOSICACH",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.SŁONECZNA 1, 08-200 Łosice",
+   "phoneRegistration": "83 357-32-31",
+   "phoneInfo": "83 357-32-31",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ W WĘGROWIE",
+   "place": "PRACOWNIA DIAGNOSTYKI OBRAZOWEJ (MAMMOGRAFIA)",
+   "address": "ul.KOŚCIUSZKI 201, 07-100 Węgrów",
+   "phoneRegistration": "25 792 45 18",
+   "phoneInfo": "25 506 54 20",
+   "website": "//www.spzoz.wegrow.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.SZPITALNA 37, 05-300 Mińsk Mazowiecki",
+   "phoneRegistration": "+48 25 506 52 12",
+   "phoneInfo": "+48 887 035 434",
+   "website": "//www.spzozmm.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ IM. MARSZAŁKA JÓZEFA PIŁSUDSKIEGO W PŁOŃSKU",
+   "place": "PRZYCHODNIA-PORADNIA ONKOLOGICZNA",
+   "address": "ul.HENRYKA SIENKIEWICZA 7, 09-100 Płońsk",
+   "phoneRegistration": "+48 23 662 25 65",
+   "phoneInfo": "+48 23 661 34 00 wew. 433",
+   "website": "////www.szpitalplonsk.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ IM. MARSZAŁKA JÓZEFA PIŁSUDSKIEGO W PŁOŃSKU",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.HENRYKA SIENKIEWICZA 7, 09-100 Płońsk",
+   "phoneRegistration": "+48 23 661 34 00 wew. 326",
+   "phoneInfo": "+48 23 661 34 00 wew. 326",
+   "website": "////www.szpitalplonsk.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ W KOZIENICACH",
+   "place": "PRACOWNIA RADIOLOGII I USG",
+   "address": "AL. WŁ. SIKORSKIEGO 10, 26-900 Kozienice",
+   "phoneRegistration": "48 67 97 171",
+   "phoneInfo": "48 67 97 171",
+   "website": "////www.szpitalkozienice.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ W LIPSKU",
+   "place": "PRACOWNIA RENTGENODIAGNOSTYKI, ULTRASONOGRAFII I ELEKTRODIAGNOSTYKI",
+   "address": "ul.JĘDRZEJA ŚNIADECKIEGO 2, 27-300 Lipsko",
+   "phoneRegistration": "48-3783575",
+   "phoneInfo": "48-3783576",
+   "website": "//www.spzzoz-lipsko.mazowsze.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ W PRUSZKOWIE",
+   "place": "PRACOWNIA MAMMOGRAFICZNA",
+   "address": "ul.ARMII KRAJOWEJ 2/4, 05-800 Pruszków",
+   "phoneRegistration": "572-664-514",
+   "phoneInfo": "572-664-504",
+   "website": "////www.szpitalnawrzesinie.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY ZESPÓŁ PUBLICZNYCH ZAKŁADÓW LECZNICTWA OTWARTEGO WARSZAWA WAWER",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.STRUSIA 4/8, 04-564 Wawer",
+   "phoneRegistration": "(22) 59 00 999",
+   "phoneInfo": "(22) 59 00 999",
+   "website": "//www.zoz-wawer.waw.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "\"SENSOR CLINIQ\" SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ I WSPÓLNICY SPÓŁKA KOMANDYTOWA",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.KACZA 8, 01-013 Warszawa",
+   "phoneRegistration": "227103333",
+   "phoneInfo": "227103333",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SPECJALISTYCZNA PRZYCHODNIA LEKARSKA DLA PRACOWNIKÓW WOJSKA SPZOZ W WARSZAWIE",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.NOWOWIEJSKA 5, 00-643 Śródmieście",
+   "phoneRegistration": "22 150 15 83",
+   "phoneInfo": "22 150 15 83",
+   "website": "//www.spl.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SPECJALISTYCZNY SZPITAL WOJEWÓDZKI W CIECHANOWIE",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.POWST. WIELKOPOLSKICH 2, 06-400 Ciechanów",
+   "phoneRegistration": "023 67 30 527",
+   "phoneInfo": "023 67 30 264",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SPECJALISTYCZNY SZPITAL WOJEWÓDZKI W CIECHANOWIE",
+   "place": "PORADNIA CHIRURGII ONKOLOGICZNEJ",
+   "address": "ul.POWST. WIELKOPOLSKICH 2, 06-400 Ciechanów",
+   "phoneRegistration": "23 673 04 40",
+   "phoneInfo": "23 673 04 40",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SPZZLO WARSZAWA ŻOLIBORZ-BIELANY",
+   "place": "PRACOWNIA MMG",
+   "address": "ul.SZAJNOCHY 8, 01-637 Żoliborz",
+   "phoneRegistration": "+48 22 833 14 77",
+   "phoneInfo": "+48 22 833 14 70",
+   "website": "////www.spzzlo.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "ŚWIAT ZDROWIA OPERATOR MEDYCZNY SP. Z O.O",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.WOJSKA POLSKIEGO 35, 09-500 Gostynin",
+   "phoneRegistration": "+48 24 235 04 15",
+   "phoneInfo": "+48 24 235 04 15",
+   "website": "//www.neucamed.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "ŚWIAT ZDROWIA OPERATOR MEDYCZNY SP. Z O.O",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.KRÓLEWIECKA 24A, 09-400 Płock",
+   "phoneRegistration": "24 367 63 41",
+   "phoneInfo": "24 367 63 40",
+   "website": "//www.cmomega.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SZPITAL GROCHOWSKI IM. DR MED. RAFAŁA MASZTAKA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.GRENADIERÓW 51/59, 04-073 Warszawa",
+   "phoneRegistration": "22 51 52 639",
+   "phoneInfo": "22 51 52 639",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "SZPITAL SPECJALISTYCZNY IM. ŚWIĘTEJ RODZINY SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA RTG",
+   "address": "ul.ANTONIEGO JÓZEFA MADALIŃSKIEGO 25, 02-544 Mokotów",
+   "phoneRegistration": "22 4502488",
+   "phoneInfo": "22 4502288",
+   "website": "////www.szpitalmadalinskiego.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "WOJSKOWY INSTYTUT MEDYCZNY - PAŃSTWOWY INSTYTUT BADAWCZY",
+   "place": "PRACOWNIA MAMMOGRAFICZNA",
+   "address": "ul.SZASERÓW 128, 04-141 Praga-Południe",
+   "phoneRegistration": "+48 22 122 52 27",
+   "phoneInfo": "+48 261 817 666",
+   "website": "//www.wim.mil.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "WOJSKOWY INSTYTUT MEDYCZNY - PAŃSTWOWY INSTYTUT BADAWCZY",
+   "place": "PRACOWNIA MAMMOGRAFICZNA",
+   "address": "ul.ZEGRZYŃSKA 8, 05-119 Legionowo",
+   "phoneRegistration": "+48 22 122 52 27",
+   "phoneInfo": "+48 261 866 219",
+   "website": "//www.wim.mil.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "ZAKŁAD OPIEKI ZDROWOTNEJ WARSZAWA BEMOWO-WŁOCHY",
+   "place": "PRACOWNIA MAMMOGRAFII",
+   "address": "ul.WALERIANA CZUMY 1, 01-355 Bemowo",
+   "phoneRegistration": "22666-10-16",
+   "phoneInfo": "22666-10-16",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  },
+  {
+   "provider": "ZESPÓŁ LEKARZY SPECJALISTÓW MEDICA GAŁCZYŃSKI I WSPÓLNICY SPÓŁKA KOMANDYTOWA",
+   "place": "PRACOWNIA MAMMOGRAFICZNA",
+   "address": "ul.3 MAJA 3, 08-110 Siedlce",
+   "phoneRegistration": "256447400",
+   "phoneInfo": "256447400",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka piersi"
+   ]
+  }
+ ]
+}

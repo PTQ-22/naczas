@@ -1,0 +1,137 @@
+{
+ "_source": "GET https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczneSearch?specjalizacja=1242&wojewodztwo=07 (tylko strona 1 z 55)",
+ "_fetched": "2026-10-03",
+ "totalCount": 543,
+ "items": [
+  {
+   "provider": "ACROMED SPECJALISTYCZNA PRZYCHODNIA RODZINNA",
+   "place": "PORADNIA POŁOŻNEJ PODSTAWOWEJ OPIEKI ZDROWOTNEJ",
+   "address": "ul.BIAŁEJ FLOTY 6/1, 02-654 Mokotów",
+   "phoneRegistration": "508586623",
+   "phoneInfo": "508586623",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "ADRIANA MARIA FUŁEK NIEPUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ \"ASMED\"",
+   "place": "PORADNIA GINEKOLOGICZNO-POŁOŻNICZA",
+   "address": "ul.DOBRZYŃSKA 23, 09-214 Mochowo",
+   "phoneRegistration": "(024) 276 32 91",
+   "phoneInfo": "(024) 276 32 91",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "ARION MED SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PORADNIA POŁOŻNICZO-GINEKOLOGICZNA",
+   "address": "ul.KRUK 5/;, 09-500 Gorzewo",
+   "phoneRegistration": "24 236 09 19",
+   "phoneInfo": "24 236 09 19",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "ARION MED SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "GABINET POŁOŻNEJ PODSTAWOWEJ OPIEKI ZDROWOTNEJ",
+   "address": "ul.KRUK 5/;, 09-500 Gorzewo",
+   "phoneRegistration": "24 369 60 85 LUB 84",
+   "phoneInfo": "24 369 60 85 LUB 84",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "ARNICA OLSZEWSKI I WSPÓLNIK SPÓŁKA JAWNA",
+   "place": "PORADNIA GINEKOLOGICZNOPOŁOŻNICZA",
+   "address": "ul.RYNEK 10, 05-082 Stare Babice",
+   "phoneRegistration": "22 721 00 87/ 22 100 32 35",
+   "phoneInfo": "22 721 00 87/ 22 100 32 35",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "AWEMED S.C. A. DZIARCZYKOWSKA - KOPEĆ, E. BORKOWSKA, M. FILIPIAK",
+   "place": "PORADNIA GINEKOLOGICZNO-POŁOŻNICZA",
+   "address": "ul.PIASTA 30, 05-822 Milanówek",
+   "phoneRegistration": "22 758 31 05",
+   "phoneInfo": "22 758 31 42",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "BEAMED PRZYCHODNIA LEKARSKA BEATA BIELECKA",
+   "place": "PORADNIA POŁOŻNEJ POZ",
+   "address": "ul.WESOŁA 2A/U5, 05-300 Mińsk Mazowiecki",
+   "phoneRegistration": "604808116",
+   "phoneInfo": "604808116",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "\"BETA-MED\" NIEPUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PORADNIA POŁOŻNEJ ŚRODOWISKOWEJ-RODZINNEJ",
+   "address": "ul.KS.SKORUPKI 71, 05-091 Ząbki",
+   "phoneRegistration": "+48 22 781 58 42",
+   "phoneInfo": "+48 22 781 58 42",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "\"BETA-MED\" NIEPUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PORADNIA GINEKOLOGICZNO-POŁOŻNICZA",
+   "address": "ul.KS.SKORUPKI 71, 05-091 Ząbki",
+   "phoneRegistration": "022781-58-42",
+   "phoneInfo": "022781-58-42",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  },
+  {
+   "provider": "BIOVENA SP. Z O.O.",
+   "place": "PORADNIA ( GABINET ) POŁOŻNEJ PODSTAWOWEJ OPIEKI ZDROWOTNEJ",
+   "address": "ul.MICKIEWICZA 1, 05-822 Milanówek",
+   "phoneRegistration": "22 7249090",
+   "phoneInfo": "22 7249090",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Profilaktyka raka szyjki macicy"
+   ]
+  }
+ ]
+}

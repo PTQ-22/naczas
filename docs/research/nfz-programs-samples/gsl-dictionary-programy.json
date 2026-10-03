@@ -1,0 +1,46 @@
+{
+ "_source": "GET https://gsl.nfz.gov.pl/GSL/Dictionary/ZakresyAll?kod_typ=19",
+ "_fetched": "2026-10-03",
+ "response": [
+  {
+   "Kod": "1245",
+   "Nazwa": "Badania prenatalne",
+   "Komentarz": null
+  },
+  {
+   "Kod": "1081",
+   "Nazwa": "Kolonoskopia",
+   "Komentarz": null
+  },
+  {
+   "Kod": "2122",
+   "Nazwa": "Moje zdrowie",
+   "Komentarz": "W pierwszej kolejności należy wypełnić ankietę Moje Zdrowie. Po wypełnieniu ankiety skontaktuje się z Tobą pracownik przychodni, w której masz złożoną deklarację wyboru lekarza POZ. Szczegóły na stronie internetowej Narodowego Funduszu Zdrowia."
+  },
+  {
+   "Kod": "1244",
+   "Nazwa": "Profilaktyka chorób odtytoniowych",
+   "Komentarz": null
+  },
+  {
+   "Kod": "1285",
+   "Nazwa": "Profilaktyka chorób układu krążenia",
+   "Komentarz": null
+  },
+  {
+   "Kod": "1286",
+   "Nazwa": "Profilaktyka gruźlicy",
+   "Komentarz": null
+  },
+  {
+   "Kod": "1243",
+   "Nazwa": "Profilaktyka raka piersi",
+   "Komentarz": null
+  },
+  {
+   "Kod": "1242",
+   "Nazwa": "Profilaktyka raka szyjki macicy",
+   "Komentarz": null
+  }
+ ]
+}

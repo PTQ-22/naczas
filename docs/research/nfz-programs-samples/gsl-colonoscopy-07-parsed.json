@@ -1,0 +1,489 @@
+{
+ "_source": "GET https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczneSearch?specjalizacja=1081&wojewodztwo=07 + ProgramyProfilaktycznePage?Page=2..N&PageSize=10 (cookie sesji); HTML sparsowany skryptem, pola 1:1 z kart wyników",
+ "_fetched": "2026-10-03",
+ "_note": "Odpowiedź źródłowa to HTML (~440 KB/strona, 10 kart). lat/lng z ukrytych <input name=lat|long> — w większości puste.",
+ "totalCount": 37,
+ "items": [
+  {
+   "provider": "CENTRUM MEDYCZNE ENEL-MED SPÓŁKA AKCYJNA",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.GILARSKA 86C, 03-589 Warszawa",
+   "phoneRegistration": "22 23 07 007",
+   "phoneInfo": "22 23 07 007",
+   "website": "//www.enel.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "CENTRUM MEDYCZNE ENEL-MED SPÓŁKA AKCYJNA",
+   "place": "PRACOWNIA ENDOSKOPII - MYŚLIWIECKA",
+   "address": "ul.MYŚLIWIECKA 4A, 00-459 Śródmieście",
+   "phoneRegistration": "+48 22 230 70 07",
+   "phoneInfo": "+48 22 230 70 07",
+   "website": null,
+   "lat": 52.219671,
+   "lng": 21.037375,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "CENTRUM MEDYCZNE ENEL-MED SPÓŁKA AKCYJNA",
+   "place": "PRACOWNIA ENDOSKOPII - DOMANIEWSKA",
+   "address": "ul.DOMANIEWSKA 49, 02-672 Mokotów",
+   "phoneRegistration": "+48 22 230 70 07",
+   "phoneInfo": "+48 22 230 70 07",
+   "website": "//www.enel.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "CENTRUM MEDYCZNE IM. BITWY WARSZAWSKIEJ 1920 R. W RADZYMINIE - SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.KONSTYTUCJI 3 MAJA 17, 05-250 Radzymin",
+   "phoneRegistration": "22 7607 200",
+   "phoneInfo": "22 7607 200",
+   "website": "////www.cmradzymin.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.DĄBRÓWKI 52, 05-300 Mińsk Mazowiecki",
+   "phoneRegistration": "25 633-35-55",
+   "phoneInfo": "25 633-35-55",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.KLEEBERGA 2, 08-110 Siedlce",
+   "phoneRegistration": "25 633-35-55",
+   "phoneInfo": "25 633-35-55",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "\"CENTRUM MEDYCZNO-DIAGNOSTYCZNE\" SP. Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII (KOLONOSKOPIA)",
+   "address": "ul.ARMII KRAJOWEJ 5, 05-410 Józefów",
+   "phoneRegistration": "+48 22 789 89 89",
+   "phoneInfo": "+48 22 789 89 89",
+   "website": "//www.centrum.med.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "ENDOMED SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA ENDOSKOPII PRZEWODU POKARMOWEGO",
+   "address": "ul.JANA KILIŃSKIEGO 6, 26-600 Radom",
+   "phoneRegistration": "48 3400235",
+   "phoneInfo": "48 3400235",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "EUROPEJSKIE CENTRUM ZDROWIA OTWOCK SP. Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.BOROWA 14/18, 05-400 Otwock",
+   "phoneRegistration": "+48 22 710 33 33",
+   "phoneInfo": "+48 22 710 33 33",
+   "website": "//www.ecz-otwock.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "JERZY PETZ MEDIQ NIEPUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.PIŁSUDSKIEGO 20, 05-120 Legionowo",
+   "phoneRegistration": "22 774-26-40",
+   "phoneInfo": "22 774-26-40",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "KLINIKI NEURORADIOCHIRURGII SP. Z.O.O.",
+   "place": "PRACOWNIA ENDOSKOPII (GASTRO I KOLONOSKOPIA)",
+   "address": "ul.UNIWERSYTECKA 6A, 26-600 Radom",
+   "phoneRegistration": "48 377 90 20",
+   "phoneInfo": "48 377 90 20",
+   "website": "//www.onkologiaradom.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "LUX MED ONKOLOGIA SPÓŁKA Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.GEN. AUGUSTA EMILA FIELDORFA \"NILA\" 40, 04-125 Praga-Południe",
+   "phoneRegistration": "22 430 87 00",
+   "phoneInfo": "22 430 87 00",
+   "website": "HTTPS://ONKOLOGIA.LUXMED.PL/",
+   "lat": 52.23368,
+   "lng": 21.098213,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "LUX MED ONKOLOGIA SPÓŁKA Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.SZAMOCKA 6, 01-748 Żoliborz",
+   "phoneRegistration": "22 430 87 00",
+   "phoneInfo": "22 430 87 00",
+   "website": "HTTPS://ONKOLOGIA.LUXMED.PL/",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "LUX MED ONKOLOGIA SPÓŁKA Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.SEWERYNA GOSZCZYŃSKIEGO 1, 01-748 Mokotów",
+   "phoneRegistration": "+48 22 120 20 37",
+   "phoneInfo": "+48 22 120 20 37",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL ONKOLOGICZNY SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.KOŚCIELNA 61, 05-135 Wieliszew",
+   "phoneRegistration": "22 766 15 00",
+   "phoneInfo": "22 766 15 00",
+   "website": "//www.szpitalonkologiczny.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL SPECJALISTYCZNY IM. DR JÓZEFA PSARSKIEGO W OSTROŁĘCE",
+   "place": "PRACOWNIA ENDOSKOPOWA",
+   "address": "ul.JANA PAWŁA II 120A, 07-410 Ostrołęka",
+   "phoneRegistration": "297652395",
+   "phoneInfo": "297652395",
+   "website": "////www.szpital.ostroleka.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL SPECJALISTYCZNY SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.J. ALEKSANDROWICZA 5, 26-617 Radom",
+   "phoneRegistration": "48 361-33-97",
+   "phoneInfo": "48 361-33-97",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "MAZOWIECKI SZPITAL WOJEWÓDZKI IM. ŚW. JANA PAWŁA II W SIEDLCACH SP. Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPII PRZEWODU POKARMOWEGO",
+   "address": "ul.PONIATOWSKIEGO 26, 08-110 Siedlce",
+   "phoneRegistration": "25 6403 301",
+   "phoneInfo": "25 6403 585",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "MIĘDZYLESKI SZPITAL SPECJALISTYCZNY W WARSZAWIE",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.BURSZTYNOWA 2, 04-749 Wawer",
+   "phoneRegistration": "22 47-35-111",
+   "phoneInfo": "22 47-35-383",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "NARODOWY INSTYTUT ONKOLOGII IM. MARII SKŁODOWSKIEJ-CURIE - PAŃSTWOWY INSTYTUT BADAWCZY",
+   "place": "PRACOWNIA ENDOSKOPII I PROFILAKTYKI RAKA JELITA GRUBEGO",
+   "address": "ul.ROENTGENA 5, 02-781 Ursynów",
+   "phoneRegistration": "+48 22 546 24 45",
+   "phoneInfo": "+48 22 546 24 45",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "PAŃSTWOWY INSTYTUT MEDYCZNY MINISTERSTWA SPRAW WEWNĘTRZNYCH I ADMINISTRACJI",
+   "place": "PRACOWNIA ENDOSKOPII KLINIKI CHORÓB WEWNĘTRZNYCH I GASTROENTEROLOGII",
+   "address": "ul.WOŁOSKA 137, 02-507 Mokotów",
+   "phoneRegistration": "(47) 722 14 15; (47) 722 14 48",
+   "phoneInfo": "(47) 722 14 15; (47) 722 14 48",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "PŁOCKI ZAKŁAD OPIEKI ZDROWOTNEJ SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA ENDOSKOPOWA",
+   "address": "ul.KOŚCIUSZKI 28 , 09-402 Płock",
+   "phoneRegistration": "662028232",
+   "phoneInfo": "662028232",
+   "website": "//www.szpitalplock.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "POWIATOWE CENTRUM MEDYCZNE W GRÓJCU SPÓŁKA Z O.O.",
+   "place": "PRACOWNIA ENDOSKOPOWA",
+   "address": "ul.PIOTRA SKARGI 10, 05-600 Grójec",
+   "phoneRegistration": "486649100",
+   "phoneInfo": "486649100",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ WARSZAWA-URSYNÓW",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.KAJAKOWA 12, 02-838 Warszawa",
+   "phoneRegistration": "+48 22 334 46 44",
+   "phoneInfo": "+48 22 334 46 44",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ W PRUSZKOWIE",
+   "place": "PRACOWNIA ENDOSKOPOWA",
+   "address": "ul.ARMII KRAJOWEJ 2/4, 05-800 Pruszków",
+   "phoneRegistration": "572-664-577",
+   "phoneInfo": "572-664-558",
+   "website": "////www.szpitalnawrzesinie.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SAMODZIELNY PUBLICZNY ZESPÓŁ ZAKŁADÓW OPIEKI ZDROWOTNEJ W WYSZKOWIE",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.KOMISJI EDUKACJI NARODOWEJ 1, 07-200 Wyszków",
+   "phoneRegistration": "029 7437642",
+   "phoneInfo": "029 7437642",
+   "website": "//www.szpitalwyszkow.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SZPITAL BIELAŃSKI IM.KS.JERZEGO POPIEŁUSZKI SAMODZIELNY PUBLICZNY ZAKŁAD OPIEKI ZDROWOTNEJ",
+   "place": "PRACOWNIA ENDOSKOPOWA",
+   "address": "ul.CEGŁOWSKA 80, 01-809 Bielany",
+   "phoneRegistration": "+48 22 569 03 25",
+   "phoneInfo": "+48 22 569 03 25",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SZPITAL CZERNIAKOWSKI SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.STĘPIŃSKA 19/25, 00-739 Mokotów",
+   "phoneRegistration": "22-31-86-374, 506293691",
+   "phoneInfo": "22-31-86-374, 506293691",
+   "website": "//www.szpitalczerniakowski.waw.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SZPITAL GROCHOWSKI IM. DR MED. RAFAŁA MASZTAKA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.GRENADIERÓW 51/59, 04-073 Warszawa",
+   "phoneRegistration": "22 51 52 577",
+   "phoneInfo": "22 51 52 577",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "SZPITAL MATKI BOŻEJ NIEUSTAJĄCEJ POMOCY W WOŁOMINIE",
+   "place": "PRACOWNIA ENDOSKOPOWA",
+   "address": "ul.GDYŃSKA 1/3, 05-200 Wołomin",
+   "phoneRegistration": "022 76-33-292",
+   "phoneInfo": "022 76-33-175",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "WOJEWÓDZKI SZPITAL ZAKAŹNY W WARSZAWIE",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.WOLSKA 37, 01-201 Wola",
+   "phoneRegistration": "+48 22 335 54 31",
+   "phoneInfo": "+48 22 335 53 51",
+   "website": "//www.zakazny.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "WOJSKOWY INSTYTUT MEDYCZNY - PAŃSTWOWY INSTYTUT BADAWCZY",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.SZASERÓW 128, 04-141 Praga-Południe",
+   "phoneRegistration": "+48 261 818 380",
+   "phoneInfo": "+48 261 817 666",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "WOJSKOWY INSTYTUT MEDYCZNY - PAŃSTWOWY INSTYTUT BADAWCZY",
+   "place": "PRACOWNIA ENDOSKOPII GASTROLOGICZNEJ",
+   "address": "ul.ZEGRZYŃSKA 8, 05-119 Legionowo",
+   "phoneRegistration": "+48 22 122 52 27",
+   "phoneInfo": "+48 22 122 52 27",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "ZAKŁAD OPIEKI ZDROWOTNEJ ENDOTERAPIA PFG",
+   "place": "PRACOWNIA ENDOSKOPOWA - PROFILAKTYKA WARYŃSKIEGO",
+   "address": "ul.WARYŃSKIEGO 10A, 00-631 Warszawa",
+   "phoneRegistration": "228256299",
+   "phoneInfo": "228256299",
+   "website": "//www.przychodniapfg.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "ZAKŁAD OPIEKI ZDROWOTNEJ ENDOTERAPIA PFG",
+   "place": "PRACOWNIA ENDOSKOPII - PROFILAKTYKA WILANOWSKA",
+   "address": "ALEJA WILANOWSKA 333, 02-665 Mokotów",
+   "phoneRegistration": "2",
+   "phoneInfo": "228256299",
+   "website": "//www.przychodniapfg.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "ZAKŁAD OPIEKI ZDROWOTNEJ WARSZAWA BEMOWO-WŁOCHY",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.GEN. MERIANA C. COOPERA 5, 01-315 Bemowo",
+   "phoneRegistration": "221637045",
+   "phoneInfo": "221637045",
+   "website": null,
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  },
+  {
+   "provider": "ZESPÓŁ LEKARZY SPECJALISTÓW MEDICA GAŁCZYŃSKI I WSPÓLNICY SPÓŁKA KOMANDYTOWA",
+   "place": "PRACOWNIA ENDOSKOPII",
+   "address": "ul.BRZESKA 131, 08-110 Siedlce",
+   "phoneRegistration": "256447400",
+   "phoneInfo": "256447400",
+   "website": "//www.medica.siedlce.pl",
+   "lat": null,
+   "lng": null,
+   "programs": [
+    "Kolonoskopia"
+   ]
+  }
+ ]
+}

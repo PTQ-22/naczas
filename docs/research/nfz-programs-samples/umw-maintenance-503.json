@@ -1,0 +1,24 @@
+{
+ "_source": "GET https://api.nfz.gov.pl/app-umw-api/service-types?year=2026&format=json&api-version=1.2 (oraz available-years, contract-products; 1.1) — HTTP 503, 2026-10-03 22:51–23:10 CEST",
+ "response": {
+  "errors": [
+   {
+    "id": "703f156f-662f-4634-95ed-2c8446b63a54",
+    "error-result": "Maintenance",
+    "error-reason": "",
+    "error-solution": "",
+    "error-help": "",
+    "error-code": 4200003
+   }
+  ]
+ },
+ "version_endpoint_same_time": {
+  "api-version": {
+   "major": 1,
+   "minor": 2,
+   "patch": 0,
+   "date-mod": "2026-10-03T22:51:10+02:00",
+   "deprecated": false
+  }
+ }
+}

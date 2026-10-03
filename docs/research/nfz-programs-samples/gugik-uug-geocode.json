@@ -1,0 +1,34 @@
+{
+ "_source": "GET https://services.gugik.gov.pl/uug/?request=GetAddress&address=Warszawa, Wołoska 137&srid=4326",
+ "_note": "x = longitude, y = latitude przy srid=4326",
+ "response": {
+  "type": "address",
+  "max results limit": 15,
+  "min accuracy limit": 0.4,
+  "only exact numbers": 1,
+  "found objects": 15,
+  "returned objects": 1,
+  "results": {
+   "1": {
+    "city": "Warszawa",
+    "citypart": null,
+    "street": "ulica Wołoska",
+    "number": "137",
+    "teryt": "146501",
+    "simc": "0918123",
+    "ulic": "24723",
+    "code": "02-507",
+    "jednostka": "{Polska,mazowieckie,Warszawa,Warszawa}",
+    "x": "20.999518603079",
+    "y": "52.1987548305323",
+    "geometry_wkt": "POINT(20.999518603079 52.1987548305323)",
+    "accuracy": "0.769231",
+    "city_accuracy": "1",
+    "street_part_accuracy": "1",
+    "street_accuracy": "0.571429",
+    "id": 1
+   }
+  },
+  "request time": 0.008833098411560058
+ }
+}
