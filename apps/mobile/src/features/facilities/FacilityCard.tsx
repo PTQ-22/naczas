@@ -52,7 +52,8 @@ export function FacilityCard({ facility: f, primary = false, sort }: FacilityCar
       <View
         style={{
           flexDirection: seniorMode ? 'column' : 'row',
-          flexWrap: 'wrap',
+          // wrap breaks alignSelf: 'stretch' in a column, so only the row layout wraps.
+          flexWrap: seniorMode ? 'nowrap' : 'wrap',
           alignItems: seniorMode ? 'stretch' : 'center',
           gap: space.sm,
         }}
