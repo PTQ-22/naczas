@@ -37,7 +37,7 @@ export default function RootLayout() {
 
 // Separate component so useTheme() runs inside SettingsThemeProvider.
 function ThemedStack() {
-  const { colors, scheme } = useTheme();
+  const { colors, scheme, type } = useTheme();
   return (
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
@@ -49,7 +49,7 @@ function ThemedStack() {
           // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
           headerShadowVisible: false,
           headerTintColor: colors.primary,
-          headerTitleStyle: { color: colors.text },
+          headerTitleStyle: { color: colors.text, fontFamily: type.heading.fontFamily },
         }}
       >
         <Stack.Screen name="index" />

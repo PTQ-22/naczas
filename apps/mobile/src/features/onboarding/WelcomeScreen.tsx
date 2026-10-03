@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect } from 'react';
 
-import { Button, Disclaimer, Screen, Text } from '@/components';
+import { Button, Disclaimer, Plate, Screen, Text } from '@/components';
 import { t } from '@/i18n';
 import { useOnboardingDraftStore, useToday } from '@/store';
 
@@ -43,6 +43,7 @@ export default function WelcomeScreen() {
 
   return (
     <Screen
+      wall
       footer={
         <>
           <Button
@@ -59,12 +60,14 @@ export default function WelcomeScreen() {
         </>
       }
     >
-      <Text variant="display" accessibilityRole="header">
-        {t('onboarding.welcome.title')}
-      </Text>
-      <Text variant="bodyLarge">{t('onboarding.welcome.subtitle')}</Text>
-      <Text tone="textMuted">{t('onboarding.welcome.privacy')}</Text>
-      <Disclaimer text={t('onboarding.welcome.disclaimer')} />
+      <Plate>
+        <Text variant="display" accessibilityRole="header">
+          {t('onboarding.welcome.title')}
+        </Text>
+        <Text variant="bodyLarge">{t('onboarding.welcome.subtitle')}</Text>
+        <Text tone="textMuted">{t('onboarding.welcome.privacy')}</Text>
+        <Disclaimer text={t('onboarding.welcome.disclaimer')} />
+      </Plate>
     </Screen>
   );
 }

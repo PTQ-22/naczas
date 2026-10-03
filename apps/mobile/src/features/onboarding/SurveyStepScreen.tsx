@@ -1,7 +1,7 @@
 import { Redirect, router, useLocalSearchParams } from 'expo-router';
 import { View } from 'react-native';
 
-import { Button, ProgressBar, Screen, Text } from '@/components';
+import { Button, Plate, ProgressBar, Screen, Text } from '@/components';
 import { t, type MessageKey } from '@/i18n';
 import { useOnboardingDraftStore, useToday, type OnboardingDraft } from '@/store';
 import { useTheme } from '@/theme';
@@ -134,6 +134,7 @@ export default function SurveyStepScreen() {
 
   return (
     <Screen
+      wall
       footer={
         <Button
           label={isLast ? t('onboarding.nav.finish') : t('onboarding.nav.next')}
@@ -143,31 +144,33 @@ export default function SurveyStepScreen() {
         />
       }
     >
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-        <Button variant="ghost" label={t('onboarding.nav.back')} onPress={goBack} />
-        <Text variant="caption" tone="textMuted">
-          {progress}
+      <Plate>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+          <Button variant="ghost" label={t('onboarding.nav.back')} onPress={goBack} />
+          <Text variant="eyebrow" tone="textMuted">
+            {progress}
+          </Text>
+        </View>
+        <ProgressBar value={n / STEP_COUNT} accessibilityLabel={progress} />
+        {/* Always rendered (blank until step 1 is answered) so choosing "for me / relative"
+            doesn't shift the options under the user's finger. */}
+        <Text
+          variant="caption"
+          tone="textMuted"
+          accessibilityElementsHidden={!context}
+          importantForAccessibility={context ? 'auto' : 'no-hide-descendants'}
+        >
+          {context ?? '\u00a0'}
         </Text>
-      </View>
-      <ProgressBar value={n / STEP_COUNT} accessibilityLabel={progress} />
-      {/* Always rendered (blank until step 1 is answered) so choosing "for me / relative"
-          doesn't shift the options under the user's finger. */}
-      <Text
-        variant="caption"
-        tone="textMuted"
-        accessibilityElementsHidden={!context}
-        importantForAccessibility={context ? 'auto' : 'no-hide-descendants'}
-      >
-        {context ?? '\u00a0'}
-      </Text>
-      <Text variant="title" accessibilityRole="header">
-        {t(`onboarding.steps.${step}.title`)}
-      </Text>
-      {hint && <Text tone="textMuted">{t(hint)}</Text>}
-      <StepBody step={step} draft={draft} update={update} today={today} />
-      {isSkippable(step) && (
-        <Button variant="ghost" label={t('onboarding.nav.dontKnow')} onPress={skip} />
-      )}
+        <Text variant="display" accessibilityRole="header">
+          {t(`onboarding.steps.${step}.title`)}
+        </Text>
+        {hint && <Text tone="textMuted">{t(hint)}</Text>}
+        <StepBody step={step} draft={draft} update={update} today={today} />
+        {isSkippable(step) && (
+          <Button variant="ghost" label={t('onboarding.nav.dontKnow')} onPress={skip} />
+        )}
+      </Plate>
     </Screen>
   );
 }
