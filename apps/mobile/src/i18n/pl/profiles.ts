@@ -1,8 +1,10 @@
 export const profiles = {
   title: 'Rodzina',
   subtitle: 'Plany badań dla Ciebie i bliskich.',
-  add: 'Dodaj osobę',
+  add: 'Dodaj bliską osobę',
+  addHint: 'Otwiera ankietę dla nowej osoby',
   remove: 'Usuń',
+  removeA11y: 'Usuń profil {{name}}',
   removeConfirmTitle: 'Usunąć profil {{name}}?',
   removeConfirmBody: 'Plan i historia badań tej osoby zostaną usunięte z tego urządzenia.',
   removeConfirm: 'Usuń',
@@ -10,7 +12,8 @@ export const profiles = {
   active: 'Aktywny profil',
   switchTo: 'Przełącz na profil {{name}}',
   urgentBadge: 'Pilne: {{count}}',
-  age: '{{age}} lat',
+  urgentA11y: 'pilne badania: {{count}}',
+  age: '{{age}} l.',
   relation: {
     self: 'Ja',
     parent: 'Rodzic',
@@ -19,4 +22,5 @@ export const profiles = {
     other: 'Bliska osoba',
   },
   empty: 'Nie masz jeszcze żadnego profilu.',
+  emptyCta: 'Zacznij ankietę',
 } as const;
