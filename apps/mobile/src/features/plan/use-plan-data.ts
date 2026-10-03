@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 
 import { MOCK_TODAY, mockPlan, mockProfileMama } from '@naczas/rules';
-import type { Plan, Profile } from '@naczas/shared';
+import type { ISODate, Plan, Profile } from '@naczas/shared';
 
 export interface PlanData {
   profiles: Profile[];
   activeProfile: Profile;
   plan: Plan;
+  today: ISODate;
 }
 
 // TODO(WS3): replace with the store (`profiles`, `activeProfileId`) + `usePlan(profileId)` and
@@ -17,6 +18,7 @@ export function usePlanData(): PlanData {
       profiles: [mockProfileMama],
       activeProfile: mockProfileMama,
       plan: mockPlan({ today: MOCK_TODAY, profileId: mockProfileMama.id }),
+      today: MOCK_TODAY,
     }),
     [],
   );

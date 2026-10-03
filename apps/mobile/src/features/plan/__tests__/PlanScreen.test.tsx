@@ -51,6 +51,14 @@ describe('PlanScreen (mockPlan)', () => {
     expect(screen.getByRole('button', { name: 'Zrobione (1)' })).toBeExpanded();
   });
 
+  it('shows the activity tip for the profile with a source link', () => {
+    renderPlan();
+    expect(screen.getByText('Aktywność')).toBeOnTheScreen();
+    expect(
+      screen.getByRole('link', { name: /^Źródło: .+, otwiera przeglądarkę$/ }),
+    ).toBeOnTheScreen();
+  });
+
   it('senior mode also collapses "Później"', () => {
     renderPlan(true);
     expect(screen.getByRole('button', { name: 'Później (1)' })).toBeCollapsed();
