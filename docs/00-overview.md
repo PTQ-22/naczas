@@ -9,7 +9,7 @@ Ludzie nie robią badań profilaktycznych, bo:
 4. **nie wiedzą, gdzie** zrobić badanie najszybciej w okolicy,
 5. dodatkowo **opiekują się zdrowiem rodziców**, którzy sami tego nie pilnują.
 
-Istniejące rozwiązania (np. Doctor Robert) tworzą plan badań i przypominają, ale nie łączą go z dostępnością świadczeń NFZ i nie mówią, *kiedy zacząć szukać terminu*.
+Istniejące rozwiązania działają osobno: Doctor Robert tworzy plan badań i przypomina, a IKP/pacjent.gov.pl pokazuje kolejki NFZ i pozwala się zapisać. Żadne nie łączy **osobistego planu profilaktyki** z danymi o kolejkach, żeby powiedzieć, *kiedy zacząć szukać terminu* (szczegóły i źródła: `pitch/slides-outline.md`, slajd 5).
 
 ## Grupa docelowa (persona)
 

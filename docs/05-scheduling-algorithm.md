@@ -41,6 +41,8 @@ Dlaczego **p75, a nie średnia:** średnia zaniża dla użytkownika, który traf
    — `dates` z NFZ jest null w 100% rekordów (zweryfikowane WS2-1, 2026-10-03).
 4. Promień: zacznij od radiusKm (domyślnie 15); jeśli < 3 placówki → 30 → 60 → całe województwo.
 5. Zwróć p50, p75, min, facilitiesCount, faktyczny radiusKm, asOf.
+
+Percentyle: interpolacja liniowa (= Excel `PERCENTILE.INC`, numpy `linear`), żeby liczby w API i na slajdach (`pitch/scripts/wait-stats.mjs`) były identyczne. Wynik zaokrąglony do pełnych dni.
 ```
 Odległość: haversine. Brak współrzędnych użytkownika → całe województwo.
 
