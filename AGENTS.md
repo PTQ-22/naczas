@@ -29,6 +29,9 @@ pnpm test             # Vitest / jest-expo
 pnpm check            # lint + typecheck + test — OBOWIĄZKOWE przed commitem/PR
 ```
 
+> **pnpm:** jeśli `pnpm: command not found` — użyj `corepack pnpm ...` (albo raz `corepack enable pnpm`). Nowy worktree = najpierw `pnpm install`.
+> Repo używa `nodeLinker: hoisted` — po `pnpm --filter X add ...` zawsze uruchom `pnpm install`, inaczej znikają paczki innych workspace'ów.
+
 Agent: **po każdej zakończonej zmianie uruchom `pnpm check`** (lub zawężone `pnpm --filter <pakiet> check`) i nie raportuj zadania jako skończonego, dopóki nie przechodzi. Jeśli test był czerwony przed Twoją zmianą — napisz to wprost, nie wyłączaj go.
 
 ## 3. Jakość kodu
