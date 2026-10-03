@@ -1,9 +1,17 @@
 node_modules/
-.env
-.env.local
-.DS_Store
-.expo/
+coverage/
 dist/
 web-build/
-coverage/
 *.tsbuildinfo
+.DS_Store
+
+# env — only .env.example is committed
+.env
+.env*.local
+
+# Expo / Metro
+.expo/
+expo-env.d.ts
+.metro-health-check*
+/apps/mobile/ios
+/apps/mobile/android

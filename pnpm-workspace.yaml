@@ -1,0 +1,12 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Why hoisted: Expo supports isolated installs since SDK 54, but some RN libraries
+# (maps, reanimated plugins) still break under isolated layouts — not worth the risk in a 24h hackathon.
+allowBuilds:
+  '@parcel/watcher': true
+  esbuild: true
+  unrs-resolver: true
+
+nodeLinker: hoisted

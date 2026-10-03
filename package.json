@@ -1,0 +1,23 @@
+{
+  "name": "naczas",
+  "private": true,
+  "packageManager": "pnpm@12.8.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @naczas/mobile --filter @naczas/api dev",
+    "dev:mobile": "pnpm --filter @naczas/mobile dev",
+    "dev:web": "pnpm --filter @naczas/mobile dev:web",
+    "dev:api": "pnpm --filter @naczas/api dev",
+    "lint": "pnpm -r --if-present lint",
+    "lint:fix": "pnpm -r --if-present lint:fix",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm -r --if-present test",
+    "check": "pnpm lint && pnpm typecheck && pnpm test"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.4",
+    "typescript": "~6.0.3"
+  }
+}
