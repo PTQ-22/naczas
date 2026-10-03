@@ -3,6 +3,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 
 import { getExamRule } from '@naczas/rules';
 
+import { mockPlanData } from '@/features/plan/__fixtures__/mock-plan-data';
+import { usePlanData } from '@/features/plan/use-plan-data';
 import { useRecordsStore } from '@/store';
 import { ThemeProvider } from '@/theme';
 
@@ -11,6 +13,7 @@ import ExamScreen from '../ExamScreen';
 jest.mock('@react-native-async-storage/async-storage', () =>
   jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
+jest.mock('@/features/plan/use-plan-data', () => ({ usePlanData: jest.fn() }));
 jest.mock('expo-router', () => ({
   router: { push: jest.fn(), back: jest.fn() },
   useLocalSearchParams: jest.fn(),
@@ -30,6 +33,7 @@ const renderExam = (examId: unknown) => {
 describe('ExamScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (usePlanData as jest.Mock).mockReturnValue(mockPlanData());
     useRecordsStore.getState().reset();
   });
 

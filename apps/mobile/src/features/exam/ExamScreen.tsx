@@ -64,7 +64,7 @@ export default function ExamScreen() {
     );
   }
 
-  const item = plan.items.find((i) => i.examId === rule.id);
+  const item = plan?.items.find((i) => i.examId === rule.id);
   // TODO(WS3): pass the WaitTimeSummary from usePlan once services/api.ts lands.
   const queue = queueInfo(rule, item, undefined);
   const ctas = examCtas(rule, item);
@@ -85,6 +85,7 @@ export default function ExamScreen() {
         return;
       case 'markDone':
         // TODO(WS3-5): switch to markDone() from the records store when it lands (adds undo).
+        if (!activeProfile) return;
         upsertRecord({
           profileId: activeProfile.id,
           examId: rule.id,

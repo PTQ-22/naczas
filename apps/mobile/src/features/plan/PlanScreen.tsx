@@ -42,7 +42,24 @@ function handleCta(action: CtaAction, examId: string) {
 
 export default function PlanScreen() {
   const { motion, layout, space, seniorMode } = useTheme();
-  const { profiles, activeProfile, plan, today } = usePlanData();
+  const { profiles, activeProfile, plan, today, selectProfile } = usePlanData();
+
+  if (!activeProfile || !plan) {
+    return (
+      <Screen edges={['top', 'left', 'right']}>
+        <EmptyState
+          icon="people"
+          title={t('plan.noProfile.title')}
+          body={t('plan.noProfile.body')}
+          action={{
+            label: t('plan.noProfile.cta'),
+            onPress: () => router.push('/onboarding/welcome'),
+          }}
+        />
+      </Screen>
+    );
+  }
+
   const tip = activityTip(activeProfile, today);
   const sections = groupSections(plan.items);
   const actNow = countActNow(plan.items);
@@ -60,8 +77,7 @@ export default function PlanScreen() {
             urgentCount: p.id === activeProfile.id ? actNow : 0,
           }))}
           activeId={activeProfile.id}
-          // TODO(WS3): setActiveProfileId from the store.
-          onSelect={() => undefined}
+          onSelect={selectProfile}
           onAdd={() => router.push('/family')}
         />
       )}

@@ -20,7 +20,7 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 ### WS4-3 · Ekran planu (oś czasu) — „wow moment”
 - [x] Sekcje wg urgency, `ExamCard` z jednym CTA zależnym od `booking` (`01-user-journey.md` §UX)
 - [x] Linia czasu z animacją wejścia (`react-native-reanimated`, subtelnie — 300 ms, respektuj „ogranicz ruch”)
-- [ ] Na mockach (`mockPlan()` z WS1), potem `usePlan()` od WS3
+- [x] Na mockach (`mockPlan()` z WS1), potem `usePlan()` od WS3
 
 ### WS4-4 · Karta badania `exam/[examId]`
 - [x] Dlaczego (reasons), jak często, czy skierowanie, „jak się przygotować”, źródło (link), disclaimer, dopisek „wartość orientacyjna” dla `verified: false`

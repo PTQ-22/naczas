@@ -40,6 +40,11 @@ export const plan = {
     source: 'Źródło: {{name}}',
     sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
   },
+  noProfile: {
+    title: 'Nie ma jeszcze profilu',
+    body: 'Odpowiedz na kilka pytań, a przygotujemy plan badań.',
+    cta: 'Zacznij',
+  },
   empty: {
     title: 'Wszystko na czas',
     body: 'Nie ma teraz badań do zorganizowania.',
