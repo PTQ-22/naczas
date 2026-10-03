@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
 
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
@@ -9,7 +9,7 @@ import { Text } from './Text';
 export interface ProfileSwitcherItem {
   id: string;
   name: string;
-  /** Number of act_now items — shown as a badge. */
+  /** Number of act_now items — shown in red next to the name. */
   urgentCount: number;
 }
 
@@ -79,19 +79,14 @@ export function ProfileSwitcher({ profiles, activeId, onSelect, onAdd }: Profile
               {p.name}
             </Text>
             {p.urgentCount > 0 && (
-              <View
-                style={{
-                  minWidth: layout.icon.md,
-                  paddingHorizontal: space.xs,
-                  borderRadius: radius.full,
-                  backgroundColor: colors.urgency.act_now.bg,
-                  alignItems: 'center',
-                }}
+              // Bare number, no pill: inactive tabs sit on the wall, where act_now.fg fails AA.
+              <Text
+                variant="data"
+                tabular
+                color={selected ? colors.urgency.act_now.fg : colors.urgentOnWall}
               >
-                <Text variant="data" tabular color={colors.urgency.act_now.fg}>
-                  {p.urgentCount}
-                </Text>
-              </View>
+                {p.urgentCount}
+              </Text>
             )}
           </Pressable>
         );
