@@ -1,9 +1,10 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 
 import { mockProfileMama, rules } from '@naczas/rules';
 
+import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { Icon } from '@/components/Icon';
@@ -167,9 +168,29 @@ export default function FacilitiesScreen() {
     );
   }
 
+  // L5: for colonoscopy the NFZ queues are clinics (usually with a referral), while the screening
+  // programme needs none — say so where people pick a place, and link the programme search.
+  const programUrl = rule.programUrl;
+  const programInfo = programUrl && (
+    <Card>
+      <Text variant="caption" tone="textMuted">
+        {t('facilities.programInfo')}
+      </Text>
+      <Button
+        variant="ghost"
+        icon="external"
+        accessibilityRole="link"
+        label={t('facilities.programLink')}
+        accessibilityLabel={t('facilities.programLinkA11y')}
+        onPress={() => void Linking.openURL(programUrl)}
+      />
+    </Card>
+  );
+
   return (
     <Screen edges={['left', 'right', 'bottom']}>
       {header}
+      {programInfo}
       {controls}
       {body}
     </Screen>

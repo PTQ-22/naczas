@@ -9,6 +9,11 @@ export const facilities = {
     nearest: 'Pokazano: {{count}}, od najbliższej · do {{km}} km od Ciebie',
   },
   snapshotInfo: 'Dane z kopii NFZ, stan na {{date}}.',
+  // Exams with both an NFZ queue and a screening programme (colonoscopy): ITL queues are clinics.
+  programInfo:
+    'To kolejki NFZ do poradni. W programie przesiewowym zapiszesz się bez skierowania — placówki programu znajdziesz w wyszukiwarce NFZ.',
+  programLink: 'Wyszukiwarka programów NFZ',
+  programLinkA11y: 'Wyszukiwarka programów profilaktycznych NFZ, otwiera przeglądarkę',
   sort: {
     label: 'Sortowanie',
     soonest: 'Najszybciej',

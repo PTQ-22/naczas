@@ -107,6 +107,29 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     expect(await screen.findByText(/^Pokazano: \d+, od najbliższej · do \d+ km/)).toBeTruthy();
   });
 
+  it('colonoscopy: explains queues are clinics and links the screening programme (L5)', async () => {
+    render(<FacilitiesScreen />);
+    expect(
+      await screen.findByText(/^To kolejki NFZ do poradni\. W programie przesiewowym/),
+    ).toBeTruthy();
+    fireEvent.press(
+      screen.getByRole('link', {
+        name: 'Wyszukiwarka programów profilaktycznych NFZ, otwiera przeglądarkę',
+      }),
+    );
+    expect(openURL).toHaveBeenCalledWith('https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne');
+    // Let the list load so no state update lands after the test ends.
+    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+  });
+
+  it('queue exams without a programme get no programme note', async () => {
+    mockExamId = 'eye_exam';
+    render(<FacilitiesScreen />);
+    await screen.findByText('Badanie u okulisty — gdzie na NFZ');
+    expect(screen.queryByText(/^To kolejki NFZ do poradni/)).toBeNull();
+    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+  });
+
   it('exams without an NFZ queue show an explanation instead of a list', () => {
     mockExamId = 'mammography';
     render(<FacilitiesScreen />);

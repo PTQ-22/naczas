@@ -89,7 +89,7 @@ describe('visitPrepSummary — persona mama (no referrals needed)', () => {
   it('urgent exams without referral carry the referralNote', () => {
     const colonoscopy = summary.noReferralNeeded.find((e) => e.examId === 'colonoscopy_screening');
     expect(colonoscopy?.name).toBe('Kolonoskopia');
-    expect(colonoscopy?.referralNote).toMatch(/nie potrzebujesz skierowania/i);
+    expect(colonoscopy?.referralNote).toMatch(/bez skierowania/i);
   });
 
   it('recentlyDone lists done exams with their date', () => {
