@@ -3,6 +3,7 @@ import path from 'node:path';
 import { serve } from '@hono/node-server';
 
 import { createApp } from './app';
+import { loadEnv } from './env';
 import { createNfzClient } from './nfz/client';
 import { createSnapshotStore } from './nfz/snapshot';
 import { createQueueLoader } from './queues';
@@ -27,23 +28,29 @@ const REFRESH_ORDER = [
   '08',
 ];
 
-const port = Number(process.env.PORT ?? 8787);
-const refreshOnStart = process.env.REFRESH_ON_START !== 'false';
+const env = loadEnv();
 
 const nfz = createNfzClient();
 const snapshot = createSnapshotStore(path.resolve(import.meta.dirname, '../data/snapshot'));
 const loader = createQueueLoader({ nfz, snapshot, now: () => new Date() });
-const app = createApp({ nfz, snapshot, loader });
+const app = createApp({
+  nfz,
+  snapshot,
+  loader,
+  cors: { origins: env.CORS_ORIGINS, allowLocalhost: env.NODE_ENV !== 'production' },
+  rateLimit: { perMinute: env.RATE_LIMIT_PER_MIN, trustProxy: env.TRUST_PROXY },
+  log: (line) => console.log(line),
+});
 
 // Warm-up before listening: the first request is answered from the snapshot immediately.
 const warmed = await loader.warmUpFromSnapshot();
 console.log(`Cache warmed with ${warmed} snapshot entries`);
 
-serve({ fetch: app.fetch, port }, (info) => {
+serve({ fetch: app.fetch, port: env.PORT }, (info) => {
   console.log(`API listening on http://localhost:${info.port}`);
 });
 
-if (refreshOnStart) {
+if (env.REFRESH_ON_START) {
   const entries = await snapshot.readAll();
   const keys = entries
     .map(({ province, benefit }) => ({ province, benefit }))
