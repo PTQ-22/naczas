@@ -8,6 +8,8 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { benefitSlug } from '../src/nfz/slug';
+
 const ORIGIN = 'https://api.nfz.gov.pl';
 const BASE = `${ORIGIN}/app-itl-api`;
 const GAP_MS = 1100;
@@ -53,16 +55,6 @@ function nextUrl(page: unknown): string | null {
   return url.toString();
 }
 
-function slug(benefit: string): string {
-  return benefit
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .replace(/ł/gi, 'l')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-}
-
 async function fetchAllPages(benefit: string, province: string): Promise<unknown[]> {
   const params = new URLSearchParams({
     case: String(CASE),
@@ -87,7 +79,7 @@ async function main() {
   for (const province of PROVINCES) {
     for (const benefit of BENEFITS) {
       const pages = await fetchAllPages(benefit, province);
-      const file = path.join(OUT_DIR, province, `${slug(benefit)}.json`);
+      const file = path.join(OUT_DIR, province, `${benefitSlug(benefit)}.json`);
       await mkdir(path.dirname(file), { recursive: true });
       const fixture = {
         request: { benefit, province, case: CASE },
