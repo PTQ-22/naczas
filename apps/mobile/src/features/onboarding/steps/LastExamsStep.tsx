@@ -1,4 +1,4 @@
-import { Card, ChipGroup, Text } from '@/components';
+import { Button, Card, Text, TimelineScale } from '@/components';
 import { t } from '@/i18n';
 import { useOnboardingDraftStore } from '@/store';
 
@@ -7,16 +7,13 @@ import { lastExamQuestions } from '../survey';
 
 import type { StepProps } from './step-props';
 
-const ANSWERS = [
-  'within_half_interval',
-  'within_interval',
-  'over_interval',
-  'never',
-  'unknown',
-] as const;
+// 'unknown' is not a segment: leaving the scale empty means "nie pamiętam" — the plan treats a
+// missing answer exactly like 'unknown' (due from today), so a fifth option would only add noise.
+const ANSWERS = ['within_half_interval', 'within_interval', 'over_interval', 'never'] as const;
 
 export function LastExamsStep({ draft, today }: StepProps) {
   const setLastDone = useOnboardingDraftStore((s) => s.setLastDone);
+  const clearLastDone = useOnboardingDraftStore((s) => s.clearLastDone);
   const exams = lastExamQuestions(draft, today);
 
   if (exams.length === 0) {
@@ -24,20 +21,40 @@ export function LastExamsStep({ draft, today }: StepProps) {
   }
   return (
     <>
-      {exams.map(({ rule, intervalMonths }) => (
-        <Card key={rule.id}>
-          <Text variant="heading">{rule.name}</Text>
-          <ChipGroup
-            groupLabel={rule.name}
-            options={ANSWERS.map((value) => ({
-              value,
-              label: lastDoneLabel(value, intervalMonths),
-            }))}
-            selected={draft.lastDone[rule.id]}
-            onSelect={(answer) => setLastDone(rule.id, answer)}
-          />
-        </Card>
-      ))}
+      {exams.map(({ rule, intervalMonths }) => {
+        const answer = draft.lastDone[rule.id];
+        // Answers saved as 'unknown' before this screen existed show as empty, too.
+        const selected = answer === 'unknown' ? undefined : answer;
+        return (
+          <Card key={rule.id}>
+            <Text variant="heading">{rule.name}</Text>
+            <TimelineScale
+              groupLabel={rule.name}
+              options={ANSWERS.map((value) => ({
+                value,
+                label: lastDoneLabel(value, intervalMonths, 'short'),
+                accessibilityLabel: lastDoneLabel(value, intervalMonths),
+              }))}
+              selected={selected}
+              onSelect={(value) => setLastDone(rule.id, value)}
+              startLabel={t('onboarding.steps.lastExams.axisRecent')}
+              endLabel={t('onboarding.steps.lastExams.axisLongAgo')}
+            />
+            {selected ? (
+              <Button
+                variant="ghost"
+                label={t('onboarding.steps.lastExams.clear')}
+                accessibilityLabel={t('onboarding.steps.lastExams.clearA11y', { exam: rule.name })}
+                onPress={() => clearLastDone(rule.id)}
+              />
+            ) : (
+              <Text variant="caption" tone="textMuted">
+                {t('onboarding.steps.lastExams.unanswered')}
+              </Text>
+            )}
+          </Card>
+        );
+      })}
     </>
   );
 }
