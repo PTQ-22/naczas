@@ -7,7 +7,6 @@
 
 *Wiesz co, kiedy i gdzie — zanim będzie za późno.*
 
-<!-- SZKIC (WS5-4): sekcje „Główne funkcje” i „Architektura” opisują docelowe MVP. Przed zgłoszeniem odhaczyć każdą pozycję z działającym buildem i usunąć to, czego nie ma. Stan na 2026-10-03: brak packages/rules/data/*.json, testu źródeł reguł, apps/api/data/snapshot/, obsługi EXPO_PUBLIC_USE_MOCKS w kodzie. -->
 
 ## Problem i rozwiązanie
 
@@ -76,8 +75,9 @@ cp .env.example apps/mobile/.env
 | Zmienna | Domyślnie | Znaczenie |
 |---|---|---|
 | `EXPO_PUBLIC_API_URL` | `http://localhost:8787` | adres API |
-| `EXPO_PUBLIC_USE_MOCKS` | `true` | `true` = aplikacja działa na danych przykładowych, bez API; `false` = łączy się z `apps/api` {DO POTWIERDZENIA po implementacji w `apps/mobile`} |
-| `PORT` | `8787` | port API |
+| `EXPO_PUBLIC_USE_MOCKS` | `1` | `1` = aplikacja działa na wbudowanych danych przykładowych, bez zapytań do API; każda inna wartość = łączy się z `apps/api` |
+
+API nie czyta pliku `.env` — działa na wartościach domyślnych (port `8787`, start z zapasowej kopii danych NFZ w `apps/api/data/snapshot/` i odświeżanie w tle). Zmiany przez zmienne środowiskowe przy starcie, np. `PORT=9000 corepack pnpm dev:api`; pełna lista z opisami: `.env.example` i `apps/api/src/env.ts`.
 
 > `EXPO_PUBLIC_*` trafia do bundla klienta — nigdy nie wpisuj tam sekretów. Projekt nie wymaga żadnych kluczy (API NFZ jest publiczne).
 
@@ -95,7 +95,7 @@ Na telefonie: `corepack pnpm dev:mobile` i zeskanuj QR w Expo Go. Wszystko naraz
 
 > Skrypty w `package.json` wołają `pnpm` bezpośrednio. Jeśli `pnpm` nie jest w `PATH`, uruchom raz `corepack enable` (zmienia globalną konfigurację Node — instaluje shim `pnpm`).
 
-Testy i lint (to samo co CI):
+Testy i lint (to samo co CI) — 609 testów: silnik reguł 154 (100% pokrycia linii), API 93, aplikacja 337, kontrakty 25 (stan na 2026-10-03):
 
 ```bash
 corepack pnpm check
@@ -118,7 +118,7 @@ Zgodnie z regulaminem HackYeah 2026 ([docs/07](docs/07-pitch-and-submission.md))
 | **Claude Code** (Anthropic) z modelem **Claude Opus 5.5** | Agenci AI pracujący równolegle w osobnych gałęziach (workstreamy) pod nadzorem zespołu, według zasad z [AGENTS.md](AGENTS.md): generowanie i refaktoryzacja kodu (TypeScript, React Native, Hono), pisanie testów, konfiguracja monorepo; research źródeł (programy NFZ, czasy oczekiwania, konkurencja) z obowiązkiem podania URL; projekt tokenów i makiet z wyliczeniem kontrastu WCAG; szkice dokumentacji, slajdów i skryptu pitchu. {ZESPÓŁ: uzupełnić / skorygować wg faktycznego użycia w każdym workstreamie} |
 
 Zasady, których się trzymaliśmy:
-- **AI nie generuje zaleceń medycznych.** Przedziały wieku i interwały pochodzą z oficjalnych źródeł z cytatem i URL; reguła bez źródła nie przechodzi testów {DO POTWIERDZENIA: test wymagany przez AGENTS.md §7 — sprawdzić, że jest w `packages/rules`}.
+- **AI nie generuje zaleceń medycznych.** Przedziały wieku i interwały pochodzą z oficjalnych źródeł z cytatem i URL; reguła bez źródła (nazwa + URL https) i daty weryfikacji nie przechodzi testów (`packages/rules/test/rules-data.test.ts`).
 - Każda zmiana przechodzi lint, typecheck i testy (`pnpm check`) przed scaleniem; commity z udziałem AI mają trailer `Co-Authored-By`.
 - Zespół rozumie i potrafi wyjaśnić architekturę, algorytm i każdy fragment kodu, także wygenerowany.
 

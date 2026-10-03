@@ -188,6 +188,26 @@
         padding: 40px;
       }
 
+      /* App screenshots: same box as the placeholder frames, so layout does not move. */
+      .shot-img {
+        display: block;
+        height: 560px;
+        aspect-ratio: 9 / 19.5;
+        margin: 0 auto;
+        object-fit: cover;
+        object-position: top;
+        border-radius: 40px;
+        border: 2px solid var(--border);
+        box-shadow: 0 8px 24px rgb(30 42 45 / 0.12);
+        background: var(--surface);
+      }
+
+      .shot-img.doc {
+        aspect-ratio: 1 / 1.414;
+        object-fit: contain;
+        border-radius: 12px;
+      }
+
       /* Placeholder frames for app screenshots (inserted after M3). */
       .shot {
         border: 4px dashed var(--border-strong);
@@ -555,19 +575,19 @@
       <h2>Od ankiety do „Zadzwoń” w czterech krokach</h2>
       <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 56px">
         <div>
-          <div class="shot phone">SCREENSHOT<br />Ankieta</div>
+          <img class="shot-img" src="../screenshots/m3/02-onboarding-family-history.png" alt="Ankieta: krok historia rodzinna" />
           <p class="shot-caption">Ankieta: jeden temat na ekran</p>
         </div>
         <div>
-          <div class="shot phone">SCREENSHOT<br />Plan — oś czasu</div>
+          <img class="shot-img" src="../screenshots/plan-light.png" alt="Plan badań mamy: kolonoskopia w sekcji Działaj teraz" />
           <p class="shot-caption">Plan: co teraz, co później</p>
         </div>
         <div>
-          <div class="shot phone">SCREENSHOT<br />Karta badania</div>
+          <img class="shot-img" src="../screenshots/exam-light.png" alt="Karta badania z czasem oczekiwania w okolicy" />
           <p class="shot-caption">Ile się czeka w okolicy</p>
         </div>
         <div>
-          <div class="shot phone">SCREENSHOT<br />Placówki</div>
+          <img class="shot-img" src="../screenshots/m3/05-facilities-list.png" alt="Lista placówek NFZ posortowana według czasu oczekiwania" />
           <p class="shot-caption">Gdzie najszybciej + „Zadzwoń”</p>
         </div>
       </div>
@@ -582,8 +602,7 @@
         <b>kiedy zacząć</b> = termin badania − czas czekania w okolicy (p75 z NFZ) − zapas na skierowanie
       </div>
       <p class="small muted" style="margin: 14px 0 20px">
-        p75: w 3 na 4 placówkach w okolicy zdążysz. Przykład z demo: kolonoskopia, czeka się
-        <span class="todo">{N} tyg.</span> → przypomnienie <span class="todo">{N+2} tyg.</span> przed terminem.
+        p75: w 3 na 4 placówkach w okolicy zdążysz. Przykład z demo: na kolonoskopię w okolicy czeka się ok. 30 tyg. — więc przypomnienie przychodzi z takim wyprzedzeniem.
       </p>
       <table class="cmp">
         <thead>
@@ -647,13 +666,13 @@
         <ul class="points" style="justify-content: center">
           <li><b>Profile rodzinne</b> — przełącznik Ja / Mama, licznik pilnych badań przy profilu mamy</li>
           <li><b>Przygotowanie do wizyty</b> — podsumowanie dla lekarza rodzinnego: „Proszę o skierowanie na…”, czynniki ryzyka, lista badań (ekran lub PDF)</li>
-          <li class="muted"><span class="todo">{Karta aktywności — tylko jeśli działa w demo}</span></li>
+          <li><b>Karta aktywności</b> — mały, osiągalny krok ruchu dopasowany do odpowiedzi z ankiety</li>
         </ul>
         <div>
-          <div class="shot phone">SCREENSHOT<br />Przełącznik profili</div>
+          <img class="shot-img" src="../screenshots/family-light.png" alt="Ekran Rodzina: profile Kasi i mamy z liczbą pilnych badań" />
         </div>
         <div>
-          <div class="shot" style="height: 560px; aspect-ratio: 1 / 1.414; margin: 0 auto">SCREENSHOT<br />PDF dla lekarza (A4)</div>
+          <img class="shot-img doc" src="screens/visit-prep-pdf.png" alt="PDF dla lekarza rodzinnego: czynniki ryzyka i lista badań" />
         </div>
       </div>
       <div class="footer"><span class="app-name"></span><span class="page"></span></div>
@@ -672,17 +691,15 @@
           <li>Systemowe powiększenie czcionki i czytnik ekranu</li>
         </ul>
         <div>
-          <div class="shot phone">SCREENSHOT<br />Plan</div>
+          <img class="shot-img" src="../screenshots/plan-light.png" alt="Plan w trybie standardowym" />
           <p class="shot-caption">Standard</p>
         </div>
         <div>
-          <div class="shot phone">SCREENSHOT<br />Plan — senior</div>
+          <img class="shot-img" src="../screenshots/plan-senior.png" alt="Plan w trybie senior" />
           <p class="shot-caption">Tryb senior</p>
         </div>
         <div>
-          <div class="shot phone" style="background: #1a2120; color: #b3bdba; border-color: #7f8c89">
-            SCREENSHOT<br />Plan — dark
-          </div>
+          <img class="shot-img" src="../screenshots/plan-dark.png" alt="Plan w trybie ciemnym" />
           <p class="shot-caption">Dark mode</p>
         </div>
       </div>
@@ -730,7 +747,7 @@
           <li><b>Privacy by design</b> — bez kont, dane zdrowotne nie opuszczają telefonu</li>
           <li><b>Demo odporne na awarię NFZ</b> — cache i zapasowa kopia danych</li>
           <li><b>Otwarte reguły</b> — każde zalecenie ze źródłem; niezweryfikowane oznaczone jako orientacyjne</li>
-          <li><b>Testy</b> — silnik reguł: 123 testy, 100% pokrycia linii; API: 74 testy</li>
+          <li><b>Testy</b> — 609: silnik reguł 154 (100% pokrycia linii), API 93, aplikacja 337, kontrakty 25</li>
         </ul>
       </div>
       <div class="footer"><span>TypeScript · Expo · Hono · Zod · Vitest</span><span class="page"></span></div>
