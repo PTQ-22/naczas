@@ -47,6 +47,8 @@ export const facilities = {
   map: {
     a11y: 'Mapa placówek. Te same placówki są na liście.',
     you: 'Twoja okolica',
+    // Marker label for the user's (rounded) position.
+    youShort: 'Ty',
     attribution: '© OpenStreetMap',
   },
   states: {
