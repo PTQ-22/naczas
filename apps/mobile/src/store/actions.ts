@@ -1,3 +1,4 @@
+import { useOnboardingDraftStore } from './onboarding-draft-store';
 import { useProfilesStore } from './profiles-store';
 import { useRecordsStore } from './records-store';
 import { useSettingsStore } from './settings-store';
@@ -13,4 +14,5 @@ export function resetAllData() {
   useRecordsStore.getState().reset();
   useProfilesStore.getState().reset();
   useSettingsStore.getState().reset();
+  useOnboardingDraftStore.getState().clear();
 }
