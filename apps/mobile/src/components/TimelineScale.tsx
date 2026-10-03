@@ -1,4 +1,5 @@
-import { Pressable, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, useWindowDimensions, View } from 'react-native';
 
 import { useTheme } from '@/theme';
 
@@ -8,7 +9,8 @@ export interface TimelineScaleOption<T extends string> {
   value: T;
   /** Short segment text, e.g. "Do 1,5 roku". */
   label: string;
-  /** Full sentence for screen readers, e.g. "W ciągu ostatnich półtora roku". */
+  /** Full sentence, e.g. "W ciągu ostatnich półtora roku": read by screen readers, and shown
+   * instead of `label` when the scale is stacked and has room for it. */
   accessibilityLabel?: string;
 }
 
@@ -25,10 +27,14 @@ export interface TimelineScaleProps<T extends string> {
   testID?: string;
 }
 
+// A segment must fit its longest single word ("Ponad", "mies.") — RN never breaks inside a word,
+// so a narrower segment would push the text past the screen edge. ~3 em covers those words.
+const MIN_SEGMENT_EMS = 3;
+
 /**
  * Single choice laid out as one segmented bar, so ordered answers ("kiedy ostatnio?") read as
- * a scale instead of a cloud of equal pills. Segments share the width and grow in height when
- * large fonts make labels wrap, so the bar never wraps onto a second row.
+ * a scale instead of a cloud of equal pills. When the segments get too narrow for the text
+ * (small phone, system font scaling, senior mode) the bar turns into a vertical list, same order.
  */
 export function TimelineScale<T extends string>({
   groupLabel,
@@ -39,15 +45,23 @@ export function TimelineScale<T extends string>({
   endLabel,
   testID,
 }: TimelineScaleProps<T>) {
-  const { colors, space, radius, borderWidth, layout } = useTheme();
+  const { colors, space, radius, borderWidth, layout, type } = useTheme();
+  const { fontScale } = useWindowDimensions();
+  const [width, setWidth] = useState(0);
+  const segmentText = (width - 2 * borderWidth.strong) / options.length - 2 * space.xs;
+  const stacked = width > 0 && segmentText < type.label.fontSize * fontScale * MIN_SEGMENT_EMS;
 
   return (
-    <View testID={testID} style={{ gap: space.xs }}>
+    <View
+      testID={testID}
+      onLayout={(e) => setWidth(e.nativeEvent.layout.width)}
+      style={{ gap: space.xs }}
+    >
       <View
         accessibilityRole="radiogroup"
         accessibilityLabel={groupLabel}
         style={{
-          flexDirection: 'row',
+          flexDirection: stacked ? 'column' : 'row',
           borderWidth: borderWidth.strong,
           borderColor: colors.borderStrong,
           borderRadius: radius.md,
@@ -64,13 +78,14 @@ export function TimelineScale<T extends string>({
               accessibilityLabel={`${groupLabel}: ${option.accessibilityLabel ?? option.label}`}
               accessibilityState={{ checked: isSelected }}
               style={({ pressed }) => ({
-                flex: 1,
+                flex: stacked ? undefined : 1,
                 minHeight: layout.minTouch,
                 justifyContent: 'center',
-                paddingHorizontal: space.xs,
+                paddingHorizontal: stacked ? space.md : space.xs,
                 paddingVertical: space.sm,
-                borderLeftWidth: index === 0 ? 0 : borderWidth.hairline,
-                borderLeftColor: colors.border,
+                [stacked ? 'borderTopWidth' : 'borderLeftWidth']:
+                  index === 0 ? 0 : borderWidth.hairline,
+                borderColor: colors.border,
                 backgroundColor: isSelected
                   ? colors.primary
                   : pressed
@@ -81,28 +96,30 @@ export function TimelineScale<T extends string>({
               <Text
                 variant="label"
                 tone={isSelected ? 'onPrimary' : 'text'}
-                style={{ textAlign: 'center' }}
+                style={{ textAlign: stacked ? 'left' : 'center' }}
               >
                 {/* No ✓ prefix: it breaks wrapping in narrow segments; the solid fill is the cue. */}
-                {option.label}
+                {stacked ? (option.accessibilityLabel ?? option.label) : option.label}
               </Text>
             </Pressable>
           );
         })}
       </View>
-      <View
-        // Decorative axis; the order is already conveyed by the option labels.
-        importantForAccessibility="no-hide-descendants"
-        accessibilityElementsHidden
-        style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-      >
-        <Text variant="caption" tone="textMuted">
-          {startLabel}
-        </Text>
-        <Text variant="caption" tone="textMuted">
-          {endLabel}
-        </Text>
-      </View>
+      {!stacked && (
+        <View
+          // Decorative axis; the order is already conveyed by the option labels.
+          importantForAccessibility="no-hide-descendants"
+          accessibilityElementsHidden
+          style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+        >
+          <Text variant="caption" tone="textMuted">
+            {startLabel}
+          </Text>
+          <Text variant="caption" tone="textMuted">
+            {endLabel}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
