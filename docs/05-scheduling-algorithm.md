@@ -36,8 +36,9 @@ Dlaczego **p75, a nie średnia:** średnia zaniża dla użytkownika, który traf
 
 ```
 1. Pobierz kolejki dla wszystkich nfzBenefits badania w województwie (case=1), cache 24h.
-2. Odfiltruj rekordy bez dates.date lub bez współrzędnych.
-3. waitDays = dates.date − dates.date-situation-as-at  (dni, ≥ 0)
+2. Odfiltruj rekordy z average-period ≤ 0 / null lub bez współrzędnych.
+3. waitDays = statistics.provider-data.average-period  (średnie oczekiwanie wg placówki, dni)
+   — `dates` z NFZ jest null w 100% rekordów (zweryfikowane WS2-1, 2026-10-03).
 4. Promień: zacznij od radiusKm (domyślnie 15); jeśli < 3 placówki → 30 → 60 → całe województwo.
 5. Zwróć p50, p75, min, facilitiesCount, faktyczny radiusKm, asOf.
 ```

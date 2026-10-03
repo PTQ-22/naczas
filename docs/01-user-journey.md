@@ -50,7 +50,7 @@ Tryb demo: `settings → Data demo = 2026-10-04`, preset profili można wczytać
 1. **Hook (20 s):** „Kasia wie, że mama powinna się badać. Nie wie, co, kiedy ani gdzie — i że na kolonoskopię czeka się 3 miesiące.”
 2. **Onboarding mamy (40 s):** 58 lat, kobieta, rak jelita w rodzinie, nie pamięta ostatnich badań.
 3. **Plan (40 s):** oś czasu. Czerwona karta: *„Kolonoskopia — w Twojej okolicy czeka się ~10 tyg. Zacznij szukać teraz.”* Mammografia: „bez skierowania, program NFZ”.
-4. **Placówki (30 s):** mapa, 5 placówek posortowanych po pierwszym terminie, dane „stan na 2026-09”. Klik „Zadzwoń”.
+4. **Placówki (30 s):** mapa, 5 placówek posortowanych po średnim czasie oczekiwania, dane „stan na 2026-09”. Klik „Zadzwoń”.
 5. **Przygotowanie do wizyty (20 s):** „Poproś lekarza rodzinnego o skierowanie na…” + podsumowanie PDF.
 6. **Zamknięcie pętli (20 s):** „Umówione na 12.01” → przewiń czas → powiadomienie dzień przed → „Zrobione” → następne za 10 lat.
 7. **Kasia (10 s):** przełączenie na własny profil — cytologia, stomatolog, karta aktywności.

@@ -28,7 +28,7 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 - [ ] CTA: znajdź termin / gdzie zrobić (program) / oznacz jako zrobione / umówiłem się
 
 ### WS4-5 · Placówki `exam/[examId]/facilities`
-- [ ] Lista: nazwa, adres, odległość, pierwszy termin (lub „brak danych”), ikonki dostępności, przycisk „Zadzwoń” (`Linking.openURL('tel:…')`), „Nawiguj” (link do map)
+- [ ] Lista: nazwa, adres, odległość, średni czas oczekiwania „ok. N tyg.” (lub „brak danych”) — NFZ nie podaje dziś konkretnych terminów, ikonki dostępności, przycisk „Zadzwoń” (`Linking.openURL('tel:…')`), „Nawiguj” (link do map)
 - [ ] Przełącznik sortowania: najszybciej / najbliżej
 - [ ] Mapa: `FacilitiesMap.tsx` (`react-native-maps`) + `FacilitiesMap.web.tsx` (`react-leaflet` + OSM); markery kolorowane wg czasu oczekiwania
 - [ ] Stany: ładowanie (skeleton), błąd (retry), pusto, `source: 'nfz_snapshot'` → dyskretna informacja

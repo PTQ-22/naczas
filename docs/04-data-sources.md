@@ -34,6 +34,8 @@
 ```
 
 ### Pułapki
+- **`dates` = null w 100% rekordów** (WS2-1, 1867 rekordów, api-version 1.2/1.3). Jedyny sygnał czasu: `statistics.provider-data.average-period` (wypełnione w 61–98% rekordów). Mediany: kolonoskopia ~137–158 dni, okulistyka 73–200 dni, stomatolog 22–29 dni.
+- Filtr `benefit` działa jak prefiks (`PORADNIA STOMATOLOGICZNA` zwraca też `… DLA DZIECI`) → filtrować po dokładnej nazwie. Okulistyka ambulatoryjna: `ŚWIADCZENIA Z ZAKRESU OKULISTYKI`. 1–17% rekordów bez lat/lng.
 - `dates` bywa `null`, statystyki bywają zerowe → takie rekordy pokazujemy na liście („brak danych o terminie”), ale **wykluczamy z agregatu** p50/p75.
 - Dane raportowane przez placówki, aktualizacja ~miesięczna → w UI zawsze „stan na: …”.
 - **Badań programowych (mammografia, cytologia) nie ma w ITL** (`/benefits?name=mammo` → `[]`). Obsługa przez `booking: 'program'`.

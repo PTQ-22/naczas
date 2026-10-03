@@ -142,6 +142,8 @@ export interface WaitTimeSummary {
 
 ### `GET /v1/facilities?examId=&province=&lat=&lng=&radiusKm=&sort=soonest|nearest&limit=20`
 
+> **Zmiana 2026-10-03 (WS2-1):** NFZ zwraca `dates: null` w 100% rekordów. Źródłem czasu oczekiwania jest `statistics.provider-data.average-period` (średni czas oczekiwania w dniach, raportowany przez placówkę). `sort=soonest` = rosnąco po `waitDays`, nulle na końcu. Typy bez zmian.
+
 ```ts
 export interface Facility {
   id: string;                     // NFZ queue id
@@ -154,11 +156,11 @@ export interface Facility {
   lat: number;
   lng: number;
   distanceKm: number;
-  firstAvailableDate: ISODate | null;
-  waitDays: number | null;        // firstAvailableDate − asOf
+  firstAvailableDate: ISODate | null; // obecnie zawsze null — NFZ nie zwraca `dates` (stan 2026-10)
+  waitDays: number | null;        // average-period z NFZ (dni); null gdy brak lub 0
   awaiting: number | null;        // statistics.provider-data.awaiting
   accessibility: { ramp: boolean; elevator: boolean; parking: boolean; toilet: boolean };
-  asOf: ISODate;                  // dates.date-situation-as-at
+  asOf: ISODate;                  // statistics.update 'YYYY-MM' → 'YYYY-MM-01'
 }
 
 export interface FacilitiesResponse {
