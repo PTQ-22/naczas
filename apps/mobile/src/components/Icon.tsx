@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Text, type ColorValue } from 'react-native';
 
 import { useTheme } from '@/theme';
 
@@ -17,6 +17,8 @@ const glyphs = {
   chevronRight: '›',
   external: '↗',
   phone: '☎',
+  people: '☺',
+  settings: '⚙',
 } as const;
 
 export type IconName = keyof typeof glyphs;
@@ -24,7 +26,7 @@ export type IconName = keyof typeof glyphs;
 interface IconProps {
   name: IconName;
   size?: 'sm' | 'md' | 'lg';
-  color?: string;
+  color?: ColorValue;
 }
 
 export function Icon({ name, size = 'md', color }: IconProps) {

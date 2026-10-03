@@ -7,12 +7,9 @@
     "icon": "./assets/images/icon.png",
     "scheme": "naczas",
     "userInterfaceStyle": "automatic",
-    "ios": {
-      "icon": "./assets/expo.icon"
-    },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1C6B66",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -21,16 +18,24 @@
     },
     "web": {
       "output": "single",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/favicon.png",
+      "name": "NaCzas",
+      "shortName": "NaCzas",
+      "description": "Plan badań profilaktycznych na czas — dla Ciebie i bliskich.",
+      "themeColor": "#1C6B66",
+      "backgroundColor": "#FAF7F2"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#1C6B66",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200,
+          "dark": {
+            "backgroundColor": "#111615"
+          }
         }
       ],
       "expo-sharing",

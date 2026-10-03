@@ -40,7 +40,7 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 
 ### WS4-7 · Polish (T+16 – T+20)
 - [ ] Tryb senior i dark mode na każdym ekranie
-- [ ] Ikona aplikacji, splash, favicon/tytuł dla web
+- [x] Ikona aplikacji, splash, favicon/tytuł dla web
 - [ ] Screenshoty do prezentacji (dla WS5)
 
 ## Definition of Done (WS4)
