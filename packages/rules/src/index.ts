@@ -3,3 +3,4 @@ export { ageAt } from './age';
 export { eligibleExams, isEligible, matchingModifiers, profileFactors } from './eligibility';
 export { getExamRule, parseRules, rules } from './load-rules';
 export { MOCK_TODAY, mockPlan, mockProfileMama } from './mock-plan';
+export * from './schedule';
