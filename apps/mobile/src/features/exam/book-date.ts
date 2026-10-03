@@ -31,25 +31,3 @@ export function validateBookedFor(value: string, today: ISODate): BookDateError 
   if (value > max) return 'tooFar';
   return null;
 }
-
-/**
- * Record after booking. Keeps `lastDone` so the interval still counts from the last exam if the
- * visit is later cancelled.
- */
-export function bookedRecord(input: {
-  profileId: string;
-  examId: string;
-  bookedFor: ISODate;
-  today: ISODate;
-  existing?: ExamRecord;
-}): ExamRecord {
-  const { profileId, examId, bookedFor, today, existing } = input;
-  return {
-    profileId,
-    examId,
-    ...(existing?.lastDone !== undefined && { lastDone: existing.lastDone }),
-    status: 'booked',
-    bookedFor,
-    updatedAt: today,
-  };
-}

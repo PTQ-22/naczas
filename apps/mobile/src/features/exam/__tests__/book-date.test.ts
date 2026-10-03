@@ -1,6 +1,6 @@
 import type { ExamRecord } from '@naczas/shared';
 
-import { bookedRecord, bookingRange, initialBookedFor, validateBookedFor } from '../book-date';
+import { bookingRange, initialBookedFor, validateBookedFor } from '../book-date';
 
 const TODAY = '2026-10-03';
 
@@ -39,27 +39,5 @@ describe('book-date', () => {
     ['abc', 'invalid'],
   ] as const)('validate %j → %s', (value, expected) => {
     expect(validateBookedFor(value, TODAY)).toBe(expected);
-  });
-
-  it('booked record keeps lastDone and stamps updatedAt', () => {
-    expect(
-      bookedRecord({
-        profileId: 'p',
-        examId: 'eye_exam',
-        bookedFor: '2026-11-05',
-        today: TODAY,
-        existing: record({ lastDone: '1_3y' }),
-      }),
-    ).toEqual({
-      profileId: 'p',
-      examId: 'eye_exam',
-      lastDone: '1_3y',
-      status: 'booked',
-      bookedFor: '2026-11-05',
-      updatedAt: TODAY,
-    });
-    expect(
-      bookedRecord({ profileId: 'p', examId: 'eye_exam', bookedFor: '2026-11-05', today: TODAY }),
-    ).not.toHaveProperty('lastDone');
   });
 });

@@ -59,6 +59,20 @@ describe('BookScreen', () => {
     expect(router.back).toHaveBeenCalled();
   });
 
+  it('saves through markBooked, so the booking can be undone', () => {
+    render(<BookScreen />);
+    fireEvent.press(screen.getByRole('button', { name: 'Zapisz wizytę na 17.10.2026' }));
+    let undone = false;
+    act(() => {
+      undone = useRecordsStore.getState().undo(profile.id, 'eye_exam');
+    });
+    expect(undone).toBe(true);
+    expect(useRecordsStore.getState().records[0]).toMatchObject({
+      status: 'none',
+      lastDone: '1_3y',
+    });
+  });
+
   it('saves the date the user picked', () => {
     render(<BookScreen />);
     fireEvent.changeText(screen.getByTestId('date'), '2026-11-20');
