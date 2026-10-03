@@ -53,6 +53,20 @@ describe('ExamScreen', () => {
     });
   });
 
+  it('colonoscopy: notes the queue is for clinics and links the no-referral programme (L5)', () => {
+    renderExam('colonoscopy_screening');
+    expect(screen.getByText(/^To kolejki NFZ do poradni/)).toBeOnTheScreen();
+    expect(
+      screen.getByRole('link', { name: /Program przesiewowy bez skierowania/ }),
+    ).toBeOnTheScreen();
+  });
+
+  it('links to visit prep even when no referral is needed (M3 H2)', () => {
+    renderExam('colonoscopy_screening');
+    fireEvent.press(screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza' }));
+    expect(router.push).toHaveBeenCalledWith('/visit-prep');
+  });
+
   it('marks "Wartość orientacyjna" for unverified rules', () => {
     renderExam('eye_exam');
     expect(screen.getByText('Wartość orientacyjna')).toBeOnTheScreen();
@@ -70,6 +84,13 @@ describe('ExamScreen', () => {
     fireEvent.press(screen.getByRole('button', { name: /Cofnij oznaczenie badania Mammografia/ }));
     expect(useRecordsStore.getState().records).toEqual([]);
     expect(screen.queryByText('Oznaczono jako zrobione')).toBeNull();
+  });
+
+  it('exam outside the active person\'s plan says so instead of "no queue data" (M3 L6)', () => {
+    renderExam('psa_discussion');
+    expect(screen.getByText('To badanie nie jest teraz zalecane dla: Mama.')).toBeOnTheScreen();
+    expect(screen.queryByText(/Nie mamy aktualnych danych o kolejce/)).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Oznacz jako zrobione' })).toBeNull();
   });
 
   it('unknown or invalid examId → not-found state', () => {

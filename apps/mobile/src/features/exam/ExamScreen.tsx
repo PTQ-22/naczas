@@ -10,6 +10,7 @@ import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Disclaimer } from '@/components/Disclaimer';
 import { EmptyState } from '@/components/EmptyState';
+import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
@@ -71,8 +72,15 @@ export default function ExamScreen() {
   }
 
   const item = plan?.items.find((i) => i.examId === rule.id);
-  const queue = queueInfo(rule, waitTimes[rule.id]);
-  const ctas = examCtas(rule, item);
+  // Not in this person's plan (e.g. deep link while another profile is active): say so plainly
+  // instead of a misleading "no queue data", and don't push booking actions (M3 L6).
+  const notRecommended = Boolean(activeProfile) && !item;
+  const queue = notRecommended ? null : queueInfo(rule, waitTimes[rule.id]);
+  const ctas = notRecommended ? {} : examCtas(rule, item);
+  // Queue exams that also have a no-referral programme (colonoscopy): the wait times are NFZ
+  // clinic (AOS) queues, not the programme — say so and link the programme (WS1, M3 L5).
+  const programUrl = rule.programUrl;
+  const showProgramNote = queue !== null && Boolean(programUrl);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;
 
@@ -150,6 +158,22 @@ export default function ExamScreen() {
           ))}
       </View>
 
+      {notRecommended && activeProfile && (
+        <View
+          accessible
+          style={{
+            flexDirection: 'row',
+            gap: space.sm,
+            padding: layout.cardPadding,
+            borderRadius: radius.lg,
+            backgroundColor: colors.surfaceAlt,
+          }}
+        >
+          <Icon name="info" size="sm" color={colors.textMuted} />
+          <Text style={{ flex: 1 }}>{t('exam.notRecommended', { name: activeProfile.name })}</Text>
+        </View>
+      )}
+
       {queue && (
         <View
           accessible
@@ -164,10 +188,26 @@ export default function ExamScreen() {
         >
           {queue.lines.label && <Text>{msg(queue.lines.label)}</Text>}
           {queue.lines.value && <Text variant="heading">{msg(queue.lines.value)}</Text>}
+          {showProgramNote && (
+            <Text variant="caption" tone="textMuted">
+              {t('exam.queue.clinicNote')}
+            </Text>
+          )}
           {queue.lines.meta && (
             <Text variant="caption" tone="textSubtle">
               {msg(queue.lines.meta)}
             </Text>
+          )}
+          {/* Outside the grouped (accessible) box so screen readers can reach the link. */}
+          {showProgramNote && programUrl && (
+            <Button
+              variant="ghost"
+              icon="external"
+              accessibilityRole="link"
+              label={t('exam.queue.programLink')}
+              accessibilityLabel={t('exam.queue.programLinkA11y')}
+              onPress={() => void Linking.openURL(programUrl)}
+            />
           )}
         </View>
       )}
@@ -191,14 +231,13 @@ export default function ExamScreen() {
 
       <Section title={t('exam.section.referral')}>
         <Text>{typeof referral === 'string' ? referral : msg(referral)}</Text>
-        {rule.referral && (
-          <Button
-            variant="ghost"
-            icon="chevronRight"
-            label={t('exam.referral.prepareRequest')}
-            onPress={() => router.push('/visit-prep')}
-          />
-        )}
+        {/* Always reachable (M3 H2): even without a referral the GP visit summary is useful. */}
+        <Button
+          variant="ghost"
+          icon="chevronRight"
+          label={t(rule.referral ? 'exam.referral.prepareRequest' : 'exam.referral.prepareVisit')}
+          onPress={() => router.push('/visit-prep')}
+        />
       </Section>
 
       {rule.prepTips && rule.prepTips.length > 0 && (

@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Platform, View } from 'react-native';
 import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
 
@@ -9,7 +10,9 @@ import { EmptyState } from '@/components/EmptyState';
 import { ProfileSwitcher } from '@/components/ProfileSwitcher';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { Toast } from '@/components/Toast';
 import { t } from '@/i18n';
+import { useRecordsStore } from '@/store';
 import { useTheme } from '@/theme';
 
 import { ActivityCard } from './ActivityCard';
@@ -24,27 +27,32 @@ import {
 } from './plan-view-model';
 import { PlanTimelineSection } from './PlanTimelineSection';
 import { ReminderBanner } from './ReminderBanner';
+import { UrgentCountProbe } from './UrgentCountProbe';
 import { usePlanData } from './use-plan-data';
+import { VisitPrepCard } from './VisitPrepCard';
 
 const openExam = (examId: string) =>
   router.push({ pathname: '/exam/[examId]', params: { examId } });
 
-function handleCta(action: CtaAction, examId: string) {
-  switch (action) {
-    case 'facilities':
-      router.push({ pathname: '/exam/[examId]/facilities', params: { examId } });
-      return;
-    case 'exam':
-    case 'markDone':
-      // TODO(WS3-5): markDone should call the records store; until it exists the exam screen
-      // is where the user confirms it.
-      openExam(examId);
-  }
+interface DoneToast {
+  profileId: string;
+  examId: string;
+  name: string;
 }
 
 export default function PlanScreen() {
   const { motion, layout, space, seniorMode } = useTheme();
   const { profiles, activeProfile, plan, waitTimes, today, selectProfile } = usePlanData();
+  const markDone = useRecordsStore((s) => s.markDone);
+  const undo = useRecordsStore((s) => s.undo);
+  const [doneToast, setDoneToast] = useState<DoneToast | null>(null);
+  const hideToast = useCallback(() => setDoneToast(null), []);
+  const [urgentById, setUrgentById] = useState<Record<string, number>>({});
+  const reportUrgent = useCallback(
+    (id: string, count: number) =>
+      setUrgentById((cur) => (cur[id] === count ? cur : { ...cur, [id]: count })),
+    [],
+  );
 
   if (!activeProfile || !plan) {
     return (
@@ -69,14 +77,49 @@ export default function PlanScreen() {
   const firstActNowId = plan.items.find((i) => i.urgency === 'act_now')?.examId;
   let cardIndex = 0;
 
+  const handleCta = (action: CtaAction, examId: string) => {
+    switch (action) {
+      case 'facilities':
+        router.push({ pathname: '/exam/[examId]/facilities', params: { examId } });
+        return;
+      case 'exam':
+        openExam(examId);
+        return;
+      case 'markDone':
+        // Done right here (M3 M6): the card moves to "Zrobione" and the toast offers undo.
+        markDone(activeProfile.id, examId, today);
+        setDoneToast({ profileId: activeProfile.id, examId, name: getExamRule(examId).name });
+    }
+  };
+
+  const toast = doneToast && (
+    <Toast
+      message={t('exam.toast.markedDone')}
+      action={{
+        label: t('exam.toast.undo'),
+        accessibilityLabel: t('exam.toast.undoA11y', { name: doneToast.name }),
+        onPress: () => {
+          undo(doneToast.profileId, doneToast.examId);
+          setDoneToast(null);
+        },
+      }}
+      onHide={hideToast}
+    />
+  );
+
   return (
-    <Screen edges={['top', 'left', 'right']}>
+    <Screen edges={['top', 'left', 'right']} footer={toast || undefined}>
+      {profiles
+        .filter((p) => p.id !== activeProfile.id)
+        .map((p) => (
+          <UrgentCountProbe key={p.id} profileId={p.id} onCount={reportUrgent} />
+        ))}
       {profiles.length > 0 && (
         <ProfileSwitcher
           profiles={profiles.map((p) => ({
             id: p.id,
             name: p.name,
-            urgentCount: p.id === activeProfile.id ? actNow : 0,
+            urgentCount: p.id === activeProfile.id ? actNow : (urgentById[p.id] ?? 0),
           }))}
           activeId={activeProfile.id}
           onSelect={selectProfile}
@@ -135,6 +178,7 @@ export default function PlanScreen() {
         </View>
       )}
 
+      {sections.length > 0 && <VisitPrepCard />}
       {sections.length > 0 && <NotificationPrompt />}
 
       {tip && <ActivityCard tip={tip} />}

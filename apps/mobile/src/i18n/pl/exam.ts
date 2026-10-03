@@ -8,6 +8,7 @@ export const exam = {
     title: 'Nie znaleziono badania',
     body: 'To badanie nie jest już dostępne w aplikacji.',
   },
+  notRecommended: 'To badanie nie jest teraz zalecane dla: {{name}}.',
   dueBy: 'Zrób do: {{date}}',
   bookedFor: 'Wizyta: {{date}}',
   doneNext: 'Następne: ok. {{date}}',
@@ -17,6 +18,10 @@ export const exam = {
     radius: 'W promieniu {{km}} km czeka się',
     weeks: 'ok. {{weeks}} tyg.',
     asOf: 'Dane NFZ, stan na {{date}}',
+    clinicNote:
+      'To kolejki NFZ do poradni — w programie przesiewowym zapiszesz się bez skierowania.',
+    programLink: 'Program przesiewowy bez skierowania',
+    programLinkA11y: 'Program przesiewowy bez skierowania, otwiera wyszukiwarkę NFZ',
     noData: 'Nie mamy aktualnych danych o kolejce — zacznij szukać terminu z wyprzedzeniem.',
   },
   section: {
@@ -37,6 +42,7 @@ export const exam = {
     required: 'Potrzebne — od lekarza rodzinnego.',
     notRequired: 'Nie jest potrzebne.',
     prepareRequest: 'Przygotuj prośbę do lekarza',
+    prepareVisit: 'Przygotuj się do wizyty u lekarza',
   },
   source: 'Źródło: {{name}}',
   sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
