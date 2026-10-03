@@ -193,5 +193,25 @@ export interface FacilitiesResponse {
 
 ### `GET /v1/health` → `{ ok: true, nfz: 'up' | 'down', snapshotAsOf: string }`
 
+### `GET /v1/coverage?program=mammography|cervical|colonoscopy&province=&lat=&lng=`
+
+Odsetek uprawnionych objętych programem przesiewowym NFZ w okolicy (statystyka regionalna, nie dotyczy osoby). `province`, `lat`/`lng` opcjonalne (`lat` i `lng` razem); serwer zaokrągla współrzędne do 2 miejsc i ich nie loguje (§8). Obszar: współrzędne → TERYT gminy przez GUGiK ULDK (timeout 3 s, cache w pamięci); kolejno gmina (jeśli ≥ 1000 uprawnionych) → powiat → województwo z `province` → cały kraj. Dane statyczne z `apps/api/data/screening/coverage.json` (źródło: 04-data-sources §E). Błędy: 400 `invalid_query`, 404 `no_data`.
+
+```ts
+// packages/shared/src/coverage.ts
+export interface Coverage {
+  program: 'mammography' | 'cervical' | 'colonoscopy';
+  level: 'gmina' | 'powiat' | 'voivodeship' | 'country';
+  areaName: string; // mianownik: 'Zielonki' | 'powiat krakowski' | 'Warszawa' | 'mazowieckie' | 'Polska'
+  percent: number; // 0–100, 1 miejsce po przecinku
+  eligible: number; // liczba kwalifikujących się
+  covered?: number; // „wyłączonych – ogółem” wg NFZ
+  asOf: string; // 'YYYY-MM-DD' — data raportu NFZ
+  source: string; // URL pliku xlsx NFZ
+}
+```
+
+Mapowanie w aplikacji: `mammography` → `mammography`, `cervical_screening` → `cervical`, `colonoscopy_screening` → `colonoscopy` (`apps/mobile/src/services/coverage.ts`).
+
 ## Mapowanie examId → świadczenia NFZ
 Trzymane w `ExamRule.nfzBenefits` (pakiet `rules`), API importuje `@naczas/rules` żeby rozwiązać `examId` → nazwy świadczeń. Klient nigdy nie wysyła surowej nazwy świadczenia.

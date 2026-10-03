@@ -36,7 +36,7 @@ function memoryStorage(initial: Record<string, string> = {}) {
 }
 
 function fakeApi(getWaitTimes: ApiClient['getWaitTimes']): ApiClient {
-  return { getWaitTimes: jest.fn(getWaitTimes), getFacilities: jest.fn() };
+  return { getWaitTimes: jest.fn(getWaitTimes), getFacilities: jest.fn(), getCoverage: jest.fn() };
 }
 
 const offline = () => Promise.reject(new ApiRequestError('network', 'offline'));

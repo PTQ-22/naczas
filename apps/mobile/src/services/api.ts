@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 import {
   ApiErrorSchema,
+  CoverageSchema,
   FacilitiesResponseSchema,
+  type Coverage,
+  type CoverageProgram,
   WaitTimeSummarySchema,
   type FacilitiesResponse,
   type ProvinceCode,
@@ -38,6 +41,13 @@ export interface RequestOptions {
   timeoutMs?: number;
 }
 
+export interface CoverageParams {
+  program: CoverageProgram;
+  province?: ProvinceCode;
+  lat?: number;
+  lng?: number;
+}
+
 // Function properties, not methods: callers may pass them around unbound (no `this`).
 export interface ApiClient {
   getWaitTimes: (params: LocationParams, options?: RequestOptions) => Promise<WaitTimeSummary>;
@@ -45,6 +55,7 @@ export interface ApiClient {
     params: FacilitiesParams,
     options?: RequestOptions,
   ) => Promise<FacilitiesResponse>;
+  getCoverage: (params: CoverageParams, options?: RequestOptions) => Promise<Coverage>;
 }
 
 export type ApiErrorKind = 'timeout' | 'network' | 'http' | 'invalid_response' | 'aborted';
@@ -82,6 +93,17 @@ export function buildQuery(params: FacilitiesParams): string {
   if (params.radiusKm !== undefined) query.set('radiusKm', String(params.radiusKm));
   if (params.sort) query.set('sort', params.sort);
   if (params.limit !== undefined) query.set('limit', String(params.limit));
+  return query.toString();
+}
+
+/** Coverage needs only the programme and the (rounded) place — never anything about the person. */
+export function buildCoverageQuery(params: CoverageParams): string {
+  const query = new URLSearchParams({ program: params.program });
+  if (params.province) query.set('province', params.province);
+  if (params.lat !== undefined && params.lng !== undefined) {
+    query.set('lat', String(roundCoord(params.lat)));
+    query.set('lng', String(roundCoord(params.lng)));
+  }
   return query.toString();
 }
 
@@ -137,5 +159,7 @@ export function createHttpApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
       getJson(`/v1/wait-times?${buildQuery(params)}`, WaitTimeSummarySchema, options, fetchImpl),
     getFacilities: (params, options = {}) =>
       getJson(`/v1/facilities?${buildQuery(params)}`, FacilitiesResponseSchema, options, fetchImpl),
+    getCoverage: (params, options = {}) =>
+      getJson(`/v1/coverage?${buildCoverageQuery(params)}`, CoverageSchema, options, fetchImpl),
   };
 }

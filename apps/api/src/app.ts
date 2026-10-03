@@ -5,10 +5,13 @@ import { rateLimit, type RateLimitOptions } from './middleware/rate-limit';
 import { requestLog } from './middleware/request-log';
 import { createQueueLoader, DataUnavailableError, type QueueLoader } from './queues';
 import { errorResponse } from './routes/common';
+import { coverageRoutes } from './routes/coverage';
 import { facilitiesRoutes } from './routes/facilities';
 import { healthRoutes } from './routes/health';
 import { syncRoutes } from './routes/sync';
 import { waitTimesRoutes } from './routes/wait-times';
+import { loadCoverageData, type CoverageData } from './screening/data';
+import { createUldkResolver, type CommuneResolver } from './screening/uldk';
 
 import type { NfzClient } from './nfz/client';
 import type { SnapshotStore } from './nfz/snapshot';
@@ -28,6 +31,9 @@ export interface AppDeps {
   cors?: CorsOptions;
   rateLimit?: RateLimitOptions;
   log?: (line: string) => void;
+  /** Screening coverage (data/screening) and coords → gmina resolver; real ones by default. */
+  coverage?: CoverageData;
+  communes?: CommuneResolver;
 }
 
 const LOCALHOST = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
@@ -40,6 +46,8 @@ export function createApp({
   cors: corsOptions = { origins: [], allowLocalhost: true },
   rateLimit: rateLimitOptions = { perMinute: 60, trustProxy: false },
   log,
+  coverage = loadCoverageData(),
+  communes = createUldkResolver(),
 }: AppDeps) {
   loader ??= createQueueLoader({ nfz, snapshot, now });
 
@@ -64,6 +72,7 @@ export function createApp({
   app.route('/', waitTimesRoutes(loader));
   app.route('/', facilitiesRoutes(loader));
   app.route('/', syncRoutes());
+  app.route('/', coverageRoutes(coverage, communes));
 
   app.notFound((c) => errorResponse(c, 404, 'not_found', 'Unknown endpoint'));
   app.onError((err, c) => {

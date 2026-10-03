@@ -44,6 +44,13 @@
 ## B. API NFZ „Umowy” (opcjonalnie)
 - `https://api.nfz.gov.pl/app-umw-api` — kto ma kontrakt na dany zakres. Potencjalnie do listy placówek realizujących programy profilaktyczne. **Stretch**, nie blokuje MVP.
 
+## E. NFZ „Dane o realizacji programów” (objęcie populacji) — zweryfikowane 2026-10-04
+- Strona: https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/dane-o-realizacji-programow/ — co miesiąc 3 pliki xlsx (podział na gminy). Użyty stan na **2026-10-01**: `.../defaultstronaopisowa/483/144/1/mammografia_1.10.2026_r..xlsx`, `hpv_hr_1.10.2026_r..xlsx` (szyjka macicy), `kolonoskopia_1.10.2026_r..xlsx` (prefiks `https://www.nfz.gov.pl/download/gfx/nfz/pl`). Nazwy plików zmieniają się między miesiącami (np. `cytologia_hpv_` do 08.2026) — sprawdzać na stronie.
+- Kolumny: OW NFZ, województwo, ID/nazwa powiatu, ID/nazwa gminy (TERYT bez wiodącego zera, gminy miejsko-wiejskie rozbite na miasto `4` i obszar wiejski `5`), kwalifikujący się, wyłączeni ogółem (= badani w programie + leczeni), „Procent objęcia populacji [%]” = wyłączeni / kwalifikujący się. Wiersze `BRAK DANYCH` (tylko w sumie krajowej) i `RAZEM`.
+- Konwersja: `pnpm --filter @naczas/api coverage` (`apps/api/scripts/coverage.ts`, parser xlsx bez zależności) → `apps/api/data/screening/coverage.json`. Sumy powiatów/województw liczone z liczebności (nie średnia procentów); skrypt sprawdza formułę NFZ w każdym wierszu i zgodność z `RAZEM`. Przy nowym miesiącu: zmienić `ISSUE`/`AS_OF`/`FILES` w skrypcie.
+- Warszawa, Kraków (i inne miasta podzielone w pliku na dzielnice/delegatury): brak wiersza gminy, ULDK zwraca całe miasto → pokazujemy powiat (= miasto).
+- GUGiK ULDK `https://uldk.gugik.gov.pl/?request=GetCommuneByXY&xy=lon,lat,4326&result=teryt,commune,county,voivodeship` → `0\n146501_1|Warszawa (miasto)|powiat Warszawa|mazowieckie`; poza Polską `-1 brak wyników`. Bez klucza.
+
 ## C. Reguły profilaktyki — źródła do weryfikacji (WS1)
 
 Priorytet źródeł: 1) programy MZ/NFZ (pacjent.gov.pl, nfz.gov.pl), 2) rekomendacje polskich towarzystw naukowych, 3) wytyczne międzynarodowe (USPSTF, ESC) — tylko jako uzupełnienie.

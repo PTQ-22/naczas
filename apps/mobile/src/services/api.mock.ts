@@ -1,8 +1,14 @@
 import { z } from 'zod';
 
-import { FacilitiesResponseSchema, WaitTimeSummarySchema, type Facility } from '@naczas/shared';
+import {
+  CoverageSchema,
+  FacilitiesResponseSchema,
+  WaitTimeSummarySchema,
+  type Facility,
+} from '@naczas/shared';
 
 import { ApiRequestError, type ApiClient, type FacilitiesParams } from './api';
+import coverageJson from './mock-data/coverage.json';
 import facilitiesJson from './mock-data/facilities.json';
 import waitTimesJson from './mock-data/wait-times.json';
 
@@ -18,6 +24,9 @@ const waitTimes = z.array(WaitTimeSummarySchema).parse(waitTimesJson);
 const facilities = z
   .array(FacilitiesResponseSchema.extend({ province: z.string() }))
   .parse(facilitiesJson);
+
+// Real /v1/coverage answers for Warsaw (demo location), NFZ data as of 2026-10-01.
+const coverage = z.array(CoverageSchema).parse(coverageJson);
 
 const unknownExam = (examId: string) =>
   new ApiRequestError('http', `No NFZ queue data for examId "${examId}"`, 400, 'unknown_exam');
@@ -80,6 +89,12 @@ export function createMockApi({ delayMs = 300 }: { delayMs?: number } = {}): Api
           : response.items.map((f) => ({ ...f, distanceKm: 0 }));
         if (params.sort === 'nearest') items = [...items].sort(byNearest);
         return { ...response, items: items.slice(0, params.limit ?? 20) };
+      }),
+    getCoverage: (params) =>
+      respond(() => {
+        const match = coverage.find((c) => c.program === params.program);
+        if (!match) throw new ApiRequestError('http', 'No coverage data', 404, 'no_data');
+        return match;
       }),
   };
 }
