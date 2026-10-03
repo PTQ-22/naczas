@@ -1,11 +1,19 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { Linking } from 'react-native';
 
+import type { FacilitiesParams } from '@/services';
+import { createMockApi } from '@/services/api.mock';
+
 import FacilitiesScreen from '../FacilitiesScreen';
 
+// WS3's mock API serves real recorded /v1/facilities responses (woj. 07, Warszawa).
+const recorded = createMockApi({ delayMs: 0 });
+
 let mockExamId = 'colonoscopy_screening';
-const mockConfig = { baseUrl: 'https://api.test', useMocks: true };
-jest.mock('../api-config', () => ({ apiConfig: () => mockConfig }));
+const mockGetFacilities = jest.fn();
+jest.mock('@/services', () => ({
+  api: { getFacilities: (...args: unknown[]) => mockGetFacilities(...args) as unknown },
+}));
 jest.mock('expo-router', () => ({
   useLocalSearchParams: () => ({ examId: mockExamId }),
 }));
@@ -22,7 +30,12 @@ let openURL: jest.SpyInstance;
 describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
   beforeEach(() => {
     mockExamId = 'colonoscopy_screening';
-    mockConfig.useMocks = true;
+    mockGetFacilities.mockReset();
+    // Marked as snapshot so the "dane z kopii" info is exercised too.
+    mockGetFacilities.mockImplementation(async (params: FacilitiesParams) => ({
+      ...(await recorded.getFacilities(params)),
+      source: 'nfz_snapshot',
+    }));
     openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(true);
   });
   afterEach(() => {
@@ -64,32 +77,26 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
   });
 
   it('error state with retry', async () => {
-    mockConfig.useMocks = false;
-    const fetchMock = jest.fn(() => Promise.reject(new Error('offline')));
-    global.fetch = fetchMock;
+    mockGetFacilities.mockReset().mockRejectedValue(new Error('offline'));
     render(<FacilitiesScreen />);
     expect(await screen.findByText('Nie udało się pobrać placówek')).toBeTruthy();
     fireEvent.press(screen.getByRole('button', { name: 'Spróbuj ponownie' }));
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(mockGetFacilities).toHaveBeenCalledTimes(2));
   });
 
   it('empty state offers a wider radius', async () => {
-    mockConfig.useMocks = false;
-    const fetchMock = jest.fn(() =>
-      Promise.resolve({
-        ok: true,
-        status: 200,
-        json: () =>
-          Promise.resolve({ examId: 'colonoscopy_screening', items: [], source: 'nfz_live' }),
-      } as Response),
-    );
-    global.fetch = fetchMock;
+    mockGetFacilities
+      .mockReset()
+      .mockResolvedValue({ examId: 'colonoscopy_screening', items: [], source: 'nfz_live' });
     render(<FacilitiesScreen />);
     expect(await screen.findByText('Brak placówek w promieniu 25 km')).toBeTruthy();
     fireEvent.press(screen.getByRole('button', { name: 'Szukaj w promieniu 50 km' }));
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2));
-    const [, [url]] = fetchMock.mock.calls as unknown as [[string], [string]];
-    expect(new URL(url).searchParams.get('radiusKm')).toBe('50');
+    await waitFor(() =>
+      expect(mockGetFacilities).toHaveBeenLastCalledWith(
+        expect.objectContaining({ radiusKm: 50 }),
+        expect.anything(),
+      ),
+    );
   });
 
   it('exams without an NFZ queue show an explanation instead of a list', () => {

@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import { FacilitiesResponseSchema } from '@naczas/shared';
-import type { FacilitiesResponse, Facility, ProvinceCode } from '@naczas/shared';
+import type { FacilitiesResponse, ProvinceCode } from '@naczas/shared';
 
-import { apiConfig } from './api-config';
-import mockFacilities from './mock-facilities.json';
+import { api } from '@/services';
 
 export type FacilitiesSort = 'soonest' | 'nearest';
 
@@ -21,58 +19,10 @@ export type FacilitiesState =
   { status: 'loading' } | { status: 'error' } | { status: 'success'; data: FacilitiesResponse };
 
 const LIMIT = 20;
+/** A cold NFZ fetch can take ~30 s server-side; this screen has nothing to fall back to. */
+const TIMEOUT_MS = 30_000;
 
-/** Privacy (AGENTS.md §8): coordinates leave the device rounded to ~1 km. */
-const roundCoord = (n: number) => Math.round(n * 100) / 100;
-
-// Same order as the API (routes/facilities.ts): unknown waits last.
-const bySoonest = (a: Facility, b: Facility) =>
-  (a.waitDays ?? Infinity) - (b.waitDays ?? Infinity) || a.distanceKm - b.distanceKm;
-const byNearest = (a: Facility, b: Facility) => a.distanceKm - b.distanceKm;
-
-/**
- * Recorded from the real API (/v1/facilities, woj. 07, Warszawa, 2026-10-03) for the four
- * queue exams. Marked as snapshot because it is not live data.
- */
-function mockResponse(q: FacilitiesQuery): FacilitiesResponse {
-  const raw: unknown = (mockFacilities as Record<string, unknown>)[q.examId] ?? [];
-  const items = FacilitiesResponseSchema.shape.items.parse(raw);
-  return {
-    examId: q.examId,
-    items: items
-      .filter((f) => f.distanceKm <= q.radiusKm)
-      .sort(q.sort === 'nearest' ? byNearest : bySoonest),
-    source: 'nfz_snapshot',
-  };
-}
-
-/**
- * TODO(WS3): move to src/services/api.ts once it lands in main; the hook should only call it.
- */
-export async function fetchFacilities(
-  q: FacilitiesQuery,
-  init?: { signal?: AbortSignal },
-): Promise<FacilitiesResponse> {
-  const { baseUrl, useMocks } = apiConfig();
-  if (useMocks) return mockResponse(q);
-
-  const params = new URLSearchParams({
-    examId: q.examId,
-    province: q.province,
-    radiusKm: String(q.radiusKm),
-    sort: q.sort,
-    limit: String(LIMIT),
-  });
-  if (q.lat !== undefined && q.lng !== undefined) {
-    params.set('lat', String(roundCoord(q.lat)));
-    params.set('lng', String(roundCoord(q.lng)));
-  }
-  const res = await fetch(`${baseUrl}/v1/facilities?${params.toString()}`, init);
-  if (!res.ok) throw new Error(`facilities: HTTP ${res.status}`);
-  // External data is validated at the boundary (AGENTS.md §3).
-  return FacilitiesResponseSchema.parse(await res.json());
-}
-
+/** Facilities for one exam near the user, via the shared API client (mock mode included). */
 export function useFacilities(q: FacilitiesQuery | null): FacilitiesState & { retry: () => void } {
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
@@ -85,7 +35,12 @@ export function useFacilities(q: FacilitiesQuery | null): FacilitiesState & { re
   useEffect(() => {
     if (!examId || !province || radiusKm === undefined || !sort) return;
     const controller = new AbortController();
-    fetchFacilities({ examId, province, lat, lng, radiusKm, sort }, { signal: controller.signal })
+    // Coordinates are rounded to ~1 km inside the client (AGENTS.md §8).
+    api
+      .getFacilities(
+        { examId, province, lat, lng, radiusKm, sort, limit: LIMIT },
+        { signal: controller.signal, timeoutMs: TIMEOUT_MS },
+      )
       .then((data) => setResult({ key, state: { status: 'success', data } }))
       .catch(() => {
         if (!controller.signal.aborted) setResult({ key, state: { status: 'error' } });
