@@ -13,7 +13,8 @@ import {
 export const DEFAULT_TIMEOUT_MS = 10_000;
 
 // Expo Go on a phone can't reach the laptop's "localhost" — set EXPO_PUBLIC_API_URL to its LAN IP.
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? 'http://localhost:8787';
+const API_BASE_URL: string =
+  (process.env.EXPO_PUBLIC_API_URL as string | undefined) ?? 'http://localhost:8787';
 
 export interface LocationParams {
   examId: string;
