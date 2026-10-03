@@ -56,9 +56,17 @@ describe('ExamScreen', () => {
   it('colonoscopy: notes the queue is for clinics and links the no-referral programme (L5)', () => {
     renderExam('colonoscopy_screening');
     expect(screen.getByText(/^To kolejki NFZ do poradni/)).toBeOnTheScreen();
-    expect(
-      screen.getByRole('link', { name: /Program przesiewowy bez skierowania/ }),
-    ).toBeOnTheScreen();
+    const link = screen.getByRole('link', { name: /Program przesiewowy bez skierowania/ });
+    // Must not sit inside an `accessible` group — screen readers would never focus it.
+    // Host ancestors only, skipping the link's own wrappers (Pressable carries `accessible` too).
+    let parent = link.parent;
+    while (parent) {
+      const isOwnWrapper = parent.props.accessibilityRole === 'link';
+      if (typeof parent.type === 'string' && !isOwnWrapper) {
+        expect(parent.props.accessible).not.toBe(true);
+      }
+      parent = parent.parent;
+    }
   });
 
   it('links to visit prep even when no referral is needed (M3 H2)', () => {
