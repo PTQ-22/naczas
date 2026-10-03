@@ -1,0 +1,15 @@
+# Build context for the API image (Dockerfile) — keep it small and secret-free
+**/node_modules
+**/.expo
+**/dist
+**/coverage
+.git
+.github
+.env
+.env.*
+!.env.example
+docs
+pitch
+apps/api/test
+apps/mobile/*
+!apps/mobile/package.json

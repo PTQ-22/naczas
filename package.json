@@ -16,7 +16,8 @@
     "test": "pnpm -r --if-present test",
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "format": "prettier --write .",
-    "prepare": "simple-git-hooks"
+    "prepare": "simple-git-hooks",
+    "build:web": "pnpm --filter @naczas/mobile build:web"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
