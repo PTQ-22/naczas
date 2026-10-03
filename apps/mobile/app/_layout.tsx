@@ -35,6 +35,8 @@ function ThemedStack() {
           headerShown: false,
           contentStyle: { backgroundColor: colors.bg },
           headerStyle: { backgroundColor: colors.surface },
+          // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
+          headerShadowVisible: false,
           headerTintColor: colors.primary,
           headerTitleStyle: { color: colors.text },
         }}
