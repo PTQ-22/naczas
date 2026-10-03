@@ -13,13 +13,13 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 - [x] `useTheme()` czyta `seniorMode`/`darkMode` ze store'u WS3 (do tego czasu: lokalny stan)
 
 ### WS4-2 · Komponenty bazowe
-- [ ] `Button` (primary/secondary/ghost, loading, min. 44 pt), `Card`, `Chip`/`Badge`, `Screen` (safe area + scroll), `Text` (warianty z tokenów), `ProgressBar`, `OptionTile` (duży wybór w ankiecie), `ProfileSwitcher`, `EmptyState`, `Disclaimer`
-- [ ] Każdy z `accessibilityRole`/`accessibilityLabel`; propsy typowane, bez stylów inline z magicznymi liczbami
-- [ ] Ekran `/dev/components` (tylko w dev) — galeria komponentów do szybkiego review
+- [x] `Button` (primary/secondary/ghost, loading, min. 44 pt), `Card`, `Chip`/`Badge`, `Screen` (safe area + scroll), `Text` (warianty z tokenów), `ProgressBar`, `OptionTile` (duży wybór w ankiecie), `ProfileSwitcher`, `EmptyState`, `Disclaimer`
+- [x] Każdy z `accessibilityRole`/`accessibilityLabel`; propsy typowane, bez stylów inline z magicznymi liczbami
+- [x] Ekran `/dev/components` (tylko w dev) — galeria komponentów do szybkiego review
 
 ### WS4-3 · Ekran planu (oś czasu) — „wow moment”
-- [ ] Sekcje wg urgency, `ExamCard` z jednym CTA zależnym od `booking` (`01-user-journey.md` §UX)
-- [ ] Linia czasu z animacją wejścia (`react-native-reanimated`, subtelnie — 300 ms, respektuj „ogranicz ruch”)
+- [x] Sekcje wg urgency, `ExamCard` z jednym CTA zależnym od `booking` (`01-user-journey.md` §UX)
+- [x] Linia czasu z animacją wejścia (`react-native-reanimated`, subtelnie — 300 ms, respektuj „ogranicz ruch”)
 - [ ] Na mockach (`mockPlan()` z WS1), potem `usePlan()` od WS3
 
 ### WS4-4 · Karta badania `exam/[examId]`

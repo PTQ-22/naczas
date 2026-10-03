@@ -104,7 +104,8 @@ export const radius = { sm: 8, md: 12, lg: 16, xl: 24, full: 999 } as const;
 
 export const borderWidth = { hairline: 1, strong: 2, focus: 3, accent: 4 } as const;
 
-export const motion = { fast: 150, base: 300, reduced: 0 } as const;
+// stagger: delay between consecutive timeline cards entering (screens.md §2).
+export const motion = { fast: 150, base: 300, reduced: 0, stagger: 40 } as const;
 
 /** Light-mode card shadow. Dark mode has no shadow — surface vs bg + border separate cards. */
 export const cardElevation = {
