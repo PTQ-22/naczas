@@ -18,7 +18,9 @@ export function BookDatePicker({ value, min, max, onChange }: BookDatePickerProp
         minHeight: layout.minTouch,
         padding: `0 ${space.lg}px`,
         fontSize: type.bodyLarge.fontSize,
-        fontFamily: 'inherit',
+        // Same stack react-native-web uses for <Text>; 'inherit' would pick the body's serif.
+        fontFamily:
+          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
         color: colors.text,
         backgroundColor: colors.surface,
         border: `${borderWidth.strong}px solid ${colors.borderStrong}`,
