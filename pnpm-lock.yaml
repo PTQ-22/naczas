@@ -379,9 +379,6 @@ importers:
 
   packages/shared:
     dependencies:
-      date-fns:
-        specifier: ^4.4.0
-        version: 4.4.0
       zod:
         specifier: ^4.6.5
         version: 4.6.5
