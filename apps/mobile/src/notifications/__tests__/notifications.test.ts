@@ -15,10 +15,6 @@ import {
 } from '..';
 import { useInAppBannerStore } from '../in-app';
 
-jest.mock('@react-native-async-storage/async-storage', () =>
-  jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
-);
-
 // In-memory stand-in for the OS scheduler.
 const mockScheduled = new Map<
   string,
