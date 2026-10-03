@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Icon, type IconName } from '@/components/Icon';
 import { t } from '@/i18n';
@@ -14,14 +15,27 @@ function tabIcon(name: IconName) {
 }
 
 export default function TabsLayout() {
-  const { colors, type } = useTheme();
+  const { colors, type, layout, space } = useTheme();
+  const insets = useSafeAreaInsets();
+  // The default 49 pt bar clips a 14 pt (senior: 18 pt) label; size it from tokens instead.
+  const tabBarHeight = layout.minTouch + type.caption.lineHeight + space.sm * 2 + insets.bottom;
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarLabelStyle: { fontSize: type.caption.fontSize, fontWeight: type.label.fontWeight },
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          height: tabBarHeight,
+          paddingTop: space.sm,
+          paddingBottom: space.sm + insets.bottom,
+        },
+        tabBarLabelStyle: {
+          fontSize: type.caption.fontSize,
+          lineHeight: type.caption.lineHeight,
+          fontWeight: type.label.fontWeight,
+        },
         headerStyle: { backgroundColor: colors.surface },
         headerTintColor: colors.text,
         sceneStyle: { backgroundColor: colors.bg },
