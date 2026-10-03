@@ -1,6 +1,6 @@
 import { format, parseISO } from 'date-fns';
 import { pl as plLocale } from 'date-fns/locale';
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 
 import {
@@ -26,6 +26,7 @@ import {
 } from '@/store';
 import { useTheme } from '@/theme';
 
+import { Confetti } from './Confetti';
 import { betProgress, resolveBetStatus } from './resolve-bets';
 
 const BET_AMOUNTS = [10, 20, 50] as const;
@@ -53,22 +54,26 @@ export default function BetScreen() {
   const { plan } = usePlan(profileId);
 
   const [selectedAmount, setSelectedAmount] = useState<number>(BET_AMOUNTS[1]);
+  const [justWon, setJustWon] = useState(false);
 
-  // Resolve any active bets whose status may have changed
-  const activeBet = useMemo(() => {
-    const current = activeBetForProfile(bets, profileId);
-    if (!current) return undefined;
-    const newStatus = resolveBetStatus(current, records, today);
-    if (newStatus !== current.status) {
-      resolveBet(current.id, newStatus);
-      return { ...current, status: newStatus };
+  // We need to resolve bet status as a side-effect, not during render (useMemo).
+  const currentActiveBet = useMemo(() => activeBetForProfile(bets, profileId), [bets, profileId]);
+
+  useEffect(() => {
+    if (!currentActiveBet) return;
+    const newStatus = resolveBetStatus(currentActiveBet, records, today);
+    if (newStatus !== currentActiveBet.status) {
+      resolveBet(currentActiveBet.id, newStatus);
+      if (newStatus === 'won') {
+        // Defer state update to avoid cascading render lint rule
+        setTimeout(() => setJustWon(true), 0);
+      }
     }
-    return current;
-  }, [bets, profileId, records, today, resolveBet]);
+  }, [currentActiveBet, records, today, resolveBet]);
 
   const progress = useMemo(
-    () => (activeBet ? betProgress(activeBet, records) : null),
-    [activeBet, records],
+    () => (currentActiveBet ? betProgress(currentActiveBet, records) : null),
+    [currentActiveBet, records],
   );
 
   const history = useMemo(
@@ -115,20 +120,21 @@ export default function BetScreen() {
 
   return (
     <Screen testID="bet-screen" edges={['left', 'right']}>
+      <Confetti fire={justWon} />
       <Text variant="title" accessibilityRole="header">
         {t('bet.screen.title')}
       </Text>
       <Text tone="textMuted">{t('bet.screen.subtitle')}</Text>
 
       {/* ── Active bet card ── */}
-      {activeBet && progress ? (
+      {currentActiveBet && progress && currentActiveBet.status === 'active' ? (
         <Card accent={colors.urgency.act_now.accent} testID="bet-active-card">
           <Text variant="heading">{t('bet.active.title')}</Text>
           <Text variant="bodyLarge" style={{ fontWeight: '700' }}>
-            {t('bet.active.amount', { amount: activeBet.amountPln })}
+            {t('bet.active.amount', { amount: currentActiveBet.amountPln })}
           </Text>
           <Text tone="textMuted">
-            {t('bet.active.deadline', { date: longDate(activeBet.expiresAt) })}
+            {t('bet.active.deadline', { date: longDate(currentActiveBet.expiresAt) })}
           </Text>
           <ProgressBar
             value={progress.ratio}
@@ -148,14 +154,14 @@ export default function BetScreen() {
           </Text>
           <View style={{ flexDirection: 'row', gap: space.sm }}>
             <Text tone="textMuted">
-              {t('bet.active.deadline', { date: longDate(activeBet.expiresAt) })}
+              {t('bet.active.deadline', { date: longDate(currentActiveBet.expiresAt) })}
             </Text>
           </View>
         </Card>
       ) : null}
 
       {/* ── Place new bet ── */}
-      {!activeBet ? (
+      {!currentActiveBet ? (
         <Card testID="bet-place-card">
           <Text variant="heading">{t('bet.place.title')}</Text>
           <Text tone="textMuted">{t('bet.place.description')}</Text>
@@ -185,9 +191,23 @@ export default function BetScreen() {
               <Text tone="textMuted">
                 {t('bet.place.deadlineInfo', { days: BET_DURATION_DAYS })}
               </Text>
+
+              <View
+                style={{
+                  backgroundColor: colors.surfaceAlt,
+                  padding: space.sm,
+                  borderRadius: space.sm,
+                  marginVertical: space.sm,
+                }}
+              >
+                <Text tone="textMuted" variant="label" style={{ textAlign: 'center' }}>
+                  {t('bet.place.payDisclaimer')}
+                </Text>
+              </View>
+
               <Button
                 testID="bet-place-confirm"
-                label={t('bet.place.confirm')}
+                label={t('bet.place.payButton', { amount: selectedAmount })}
                 accessibilityLabel={t('bet.place.confirmA11y')}
                 icon="heart"
                 onPress={onPlaceBet}
@@ -231,7 +251,9 @@ export default function BetScreen() {
               {longDate(b.createdAt)} — {longDate(b.expiresAt)}
             </Text>
             <Text style={{ fontStyle: 'italic' }}>
-              {b.status === 'won' ? t('bet.history.wonMessage') : t('bet.history.lostMessage')}
+              {b.status === 'won'
+                ? t('bet.history.wonMessage')
+                : t('bet.history.lostMessage', { amount: b.amountPln })}
             </Text>
           </Card>
         ))

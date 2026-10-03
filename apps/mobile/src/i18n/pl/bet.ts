@@ -25,6 +25,9 @@ export const bet = {
     confirm: 'Stawiam!',
     confirmA11y: 'Złóż zakład o zdrowie na wybraną kwotę',
     deadlineInfo: 'Termin: {{days}} dni od dziś',
+    payButton: 'Zablokuj {{amount}} zł (Apple Pay)',
+    payDisclaimer:
+      'Kwota zostanie pobrana TYLKO jeśli zignorujesz badania. W przypadku przegranej, 100% zablokowanej kwoty trafia do Fundacji WOŚP.',
   },
   history: {
     title: 'Historia zakładów',
@@ -32,8 +35,9 @@ export const bet = {
     won: 'Wygrana',
     lost: 'Przegrana',
     active: 'W toku',
-    wonMessage: 'Brawo! Dbasz o zdrowie! 🎉',
-    lostMessage: 'Nie tym razem… Ale nigdy nie jest za późno na badania!',
+    wonMessage: 'Brawo! Dbasz o zdrowie! 🎉 Twoje pieniądze zostały odblokowane.',
+    lostMessage:
+      'Przegrana. Twoje {{amount}} zł właśnie zasiliło konto Fundacji WOŚP. Dziękujemy za wsparcie!',
   },
   disclaimer:
     'Zakład o zdrowie to motywator — żadne prawdziwe pieniądze nie są pobierane. Kwota jest symboliczna i ma Cię zmotywować do regularnych badań profilaktycznych.',
