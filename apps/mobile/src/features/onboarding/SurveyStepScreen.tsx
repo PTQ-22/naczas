@@ -132,7 +132,11 @@ export default function SurveyStepScreen() {
       today,
       selfName: t('profiles.relation.self'),
     });
-    if (profile) router.replace('/onboarding/done');
+    if (!profile) return;
+    // Straight to the plan — it is the confirmation. Drop the survey steps first so a
+    // back swipe can't reopen a step whose draft was just cleared.
+    if (router.canDismiss()) router.dismissAll();
+    router.replace('/plan');
   };
 
   const goBack = () => {
