@@ -83,7 +83,8 @@ export function TimelineScale<T extends string>({
                 tone={isSelected ? 'onPrimary' : 'text'}
                 style={{ textAlign: 'center' }}
               >
-                {isSelected ? `✓ ${option.label}` : option.label}
+                {/* No ✓ prefix: it breaks wrapping in narrow segments; the solid fill is the cue. */}
+                {option.label}
               </Text>
             </Pressable>
           );
