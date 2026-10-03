@@ -214,6 +214,17 @@ describe('effectiveIntervalMonths', () => {
     expect(effectiveIntervalMonths(withOverride, { ...fam, birthYear: 1981 }, TODAY)).toBe(24);
   });
 
+  it('applies an age-only modifier (no `when`) by age alone', () => {
+    const ageOnly: ExamRule = {
+      ...base,
+      modifiers: [{ age: [50, 120], intervalMonths: 36, note: 'x' }],
+    };
+    expect(effectiveIntervalMonths(ageOnly, profile, TODAY)).toBe(36); // 58 y.o.
+    expect(effectiveIntervalMonths(ageOnly, { ...profile, birthYear: 1990 }, TODAY)).toBe(
+      base.intervalMonths,
+    );
+  });
+
   it('falls back to the rule interval when nothing matches', () => {
     expect(effectiveIntervalMonths(withOverride, profile, TODAY)).toBe(base.intervalMonths);
   });

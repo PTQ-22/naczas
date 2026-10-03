@@ -63,8 +63,7 @@ describe('profileFactors', () => {
 
 // Each rule: [examId, eligible profile, ineligible profile, why ineligible]
 const cases: Array<[string, Profile, Profile, string]> = [
-  ['health_check_adult', person(30), person(50), 'too old for the 20–49 variant'],
-  ['health_check_adult_50', person(58), person(49), 'too young'],
+  ['health_check_adult', person(30), person(19), 'below 20'],
   ['dental_checkup', person(34), person(34), 'n/a — no criteria, see below'],
   ['cervical_screening', person(34), person(34, { sex: 'male' }), 'male'],
   ['mammography', person(58), person(58, { sex: 'male' }), 'male'],
@@ -128,6 +127,16 @@ describe('modifiers extending the age range', () => {
   });
 });
 
+describe('age-only modifiers (no `when`)', () => {
+  it('do not widen eligibility', () => {
+    const rule = {
+      ...getExamRule('eye_exam'),
+      modifiers: [{ age: [18, 39] as [number, number], note: 'x' }],
+    };
+    expect(isEligible(rule, person(30), TODAY)).toBe(false);
+  });
+});
+
 describe('requiresAny', () => {
   it('lung_ldct needs smoker_20py even inside the age range', () => {
     const ldct = getExamRule('lung_ldct');
@@ -145,7 +154,7 @@ describe('eligibleExams', () => {
       (r) => r.id,
     );
     expect(ids).toEqual(
-      expect.arrayContaining(['colonoscopy_screening', 'mammography', 'health_check_adult_50']),
+      expect.arrayContaining(['colonoscopy_screening', 'mammography', 'health_check_adult']),
     );
     expect(ids).not.toContain('psa_discussion');
     expect(ids).not.toContain('lung_ldct');
@@ -159,8 +168,8 @@ describe('eligibleExams', () => {
   });
 
   it('depends on today, not the system clock', () => {
-    const p = person(49); // born 1977
-    expect(eligibleExams(p, '2026-10-03').map((r) => r.id)).not.toContain('health_check_adult_50');
-    expect(eligibleExams(p, '2027-01-01').map((r) => r.id)).toContain('health_check_adult_50');
+    const p = person(19); // born 2007
+    expect(eligibleExams(p, '2026-10-03').map((r) => r.id)).not.toContain('health_check_adult');
+    expect(eligibleExams(p, '2027-01-01').map((r) => r.id)).toContain('health_check_adult');
   });
 });

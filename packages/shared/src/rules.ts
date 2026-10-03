@@ -28,7 +28,7 @@ export const ExamRuleSchema = z.object({
   modifiers: z
     .array(
       z.object({
-        when: ModifierTriggerSchema,
+        when: ModifierTriggerSchema.optional(), // absent → applies by age only
         age: AgeRangeSchema.optional(),
         intervalMonths: z.number().optional(),
         note: z.string(), // PL
@@ -38,6 +38,7 @@ export const ExamRuleSchema = z.object({
   intervalMonths: z.number(),
   booking: BookingTypeSchema,
   referral: z.boolean(), // whether NFZ requires a referral
+  referralNote: z.string().optional(), // PL, 1 sentence: referral / how to sign up
   nfzBenefits: z.array(z.string()).optional(), // exact names from NFZ /benefits (for 'queue')
   programUrl: z.string().optional(), // for 'program'
   prepTips: z.array(z.string()).optional(), // PL

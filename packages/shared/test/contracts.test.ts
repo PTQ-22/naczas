@@ -147,6 +147,20 @@ describe('ExamRuleSchema', () => {
     expect(ExamRuleSchema.safeParse(noSource).success).toBe(false);
   });
 
+  it('accepts an age-only modifier (no `when`) and referralNote', () => {
+    const ageOnly = {
+      ...rule,
+      modifiers: [{ age: [50, 120], intervalMonths: 36, note: 'Od 50 lat co 3 lata.' }],
+      referralNote: 'Nie potrzebujesz skierowania.',
+    };
+    expect(ExamRuleSchema.parse(ageOnly)).toEqual(ageOnly);
+  });
+
+  it('rejects a modifier without note', () => {
+    const bad = { ...rule, modifiers: [{ age: [50, 120], intervalMonths: 36 }] };
+    expect(ExamRuleSchema.safeParse(bad).success).toBe(false);
+  });
+
   it('rejects low_activity in eligibility (allowed only in modifiers)', () => {
     const bad = { ...rule, eligibility: { requiresAny: ['low_activity'] } };
     expect(ExamRuleSchema.safeParse(bad).success).toBe(false);
