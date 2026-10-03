@@ -109,7 +109,4 @@ export const onboarding = {
     subtitle: 'Przygotowaliśmy plan badań.',
     cta: 'Zobacz plan',
   },
-  errors: {
-    restoreFailed: 'Nie udało się odczytać zapisanych danych. Zaczynamy od nowa.',
-  },
 } as const;
