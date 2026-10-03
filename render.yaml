@@ -1,0 +1,23 @@
+# Render Blueprint for the API (https://render.com/docs/blueprint-spec).
+# Render injects PORT itself; CORS_ORIGINS is set in the dashboard once the Vercel URL is known.
+services:
+  - type: web
+    name: naczas-api
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /v1/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY # Render's proxy sets X-Forwarded-For
+        value: 'true'
+      - key: REFRESH_ON_START
+        value: 'true'
+      - key: RATE_LIMIT_PER_MIN
+        value: '60'
+      - key: CORS_ORIGINS
+        sync: false # entered by a human in the dashboard
