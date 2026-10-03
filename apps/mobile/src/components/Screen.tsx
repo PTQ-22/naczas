@@ -1,5 +1,6 @@
+import { use } from 'react';
 import { ScrollView, View } from 'react-native';
-import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext, SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme';
 
@@ -29,6 +30,13 @@ export function Screen({
   testID,
 }: ScreenProps) {
   const { colors, layout, space, borderWidth } = useTheme();
+  // Context (not the hook) so tests without a SafeAreaProvider get 0 instead of throwing.
+  const bottomInset = use(SafeAreaInsetsContext)?.bottom ?? 0;
+  // A scrolling screen without a footer should run under the home indicator (as native iOS lists
+  // do) instead of being sliced by a flat safe-area edge; the inset becomes trailing padding so
+  // the last plate still ends with its rounded corners above the indicator.
+  const scrollUnderBottom = scroll && !footer && edges.includes('bottom');
+  const safeEdges = scrollUnderBottom ? edges.filter((e) => e !== 'bottom') : edges;
   const column = {
     width: '100%' as const,
     maxWidth: layout.maxContentWidth,
@@ -39,13 +47,20 @@ export function Screen({
   const screen = (
     <SafeAreaView
       testID={testID}
-      edges={edges}
+      edges={safeEdges}
       style={{ flex: 1, backgroundColor: wall ? 'transparent' : colors.bg }}
     >
       {scroll ? (
         <ScrollView
           style={{ flex: 1 }}
-          contentContainerStyle={[column, { paddingVertical: space.lg, gap: layout.cardGap }]}
+          contentContainerStyle={[
+            column,
+            {
+              paddingTop: space.lg,
+              paddingBottom: space.lg + (scrollUnderBottom ? bottomInset : 0),
+              gap: layout.cardGap,
+            },
+          ]}
         >
           {children}
         </ScrollView>
