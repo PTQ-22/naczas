@@ -1,0 +1,57 @@
+import { Pressable } from 'react-native';
+
+import { useTheme } from '@/theme';
+
+import { Icon, type IconName } from './Icon';
+
+interface IconButtonProps {
+  icon: IconName;
+  /** Required: an icon alone has no accessible name. */
+  accessibilityLabel: string;
+  accessibilityHint?: string;
+  accessibilityRole?: 'button' | 'link';
+  onPress: () => void;
+  /** Filled cobalt for the screen's main action; outlined otherwise. */
+  filled?: boolean;
+  testID?: string;
+}
+
+/** Round icon-only button, min touch target from tokens (44 / senior 56). */
+export function IconButton({
+  icon,
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityRole = 'button',
+  onPress,
+  filled = false,
+  testID,
+}: IconButtonProps) {
+  const { colors, layout, radius, borderWidth } = useTheme();
+  return (
+    <Pressable
+      testID={testID}
+      onPress={onPress}
+      accessibilityRole={accessibilityRole}
+      accessibilityLabel={accessibilityLabel}
+      accessibilityHint={accessibilityHint}
+      style={({ pressed }) => ({
+        width: layout.minTouch,
+        height: layout.minTouch,
+        borderRadius: radius.full,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: borderWidth.strong,
+        borderColor: colors.primary,
+        backgroundColor: filled
+          ? pressed
+            ? colors.primaryPressed
+            : colors.primary
+          : pressed
+            ? colors.primarySoft
+            : 'transparent',
+      })}
+    >
+      <Icon name={icon} color={filled ? colors.onPrimary : colors.primary} />
+    </Pressable>
+  );
+}

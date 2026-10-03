@@ -63,7 +63,7 @@ export function Button({
           paddingHorizontal: variant === 'ghost' ? space.sm : space.lg,
           paddingVertical: space.sm,
           borderRadius: radius.md,
-          alignItems: 'center',
+          alignItems: variant === 'ghost' ? 'flex-start' : 'center',
           justifyContent: 'center',
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
           opacity: disabled ? 0.5 : 1,
@@ -85,7 +85,12 @@ export function Button({
         ) : (
           icon && <Icon name={icon} size="sm" color={fg} />
         )}
-        <Text variant="label" color={fg} style={{ textAlign: 'center', flexShrink: 1 }}>
+        {/* Ghost buttons read as links in running text: left-aligned when they wrap. */}
+        <Text
+          variant="label"
+          color={fg}
+          style={{ textAlign: variant === 'ghost' ? 'left' : 'center', flexShrink: 1 }}
+        >
           {label}
         </Text>
       </View>

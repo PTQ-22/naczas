@@ -52,7 +52,7 @@ export const exam = {
     undoA11y: 'Cofnij oznaczenie badania {{name}} jako zrobione',
   },
   cta: {
-    findSlot: 'Znajdź termin w okolicy',
+    findSlot: 'Znajdź placówkę',
     program: 'Gdzie zrobić bez skierowania',
     markDone: 'Oznacz jako zrobione',
     done: 'Zrobione',

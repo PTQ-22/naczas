@@ -83,6 +83,7 @@ describe('queueInfo', () => {
   it('shows the NFZ p75 wait in weeks', () => {
     expect(queueInfo(colonoscopy, summary)).toEqual({
       hasData: true,
+      weeks: 30,
       lines: {
         label: { key: 'exam.queue.radius', params: { km: 25 } },
         value: { key: 'exam.queue.weeks', params: { weeks: 30 } },

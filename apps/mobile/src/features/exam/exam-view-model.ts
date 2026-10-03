@@ -56,6 +56,8 @@ export function timingMessages(item: PlanItem, today: string): Message[] {
 export interface QueueInfo {
   /** true → render on the urgency bg; false → neutral surfaceAlt "no data" box. */
   hasData: boolean;
+  /** p75 wait in weeks — printed big by QueueNumber; undefined without NFZ data. */
+  weeks?: number;
   lines: { label?: Message; value?: Message; meta?: Message };
 }
 
@@ -68,6 +70,7 @@ export function queueInfo(rule: ExamRule, summary: WaitTimeSummary | undefined):
   if (summary?.p75Days != null) {
     return {
       hasData: true,
+      weeks: weeks(summary.p75Days),
       lines: {
         label: { key: 'exam.queue.radius', params: { km: summary.radiusKm } },
         value: { key: 'exam.queue.weeks', params: { weeks: weeks(summary.p75Days) } },

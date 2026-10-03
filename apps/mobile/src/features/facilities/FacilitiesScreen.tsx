@@ -5,9 +5,9 @@ import { Linking, View } from 'react-native';
 import { mockProfileMama, rules } from '@naczas/rules';
 
 import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { Icon } from '@/components/Icon';
+import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
@@ -16,7 +16,7 @@ import { useTheme } from '@/theme';
 
 import { FacilitiesMap } from './FacilitiesMap';
 import { asOfLabel } from './facility-format';
-import { FacilityCard } from './FacilityCard';
+import { FacilityRow } from './FacilityRow';
 import { SegmentedControl } from './SegmentedControl';
 import { useFacilities, type FacilitiesSort } from './use-facilities';
 
@@ -30,8 +30,29 @@ function Skeleton() {
         <View
           key={i}
           testID="facility-skeleton"
-          style={{ height: 160, borderRadius: radius.lg, backgroundColor: colors.surfaceAlt }}
+          style={{ height: 112, borderRadius: radius.sm, backgroundColor: colors.surfaceAlt }}
         />
+      ))}
+    </View>
+  );
+}
+
+/** Rows on the plate, separated by hairlines (no cards — redesign §4). */
+function Rows({ children }: { children: ReactNode[] }) {
+  const { colors, borderWidth } = useTheme();
+  return (
+    <View>
+      {children.map((child, i) => (
+        <View
+          key={i}
+          style={
+            i > 0
+              ? { borderTopWidth: borderWidth.hairline, borderTopColor: colors.border }
+              : undefined
+          }
+        >
+          {child}
+        </View>
       ))}
     </View>
   );
@@ -39,7 +60,7 @@ function Skeleton() {
 
 export default function FacilitiesScreen() {
   const { examId = '' } = useLocalSearchParams<{ examId: string }>();
-  const { space } = useTheme();
+  const { colors, space } = useTheme();
   // TODO(WS3): drop the mock fallback once onboarding always creates an active profile.
   const profile = useProfilesStore(selectActiveProfile) ?? mockProfileMama;
   const location = profile.location;
@@ -68,11 +89,11 @@ export default function FacilitiesScreen() {
 
   const header = (
     <View style={{ gap: space.xs }}>
-      <Text variant="title" accessibilityRole="header">
+      <Text variant="title" color={colors.onWall} accessibilityRole="header">
         {rule ? t('facilities.heading', { exam: rule.name }) : t('facilities.headingFallback')}
       </Text>
       {state.status === 'success' && state.data.items.length > 0 && (
-        <Text variant="caption" tone="textMuted">
+        <Text variant="caption" color={colors.onWall}>
           {t(`facilities.summary.${sort}`, {
             count: state.data.items.length,
             km: Math.ceil(Math.max(...state.data.items.map((f) => f.distanceKm))),
@@ -84,15 +105,19 @@ export default function FacilitiesScreen() {
 
   if (!location || rule?.booking !== 'queue') {
     return (
-      <Screen edges={['left', 'right', 'bottom']}>
+      <Screen wall edges={['left', 'right', 'bottom']}>
         {header}
-        <EmptyState
-          icon="info"
-          title={
-            location ? t('facilities.states.noQueueTitle') : t('facilities.states.noLocationTitle')
-          }
-          body={location ? undefined : t('facilities.states.noLocationBody')}
-        />
+        <Plate>
+          <EmptyState
+            icon="info"
+            title={
+              location
+                ? t('facilities.states.noQueueTitle')
+                : t('facilities.states.noLocationTitle')
+            }
+            body={location ? undefined : t('facilities.states.noLocationBody')}
+          />
+        </Plate>
       </Screen>
     );
   }
@@ -137,9 +162,13 @@ export default function FacilitiesScreen() {
   } else {
     const { items, source } = state.data;
     const selected = items.find((f) => f.id === selectedId);
-    const list = items.map((f, i) => (
-      <FacilityCard key={f.id} facility={f} examId={examId} primary={i === 0} sort={sort} />
-    ));
+    const list = (
+      <Rows>
+        {items.map((f, i) => (
+          <FacilityRow key={f.id} facility={f} examId={examId} primary={i === 0} sort={sort} />
+        ))}
+      </Rows>
+    );
     const map = (
       <View style={{ gap: space.md }}>
         <View style={{ height: 420 }}>
@@ -150,18 +179,18 @@ export default function FacilitiesScreen() {
             onSelect={setSelectedId}
           />
         </View>
-        {selected && <FacilityCard facility={selected} examId={examId} primary sort={sort} />}
+        {selected && <FacilityRow facility={selected} examId={examId} primary sort={sort} />}
       </View>
     );
     body = (
       <>
         {source === 'nfz_snapshot' && items[0] && (
-          <Card style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Icon name="info" size="sm" />
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+            <Icon name="info" size="sm" color={colors.textMuted} />
             <Text variant="caption" tone="textMuted" style={{ flex: 1 }}>
               {t('facilities.snapshotInfo', { date: asOfLabel(items[0].asOf) })}
             </Text>
-          </Card>
+          </View>
         )}
         {view === 'map' ? map : list}
       </>
@@ -172,7 +201,7 @@ export default function FacilitiesScreen() {
   // programme needs none — say so where people pick a place, and link the programme search.
   const programUrl = rule.programUrl;
   const programInfo = programUrl && (
-    <Card>
+    <View style={{ gap: space.xs }}>
       <Text variant="caption" tone="textMuted">
         {t('facilities.programInfo')}
       </Text>
@@ -184,15 +213,17 @@ export default function FacilitiesScreen() {
         accessibilityLabel={t('facilities.programLinkA11y')}
         onPress={() => void Linking.openURL(programUrl)}
       />
-    </Card>
+    </View>
   );
 
   return (
-    <Screen edges={['left', 'right', 'bottom']}>
+    <Screen wall edges={['left', 'right', 'bottom']}>
       {header}
-      {programInfo}
-      {controls}
-      {body}
+      <Plate>
+        {controls}
+        {programInfo}
+        {body}
+      </Plate>
     </Screen>
   );
 }

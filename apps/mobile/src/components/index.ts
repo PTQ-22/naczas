@@ -10,6 +10,7 @@ export { Disclaimer } from './Disclaimer';
 export { EmptyState } from './EmptyState';
 export { successHaptic } from './haptics';
 export { Icon, type IconName } from './Icon';
+export { IconButton } from './IconButton';
 export { OptionTile } from './OptionTile';
 export { ProfileSwitcher, type ProfileSwitcherItem } from './ProfileSwitcher';
 export { Plate } from './Plate';
