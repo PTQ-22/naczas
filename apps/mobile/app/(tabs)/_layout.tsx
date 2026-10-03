@@ -76,6 +76,8 @@ export default function TabsLayout() {
         name="settings"
         options={{
           title: t('common.tabs.settings'),
+          tabBarLabel: t('common.tabs.settingsShort'),
+          // Screen readers keep the full word; only the visible tab label is shortened.
           tabBarAccessibilityLabel: t('common.tabs.settings'),
           tabBarIcon: tabIcon('settings'),
         }}

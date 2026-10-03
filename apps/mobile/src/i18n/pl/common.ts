@@ -3,6 +3,8 @@ export const common = {
     plan: 'Plan',
     family: 'Rodzina',
     settings: 'Ustawienia',
+    // Tab bar only: with four tabs "Ustawienia" is clipped at 390 pt (senior: "Ustawie…").
+    settingsShort: 'Opcje',
   },
   // Shared base components (WS4-2).
   components: {
