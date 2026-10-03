@@ -1,22 +1,34 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { computePlan } from '@naczas/rules';
+import { computePlan, mockPlan } from '@naczas/rules';
 import type { Plan } from '@naczas/shared';
 
 import { recordsForProfile, useProfilesStore, useRecordsStore, useToday } from '@/store';
 
-import { waitTimesLoader } from './client';
+import { USE_MOCKS, waitTimesLoader } from './client';
+import { mockWaitTimes } from './mock-plan-data';
 import { queueExamIds, waitTimesKey, type WaitTimes, type WaitTimesLoader } from './wait-times';
 
+/**
+ * - loading: wait times are being fetched; `plan` already exists with default lead times
+ * - offline: some lead times are remembered/default because the API was unreachable
+ */
+export type PlanStatus = 'loading' | 'ready' | 'offline';
+
 export interface PlanState {
-  /** null only when the profile doesn't exist. */
-  plan: Plan | null;
-  /** Wait times are being fetched; `plan` already exists (default lead times). */
-  loading: boolean;
-  /** Some lead times are cached/default because the API was unreachable. */
-  offline: boolean;
+  /** Empty (no items) when the profile doesn't exist. */
+  plan: Plan;
+  /** Exactly what was passed to computePlan — for "W okolicy czeka się ok. N tyg." */
+  waitTimes: WaitTimes;
+  status: PlanStatus;
   /** Refetch wait times, bypassing the in-memory cache. */
   refresh: () => void;
+}
+
+export interface UsePlanOptions {
+  loader?: WaitTimesLoader;
+  /** Defaults to EXPO_PUBLIC_USE_MOCKS. */
+  useMocks?: boolean;
 }
 
 interface Fetched {
@@ -26,11 +38,14 @@ interface Fetched {
   offline: boolean;
 }
 
+const NO_WAIT_TIMES: WaitTimes = {};
+
 /**
  * Plan for one profile. Offline-first: the plan is computed locally right away and recomputed
  * when NFZ wait times arrive, so the screen never waits on the network.
  */
-export function usePlan(profileId: string, loader: WaitTimesLoader = waitTimesLoader): PlanState {
+export function usePlan(profileId: string, options: UsePlanOptions = {}): PlanState {
+  const { loader = waitTimesLoader, useMocks = USE_MOCKS } = options;
   const profile = useProfilesStore((s) => s.profiles.find((p) => p.id === profileId));
   const allRecords = useRecordsStore((s) => s.records);
   const today = useToday();
@@ -43,7 +58,7 @@ export function usePlan(profileId: string, loader: WaitTimesLoader = waitTimesLo
 
   // Without a location there's nothing to ask the API for — defaults it is.
   const locationKey =
-    location && examIds.length > 0
+    !useMocks && location && examIds.length > 0
       ? examIds.map((id) => waitTimesKey(id, location)).join(',')
       : null;
   const requestKey = locationKey ? `${locationKey}#${refreshCount}` : null;
@@ -57,7 +72,7 @@ export function usePlan(profileId: string, loader: WaitTimesLoader = waitTimesLo
         if (!controller.signal.aborted) setFetched({ requestKey, locationKey, waitTimes, offline });
       })
       .catch(() => {
-        // load() handles API errors itself; only an abort can land here.
+        // load() turns API errors into defaults; nothing else to surface here.
       });
     return () => controller.abort();
     // requestKey encodes examIds, location and refreshCount.
@@ -66,18 +81,25 @@ export function usePlan(profileId: string, loader: WaitTimesLoader = waitTimesLo
 
   // While refreshing, keep the previous wait times instead of flashing defaults — but never
   // reuse them for another profile/location.
-  const waitTimes = fetched?.locationKey === locationKey ? fetched?.waitTimes : undefined;
-  const plan = useMemo(
-    () => (profile ? computePlan({ profile, records, waitTimes: waitTimes ?? {}, today }) : null),
-    [profile, records, waitTimes, today],
-  );
+  const waitTimes = useMemo(() => {
+    if (useMocks) return mockWaitTimes(location?.province ?? '07');
+    return fetched && fetched.locationKey === locationKey ? fetched.waitTimes : NO_WAIT_TIMES;
+  }, [useMocks, location?.province, fetched, locationKey]);
+
+  const plan = useMemo((): Plan => {
+    // Mock mode (agreed with WS4): fixed demo plan, independent of the stored profile.
+    if (useMocks) return mockPlan({ today, profileId });
+    if (!profile) return { profileId, generatedAt: today, items: [] };
+    return computePlan({ profile, records, waitTimes, today });
+  }, [useMocks, profile, profileId, records, waitTimes, today]);
 
   const refresh = useCallback(() => setRefreshCount((n) => n + 1), []);
 
-  return {
-    plan,
-    loading: requestKey !== null && fetched?.requestKey !== requestKey,
-    offline: requestKey !== null && fetched?.requestKey === requestKey && fetched.offline,
-    refresh,
-  };
+  let status: PlanStatus = 'ready';
+  if (requestKey !== null) {
+    if (fetched?.requestKey !== requestKey) status = 'loading';
+    else if (fetched.offline) status = 'offline';
+  }
+
+  return { plan, waitTimes, status, refresh };
 }

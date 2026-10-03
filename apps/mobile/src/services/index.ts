@@ -7,4 +7,4 @@ export {
   type LocationParams,
 } from './api';
 export { api, USE_MOCKS, waitTimesLoader } from './client';
-export { usePlan, type PlanState } from './use-plan';
+export { usePlan, type PlanState, type PlanStatus, type UsePlanOptions } from './use-plan';
