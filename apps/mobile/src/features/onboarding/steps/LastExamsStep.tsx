@@ -1,9 +1,8 @@
-import { Card, Text } from '@/components';
+import { Card, ChipGroup, Text } from '@/components';
 import { t } from '@/i18n';
 import { useOnboardingDraftStore } from '@/store';
 
 import { examsToAsk } from '../survey';
-import { AnswerChips } from '../ui/AnswerChips';
 
 import type { StepProps } from './step-props';
 
@@ -25,7 +24,7 @@ export function LastExamsStep({ draft, today }: StepProps) {
       {exams.map((rule) => (
         <Card key={rule.id}>
           <Text variant="heading">{rule.name}</Text>
-          <AnswerChips
+          <ChipGroup
             groupLabel={rule.name}
             options={answerOptions}
             selected={draft.lastDone[rule.id]}

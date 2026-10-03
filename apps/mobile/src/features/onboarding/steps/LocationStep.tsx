@@ -1,11 +1,9 @@
 import { useState } from 'react';
 
-import { Button, Text } from '@/components';
+import { Button, Text, TextField } from '@/components';
 import { t } from '@/i18n';
 import { locateWithGps } from '@/services/location';
 import { normalizePostalCode, postalCodeToLocation } from '@/services/postal';
-
-import { TextField } from '../ui/TextField';
 
 import type { StepProps } from './step-props';
 

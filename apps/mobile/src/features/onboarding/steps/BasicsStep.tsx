@@ -1,9 +1,8 @@
-import { OptionTile, Text } from '@/components';
+import { OptionTile, Text, TextField } from '@/components';
 import { t } from '@/i18n';
 
 import { birthYearRange, isBirthYearValid } from '../survey';
 import { parseWholeNumber, type StepProps } from './step-props';
-import { TextField } from '../ui/TextField';
 
 const SEXES = ['female', 'male'] as const;
 

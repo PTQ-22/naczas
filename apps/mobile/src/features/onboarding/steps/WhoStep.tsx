@@ -1,7 +1,5 @@
-import { OptionTile, Text } from '@/components';
+import { OptionTile, Text, TextField } from '@/components';
 import { t } from '@/i18n';
-
-import { TextField } from '../ui/TextField';
 
 import type { StepProps } from './step-props';
 

@@ -1,8 +1,7 @@
-import { OptionTile, Text } from '@/components';
+import { OptionTile, Text, TextField } from '@/components';
 import { t } from '@/i18n';
 
 import { parseWholeNumber, type StepProps } from './step-props';
-import { TextField } from '../ui/TextField';
 
 const SMOKING = ['never', 'former', 'current'] as const;
 const ACTIVITY = ['low', 'medium', 'high'] as const;
