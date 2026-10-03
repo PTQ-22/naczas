@@ -44,7 +44,9 @@ Dlaczego **p75, a nie średnia:** średnia zaniża dla użytkownika, który traf
 
 Percentyle: interpolacja liniowa (= Excel `PERCENTILE.INC`, numpy `linear`), żeby liczby w API i na slajdach (`pitch/scripts/wait-stats.mjs`) były identyczne. Wynik zaokrąglony do pełnych dni.
 ```
-Odległość: haversine. Brak współrzędnych użytkownika → całe województwo.
+Odległość: haversine. Brak współrzędnych użytkownika → całe województwo, **wliczając rekordy placówek bez lat/lng** (odległość nie jest wtedy potrzebna). Rekordy bez lat/lng wypadają tylko z agregacji po promieniu.
+
+Placówki dziecięce odrzucamy po nazwie miejsca (`DZIECI`, `DZIECIĘC*`, `PEDIATR*`), nie po fladze `benefits-for-children` — flaga oznacza, że placówka przyjmuje dzieci *dodatkowo* (zweryfikowane WS2, 2026-10-03).
 
 ## 4. Data powiadomienia i pilność
 
