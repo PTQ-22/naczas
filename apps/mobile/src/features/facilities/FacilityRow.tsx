@@ -85,6 +85,11 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
             <Text variant="caption" tone="textMuted">
               {`${nfzTitleCase(f.address)}, ${nfzTitleCase(f.locality)}`}
             </Text>
+            {f.anesthesia === true && (
+              <Text variant="caption" tone="textMuted">
+                {t('facilities.anesthesia')}
+              </Text>
+            )}
             {access.length > 0 && (
               <Text variant="caption" tone="textMuted">
                 {access.join(' · ')}

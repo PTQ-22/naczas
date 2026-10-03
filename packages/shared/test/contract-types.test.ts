@@ -153,6 +153,7 @@ namespace Doc {
     firstAvailableDate: ISODate | null;
     waitDays: number | null;
     awaiting: number | null;
+    anesthesia: boolean | null;
     accessibility: { ramp: boolean; elevator: boolean; parking: boolean; toilet: boolean };
     asOf: ISODate;
   }

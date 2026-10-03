@@ -66,12 +66,14 @@ export function escapeMarkerText(s: string): string {
 /** One sentence for screen readers: name, wait, distance (screens.md §4 A11y). */
 export function facilityA11yLabel(f: Facility): string {
   const weeks = waitWeeks(f.waitDays);
-  return t('facilities.card.a11y', {
+  const label = t('facilities.card.a11y', {
     name: f.providerName,
     wait:
       weeks === null ? t('facilities.wait.a11yUnknown') : t('facilities.wait.a11yWeeks', { weeks }),
     distance: distanceLabel(f.distanceKm),
   });
+  // The row is one screen-reader stop, so the visible anesthesia caption must be in the label.
+  return f.anesthesia === true ? `${label}, ${t('facilities.anesthesia')}` : label;
 }
 
 // NFZ registry strings are ALL CAPS ("GABINET STOMATOLOGICZNY EWA ANDREAS", "POZNAŃ-NOWE MIASTO"),

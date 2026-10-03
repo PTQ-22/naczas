@@ -29,7 +29,14 @@ describe('env', () => {
       REFRESH_ON_START: true,
       RATE_LIMIT_PER_MIN: 60,
       TRUST_PROXY: false,
+      NFZ_BASE_URL: 'https://apinfz.nfz.gov.pl/app-itl-api-pcus',
+      NFZ_API_VERSION: '1.4',
     });
+  });
+
+  it('rejects an invalid NFZ base URL or API version', () => {
+    expect(() => loadEnv({ NFZ_BASE_URL: 'not a url' })).toThrow(/NFZ_BASE_URL/);
+    expect(() => loadEnv({ NFZ_API_VERSION: 'latest' })).toThrow(/NFZ_API_VERSION/);
   });
 
   it('parses a production config', () => {

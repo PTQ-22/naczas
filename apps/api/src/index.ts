@@ -8,6 +8,7 @@ import { createApp } from './app';
 import { createVapiClient } from './call-assist/vapi-client';
 import { loadEnv } from './env';
 import { createNfzClient } from './nfz/client';
+import { GEO_INDEX_FILE, loadGeoIndex } from './nfz/geo-index';
 import { createSnapshotStore } from './nfz/snapshot';
 import { createQueueLoader } from './queues';
 
@@ -48,9 +49,11 @@ const callAssist =
     : null;
 console.log(`Call assist: ${callAssist ? 'live (Vapi)' : 'simulated'}`);
 
-const nfz = createNfzClient();
+const nfz = createNfzClient({ baseUrl: env.NFZ_BASE_URL, apiVersion: env.NFZ_API_VERSION });
 const snapshot = createSnapshotStore(path.resolve(import.meta.dirname, '../data/snapshot'));
-const loader = createQueueLoader({ nfz, snapshot, now: () => new Date() });
+const geoIndex = loadGeoIndex(GEO_INDEX_FILE);
+console.log(`Geo index: ${Object.keys(geoIndex).length} places`);
+const loader = createQueueLoader({ nfz, snapshot, now: () => new Date(), geoIndex });
 const app = createApp({
   nfz,
   snapshot,

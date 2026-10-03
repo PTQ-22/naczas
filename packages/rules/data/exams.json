@@ -311,7 +311,7 @@
     "booking": "queue",
     "referral": true,
     "referralNote": "Do okulisty na NFZ potrzebne jest skierowanie od lekarza rodzinnego.",
-    "nfzBenefits": ["PORADNIA OKULISTYCZNA"],
+    "nfzBenefits": ["ŚWIADCZENIA Z ZAKRESU OKULISTYKI"],
     "source": {
       "name": "Custom",
       "url": "https://pacjent.gov.pl"
@@ -326,10 +326,9 @@
     "description": "Zalecana przez lekarza rodzinnego po wstępnych badaniach (np. EKG).",
     "eligibility": {},
     "intervalMonths": 12,
-    "booking": "queue",
+    "booking": "walk_in",
     "referral": true,
     "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
-    "nfzBenefits": ["PORADNIA KARDIOLOGICZNA"],
     "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
     "verified": true,
     "verifiedAt": "2026-10-03"
@@ -359,7 +358,7 @@
     "booking": "queue",
     "referral": true,
     "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
-    "nfzBenefits": ["PORADNIA ENDOKRYNOLOGICZNA"],
+    "nfzBenefits": ["ŚWIADCZENIA Z ZAKRESU ENDOKRYNOLOGII"],
     "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
     "verified": true,
     "verifiedAt": "2026-10-03"
@@ -374,7 +373,7 @@
     "booking": "queue",
     "referral": true,
     "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
-    "nfzBenefits": ["PORADNIA NEUROLOGICZNA"],
+    "nfzBenefits": ["ŚWIADCZENIA Z ZAKRESU NEUROLOGII"],
     "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
     "verified": true,
     "verifiedAt": "2026-10-03"

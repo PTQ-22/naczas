@@ -29,10 +29,13 @@ export const facilities = {
     weeks: 'ok. {{weeks}} tyg.',
     unit: 'tyg.',
     unknown: 'Brak danych o terminie',
-    a11yWeeks: 'średnio około {{weeks}} tyg. oczekiwania',
+    // NFZ forecast (pcus) or monthly average — "około" fits both.
+    a11yWeeks: 'około {{weeks}} tyg. oczekiwania',
     a11yUnknown: 'brak danych o czasie oczekiwania',
   },
   distance: '{{km}} km',
+  // NFZ `anesthesia` flag — shown only when the facility offers it (e.g. colonoscopy).
+  anesthesia: 'Możliwe znieczulenie',
   accessibility: {
     elevator: 'winda',
     ramp: 'podjazd',

@@ -156,7 +156,7 @@ export interface WaitTimeSummary {
   p50Days: number | null;
   p75Days: number | null;         // używany do leadTime
   minDays: number | null;
-  asOf: string;                   // 'YYYY-MM' z NFZ statistics.update
+  asOf: string;                   // 'YYYY-MM' najnowszego rekordu (dates.date-situation-as-at, inaczej statistics.update)
   source: 'nfz_live' | 'nfz_snapshot';
 }
 ```
@@ -164,6 +164,8 @@ export interface WaitTimeSummary {
 ### `GET /v1/facilities?examId=&province=&lat=&lng=&radiusKm=&sort=soonest|nearest&limit=20`
 
 > **Zmiana 2026-10-03 (WS2-1):** NFZ zwraca `dates: null` w 100% rekordów. Źródłem czasu oczekiwania jest `statistics.provider-data.average-period` (średni czas oczekiwania w dniach, raportowany przez placówkę). `sort=soonest` = rosnąco po `waitDays`, nulle na końcu. Typy bez zmian.
+
+> **Zmiana 2026-10-04 (ITL v1.4):** `waitDays` = prognoza NFZ `dates.pcus` w dniach (gdy `applicable`), inaczej `average-period`; `average-period: 0` przy `awaiting: 0` = 0 (brak kolejki). `asOf` = `dates.date-situation-as-at` (dzienna). Nowe pole `anesthesia` (NFZ `anesthesia` Y/N; brak → `null`, Zod `.default(null)` dla starszego API). Szczegóły: `docs/04-data-sources.md` §A.
 
 ```ts
 export interface Facility {
@@ -177,11 +179,12 @@ export interface Facility {
   lat: number;
   lng: number;
   distanceKm: number;
-  firstAvailableDate: ISODate | null; // obecnie zawsze null — NFZ nie zwraca `dates` (stan 2026-10)
-  waitDays: number | null;        // average-period z NFZ (dni); null gdy brak lub 0
+  firstAvailableDate: ISODate | null; // zawsze null — ITL nie podaje pierwszego wolnego terminu
+  waitDays: number | null;        // dates.pcus (dni), inaczej average-period; null = brak danych
   awaiting: number | null;        // statistics.provider-data.awaiting
+  anesthesia: boolean | null;     // NFZ anesthesia Y/N; null = brak informacji
   accessibility: { ramp: boolean; elevator: boolean; parking: boolean; toilet: boolean };
-  asOf: ISODate;                  // statistics.update 'YYYY-MM' → 'YYYY-MM-01'
+  asOf: ISODate;                  // dates.date-situation-as-at; bez niego statistics.update → 'YYYY-MM-01'
 }
 
 export interface FacilitiesResponse {

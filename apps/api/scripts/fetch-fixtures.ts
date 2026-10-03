@@ -8,10 +8,10 @@
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
+import { NFZ_API_VERSION, NFZ_DEFAULT_BASE_URL, resolveNfzLink } from '../src/nfz/client';
 import { benefitSlug } from '../src/nfz/slug';
 
-const ORIGIN = 'https://api.nfz.gov.pl';
-const BASE = `${ORIGIN}/app-itl-api`;
+const BASE = NFZ_DEFAULT_BASE_URL;
 const GAP_MS = 1100;
 const RETRY_BACKOFF_MS = [5_000, 15_000, 30_000];
 
@@ -56,10 +56,11 @@ async function getJson(url: string): Promise<unknown> {
 function nextUrl(page: unknown): string | null {
   const next = (page as { links?: { next?: unknown } }).links?.next;
   if (typeof next !== 'string' || next === '') return null;
-  const url = new URL(next, ORIGIN);
+  const url = resolveNfzLink(next, BASE);
   // `links.next` from NFZ drops api-version; keep every page on the same API version.
   url.searchParams.set('format', 'json');
-  url.searchParams.set('api-version', '1.3');
+  url.searchParams.set('api-version', NFZ_API_VERSION);
+  url.searchParams.set('benefitForAdultsChildren', '2'); // dropped by links.next, like api-version
   return url.toString();
 }
 
@@ -71,7 +72,8 @@ async function fetchAllPages(benefit: string, province: string): Promise<unknown
     page: '1',
     limit: '25',
     format: 'json',
-    'api-version': '1.3',
+    'api-version': NFZ_API_VERSION,
+    benefitForAdultsChildren: '2', // adults — same filter as src/nfz/client.ts
   });
   const pages: unknown[] = [];
   let url: string | null = `${BASE}/queues?${params.toString()}`;

@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { NFZ_API_VERSION, NFZ_DEFAULT_BASE_URL } from './nfz/client';
+
 const bool = (name: string) =>
   z
     .enum(['true', 'false'], { message: `${name} must be "true" or "false"` })
@@ -38,6 +40,12 @@ const EnvSchema = z.object({
   /** Public https URL of this API — enables the live-transcript webhook */
   PUBLIC_URL: optional(z.url()),
   VAPI_WEBHOOK_SECRET: optional(z.string()),
+  /** NFZ ITL API root and its api-version — change together (v1.4 rejects api-version=1.3) */
+  NFZ_BASE_URL: z.url().default(NFZ_DEFAULT_BASE_URL),
+  NFZ_API_VERSION: z
+    .string()
+    .regex(/^\d+\.\d+$/)
+    .default(NFZ_API_VERSION),
 });
 export type Env = z.infer<typeof EnvSchema>;
 

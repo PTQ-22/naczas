@@ -35,7 +35,17 @@ export const NfzQueueSchema = z.looseObject({
           .nullish(),
       })
       .nullish(),
-    dates: z.unknown().optional(), // null in 100% of records (WS2-1), not used
+    anesthesia: YesNoSchema, // v1.4: 'Y' | 'N' (e.g. colonoscopy under anaesthesia)
+    // v1.3: always null. v1.4: { applicable, pcus: '1 mies. 3 tyg.', 'date-situation-as-at' }.
+    // Lenient sub-fields: a malformed `dates` must not drop the whole record.
+    dates: z
+      .looseObject({
+        applicable: z.boolean().nullish(),
+        pcus: z.string().nullish(),
+        'date-situation-as-at': z.string().nullish(), // 'YYYY-MM-DD'
+      })
+      .nullish()
+      .catch(null),
   }),
 });
 export type NfzQueue = z.infer<typeof NfzQueueSchema>;

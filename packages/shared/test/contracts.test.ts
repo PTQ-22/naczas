@@ -48,6 +48,7 @@ const facilitiesResponse = {
       firstAvailableDate: '2026-12-15',
       waitDays: 72,
       awaiting: 140,
+      anesthesia: true,
       accessibility: { ramp: true, elevator: true, parking: false, toilet: true },
       asOf: '2026-09-30',
     },
@@ -108,6 +109,18 @@ describe('FacilitiesResponseSchema', () => {
 
   it('rejects a facility without accessibility info', () => {
     const { accessibility: _a, ...facility } = facilitiesResponse.items[0]!;
+    const bad = { ...facilitiesResponse, items: [facility] };
+    expect(FacilitiesResponseSchema.safeParse(bad).success).toBe(false);
+  });
+
+  it('reads a facility without anesthesia (older API) as anesthesia: null', () => {
+    const { anesthesia: _a, ...facility } = facilitiesResponse.items[0]!;
+    const parsed = FacilitiesResponseSchema.parse({ ...facilitiesResponse, items: [facility] });
+    expect(parsed.items[0]!.anesthesia).toBeNull();
+  });
+
+  it('rejects a non-boolean anesthesia flag', () => {
+    const facility = { ...facilitiesResponse.items[0]!, anesthesia: 'Y' };
     const bad = { ...facilitiesResponse, items: [facility] };
     expect(FacilitiesResponseSchema.safeParse(bad).success).toBe(false);
   });

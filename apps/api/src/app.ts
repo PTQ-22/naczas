@@ -21,6 +21,7 @@ import { loadCoverageData, type CoverageData } from './screening/data';
 import { createUldkResolver, type CommuneResolver } from './screening/uldk';
 
 import type { NfzClient } from './nfz/client';
+import type { GeoIndex } from './nfz/geo-index';
 import type { SnapshotStore } from './nfz/snapshot';
 
 export interface CorsOptions {
@@ -35,6 +36,8 @@ export interface AppDeps {
   now?: () => Date;
   /** Pass a prebuilt loader to warm it up / refresh it outside the app (index.ts). */
   loader?: QueueLoader;
+  /** Coordinates for records NFZ v1.4 sends without them (ignored when `loader` is given) */
+  geoIndex?: GeoIndex;
   cors?: CorsOptions;
   rateLimit?: RateLimitOptions;
   log?: (line: string) => void;
@@ -53,6 +56,7 @@ export function createApp({
   snapshot,
   now = () => new Date(),
   loader,
+  geoIndex,
   cors: corsOptions = { origins: [], allowLocalhost: true },
   rateLimit: rateLimitOptions = { perMinute: 60, trustProxy: false },
   log,
@@ -61,7 +65,7 @@ export function createApp({
   callAssist = null,
   callAssistWebhookSecret,
 }: AppDeps) {
-  loader ??= createQueueLoader({ nfz, snapshot, now });
+  loader ??= createQueueLoader({ nfz, snapshot, now, geoIndex });
 
   const app = new Hono().basePath('/v1');
   if (log) app.use('*', requestLog(log));

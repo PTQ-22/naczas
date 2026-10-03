@@ -1,7 +1,26 @@
 import { type NfzQueue, NfzQueuesPageSchema } from './schemas';
 
-const NFZ_ORIGIN = 'https://api.nfz.gov.pl';
-const API_VERSION = '1.3';
+/**
+ * ITL v1.4 ("app-itl-api-pcus") adds `dates.pcus` — a daily forecast of the waiting time.
+ * v1.3 (api.nfz.gov.pl/app-itl-api) only has the monthly average-period. v1.4 answers
+ * api-version=1.3 with UnsupportedApiVersion, so base URL and version must be changed together.
+ */
+export const NFZ_DEFAULT_BASE_URL = 'https://apinfz.nfz.gov.pl/app-itl-api-pcus';
+export const NFZ_API_VERSION = '1.4';
+
+/** NFZ `benefitForAdultsChildren`: 1 = all, 2 = adults, 3 = children (v1.4) */
+const FOR_ADULTS = '2';
+
+/**
+ * Resolves an NFZ `links.*` value. v1.4 returns `/queues?page=2…` WITHOUT the
+ * `/app-itl-api-pcus` prefix, so a root-relative link must be resolved against the base path,
+ * not the origin. Absolute or already-prefixed links are kept as they are.
+ */
+export function resolveNfzLink(link: string, baseUrl: string): URL {
+  const base = new URL(baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`);
+  if (/^https?:\/\//i.test(link) || link.startsWith(base.pathname)) return new URL(link, base);
+  return new URL(link.replace(/^\/+/, ''), base);
+}
 
 /** NFZ did not give a usable answer (rate limit, network, timeout, changed format). */
 export class NfzUnavailableError extends Error {
@@ -10,6 +29,9 @@ export class NfzUnavailableError extends Error {
 
 export interface NfzClientOptions {
   fetch?: typeof fetch;
+  /** ITL API root, e.g. https://apinfz.nfz.gov.pl/app-itl-api-pcus */
+  baseUrl?: string;
+  apiVersion?: string;
   /** Minimum gap between request starts. NFZ answers non-JSON after a few rapid requests. */
   minIntervalMs?: number;
   timeoutMs?: number;
@@ -35,6 +57,8 @@ const defaultSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(r
 export function createNfzClient(options: NfzClientOptions = {}): NfzClient {
   const {
     fetch: fetchFn = globalThis.fetch,
+    baseUrl = NFZ_DEFAULT_BASE_URL,
+    apiVersion = NFZ_API_VERSION,
     minIntervalMs = 1000,
     timeoutMs = 8000,
     retries = 3,
@@ -83,15 +107,18 @@ export function createNfzClient(options: NfzClientOptions = {}): NfzClient {
   }
 
   function withApiParams(url: URL): string {
-    // `links.next` from NFZ drops api-version; keep every page on the same version.
+    // `links.next` from NFZ drops api-version and benefitForAdultsChildren; keep every page on
+    // the same version and filter.
     url.searchParams.set('format', 'json');
-    url.searchParams.set('api-version', API_VERSION);
+    url.searchParams.set('api-version', apiVersion);
+    // Server-side adult filter; normalize.ts keeps the place-name check as a fallback.
+    url.searchParams.set('benefitForAdultsChildren', FOR_ADULTS);
     return url.toString();
   }
 
   return {
     async getQueues({ benefit, province, case: queueCase = 1 }) {
-      const first = new URL('/app-itl-api/queues', NFZ_ORIGIN);
+      const first = resolveNfzLink('queues', baseUrl);
       first.search = new URLSearchParams({
         case: String(queueCase),
         province,
@@ -106,7 +133,7 @@ export function createNfzClient(options: NfzClientOptions = {}): NfzClient {
         const page = await fetchPage(url);
         records.push(...page.data);
         const next = page.links?.next;
-        url = next ? withApiParams(new URL(next, NFZ_ORIGIN)) : null;
+        url = next ? withApiParams(resolveNfzLink(next, baseUrl)) : null;
       }
       return records;
     },

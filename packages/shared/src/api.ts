@@ -19,7 +19,7 @@ export const WaitTimeSummarySchema = z.object({
   p50Days: z.number().nullable(),
   p75Days: z.number().nullable(), // used for leadTime
   minDays: z.number().nullable(),
-  asOf: z.string(), // 'YYYY-MM' from NFZ statistics.update
+  asOf: z.string(), // 'YYYY-MM' of the newest record (dates.date-situation-as-at, else statistics.update)
   source: DataSourceSchema,
 });
 export type WaitTimeSummary = z.infer<typeof WaitTimeSummarySchema>;
@@ -36,15 +36,19 @@ export const FacilitySchema = z.object({
   lng: z.number(),
   distanceKm: z.number(),
   firstAvailableDate: ISODateSchema.nullable(),
-  waitDays: z.number().nullable(), // firstAvailableDate − asOf
+  waitDays: z.number().nullable(), // dates.pcus forecast in days, else average-period (docs/03)
   awaiting: z.number().nullable(), // statistics.provider-data.awaiting
+  // NFZ `anesthesia` Y/N (e.g. colonoscopy under anaesthesia); null = NFZ doesn't say.
+  // .default(null): responses from an older API without the field still parse.
+  anesthesia: z.boolean().nullable().default(null),
   accessibility: z.object({
     ramp: z.boolean(),
     elevator: z.boolean(),
     parking: z.boolean(),
     toilet: z.boolean(),
   }),
-  asOf: ISODateSchema, // dates.date-situation-as-at
+  // dates.date-situation-as-at (v1.4, daily); without it statistics.update month → 'YYYY-MM-01'
+  asOf: ISODateSchema,
 });
 export type Facility = z.infer<typeof FacilitySchema>;
 
