@@ -61,39 +61,22 @@ export interface QueueInfo {
 
 /**
  * Queue box — our differentiator, so it is shown whenever the exam is booked via the NFZ queue.
- * Prefers the live/snapshot summary; without it falls back to the plan's lead time.
+ * Shows the NFZ p75 wait when we have a summary; otherwise a "start early" note without a number.
  */
-export function queueInfo(
-  rule: ExamRule,
-  item: PlanItem | undefined,
-  summary: WaitTimeSummary | undefined,
-): QueueInfo | null {
+export function queueInfo(rule: ExamRule, summary: WaitTimeSummary | undefined): QueueInfo | null {
   if (rule.booking !== 'queue') return null;
-  if (summary?.p50Days != null) {
+  if (summary?.p75Days != null) {
     return {
       hasData: true,
       lines: {
         label: { key: 'exam.queue.radius', params: { km: summary.radiusKm } },
-        value: { key: 'exam.queue.weeks', params: { weeks: weeks(summary.p50Days) } },
+        value: { key: 'exam.queue.weeks', params: { weeks: weeks(summary.p75Days) } },
         meta: { key: 'exam.queue.asOf', params: { date: summary.asOf } },
       },
     };
   }
-  if (!item) return null;
-  if (item.leadTimeSource === 'default') {
-    return {
-      hasData: false,
-      lines: { label: { key: 'exam.queue.noData', params: { weeks: weeks(item.leadTimeDays) } } },
-    };
-  }
-  return {
-    hasData: true,
-    lines: {
-      label: { key: 'exam.queue.nearby' },
-      value: { key: 'exam.queue.weeks', params: { weeks: weeks(item.leadTimeDays) } },
-      meta: { key: 'exam.queue.nfz' },
-    },
-  };
+  // No NFZ summary: leadTimeDays is "when to start", not a wait — don't present it as one.
+  return { hasData: false, lines: { label: { key: 'exam.queue.noData' } } };
 }
 
 export type ExamAction = 'facilities' | 'program' | 'markDone' | 'book';

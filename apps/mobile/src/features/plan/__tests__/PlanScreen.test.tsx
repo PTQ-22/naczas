@@ -38,6 +38,9 @@ describe('PlanScreen (mockPlan)', () => {
     expect(screen.getByRole('header', { name: 'Plan badań — Mama' })).toBeOnTheScreen();
     expect(screen.getByText('1 badanie wymaga działania')).toBeOnTheScreen();
     expect(
+      screen.getByText('W okolicy czeka się ok. 30 tyg. — zacznij szukać teraz.'),
+    ).toBeOnTheScreen();
+    expect(
       screen.getByRole('button', { name: /Znajdź termin na: Kolonoskopia/ }),
     ).toBeOnTheScreen();
   });

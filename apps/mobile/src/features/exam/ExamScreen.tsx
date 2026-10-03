@@ -65,7 +65,7 @@ export default function ExamScreen() {
   }
 
   const item = plan?.items.find((i) => i.examId === rule.id);
-  const queue = queueInfo(rule, item, waitTimes[rule.id]);
+  const queue = queueInfo(rule, waitTimes[rule.id]);
   const ctas = examCtas(rule, item);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;

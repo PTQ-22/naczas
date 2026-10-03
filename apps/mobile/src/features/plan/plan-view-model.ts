@@ -30,11 +30,11 @@ export function waitWeeks(days: number): number {
 }
 
 /**
- * Weeks shown as "czeka się ~N tyg.": the NFZ median wait when we have it; otherwise the
- * engine's lead time (p75 + buffers, or the default), which overstates the wait a little.
+ * Weeks for "czeka się ok. N tyg." — only from the NFZ p75 wait. leadTimeDays is "when to start"
+ * (wait + buffers), not a wait, so it is never shown as one (coordinator decision).
  */
-export function displayWaitWeeks(item: PlanItem, summary?: WaitTimeSummary): number {
-  return waitWeeks(summary?.p50Days ?? item.leadTimeDays);
+export function queueWaitWeeks(summary?: WaitTimeSummary): number | null {
+  return summary?.p75Days != null ? waitWeeks(summary.p75Days) : null;
 }
 
 export interface Message {
@@ -77,7 +77,10 @@ export function whyNowMessage(
 ): Message | null {
   if (booking !== 'queue') return null;
   if (item.urgency === 'act_now') {
-    return { key: 'plan.card.whyNowQueue', params: { weeks: displayWaitWeeks(item, summary) } };
+    const weeks = queueWaitWeeks(summary);
+    return weeks === null
+      ? { key: 'plan.card.startEarly' }
+      : { key: 'plan.card.whyNowQueue', params: { weeks } };
   }
   if (item.urgency === 'this_year') {
     return { key: 'plan.card.startFrom', params: { date: fullDate(item.notifyDate) } };
@@ -114,12 +117,17 @@ export function planCta(
       break;
   }
   switch (booking) {
-    case 'queue':
+    case 'queue': {
+      const weeks = queueWaitWeeks(summary);
       return {
         action: 'facilities',
         variant,
-        label: { key: 'plan.cta.findSlot', params: { weeks: displayWaitWeeks(item, summary) } },
+        label:
+          weeks === null
+            ? { key: 'plan.cta.findSlotPlain' }
+            : { key: 'plan.cta.findSlot', params: { weeks } },
       };
+    }
     case 'program':
       return { action: 'exam', variant, label: { key: 'plan.cta.program' } };
     case 'walk_in':

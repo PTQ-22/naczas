@@ -15,11 +15,9 @@ export const exam = {
   startFrom: 'Zacznij szukać: od {{date}}',
   queue: {
     radius: 'W promieniu {{km}} km czeka się',
-    nearby: 'W Twojej okolicy czeka się',
     weeks: 'ok. {{weeks}} tyg.',
     asOf: 'Dane NFZ, stan na {{date}}',
-    nfz: 'Dane NFZ',
-    noData: 'Nie mamy aktualnych danych o kolejce. Przyjęliśmy szacunkowo {{weeks}} tyg.',
+    noData: 'Nie mamy aktualnych danych o kolejce — zacznij szukać terminu z wyprzedzeniem.',
   },
   section: {
     about: 'O badaniu',

@@ -46,7 +46,6 @@ export function ExamCard({ item, rule, isFirstActNow, waitTime, onOpen, onCta }:
   const date = msg(dateMessage(item));
   const whyNow = whyNowMessage(item, rule.booking, waitTime);
   const cta = planCta(item, rule.booking, isFirstActNow, waitTime);
-  const showEstimate = whyNow !== null && item.leadTimeSource === 'default';
   const reason = item.reasons[0];
 
   const a11yLabel = [rule.name, urgencyLabel, date, whyNow && msg(whyNow)]
@@ -70,11 +69,6 @@ export function ExamCard({ item, rule, isFirstActNow, waitTime, onOpen, onCta }:
         <Text variant="heading">{rule.name}</Text>
         <Text tone={compact ? 'textMuted' : 'text'}>{date}</Text>
         {whyNow && <Text color={palette.fg}>{msg(whyNow)}</Text>}
-        {showEstimate && (
-          <Text variant="caption" tone="textSubtle">
-            {t('plan.card.estimatedWait')}
-          </Text>
-        )}
         {/* Senior mode: one fact per line, the reasoning lives on the exam screen. */}
         {!compact && !seniorMode && reason && (
           <Text variant="caption" tone="textMuted">
@@ -87,7 +81,7 @@ export function ExamCard({ item, rule, isFirstActNow, waitTime, onOpen, onCta }:
           <Button
             label={msg(cta.label)}
             accessibilityLabel={
-              cta.action === 'facilities'
+              cta.label.key === 'plan.cta.findSlot'
                 ? t('plan.cta.findSlotA11y', {
                     name: rule.name,
                     weeks: Number(cta.label.params?.weeks ?? 0),

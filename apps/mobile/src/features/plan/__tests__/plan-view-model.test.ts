@@ -1,10 +1,10 @@
 import { MOCK_TODAY, mockPlan } from '@naczas/rules';
-import type { PlanItem } from '@naczas/shared';
+import type { PlanItem, WaitTimeSummary } from '@naczas/shared';
 
 import {
   countActNow,
   dateMessage,
-  displayWaitWeeks,
+  queueWaitWeeks,
   groupSections,
   isCollapsedByDefault,
   planCta,
@@ -60,23 +60,23 @@ describe('summaryMessage (Polish plural)', () => {
   });
 });
 
-describe('displayWaitWeeks', () => {
-  it('prefers the NFZ median over the lead time', () => {
-    const item = byUrgency('act_now');
-    expect(displayWaitWeeks(item)).toBe(14);
-    expect(
-      displayWaitWeeks(item, {
-        examId: item.examId,
-        province: '07',
-        radiusKm: 25,
-        facilitiesCount: 5,
-        p50Days: 70,
-        p75Days: 84,
-        minDays: 10,
-        asOf: '2026-09',
-        source: 'nfz_snapshot',
-      }),
-    ).toBe(10);
+const nfz = (p75Days: number | null): WaitTimeSummary => ({
+  examId: 'colonoscopy_screening',
+  province: '07',
+  radiusKm: 25,
+  facilitiesCount: 5,
+  p50Days: 140,
+  p75Days,
+  minDays: 10,
+  asOf: '2026-09',
+  source: 'nfz_snapshot',
+});
+
+describe('queueWaitWeeks', () => {
+  it('uses only the NFZ p75 wait, never the lead time', () => {
+    expect(queueWaitWeeks(nfz(213))).toBe(30);
+    expect(queueWaitWeeks(nfz(null))).toBeNull();
+    expect(queueWaitWeeks(undefined)).toBeNull();
   });
 });
 
@@ -103,7 +103,11 @@ describe('dateMessage', () => {
 
 describe('whyNowMessage', () => {
   it('explains the queue for act_now / this_year queue exams only', () => {
-    expect(whyNowMessage(byUrgency('act_now'), 'queue')?.key).toBe('plan.card.whyNowQueue');
+    expect(whyNowMessage(byUrgency('act_now'), 'queue', nfz(213))).toEqual({
+      key: 'plan.card.whyNowQueue',
+      params: { weeks: 30 },
+    });
+    expect(whyNowMessage(byUrgency('act_now'), 'queue')?.key).toBe('plan.card.startEarly');
     expect(whyNowMessage(byUrgency('this_year'), 'queue')?.key).toBe('plan.card.startFrom');
     expect(whyNowMessage(byUrgency('act_now'), 'program')).toBeNull();
     expect(whyNowMessage(byUrgency('later'), 'queue')).toBeNull();
@@ -114,11 +118,12 @@ describe('planCta', () => {
   const actNow = byUrgency('act_now');
 
   it('maps booking type to a single CTA', () => {
-    expect(planCta(actNow, 'queue', true)).toMatchObject({
+    expect(planCta(actNow, 'queue', true, nfz(213))).toMatchObject({
       action: 'facilities',
       variant: 'primary',
-      label: { key: 'plan.cta.findSlot', params: { weeks: 14 } },
+      label: { key: 'plan.cta.findSlot', params: { weeks: 30 } },
     });
+    expect(planCta(actNow, 'queue', true)?.label).toEqual({ key: 'plan.cta.findSlotPlain' });
     expect(planCta(actNow, 'program', false)).toMatchObject({
       action: 'exam',
       variant: 'secondary',

@@ -73,36 +73,33 @@ describe('queueInfo', () => {
     province: '07',
     radiusKm: 25,
     facilitiesCount: 12,
-    p50Days: 70,
-    p75Days: 84,
+    p50Days: 140,
+    p75Days: 213,
     minDays: 20,
     asOf: '2026-09',
     source: 'nfz_snapshot',
   };
 
-  it('prefers the NFZ summary', () => {
-    expect(queueInfo(colonoscopy, itemFor('colonoscopy_screening'), summary)).toEqual({
+  it('shows the NFZ p75 wait in weeks', () => {
+    expect(queueInfo(colonoscopy, summary)).toEqual({
       hasData: true,
       lines: {
         label: { key: 'exam.queue.radius', params: { km: 25 } },
-        value: { key: 'exam.queue.weeks', params: { weeks: 10 } },
+        value: { key: 'exam.queue.weeks', params: { weeks: 30 } },
         meta: { key: 'exam.queue.asOf', params: { date: '2026-09' } },
       },
     });
   });
 
-  it('falls back to lead time; default source → "no data" box', () => {
-    expect(queueInfo(colonoscopy, itemFor('colonoscopy_screening'), undefined)?.hasData).toBe(true);
-    const eye = getExamRule('eye_exam');
-    const info = queueInfo(eye, itemFor('eye_exam'), undefined);
-    expect(info).toEqual({
+  it('without NFZ data never shows lead time as a wait', () => {
+    expect(queueInfo(colonoscopy, undefined)).toEqual({
       hasData: false,
-      lines: { label: { key: 'exam.queue.noData', params: { weeks: 9 } } },
+      lines: { label: { key: 'exam.queue.noData' } },
     });
   });
 
   it('is hidden for non-queue exams', () => {
-    expect(queueInfo(getExamRule('mammography'), itemFor('mammography'), undefined)).toBeNull();
+    expect(queueInfo(getExamRule('mammography'), summary)).toBeNull();
   });
 });
 

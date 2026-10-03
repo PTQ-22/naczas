@@ -43,7 +43,8 @@ describe('ExamScreen', () => {
     expect(screen.getByRole('header', { name: 'Kolonoskopia' })).toBeOnTheScreen();
     expect(screen.getByText(rule.referralNote ?? '')).toBeOnTheScreen();
     expect(screen.getByText(/To informacja edukacyjna/)).toBeOnTheScreen();
-    expect(screen.getByText('W Twojej okolicy czeka się')).toBeOnTheScreen();
+    expect(screen.getByText('W promieniu 25 km czeka się')).toBeOnTheScreen();
+    expect(screen.getByText('ok. 30 tyg.')).toBeOnTheScreen();
 
     fireEvent.press(screen.getByRole('button', { name: 'Znajdź termin w okolicy' }));
     expect(router.push).toHaveBeenCalledWith({
