@@ -19,7 +19,7 @@ import {
 } from '@/store';
 import { useTheme } from '@/theme';
 
-import { bookedRecord, bookingRange, initialBookedFor, validateBookedFor } from './book-date';
+import { bookingRange, initialBookedFor, validateBookedFor } from './book-date';
 import { BookDatePicker } from './BookDatePicker';
 
 const fullDate = (iso: string) => format(parseISO(iso), 'dd.MM.yyyy');
@@ -30,7 +30,7 @@ export default function BookScreen() {
   const today = useToday();
   const profile = useProfilesStore(selectActiveProfile);
   const records = useRecordsStore((s) => s.records);
-  const upsertRecord = useRecordsStore((s) => s.upsertRecord);
+  const markBooked = useRecordsStore((s) => s.markBooked);
   const rule = rules.find((r) => r.id === examId);
   const existing = profile && rule ? findRecord(records, profile.id, rule.id) : undefined;
 
@@ -52,10 +52,8 @@ export default function BookScreen() {
 
   const save = () => {
     if (error) return;
-    // TODO(WS3): switch to markBooked() from the records store when it lands.
-    upsertRecord(
-      bookedRecord({ profileId: profile.id, examId: rule.id, bookedFor: value, today, existing }),
-    );
+    // markBooked keeps lastDone and remembers the previous record for undo.
+    markBooked(profile.id, rule.id, value);
     router.back();
   };
 
