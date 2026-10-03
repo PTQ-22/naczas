@@ -54,6 +54,14 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="bet"
+        options={{
+          title: t('bet.tabs.bet'),
+          tabBarAccessibilityLabel: t('bet.tabs.bet'),
+          tabBarIcon: tabIcon('trophy'),
+        }}
+      />
+      <Tabs.Screen
         name="family"
         options={{
           title: t('common.tabs.family'),

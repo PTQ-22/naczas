@@ -19,6 +19,8 @@ const glyphs = {
   phone: '☎',
   people: '☺',
   settings: '⚙',
+  trophy: '★',
+  heart: '♥',
 } as const;
 
 export type IconName = keyof typeof glyphs;
