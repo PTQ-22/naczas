@@ -23,9 +23,9 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 - [ ] Na mockach (`mockPlan()` z WS1), potem `usePlan()` od WS3
 
 ### WS4-4 · Karta badania `exam/[examId]`
-- [ ] Dlaczego (reasons), jak często, czy skierowanie, „jak się przygotować”, źródło (link), disclaimer, dopisek „wartość orientacyjna” dla `verified: false`
-- [ ] Info o kolejce: „W promieniu X km czeka się ok. N tyg. (stan na …)”
-- [ ] CTA: znajdź termin / gdzie zrobić (program) / oznacz jako zrobione / umówiłem się
+- [x] Dlaczego (reasons), jak często, czy skierowanie, „jak się przygotować”, źródło (link), disclaimer, dopisek „wartość orientacyjna” dla `verified: false`
+- [x] Info o kolejce: „W promieniu X km czeka się ok. N tyg. (stan na …)”
+- [x] CTA: znajdź termin / gdzie zrobić (program) / oznacz jako zrobione / umówiłem się
 
 ### WS4-5 · Placówki `exam/[examId]/facilities`
 - [ ] Lista: nazwa, adres, odległość, średni czas oczekiwania „ok. N tyg.” (lub „brak danych”) — NFZ nie podaje dziś konkretnych terminów, ikonki dostępności, przycisk „Zadzwoń” (`Linking.openURL('tel:…')`), „Nawiguj” (link do map)

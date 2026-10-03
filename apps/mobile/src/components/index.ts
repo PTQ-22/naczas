@@ -1,4 +1,5 @@
 // Stable public surface of the shared UI kit — other workstreams import from '@/components'.
+export { Accordion } from './Accordion';
 export { Button, type ButtonProps, type ButtonVariant } from './Button';
 export { Card } from './Card';
 export { Chip, type ChipTone } from './Chip';
