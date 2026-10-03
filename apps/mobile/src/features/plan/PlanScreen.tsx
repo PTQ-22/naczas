@@ -27,6 +27,7 @@ import {
 } from './plan-view-model';
 import { PlanTimelineSection } from './PlanTimelineSection';
 import { ReminderBanner } from './ReminderBanner';
+import { UrgentCountProbe } from './UrgentCountProbe';
 import { usePlanData } from './use-plan-data';
 import { VisitPrepCard } from './VisitPrepCard';
 
@@ -46,6 +47,12 @@ export default function PlanScreen() {
   const undo = useRecordsStore((s) => s.undo);
   const [doneToast, setDoneToast] = useState<DoneToast | null>(null);
   const hideToast = useCallback(() => setDoneToast(null), []);
+  const [urgentById, setUrgentById] = useState<Record<string, number>>({});
+  const reportUrgent = useCallback(
+    (id: string, count: number) =>
+      setUrgentById((cur) => (cur[id] === count ? cur : { ...cur, [id]: count })),
+    [],
+  );
 
   if (!activeProfile || !plan) {
     return (
@@ -102,12 +109,17 @@ export default function PlanScreen() {
 
   return (
     <Screen edges={['top', 'left', 'right']} footer={toast || undefined}>
+      {profiles
+        .filter((p) => p.id !== activeProfile.id)
+        .map((p) => (
+          <UrgentCountProbe key={p.id} profileId={p.id} onCount={reportUrgent} />
+        ))}
       {profiles.length > 0 && (
         <ProfileSwitcher
           profiles={profiles.map((p) => ({
             id: p.id,
             name: p.name,
-            urgentCount: p.id === activeProfile.id ? actNow : 0,
+            urgentCount: p.id === activeProfile.id ? actNow : (urgentById[p.id] ?? 0),
           }))}
           activeId={activeProfile.id}
           onSelect={selectProfile}

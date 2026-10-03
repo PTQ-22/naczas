@@ -17,6 +17,21 @@ jest.mock('@/notifications', () => ({
   useInAppReminders: jest.fn(() => ({ reminders: [], dismiss: jest.fn() })),
 }));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+// Non-active profiles' badges come from usePlan (UrgentCountProbe): Kasia has two act_now items.
+jest.mock('@/services', () => ({
+  usePlan: (profileId: string) => {
+    const { mockPlan, MOCK_TODAY } =
+      jest.requireActual<typeof import('@naczas/rules')>('@naczas/rules');
+    const base = mockPlan({ today: MOCK_TODAY, profileId });
+    const actNow = base.items.filter((i) => i.urgency === 'act_now');
+    return {
+      plan: { ...base, items: profileId === 'kasia' ? [...actNow, ...actNow] : base.items },
+      waitTimes: {},
+      status: 'ready',
+      refresh: jest.fn(),
+    };
+  },
+}));
 // Reanimated's native worklets runtime isn't available under Jest; its official mock renders
 // Animated.View as a plain View and ignores entering animations.
 jest.mock('react-native-worklets', () =>
@@ -112,6 +127,15 @@ describe('PlanScreen (mockPlan)', () => {
 
     fireEvent.press(screen.getByRole('button', { name: /Cofnij oznaczenie badania Mammografia/ }));
     expect(useRecordsStore.getState().records).toEqual([]);
+  });
+
+  it('shows the urgent badge on every profile, not only the active one (M3 M1)', () => {
+    const base = mockPlanData();
+    const kasia = { ...base.profiles[0]!, id: 'kasia', name: 'Kasia', relation: 'self' as const };
+    mockUsePlanData.mockReturnValue(mockPlanData({ profiles: [...base.profiles, kasia] }));
+    renderPlan();
+    expect(screen.getByRole('tab', { name: 'Mama, pilne badania: 1' })).toBeOnTheScreen();
+    expect(screen.getByRole('tab', { name: 'Kasia, pilne badania: 2' })).toBeOnTheScreen();
   });
 
   it('no button is nested inside another button (screen readers skip nested ones)', () => {

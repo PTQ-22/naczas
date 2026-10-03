@@ -31,7 +31,13 @@ export function ProfileSwitcher({ profiles, activeId, onSelect, onAdd }: Profile
       horizontal
       showsHorizontalScrollIndicator={false}
       accessibilityRole="tablist"
-      contentContainerStyle={{ gap: space.sm, paddingVertical: space.xs }}
+      // Bleed to the screen edges so the row scrolls under the gutter and "+" can scroll fully in.
+      style={{ marginHorizontal: -layout.screenPaddingX }}
+      contentContainerStyle={{
+        gap: space.sm,
+        paddingVertical: space.xs,
+        paddingHorizontal: layout.screenPaddingX,
+      }}
     >
       {profiles.map((p) => {
         const selected = p.id === activeId;
