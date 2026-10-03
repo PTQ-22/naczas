@@ -33,6 +33,15 @@ export const settings = {
     resetConfirm: 'Usuń',
     cancel: 'Anuluj',
   },
+  notifications: {
+    channelName: 'Przypomnienia o badaniach',
+    notifyTitle: '{{exam}} — czas się umówić',
+    notifyBody: '{{name}}: zacznij szukać terminu, żeby zdążyć do {{due}}.',
+    visitTitle: 'Jutro: {{exam}}',
+    visitBody: '{{name}}, wizyta {{date}}. Sprawdź, jak się przygotować.',
+    testTitle: 'Test przypomnień NaCzas',
+    testBody: 'Tak będą wyglądać przypomnienia o badaniach.',
+  },
   restoreFailed: 'Nie udało się odczytać zapisanych danych, więc zaczynamy od nowa.',
   dismiss: 'Zamknij',
   disclaimer:
