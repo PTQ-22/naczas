@@ -8,6 +8,7 @@ export const exam = {
     title: 'Nie znaleziono badania',
     body: 'To badanie nie jest już dostępne w aplikacji.',
   },
+  notRecommended: 'To badanie nie jest teraz zalecane dla: {{name}}.',
   dueBy: 'Zrób do: {{date}}',
   bookedFor: 'Wizyta: {{date}}',
   doneNext: 'Następne: ok. {{date}}',

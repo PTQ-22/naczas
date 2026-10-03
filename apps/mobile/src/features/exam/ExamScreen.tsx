@@ -10,6 +10,7 @@ import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Disclaimer } from '@/components/Disclaimer';
 import { EmptyState } from '@/components/EmptyState';
+import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
@@ -71,8 +72,11 @@ export default function ExamScreen() {
   }
 
   const item = plan?.items.find((i) => i.examId === rule.id);
-  const queue = queueInfo(rule, waitTimes[rule.id]);
-  const ctas = examCtas(rule, item);
+  // Not in this person's plan (e.g. deep link while another profile is active): say so plainly
+  // instead of a misleading "no queue data", and don't push booking actions (M3 L6).
+  const notRecommended = Boolean(activeProfile) && !item;
+  const queue = notRecommended ? null : queueInfo(rule, waitTimes[rule.id]);
+  const ctas = notRecommended ? {} : examCtas(rule, item);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;
 
@@ -149,6 +153,22 @@ export default function ExamScreen() {
             </Text>
           ))}
       </View>
+
+      {notRecommended && activeProfile && (
+        <View
+          accessible
+          style={{
+            flexDirection: 'row',
+            gap: space.sm,
+            padding: layout.cardPadding,
+            borderRadius: radius.lg,
+            backgroundColor: colors.surfaceAlt,
+          }}
+        >
+          <Icon name="info" size="sm" color={colors.textMuted} />
+          <Text style={{ flex: 1 }}>{t('exam.notRecommended', { name: activeProfile.name })}</Text>
+        </View>
+      )}
 
       {queue && (
         <View

@@ -78,6 +78,13 @@ describe('ExamScreen', () => {
     expect(screen.queryByText('Oznaczono jako zrobione')).toBeNull();
   });
 
+  it('exam outside the active person\'s plan says so instead of "no queue data" (M3 L6)', () => {
+    renderExam('psa_discussion');
+    expect(screen.getByText('To badanie nie jest teraz zalecane dla: Mama.')).toBeOnTheScreen();
+    expect(screen.queryByText(/Nie mamy aktualnych danych o kolejce/)).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Oznacz jako zrobione' })).toBeNull();
+  });
+
   it('unknown or invalid examId → not-found state', () => {
     renderExam('nope');
     expect(screen.getByText('Nie znaleziono badania')).toBeOnTheScreen();
