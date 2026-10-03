@@ -122,6 +122,22 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
             onPress={() => void Linking.openURL(tel)}
           />
         )}
+        {/* Demo: an AI voice agent phones for the visit — only on the best facility. */}
+        {primary && (
+          <Button
+            label={t('facilities.actions.callForMe')}
+            accessibilityLabel={t('facilities.actions.callForMeA11y', { name: f.providerName })}
+            variant="secondary"
+            icon="phone"
+            fullWidth={seniorMode}
+            onPress={() =>
+              router.push({
+                pathname: '/exam/[examId]/call',
+                params: { examId, facility: nfzTitleCase(f.providerName) },
+              })
+            }
+          />
+        )}
         <Button
           label={t('facilities.actions.navigate')}
           accessibilityLabel={t('facilities.actions.navigateA11y', { name: f.providerName })}

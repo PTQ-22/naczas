@@ -1,0 +1,230 @@
+import { beforeAll, describe, expect, it, vi } from 'vitest';
+
+import {
+  ApiErrorSchema,
+  CallAssistStartResponseSchema,
+  CallAssistStatusSchema,
+} from '@naczas/shared';
+
+import { createApp } from '../src/app';
+import { buildAssistant } from '../src/call-assist/assistant';
+import { createVapiClient, type VapiCall } from '../src/call-assist/vapi-client';
+import { loadEnv } from '../src/env';
+import { createNfzClient } from '../src/nfz/client';
+import { createSnapshotStore } from '../src/nfz/snapshot';
+import { mapVapiStatus, vapiResult } from '../src/routes/call-assist';
+
+beforeAll(() => {
+  globalThis.fetch = () => Promise.reject(new Error('Real network access in tests'));
+});
+
+const body = {
+  examName: 'kolonoskopia',
+  facilityName: 'Szpital Bielański',
+  forWhom: 'mamę',
+  callerName: 'Kasi',
+};
+const CALL_TO = '+48500600700';
+
+function makeApp(vapiFetch?: typeof fetch) {
+  let t = new Date('2026-10-04T10:00:00');
+  const app = createApp({
+    nfz: createNfzClient({ fetch: vi.fn<typeof fetch>(), minIntervalMs: 0 }),
+    snapshot: createSnapshotStore('/nonexistent'),
+    now: () => t,
+    callAssist: vapiFetch
+      ? {
+          vapi: createVapiClient({ apiKey: 'test', fetch: vapiFetch }),
+          phoneNumberId: 'pn_1',
+          callTo: CALL_TO,
+        }
+      : null,
+    callAssistWebhookSecret: 'shh',
+  });
+  const advance = (ms: number) => (t = new Date(t.getTime() + ms));
+  const post = (payload: unknown) =>
+    app.request('/v1/call-assist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  return { app, advance, post };
+}
+
+const json = (data: unknown, status = 200) =>
+  Promise.resolve(new Response(JSON.stringify(data), { status }));
+
+describe('POST /v1/call-assist', () => {
+  it('rejects an invalid body', async () => {
+    const res = await makeApp().post({ ...body, examName: '' });
+    expect(res.status).toBe(400);
+    expect(ApiErrorSchema.parse(await res.json()).error.code).toBe('invalid_body');
+  });
+
+  it('without Vapi config runs a scripted call that ends booked', async () => {
+    const { app, advance, post } = makeApp();
+    const start = CallAssistStartResponseSchema.parse(await (await post(body)).json());
+    expect(start.mode).toBe('simulated');
+
+    const ringing = CallAssistStatusSchema.parse(
+      await (await app.request(`/v1/call-assist/${start.callId}`)).json(),
+    );
+    expect(ringing.status).toBe('ringing');
+
+    advance(60_000);
+    const ended = CallAssistStatusSchema.parse(
+      await (await app.request(`/v1/call-assist/${start.callId}`)).json(),
+    );
+    expect(ended.status).toBe('ended');
+    expect(ended.result).toEqual({ booked: true, date: '2026-10-19', time: '10:30', note: null });
+    expect(ended.transcript[0]?.text).toContain('asystentem AI');
+  });
+
+  it('dials only the configured demo number, whatever the body says', async () => {
+    const vapiFetch = vi.fn<typeof fetch>(() => json({ id: 'call_1', status: 'queued' }, 201));
+    const { post } = makeApp(vapiFetch);
+    const res = await post({ ...body, customer: { number: '+48111222333' } });
+    expect(CallAssistStartResponseSchema.parse(await res.json())).toEqual({
+      callId: 'call_1',
+      mode: 'live',
+    });
+    const [url, init] = vapiFetch.mock.calls[0]!;
+    expect(url).toBe('https://api.vapi.ai/call');
+    const sent = JSON.parse(init!.body as string) as { customer: { number: string } };
+    expect(sent.customer.number).toBe(CALL_TO);
+  });
+
+  it('maps a Vapi failure to 502', async () => {
+    const { post } = makeApp(() => json({ message: 'bad phoneNumberId' }, 400));
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    const res = await post(body);
+    spy.mockRestore();
+    expect(res.status).toBe(502);
+  });
+
+  it('limits starts to 5 per minute', async () => {
+    const { post } = makeApp();
+    for (let i = 0; i < 5; i++) expect((await post(body)).status).toBe(200);
+    expect((await post(body)).status).toBe(429);
+  });
+});
+
+describe('GET /v1/call-assist/:id (live)', () => {
+  const endedCall = {
+    id: 'call_1',
+    status: 'ended',
+    endedReason: 'assistant-ended-call',
+    artifact: {
+      messages: [
+        { role: 'system', message: 'prompt' },
+        { role: 'bot', message: 'Dzień dobry, jestem asystentem AI' },
+        { role: 'user', message: 'Mam 18 października o 9:15' },
+      ],
+    },
+    analysis: { structuredData: { booked: true, date: '2026-10-18', time: '09:15', note: '' } },
+  };
+
+  it('returns transcript and the extracted booking', async () => {
+    let n = 0;
+    const { app, post } = makeApp(() =>
+      n++ === 0 ? json({ id: 'call_1', status: 'queued' }) : json(endedCall),
+    );
+    await post(body);
+    const status = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/call_1')).json(),
+    );
+    expect(status).toEqual({
+      callId: 'call_1',
+      status: 'ended',
+      transcript: [
+        { role: 'agent', text: 'Dzień dobry, jestem asystentem AI' },
+        { role: 'clinic', text: 'Mam 18 października o 9:15' },
+      ],
+      result: { booked: true, date: '2026-10-18', time: '09:15', note: null },
+    });
+  });
+
+  it('does not proxy calls this server did not start', async () => {
+    const res = await makeApp(() => json(endedCall)).app.request('/v1/call-assist/other');
+    expect(res.status).toBe(404);
+  });
+
+  it('collects live transcript lines from the webhook', async () => {
+    let n = 0;
+    const { app, post } = makeApp(() =>
+      n++ === 0
+        ? json({ id: 'call_1', status: 'queued' })
+        : json({ id: 'call_1', status: 'in-progress' }),
+    );
+    await post(body);
+    const hook = (secret: string) =>
+      app.request('/v1/call-assist/webhook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Vapi-Secret': secret },
+        body: JSON.stringify({
+          message: {
+            type: 'transcript',
+            transcriptType: 'final',
+            role: 'user',
+            transcript: 'Słucham?',
+            call: { id: 'call_1' },
+          },
+        }),
+      });
+    expect((await hook('wrong')).status).toBe(401);
+    expect((await hook('shh')).status).toBe(200);
+    const status = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/call_1')).json(),
+    );
+    expect(status.status).toBe('in_progress');
+    expect(status.transcript).toEqual([{ role: 'clinic', text: 'Słucham?' }]);
+  });
+});
+
+describe('Vapi mapping', () => {
+  const call = (over: Partial<VapiCall>): VapiCall => ({ id: 'c', status: 'ended', ...over });
+
+  it('treats no answer / busy as failed', () => {
+    expect(mapVapiStatus(call({ endedReason: 'customer-did-not-answer' }))).toBe('failed');
+    expect(mapVapiStatus(call({ endedReason: 'customer-busy' }))).toBe('failed');
+    expect(mapVapiStatus(call({ endedReason: 'customer-ended-call' }))).toBe('ended');
+    expect(mapVapiStatus(call({ status: 'in-progress' }))).toBe('in_progress');
+  });
+
+  it('drops malformed structured data', () => {
+    expect(vapiResult(call({ analysis: { structuredData: { booked: 'yes' } } }))).toBeNull();
+    expect(
+      vapiResult(
+        call({
+          analysis: { structuredData: { booked: true, date: '18.10', time: '9:15', note: '' } },
+        }),
+      ),
+    ).toEqual({ booked: true, date: null, time: null, note: null });
+  });
+});
+
+describe('buildAssistant', () => {
+  it('opens with the AI disclosure and speaks Polish', () => {
+    const a = buildAssistant(body, '2026-10-04') as {
+      firstMessage: string;
+      transcriber: { language: string };
+      server?: unknown;
+    };
+    expect(a.firstMessage).toMatch(/^Dzień dobry, jestem asystentem AI dzwoniącym w imieniu Kasi/);
+    expect(a.transcriber.language).toBe('pl');
+    expect(a.server).toBeUndefined();
+  });
+
+  it('wires the webhook only with a public URL', () => {
+    const a = buildAssistant(body, '2026-10-04', { publicUrl: 'https://x.ngrok.app/' });
+    expect(a).toMatchObject({ server: { url: 'https://x.ngrok.app/v1/call-assist/webhook' } });
+  });
+});
+
+describe('env', () => {
+  it('validates the demo number and treats empty values as unset', () => {
+    expect(() => loadEnv({ DEMO_CALL_TO: '500600700' })).toThrow(/DEMO_CALL_TO/);
+    expect(loadEnv({ DEMO_CALL_TO: '', VAPI_API_KEY: '' }).DEMO_CALL_TO).toBeUndefined();
+    expect(loadEnv({ DEMO_CALL_TO: CALL_TO }).DEMO_CALL_TO).toBe(CALL_TO);
+  });
+});

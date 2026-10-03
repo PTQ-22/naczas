@@ -172,6 +172,33 @@ namespace Doc {
     nfz: 'up' | 'down';
     snapshotAsOf: string;
   }
+
+  export interface CallAssistRequest {
+    examName: string;
+    facilityName: string;
+    forWhom: string;
+    callerName: string;
+    bookBy?: ISODate;
+  }
+
+  export interface CallAssistStartResponse {
+    callId: string;
+    mode: 'live' | 'simulated';
+  }
+
+  export interface CallAssistResult {
+    booked: boolean;
+    date: ISODate | null;
+    time: string | null;
+    note: string | null;
+  }
+
+  export interface CallAssistStatus {
+    callId: string;
+    status: 'queued' | 'ringing' | 'in_progress' | 'ended' | 'failed';
+    transcript: { role: 'agent' | 'clinic'; text: string }[];
+    result: CallAssistResult | null;
+  }
 }
 /* eslint-enable @typescript-eslint/no-namespace */
 
@@ -207,5 +234,9 @@ describe('types match docs/03-contracts.md', () => {
     expectTypeOf<S.FacilitiesResponse>().toEqualTypeOf<Doc.FacilitiesResponse>();
     expectTypeOf<S.ApiError>().toEqualTypeOf<Doc.ApiError>();
     expectTypeOf<S.HealthResponse>().toEqualTypeOf<Doc.HealthResponse>();
+    expectTypeOf<S.CallAssistRequest>().toEqualTypeOf<Doc.CallAssistRequest>();
+    expectTypeOf<S.CallAssistStartResponse>().toEqualTypeOf<Doc.CallAssistStartResponse>();
+    expectTypeOf<S.CallAssistResult>().toEqualTypeOf<Doc.CallAssistResult>();
+    expectTypeOf<S.CallAssistStatus>().toEqualTypeOf<Doc.CallAssistStatus>();
   });
 });

@@ -1,8 +1,11 @@
+import 'dotenv/config';
+
 import path from 'node:path';
 
 import { serve } from '@hono/node-server';
 
 import { createApp } from './app';
+import { createVapiClient } from './call-assist/vapi-client';
 import { loadEnv } from './env';
 import { createNfzClient } from './nfz/client';
 import { createSnapshotStore } from './nfz/snapshot';
@@ -30,6 +33,21 @@ const REFRESH_ORDER = [
 
 const env = loadEnv();
 
+const callAssist =
+  env.VAPI_API_KEY && env.VAPI_PHONE_NUMBER_ID && env.DEMO_CALL_TO
+    ? {
+        vapi: createVapiClient({ apiKey: env.VAPI_API_KEY }),
+        phoneNumberId: env.VAPI_PHONE_NUMBER_ID,
+        callTo: env.DEMO_CALL_TO,
+        assistant: {
+          voiceId: env.VAPI_VOICE_ID,
+          publicUrl: env.PUBLIC_URL,
+          webhookSecret: env.VAPI_WEBHOOK_SECRET,
+        },
+      }
+    : null;
+console.log(`Call assist: ${callAssist ? 'live (Vapi)' : 'simulated'}`);
+
 const nfz = createNfzClient();
 const snapshot = createSnapshotStore(path.resolve(import.meta.dirname, '../data/snapshot'));
 const loader = createQueueLoader({ nfz, snapshot, now: () => new Date() });
@@ -40,6 +58,8 @@ const app = createApp({
   cors: { origins: env.CORS_ORIGINS, allowLocalhost: env.NODE_ENV !== 'production' },
   rateLimit: { perMinute: env.RATE_LIMIT_PER_MIN, trustProxy: env.TRUST_PROXY },
   log: (line) => console.log(line),
+  callAssist,
+  callAssistWebhookSecret: env.VAPI_WEBHOOK_SECRET,
 });
 
 // Warm-up before listening: the first request is answered from the snapshot immediately.

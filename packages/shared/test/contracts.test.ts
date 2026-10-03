@@ -2,12 +2,16 @@ import { describe, expect, it } from 'vitest';
 
 import {
   ApiErrorSchema,
+  CallAssistRequestSchema,
+  CallAssistStatusSchema,
   ExamRecordSchema,
   ExamRuleSchema,
   FacilitiesResponseSchema,
   HealthResponseSchema,
   PlanSchema,
   ProfileSchema,
+  simulateCallAssist,
+  simulatedSlotDate,
   WaitTimeSummarySchema,
   type Profile,
 } from '../src';
@@ -207,5 +211,51 @@ describe('API envelopes', () => {
     expect(
       HealthResponseSchema.safeParse({ ok: false, nfz: 'down', snapshotAsOf: '2026-09' }).success,
     ).toBe(false);
+  });
+});
+
+describe('CallAssist schemas', () => {
+  const request = {
+    examName: 'kolonoskopia',
+    facilityName: 'Szpital Bielański',
+    forWhom: 'mamę',
+    callerName: 'Kasia',
+    bookBy: '2026-12-01',
+  };
+
+  it('parses a request and rejects an empty exam name', () => {
+    expect(CallAssistRequestSchema.parse(request)).toEqual(request);
+    expect(CallAssistRequestSchema.safeParse({ ...request, examName: ' ' }).success).toBe(false);
+  });
+
+  it('parses an ended call with a result and rejects a malformed time', () => {
+    const status = {
+      callId: 'c1',
+      status: 'ended',
+      transcript: [{ role: 'agent', text: 'Dzień dobry' }],
+      result: { booked: true, date: '2026-10-18', time: '10:30', note: null },
+    };
+    expect(CallAssistStatusSchema.parse(status)).toEqual(status);
+    const bad = { ...status, result: { ...status.result, time: '10.30' } };
+    expect(CallAssistStatusSchema.safeParse(bad).success).toBe(false);
+  });
+});
+
+describe('simulateCallAssist', () => {
+  const req = { examName: 'kolonoskopię', facilityName: 'X', forWhom: 'mamę', callerName: 'Kasi' };
+
+  it('rings, talks, then ends with a booked weekday slot two weeks out', () => {
+    expect(simulateCallAssist('s', req, '2026-10-04', 0).status).toBe('ringing');
+    const mid = simulateCallAssist('s', req, '2026-10-04', 8000);
+    expect(mid.status).toBe('in_progress');
+    expect(mid.transcript[0]?.text).toMatch(/asystentem AI.*w imieniu Kasi/);
+    const end = simulateCallAssist('s', req, '2026-10-04', 60_000);
+    expect(end).toMatchObject({ status: 'ended', result: { booked: true, date: '2026-10-19' } });
+    expect(end.transcript.at(-2)?.text).toContain('19 października o 10:30');
+  });
+
+  it('moves a weekend slot to Monday', () => {
+    expect(simulatedSlotDate('2026-10-03')).toBe('2026-10-19'); // Sat + 14 = Sat → Mon
+    expect(simulatedSlotDate('2026-10-05')).toBe('2026-10-19'); // Mon + 14 = Mon
   });
 });

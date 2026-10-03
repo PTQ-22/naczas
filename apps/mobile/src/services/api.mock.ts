@@ -1,9 +1,12 @@
+import { format } from 'date-fns';
 import { z } from 'zod';
 
 import {
   CoverageSchema,
   FacilitiesResponseSchema,
+  simulateCallAssist,
   WaitTimeSummarySchema,
+  type CallAssistRequest,
   type Facility,
 } from '@naczas/shared';
 
@@ -47,7 +50,13 @@ function pick<T extends { examId: string }>(
 
 const byNearest = (a: Facility, b: Facility) => a.distanceKm - b.distanceKm;
 
-export function createMockApi({ delayMs = 300 }: { delayMs?: number } = {}): ApiClient {
+export function createMockApi({
+  delayMs = 300,
+  now = () => Date.now(),
+}: { delayMs?: number; now?: () => number } = {}): ApiClient {
+  // Same scripted call as the API's simulated mode (shared), so offline/web demos match.
+  const calls = new Map<string, { startedAt: number; req: CallAssistRequest; today: string }>();
+
   // Small delay so loading states are visible in the demo, like the real API.
   const respond = <T>(produce: () => T) =>
     new Promise<T>((resolve, reject) => {
@@ -95,6 +104,18 @@ export function createMockApi({ delayMs = 300 }: { delayMs?: number } = {}): Api
         const match = coverage.find((c) => c.program === params.program);
         if (!match) throw new ApiRequestError('http', 'No coverage data', 404, 'no_data');
         return match;
+      }),
+    startCallAssist: (req) =>
+      respond(() => {
+        const callId = `sim-${calls.size + 1}-${now()}`;
+        calls.set(callId, { startedAt: now(), req, today: format(now(), 'yyyy-MM-dd') });
+        return { callId, mode: 'simulated' as const };
+      }),
+    getCallAssist: (callId) =>
+      respond(() => {
+        const call = calls.get(callId);
+        if (!call) throw new ApiRequestError('http', 'Unknown call id', 404, 'unknown_call');
+        return simulateCallAssist(callId, call.req, call.today, now() - call.startedAt);
       }),
   };
 }

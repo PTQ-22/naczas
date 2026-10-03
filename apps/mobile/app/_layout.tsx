@@ -77,6 +77,10 @@ function ThemedStack() {
           options={{ headerShown: true, title: t('exam.bookTitle'), presentation: 'modal' }}
         />
         <Stack.Screen
+          name="exam/[examId]/call"
+          options={{ headerShown: true, title: t('callAssist.title'), presentation: 'modal' }}
+        />
+        <Stack.Screen
           name="visit-prep"
           options={{ headerShown: true, title: t('visitPrep.title') }}
         />

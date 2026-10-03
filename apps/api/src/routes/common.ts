@@ -32,8 +32,13 @@ export const LocationQuerySchema = z
     path: ['lat'],
   });
 
-export function validationMessage(error: z.ZodError): string {
-  return error.issues.map((i) => `${i.path.join('.') || 'query'}: ${i.message}`).join('; ');
+/** Structural type: also accepts zod-core errors (e.g. from @hono/zod-validator hooks). */
+export function validationMessage(error: {
+  issues: readonly { path: readonly PropertyKey[]; message: string }[];
+}): string {
+  return error.issues
+    .map((i) => `${i.path.map(String).join('.') || 'query'}: ${i.message}`)
+    .join('; ');
 }
 
 export function originOf(q: { lat?: number | undefined; lng?: number | undefined }) {

@@ -213,5 +213,41 @@ export interface Coverage {
 
 Mapowanie w aplikacji: `mammography` → `mammography`, `cervical_screening` → `cervical`, `colonoscopy_screening` → `colonoscopy` (`apps/mobile/src/services/coverage.ts`).
 
+### `POST /v1/call-assist` (demo „Zadzwoń za mnie”)
+Agent głosowy AI (Vapi) dzwoni i prosi o termin. **Dzwoni wyłącznie na numer z env `DEMO_CALL_TO`** (nigdy na numer z requestu ani placówki); bez konfiguracji Vapi zwraca `mode: 'simulated'` (skryptowana rozmowa). Agent w pierwszym zdaniu mówi, że jest AI i w czyim imieniu dzwoni (AI Act art. 50). Body nie zawiera PESEL ani nazwiska.
+
+```ts
+export interface CallAssistRequest {
+  examName: string;               // mianownik, agent mówi „na badanie: <examName>”
+  facilityName: string;
+  forWhom: string;                // np. „mamę” (biernik, mówione przez agenta)
+  callerName: string;             // imię opiekuna w dopełniaczu („Kasi”)
+  bookBy?: ISODate;               // najpóźniejszy akceptowalny termin
+}
+
+export interface CallAssistStartResponse {
+  callId: string;
+  mode: 'live' | 'simulated';
+}
+```
+
+### `GET /v1/call-assist/:callId`
+
+```ts
+export interface CallAssistResult {
+  booked: boolean;
+  date: ISODate | null;
+  time: string | null;            // 'HH:MM'
+  note: string | null;
+}
+
+export interface CallAssistStatus {
+  callId: string;
+  status: 'queued' | 'ringing' | 'in_progress' | 'ended' | 'failed';
+  transcript: { role: 'agent' | 'clinic'; text: string }[];
+  result: CallAssistResult | null;   // po zakończeniu rozmowy
+}
+```
+
 ## Mapowanie examId → świadczenia NFZ
 Trzymane w `ExamRule.nfzBenefits` (pakiet `rules`), API importuje `@naczas/rules` żeby rozwiązać `examId` → nazwy świadczeń. Klient nigdy nie wysyła surowej nazwy świadczenia.

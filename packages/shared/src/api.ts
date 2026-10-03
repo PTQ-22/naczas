@@ -63,3 +63,39 @@ export const HealthResponseSchema = z.object({
   snapshotAsOf: z.string(),
 });
 export type HealthResponse = z.infer<typeof HealthResponseSchema>;
+
+/** POST /v1/call-assist — demo: an AI voice agent phones the clinic and asks for a visit */
+export const CallAssistRequestSchema = z.object({
+  examName: z.string().trim().min(1).max(80),
+  facilityName: z.string().trim().min(1).max(120),
+  forWhom: z.string().trim().min(1).max(40), // e.g. "mamę" (accusative, spoken by the agent)
+  callerName: z.string().trim().min(1).max(40), // caregiver's first name, genitive ("Kasi")
+  bookBy: ISODateSchema.optional(), // latest acceptable date from the plan
+});
+export type CallAssistRequest = z.infer<typeof CallAssistRequestSchema>;
+
+export const CallAssistStartResponseSchema = z.object({
+  callId: z.string(),
+  mode: z.enum(['live', 'simulated']),
+});
+export type CallAssistStartResponse = z.infer<typeof CallAssistStartResponseSchema>;
+
+export const CallAssistResultSchema = z.object({
+  booked: z.boolean(),
+  date: ISODateSchema.nullable(),
+  time: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/)
+    .nullable(),
+  note: z.string().nullable(),
+});
+export type CallAssistResult = z.infer<typeof CallAssistResultSchema>;
+
+/** GET /v1/call-assist/:callId */
+export const CallAssistStatusSchema = z.object({
+  callId: z.string(),
+  status: z.enum(['queued', 'ringing', 'in_progress', 'ended', 'failed']),
+  transcript: z.array(z.object({ role: z.enum(['agent', 'clinic']), text: z.string() })),
+  result: CallAssistResultSchema.nullable(),
+});
+export type CallAssistStatus = z.infer<typeof CallAssistStatusSchema>;

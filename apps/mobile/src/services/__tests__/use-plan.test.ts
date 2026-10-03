@@ -37,6 +37,8 @@ function loaderWith(getWaitTimes: ApiClient['getWaitTimes']) {
     getWaitTimes: jest.fn(getWaitTimes),
     getFacilities: jest.fn(),
     getCoverage: jest.fn(),
+    startCallAssist: jest.fn(),
+    getCallAssist: jest.fn(),
   };
   return { api, loader: createWaitTimesLoader({ api, storage: AsyncStorage }) };
 }

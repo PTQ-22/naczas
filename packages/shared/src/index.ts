@@ -4,3 +4,4 @@ export * from './coverage';
 export * from './domain';
 export * from './plan';
 export * from './rules';
+export * from './call-assist-script';

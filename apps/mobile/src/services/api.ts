@@ -3,10 +3,15 @@ import { z } from 'zod';
 import {
   ApiErrorSchema,
   CoverageSchema,
+  CallAssistStartResponseSchema,
+  CallAssistStatusSchema,
   FacilitiesResponseSchema,
   type Coverage,
   type CoverageProgram,
   WaitTimeSummarySchema,
+  type CallAssistRequest,
+  type CallAssistStartResponse,
+  type CallAssistStatus,
   type FacilitiesResponse,
   type ProvinceCode,
   type WaitTimeSummary,
@@ -56,6 +61,12 @@ export interface ApiClient {
     options?: RequestOptions,
   ) => Promise<FacilitiesResponse>;
   getCoverage: (params: CoverageParams, options?: RequestOptions) => Promise<Coverage>;
+  /** "Zadzwoń za mnie" demo: starts an AI phone call (or a scripted simulation). */
+  startCallAssist: (
+    body: CallAssistRequest,
+    options?: RequestOptions,
+  ) => Promise<CallAssistStartResponse>;
+  getCallAssist: (callId: string, options?: RequestOptions) => Promise<CallAssistStatus>;
 }
 
 export type ApiErrorKind = 'timeout' | 'network' | 'http' | 'invalid_response' | 'aborted';
@@ -107,11 +118,13 @@ export function buildCoverageQuery(params: CoverageParams): string {
   return query.toString();
 }
 
-async function getJson<T>(
+async function requestJson<T>(
   path: string,
   schema: z.ZodType<T>,
   { signal, timeoutMs = DEFAULT_TIMEOUT_MS }: RequestOptions,
   fetchImpl: typeof fetch,
+  /** JSON body → POST */
+  body?: unknown,
 ): Promise<T> {
   const controller = new AbortController();
   let timedOut = false;
@@ -125,16 +138,26 @@ async function getJson<T>(
   try {
     let res: Response;
     try {
-      res = await fetchImpl(`${API_BASE_URL}${path}`, { signal: controller.signal });
+      res = await fetchImpl(
+        `${API_BASE_URL}${path}`,
+        body === undefined
+          ? { signal: controller.signal }
+          : {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body),
+              signal: controller.signal,
+            },
+      );
     } catch (err) {
       if (timedOut) throw new ApiRequestError('timeout', `Timed out after ${timeoutMs} ms`);
       if (signal?.aborted) throw new ApiRequestError('aborted', 'Request aborted');
       throw new ApiRequestError('network', err instanceof Error ? err.message : 'Network error');
     }
 
-    const body: unknown = await res.json().catch(() => undefined);
+    const json: unknown = await res.json().catch(() => undefined);
     if (!res.ok) {
-      const apiError = ApiErrorSchema.safeParse(body);
+      const apiError = ApiErrorSchema.safeParse(json);
       throw new ApiRequestError(
         'http',
         apiError.success ? apiError.data.error.message : `HTTP ${res.status}`,
@@ -142,7 +165,7 @@ async function getJson<T>(
         apiError.success ? apiError.data.error.code : undefined,
       );
     }
-    const parsed = schema.safeParse(body);
+    const parsed = schema.safeParse(json);
     if (!parsed.success) {
       throw new ApiRequestError('invalid_response', `Unexpected response for ${path}`);
     }
@@ -156,10 +179,29 @@ async function getJson<T>(
 export function createHttpApi(fetchImpl: typeof fetch = (...args) => fetch(...args)): ApiClient {
   return {
     getWaitTimes: (params, options = {}) =>
-      getJson(`/v1/wait-times?${buildQuery(params)}`, WaitTimeSummarySchema, options, fetchImpl),
+      requestJson(
+        `/v1/wait-times?${buildQuery(params)}`,
+        WaitTimeSummarySchema,
+        options,
+        fetchImpl,
+      ),
     getFacilities: (params, options = {}) =>
-      getJson(`/v1/facilities?${buildQuery(params)}`, FacilitiesResponseSchema, options, fetchImpl),
+      requestJson(
+        `/v1/facilities?${buildQuery(params)}`,
+        FacilitiesResponseSchema,
+        options,
+        fetchImpl,
+      ),
+    startCallAssist: (body, options = {}) =>
+      requestJson('/v1/call-assist', CallAssistStartResponseSchema, options, fetchImpl, body),
+    getCallAssist: (callId, options = {}) =>
+      requestJson(
+        `/v1/call-assist/${encodeURIComponent(callId)}`,
+        CallAssistStatusSchema,
+        options,
+        fetchImpl,
+      ),
     getCoverage: (params, options = {}) =>
-      getJson(`/v1/coverage?${buildCoverageQuery(params)}`, CoverageSchema, options, fetchImpl),
+      requestJson(`/v1/coverage?${buildCoverageQuery(params)}`, CoverageSchema, options, fetchImpl),
   };
 }
