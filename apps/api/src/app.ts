@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 
-import { createQueueLoader, DataUnavailableError } from './queues';
+import { createQueueLoader, DataUnavailableError, type QueueLoader } from './queues';
 import { errorResponse } from './routes/common';
 import { facilitiesRoutes } from './routes/facilities';
 import { healthRoutes } from './routes/health';
@@ -13,10 +13,12 @@ export interface AppDeps {
   nfz: NfzClient;
   snapshot: SnapshotStore;
   now?: () => Date;
+  /** Pass a prebuilt loader to warm it up / refresh it outside the app (index.ts). */
+  loader?: QueueLoader;
 }
 
-export function createApp({ nfz, snapshot, now = () => new Date() }: AppDeps) {
-  const loader = createQueueLoader({ nfz, snapshot, now });
+export function createApp({ nfz, snapshot, now = () => new Date(), loader }: AppDeps) {
+  loader ??= createQueueLoader({ nfz, snapshot, now });
 
   const app = new Hono().basePath('/v1');
   app.route('/', healthRoutes(loader, snapshot));

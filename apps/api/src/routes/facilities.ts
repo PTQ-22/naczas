@@ -6,7 +6,7 @@ import type { FacilitiesResponse, Facility } from '@naczas/shared';
 import { errorResponse, LocationQuerySchema, originOf, validationMessage } from './common';
 import { MIN_FACILITIES, radiusSteps } from '../aggregate/geo';
 import { selectAdultQueues, normalizeQueue } from '../aggregate/normalize';
-import { benefitsForExam } from '../temp-benefits';
+import { benefitsForExam } from '../exam-benefits';
 
 import type { QueueLoader } from '../queues';
 

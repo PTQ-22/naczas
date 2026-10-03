@@ -40,6 +40,18 @@ export function selectAdultQueues(queues: NfzQueue[], benefits: readonly string[
   return filterExactBenefits(queues, benefits).filter((q) => !isChildrenOnlyPlace(q));
 }
 
+/** average-period in days when > 0 (docs/03 change 2026-10-03), else null */
+export function averageWaitDays(queue: NfzQueue): number | null {
+  const days = queue.attributes.statistics?.['provider-data']?.['average-period'];
+  return days != null && days > 0 ? days : null;
+}
+
+/** statistics.update ('YYYY-MM') when well-formed */
+export function dataMonth(queue: NfzQueue): string | null {
+  const month = queue.attributes.statistics?.['provider-data']?.update;
+  return month && monthToIsoDate(month) ? month : null;
+}
+
 /**
  * NFZ queue → Facility. Returns null for records without coordinates: the contract requires
  * lat/lng, and such a place can be neither mapped nor radius-filtered.
@@ -49,7 +61,7 @@ export function normalizeQueue(queue: NfzQueue, options: NormalizeOptions): Faci
   if (a.latitude == null || a.longitude == null) return null;
 
   const stats = a.statistics?.['provider-data'];
-  const averagePeriod = stats?.['average-period'];
+  const month = dataMonth(queue);
   const position = { lat: a.latitude, lng: a.longitude };
 
   return {
@@ -65,7 +77,7 @@ export function normalizeQueue(queue: NfzQueue, options: NormalizeOptions): Faci
     distanceKm: options.origin ? round1(haversineKm(options.origin, position)) : 0,
     // NFZ returns dates: null for every record (WS2-1) — docs/03 change 2026-10-03.
     firstAvailableDate: null,
-    waitDays: averagePeriod != null && averagePeriod > 0 ? averagePeriod : null,
+    waitDays: averageWaitDays(queue),
     awaiting: stats?.awaiting ?? null,
     accessibility: {
       ramp: a.ramp === 'Y',
@@ -73,7 +85,7 @@ export function normalizeQueue(queue: NfzQueue, options: NormalizeOptions): Faci
       parking: a['car-park'] === 'Y',
       toilet: a.toilet === 'Y',
     },
-    asOf: (stats?.update && monthToIsoDate(stats.update)) || options.fallbackAsOf,
+    asOf: month ? `${month}-01` : options.fallbackAsOf,
   };
 }
 

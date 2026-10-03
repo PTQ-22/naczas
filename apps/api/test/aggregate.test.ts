@@ -11,7 +11,7 @@ import {
   normalizeQueue,
   selectAdultQueues,
 } from '../src/aggregate/normalize';
-import { percentile, summarizeWaitTimes } from '../src/aggregate/wait-times';
+import { percentile, summarizeWaitTimes, toWaitSamples } from '../src/aggregate/wait-times';
 import { NfzQueueSchema, type NfzQueue } from '../src/nfz/schemas';
 
 // Expected numbers below were computed independently (Python) from the same recorded fixtures.
@@ -173,7 +173,10 @@ describe('summarizeWaitTimes (fixtures)', () => {
     summarizeWaitTimes({
       examId: 'colonoscopy_screening',
       province: '07',
-      facilities: facilitiesOf(fixture, origin),
+      samples: toWaitSamples(
+        selectAdultQueues(queuesOf(fixture), [fixture.request.benefit]),
+        origin,
+      ),
       hasOrigin: origin !== undefined,
       radiusKm,
       fallbackAsOf: '2026-10',
@@ -204,12 +207,13 @@ describe('summarizeWaitTimes (fixtures)', () => {
     });
   });
 
-  it('uses the whole province without user coordinates', () => {
+  it('uses the whole province without user coordinates, incl. facilities without lat/lng', () => {
+    // docs/05 §3 (a2d44a7): same set as the WS5 pitch reference → identical numbers
     expect(summarize(colonoscopy07, undefined, 15)).toMatchObject({
       radiusKm: 0,
-      facilitiesCount: 88, // 90 with coordinates, 2 without average-period
-      p50Days: 133,
-      p75Days: 219,
+      facilitiesCount: 96,
+      p50Days: 138,
+      p75Days: 213,
       minDays: 12,
     });
   });
@@ -217,8 +221,8 @@ describe('summarizeWaitTimes (fixtures)', () => {
   it('falls back to the whole province when 60 km is not enough', () => {
     expect(summarize(colonoscopy07, GDANSK, 15)).toMatchObject({
       radiusKm: 409,
-      facilitiesCount: 88,
-      p50Days: 133,
+      facilitiesCount: 96, // whole province counts facilities without coordinates too
+      p50Days: 138,
     });
   });
 
@@ -238,7 +242,7 @@ describe('summarizeWaitTimes (fixtures)', () => {
       summarizeWaitTimes({
         examId: 'x',
         province: '07',
-        facilities: [],
+        samples: [],
         hasOrigin: true,
         radiusKm: 15,
         fallbackAsOf: '2026-10',

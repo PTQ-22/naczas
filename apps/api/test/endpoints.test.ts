@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -11,13 +9,14 @@ import {
 
 import { createApp } from '../src/app';
 import { fixtureFetch, loadAllFixtures, rateLimitedResponse } from './helpers/nfz-fixtures';
+import { buildSnapshotFromFixtures } from './helpers/snapshot-from-fixtures';
 import { createNfzClient } from '../src/nfz/client';
 import { createSnapshotStore } from '../src/nfz/snapshot';
 
 // Expected numbers computed independently (Python) from the recorded fixtures,
 // for coordinates already rounded to 2 decimals (the server rounds too).
 const WARSAW = 'lat=52.23&lng=21.01';
-const FIXTURES_AS_SNAPSHOT = path.resolve(import.meta.dirname, 'fixtures/queues');
+const FIXTURES_AS_SNAPSHOT = await buildSnapshotFromFixtures();
 const noWait = () => Promise.resolve();
 const now = () => new Date('2026-10-04T10:00:00Z');
 
@@ -85,6 +84,14 @@ describe('GET /v1/wait-times', () => {
     });
   });
 
+  it('without coordinates aggregates the whole province (incl. facilities without lat/lng)', async () => {
+    const { body } = await get(
+      makeApp('up'),
+      '/v1/wait-times?examId=colonoscopy_screening&province=07',
+    );
+    expect(body).toMatchObject({ radiusKm: 0, facilitiesCount: 96, p50Days: 138, p75Days: 213 });
+  });
+
   it('falls back to the snapshot when NFZ is down', async () => {
     const { status, body } = await get(makeApp('down'), url);
     expect(status).toBe(200);
@@ -107,6 +114,18 @@ describe('GET /v1/wait-times', () => {
     expect(status).toBe(400);
     expect(ApiErrorSchema.parse(body).error.code).toBe('invalid_query');
   });
+
+  it.each(['mammography', 'psa_discussion', 'no_such_exam'])(
+    '400 unknown_exam for %s (not a queue exam in @naczas/rules)',
+    async (examId) => {
+      const { status, body } = await get(
+        makeApp('up'),
+        `/v1/wait-times?examId=${examId}&province=07`,
+      );
+      expect(status).toBe(400);
+      expect(ApiErrorSchema.parse(body).error.code).toBe('unknown_exam');
+    },
+  );
 
   it('400 on an exam without NFZ queues (e.g. program exams)', async () => {
     const { status, body } = await get(
