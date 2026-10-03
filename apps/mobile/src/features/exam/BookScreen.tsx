@@ -1,6 +1,98 @@
-import { ScreenPlaceholder } from '@/components/ScreenPlaceholder';
+import { format, parseISO } from 'date-fns';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { View } from 'react-native';
+
+import { rules } from '@naczas/rules';
+
+import { Button } from '@/components/Button';
+import { EmptyState } from '@/components/EmptyState';
+import { Screen } from '@/components/Screen';
+import { Text } from '@/components/Text';
 import { t } from '@/i18n';
+import {
+  findRecord,
+  selectActiveProfile,
+  useProfilesStore,
+  useRecordsStore,
+  useToday,
+} from '@/store';
+import { useTheme } from '@/theme';
+
+import { bookedRecord, bookingRange, initialBookedFor, validateBookedFor } from './book-date';
+import { BookDatePicker } from './BookDatePicker';
+
+const fullDate = (iso: string) => format(parseISO(iso), 'dd.MM.yyyy');
 
 export default function BookScreen() {
-  return <ScreenPlaceholder title={t('exam.bookTitle')} />;
+  const { examId, facility } = useLocalSearchParams<{ examId: string; facility?: string }>();
+  const { space } = useTheme();
+  const today = useToday();
+  const profile = useProfilesStore(selectActiveProfile);
+  const records = useRecordsStore((s) => s.records);
+  const upsertRecord = useRecordsStore((s) => s.upsertRecord);
+  const rule = rules.find((r) => r.id === examId);
+  const existing = profile && rule ? findRecord(records, profile.id, rule.id) : undefined;
+
+  const [value, setValue] = useState(() => initialBookedFor(today, existing));
+  const error = validateBookedFor(value, today);
+  const { min, max } = bookingRange(today);
+
+  if (!rule || !profile) {
+    return (
+      <Screen edges={['left', 'right', 'bottom']}>
+        <EmptyState
+          icon="info"
+          title={rule ? t('exam.book.noProfile') : t('exam.notFound.title')}
+          body={rule ? undefined : t('exam.notFound.body')}
+        />
+      </Screen>
+    );
+  }
+
+  const save = () => {
+    if (error) return;
+    // TODO(WS3): switch to markBooked() from the records store when it lands.
+    upsertRecord(
+      bookedRecord({ profileId: profile.id, examId: rule.id, bookedFor: value, today, existing }),
+    );
+    router.back();
+  };
+
+  return (
+    <Screen
+      edges={['left', 'right', 'bottom']}
+      footer={
+        <Button
+          label={t('exam.book.save')}
+          accessibilityLabel={
+            error ? undefined : t('exam.book.saveA11y', { date: fullDate(value) })
+          }
+          disabled={error !== null}
+          fullWidth
+          onPress={save}
+        />
+      }
+    >
+      <View style={{ gap: space.xs }}>
+        <Text variant="title" accessibilityRole="header">
+          {rule.name}
+        </Text>
+        {/* Facility name is shown for context only: ExamRecord has no field for it. */}
+        {facility ? (
+          <Text tone="textMuted">{t('exam.book.facility', { name: facility })}</Text>
+        ) : null}
+      </View>
+
+      <Text variant="heading">{t('exam.book.question')}</Text>
+      <BookDatePicker value={value} min={min} max={max} onChange={setValue} />
+      {error ? (
+        <Text tone="danger" accessibilityRole="alert">
+          {t(`exam.book.errors.${error}`)}
+        </Text>
+      ) : (
+        <Text tone="textMuted">{t('exam.book.reminder')}</Text>
+      )}
+    </Screen>
+  );
 }
