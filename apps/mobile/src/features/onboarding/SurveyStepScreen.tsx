@@ -123,7 +123,8 @@ export default function SurveyStepScreen() {
     if (router.canGoBack()) router.back();
     else if (n > 1)
       router.replace({ pathname: '/onboarding/[step]', params: { step: String(n - 1) } });
-    else router.replace('/onboarding/welcome');
+    // A relative's survey started from the Family tab — back out to it, not to the welcome.
+    else router.replace(draft.forRelative ? '/family' : '/onboarding/welcome');
   };
 
   const skip = () => {

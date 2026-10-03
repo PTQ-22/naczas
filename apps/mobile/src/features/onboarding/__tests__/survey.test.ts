@@ -6,6 +6,7 @@ import {
   draftToRecords,
   examsToAsk,
   isBirthYearValid,
+  isForRelative,
   parseStepParam,
   skipPatch,
   STEP_COUNT,
@@ -35,6 +36,15 @@ describe('parseStepParam', () => {
     expect(parseStepParam(String(STEP_COUNT + 1))).toBeNull();
     expect(parseStepParam('2abc')).toBeNull();
     expect(parseStepParam(undefined)).toBeNull();
+  });
+});
+
+describe('isForRelative', () => {
+  it('accepts only ?for=other', () => {
+    expect(isForRelative('other')).toBe(true);
+    expect(isForRelative('self')).toBe(false);
+    expect(isForRelative(['other'])).toBe(false);
+    expect(isForRelative(undefined)).toBe(false);
   });
 });
 
