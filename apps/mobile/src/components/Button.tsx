@@ -24,6 +24,8 @@ export interface ButtonProps {
   disabled?: boolean;
   fullWidth?: boolean;
   icon?: IconName;
+  /** `small`: caption-size text for secondary links (e.g. a source under content). */
+  size?: 'regular' | 'small';
   testID?: string;
 }
 
@@ -38,6 +40,7 @@ export function Button({
   disabled = false,
   fullWidth = false,
   icon,
+  size = 'regular',
   testID,
 }: ButtonProps) {
   const theme = useTheme();
@@ -104,7 +107,7 @@ export function Button({
           icon && <Icon name={icon} size="sm" color={fg} />
         )}
         <Text
-          variant="label"
+          variant={size === 'small' ? 'caption' : 'label'}
           color={fg}
           style={{ textAlign: leftAligned ? 'left' : 'center', flexShrink: 1 }}
         >

@@ -52,7 +52,7 @@ interface DoneToast {
 }
 
 export default function PlanScreen() {
-  const { colors, space, borderWidth, seniorMode } = useTheme();
+  const { colors, layout, space, borderWidth, seniorMode } = useTheme();
   const { profiles, activeProfile, plan, waitTimes, today, selectProfile } = usePlanData();
   const markDone = useRecordsStore((s) => s.markDone);
   const undo = useRecordsStore((s) => s.undo);
@@ -129,7 +129,7 @@ export default function PlanScreen() {
           onPress={() => openExam(hero.examId)}
           accessibilityHint={t('plan.ticket.a11yHint')}
         />
-        <Text>{msg(content.message)}</Text>
+        <Text variant="bodyLarge">{msg(content.message)}</Text>
         {cta && (
           <Button
             label={msg(cta.label)}
@@ -164,10 +164,14 @@ export default function PlanScreen() {
     />
   );
 
+  // Ink rules belong to the urgency sections; the trailing extras get a hairline and more air,
+  // so they read as secondary to the plan instead of as more sections.
   const divider = {
-    borderTopWidth: borderWidth.strong,
-    borderTopColor: colors.text,
-    paddingTop: space.md,
+    borderTopWidth: borderWidth.hairline,
+    borderTopColor: colors.border,
+    // Plate already spaces children by space.md; top it up to a full section gap.
+    marginTop: layout.sectionGap - space.md,
+    paddingTop: layout.sectionGap,
   };
 
   return (

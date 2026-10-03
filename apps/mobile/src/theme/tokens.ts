@@ -198,11 +198,12 @@ const baseType: Record<TypeVariant, TypeStyle> = {
   body: { fontFamily: fonts.body, fontSize: 17, lineHeight: 25 },
   label: { fontFamily: fonts.bodyBold, fontSize: 17, lineHeight: 22 },
   caption: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
-  // Uppercase mono section labels; 13 pt is legible because caps + tracking (redesign §3).
+  // Uppercase mono section labels and status words only — never names or sentences. 14 pt is the
+  // app-wide minimum (tokens.md §4).
   eyebrow: {
     fontFamily: fonts.monoBold,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },

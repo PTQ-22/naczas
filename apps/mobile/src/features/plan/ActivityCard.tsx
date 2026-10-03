@@ -22,11 +22,11 @@ export function ActivityCard({ tip }: ActivityCardProps) {
       <Text variant="label" accessibilityRole="header">
         {tip.title}
       </Text>
-      <Text variant="caption" tone="textMuted">
-        {tip.body}
-      </Text>
+      <Text>{tip.body}</Text>
+      {/* The source backs the text up; it must not outrank it (caption, not a 17 pt button). */}
       <Button
         variant="ghost"
+        size="small"
         icon="external"
         accessibilityRole="link"
         label={t('plan.activity.source', { name: tip.source.name })}
