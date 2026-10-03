@@ -1,0 +1,90 @@
+[
+  {
+    "examId": "colonoscopy_screening",
+    "province": "06",
+    "radiusKm": 15,
+    "facilitiesCount": 11,
+    "p50Days": 142,
+    "p75Days": 158,
+    "minDays": 77,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "dental_checkup",
+    "province": "06",
+    "radiusKm": 15,
+    "facilitiesCount": 46,
+    "p50Days": 34,
+    "p75Days": 55,
+    "minDays": 1,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "eye_exam",
+    "province": "06",
+    "radiusKm": 15,
+    "facilitiesCount": 28,
+    "p50Days": 217,
+    "p75Days": 291,
+    "minDays": 42,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "skin_check",
+    "province": "06",
+    "radiusKm": 15,
+    "facilitiesCount": 16,
+    "p50Days": 146,
+    "p75Days": 257,
+    "minDays": 25,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "colonoscopy_screening",
+    "province": "07",
+    "radiusKm": 15,
+    "facilitiesCount": 35,
+    "p50Days": 141,
+    "p75Days": 200,
+    "minDays": 23,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "dental_checkup",
+    "province": "07",
+    "radiusKm": 15,
+    "facilitiesCount": 114,
+    "p50Days": 29,
+    "p75Days": 48,
+    "minDays": 1,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "eye_exam",
+    "province": "07",
+    "radiusKm": 15,
+    "facilitiesCount": 83,
+    "p50Days": 61,
+    "p75Days": 111,
+    "minDays": 5,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  },
+  {
+    "examId": "skin_check",
+    "province": "07",
+    "radiusKm": 15,
+    "facilitiesCount": 48,
+    "p50Days": 92,
+    "p75Days": 142,
+    "minDays": 10,
+    "asOf": "2026-09",
+    "source": "nfz_live"
+  }
+]
