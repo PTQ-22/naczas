@@ -10,6 +10,14 @@ export function resolveToday(todayOverride: ISODate | null, now: Date): ISODate 
 }
 
 /**
+ * Non-hook twin of `useToday()` for store actions (e.g. `updatedAt`). Kept in this module so
+ * reading the clock stays in one place.
+ */
+export function currentToday(): ISODate {
+  return resolveToday(useSettingsStore.getState().todayOverride, new Date());
+}
+
+/**
  * The ONLY place the app reads the current date (AGENTS.md §3). Everything else gets `today`
  * passed in, so the demo "time travel" override reaches all of it at once.
  */
