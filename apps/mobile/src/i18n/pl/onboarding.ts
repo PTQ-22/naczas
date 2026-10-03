@@ -103,6 +103,8 @@ export const onboarding = {
     lifestyle: {
       title: 'Styl życia',
       smokingLabel: 'Palenie papierosów',
+      smokingNote:
+        'Bez tej odpowiedzi nie zaproponujemy badania płuc (niskodawkowa tomografia, LDCT).',
       smoking: {
         never: 'Nigdy',
         former: 'Kiedyś',

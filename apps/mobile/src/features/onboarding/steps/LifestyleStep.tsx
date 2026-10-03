@@ -14,6 +14,10 @@ export function LifestyleStep({ draft, update }: StepProps) {
   return (
     <>
       <Text variant="label">{t('onboarding.steps.lifestyle.smokingLabel')}</Text>
+      {/* Skipped smoking is saved as 'never' (contract needs a status) — say what that costs. */}
+      <Text variant="caption" tone="textMuted">
+        {t('onboarding.steps.lifestyle.smokingNote')}
+      </Text>
       {SMOKING.map((smoking) => (
         <OptionTile
           key={smoking}
