@@ -18,8 +18,8 @@ Czytaj: `AGENTS.md` (§3 RN — dostępność!), `docs/01-user-journey.md`, `doc
 - [x] Ekran `/dev/components` (tylko w dev) — galeria komponentów do szybkiego review
 
 ### WS4-3 · Ekran planu (oś czasu) — „wow moment”
-- [ ] Sekcje wg urgency, `ExamCard` z jednym CTA zależnym od `booking` (`01-user-journey.md` §UX)
-- [ ] Linia czasu z animacją wejścia (`react-native-reanimated`, subtelnie — 300 ms, respektuj „ogranicz ruch”)
+- [x] Sekcje wg urgency, `ExamCard` z jednym CTA zależnym od `booking` (`01-user-journey.md` §UX)
+- [x] Linia czasu z animacją wejścia (`react-native-reanimated`, subtelnie — 300 ms, respektuj „ogranicz ruch”)
 - [ ] Na mockach (`mockPlan()` z WS1), potem `usePlan()` od WS3
 
 ### WS4-4 · Karta badania `exam/[examId]`
