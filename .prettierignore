@@ -1,0 +1,12 @@
+pnpm-lock.yaml
+**/node_modules
+**/.expo
+**/dist
+**/coverage
+**/web-build
+apps/mobile/ios
+apps/mobile/android
+
+# Docs are owned by WS5 — not reformatted by tooling
+docs/
+*.md

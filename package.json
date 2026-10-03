@@ -10,14 +10,37 @@
     "dev:mobile": "pnpm --filter @naczas/mobile dev",
     "dev:web": "pnpm --filter @naczas/mobile dev:web",
     "dev:api": "pnpm --filter @naczas/api dev",
-    "lint": "pnpm -r --if-present lint",
-    "lint:fix": "pnpm -r --if-present lint:fix",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix && prettier --write .",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm -r --if-present test",
-    "check": "pnpm lint && pnpm typecheck && pnpm test"
+    "check": "pnpm lint && pnpm typecheck && pnpm test",
+    "format": "prettier --write .",
+    "prepare": "simple-git-hooks"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
     "@types/node": "^26.6.4",
-    "typescript": "~6.0.3"
+    "eslint": "^9.39.5",
+    "eslint-config-expo": "~57.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.13.0",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.9",
+    "simple-git-hooks": "^2.14.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.0"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,mjs,cjs}": [
+      "eslint --fix --max-warnings 0",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": "prettier --write"
   }
 }
