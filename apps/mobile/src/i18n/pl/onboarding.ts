@@ -7,6 +7,7 @@ export const onboarding = {
     disclaimer:
       'Aplikacja przypomina o badaniach profilaktycznych i pomaga je zaplanować, ale nie stawia diagnozy i nie zastępuje lekarza. Jeśli coś Cię niepokoi albo masz objawy, porozmawiaj z lekarzem rodzinnym.',
     start: 'Zaczynamy',
+    resume: 'Dokończ rozpoczętą ankietę',
     loadDemo: 'Wczytaj profil demo',
   },
   nav: {
@@ -15,6 +16,9 @@ export const onboarding = {
     skip: 'Pomiń',
     dontKnow: 'Nie wiem / pomiń',
     progress: 'Krok {{current}} z {{total}}',
+    finish: 'Pokaż plan',
+    askingAbout: 'Pytamy o: {{name}}',
+    askingAboutSelf: 'Pytamy o Ciebie',
   },
   steps: {
     who: {
@@ -49,6 +53,31 @@ export const onboarding = {
       postalPlaceholder: '00-000',
       postalError: 'Wpisz kod w formacie 00-000',
       gpsDenied: 'Brak zgody na lokalizację — wpisz kod pocztowy.',
+      gpsError: 'Nie udało się ustalić lokalizacji — wpisz kod pocztowy.',
+      locating: 'Ustalam lokalizację…',
+      selected: 'Wybrano: {{label}}',
+      gpsLabel: 'Moja lokalizacja, woj. {{province}}',
+      postalLocationLabel: 'Kod {{code}}, woj. {{province}}',
+      privacy:
+        'Lokalizacja zostaje w telefonie; do wyszukiwania placówek wysyłamy ją zaokrągloną do ok. 1 km.',
+      provinces: {
+        '01': 'dolnośląskie',
+        '02': 'kujawsko-pomorskie',
+        '03': 'lubelskie',
+        '04': 'lubuskie',
+        '05': 'łódzkie',
+        '06': 'małopolskie',
+        '07': 'mazowieckie',
+        '08': 'opolskie',
+        '09': 'podkarpackie',
+        '10': 'podlaskie',
+        '11': 'pomorskie',
+        '12': 'śląskie',
+        '13': 'świętokrzyskie',
+        '14': 'warmińsko-mazurskie',
+        '15': 'wielkopolskie',
+        '16': 'zachodniopomorskie',
+      },
     },
     conditions: {
       title: 'Choroby przewlekłe',
@@ -59,7 +88,6 @@ export const onboarding = {
         heart_disease: 'Choroby serca',
         other: 'Inne',
       },
-      none: 'Żadne z powyższych',
     },
     familyHistory: {
       title: 'Choroby w rodzinie',
@@ -71,7 +99,6 @@ export const onboarding = {
         ovarian_cancer: 'Rak jajnika',
         early_cardiovascular: 'Zawał lub udar przed 60. rokiem życia',
       },
-      none: 'Żadne z powyższych',
     },
     lifestyle: {
       title: 'Styl życia',
