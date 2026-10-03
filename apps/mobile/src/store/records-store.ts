@@ -7,7 +7,10 @@ import { ExamRecordSchema, type ExamRecord, type ISODate } from '@naczas/shared'
 import { validatedPersist } from './persist';
 import { currentToday } from './use-today';
 
-const PersistedRecordsSchema = z.object({ records: z.array(ExamRecordSchema) });
+const PersistedRecordsSchema = z.object({
+  records: z.array(ExamRecordSchema),
+  intervalOverrides: z.record(z.string(), z.number()).optional().default({}),
+});
 type PersistedRecords = z.infer<typeof PersistedRecordsSchema>;
 
 interface RecordsState extends PersistedRecords {
@@ -24,6 +27,8 @@ interface RecordsState extends PersistedRecords {
   markDone: (profileId: string, examId: string, date: ISODate) => void;
   /** Corrects when the exam was last done; status stays as it is. */
   setLastDone: (profileId: string, examId: string, lastDone: ExamRecord['lastDone']) => void;
+  /** Sets custom interval for an exam. Key is profileId|examId */
+  setIntervalOverride: (profileId: string, examId: string, months: number | null) => void;
   /** Reverts the last markBooked/markDone/setLastDone for this exam. Returns false if none. */
   undo: (profileId: string, examId: string) => boolean;
   removeRecordsForProfile: (profileId: string) => void;
@@ -55,6 +60,7 @@ export const useRecordsStore = create<RecordsState>()(
 
       return {
         records: [],
+        intervalOverrides: {},
         undoStack: {},
         upsertRecord: (record) =>
           set((s) => ({ records: [...s.records.filter((r) => !sameKey(r, record)), record] })),
@@ -86,6 +92,14 @@ export const useRecordsStore = create<RecordsState>()(
               updatedAt: currentToday(),
             };
           }),
+        setIntervalOverride: (profileId, examId, months) =>
+          set((s) => {
+            const key = recordKey(profileId, examId);
+            const { [key]: _, ...rest } = s.intervalOverrides || {};
+            return {
+              intervalOverrides: months === null ? rest : { ...s.intervalOverrides, [key]: months },
+            };
+          }),
         undo: (profileId, examId) => {
           const key = recordKey(profileId, examId);
           if (!(key in get().undoStack)) return false;
@@ -105,7 +119,7 @@ export const useRecordsStore = create<RecordsState>()(
       name: 'records',
       version: 1,
       schema: PersistedRecordsSchema,
-      partialize: ({ records }) => ({ records }),
+      partialize: ({ records, intervalOverrides }) => ({ records, intervalOverrides }),
     }),
   ),
 );

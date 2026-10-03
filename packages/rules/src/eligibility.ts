@@ -32,6 +32,9 @@ export function matchingModifiers(rule: ExamRule, profile: Profile): Modifier[] 
 }
 
 export function isEligible(rule: ExamRule, profile: Profile, today: ISODate): boolean {
+  if (profile.subscribedExams?.includes(rule.id)) return true;
+  if (rule.source.name === 'Custom') return false;
+
   const { sex, age: range, requiresAny } = rule.eligibility;
   if (sex && sex !== profile.sex) return false;
 

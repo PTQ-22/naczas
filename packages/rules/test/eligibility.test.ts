@@ -75,8 +75,9 @@ const cases: Array<[string, Profile, Profile, string]> = [
 ];
 
 describe('isEligible — every rule has a positive and a negative case', () => {
-  it('covers every rule in exams.json', () => {
-    expect(cases.map(([id]) => id).sort()).toEqual(rules.map((r) => r.id).sort());
+  it('covers every standard rule in exams.json', () => {
+    const standardRules = rules.filter((r) => r.source.name !== 'Custom');
+    expect(cases.map(([id]) => id).sort()).toEqual(standardRules.map((r) => r.id).sort());
   });
 
   it.each(cases)('%s: eligible profile qualifies', (id, yes) => {

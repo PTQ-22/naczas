@@ -51,6 +51,7 @@ namespace Doc {
     activity?: ActivityLevel;
     heightCm?: number;
     weightKg?: number;
+    subscribedExams?: string[];
     createdAt: ISODate;
   }
 

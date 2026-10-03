@@ -1,0 +1,88 @@
+import { useCallback, useEffect, useState } from 'react';
+
+import type { Profile, ExamRecord } from '@naczas/shared';
+
+import { useBetStore, useProfilesStore, useRecordsStore, useSettingsStore } from '@/store';
+
+const envApiUrl: unknown = process.env.EXPO_PUBLIC_API_URL;
+const API_BASE_URL =
+  typeof envApiUrl === 'string' && envApiUrl ? envApiUrl : 'http://localhost:8787';
+
+export function useCloudSync() {
+  const familyCode = useSettingsStore((s) => s.familyCode);
+  const [syncing, setSyncing] = useState(false);
+  const [lastSync, setLastSync] = useState<Date | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const push = useCallback(async () => {
+    if (!familyCode) return;
+    setSyncing(true);
+    setError(null);
+    try {
+      const profiles = useProfilesStore.getState().profiles;
+      const records = useRecordsStore.getState().records;
+      const bets = useBetStore.getState().bets;
+
+      const response = await fetch(`${API_BASE_URL}/v1/sync/push`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          familyCode,
+          profiles,
+          records,
+          bets,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Sync push failed');
+      }
+      setLastSync(new Date());
+    } catch (e) {
+      // ignore
+      setError(e instanceof Error ? e.message : 'Unknown error');
+    } finally {
+      setSyncing(false);
+    }
+  }, [familyCode]);
+
+  const pull = useCallback(async () => {
+    if (!familyCode) return;
+    setSyncing(true);
+    setError(null);
+    try {
+      const response = await fetch(`${API_BASE_URL}/v1/sync/pull/${familyCode}`);
+      if (!response.ok) {
+        throw new Error('Sync pull failed');
+      }
+      const data = (await response.json()) as {
+        profiles?: Profile[];
+        records?: ExamRecord[];
+        bets?: unknown[];
+      };
+
+      if (data.profiles && data.profiles.length > 0) {
+        useProfilesStore.setState({ profiles: data.profiles });
+        if (data.records) useRecordsStore.setState({ records: data.records });
+        if (data.bets) useBetStore.setState({ bets: data.bets as never[] }); // Casting to never[] as useBetStore types are not fully known here
+      }
+      setLastSync(new Date());
+      setLastSync(new Date());
+    } catch (e) {
+      // ignore
+      setError(e instanceof Error ? e.message : 'Unknown error');
+    } finally {
+      setSyncing(false);
+    }
+  }, [familyCode]);
+
+  // Initial pull when familyCode changes
+  useEffect(() => {
+    if (familyCode) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      void pull();
+    }
+  }, [familyCode, pull]);
+
+  return { push, pull, syncing, lastSync, error };
+}

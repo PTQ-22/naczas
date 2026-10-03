@@ -48,6 +48,7 @@ export function usePlan(profileId: string, options: UsePlanOptions = {}): PlanSt
   const { loader = waitTimesLoader, useMocks = USE_MOCKS } = options;
   const profile = useProfilesStore((s) => s.profiles.find((p) => p.id === profileId));
   const allRecords = useRecordsStore((s) => s.records);
+  const intervalOverrides = useRecordsStore((s) => s.intervalOverrides);
   const today = useToday();
   const [refreshCount, setRefreshCount] = useState(0);
   const [fetched, setFetched] = useState<Fetched | null>(null);
@@ -91,9 +92,9 @@ export function usePlan(profileId: string, options: UsePlanOptions = {}): PlanSt
   const plan = useMemo(
     (): Plan =>
       profile
-        ? computePlan({ profile, records, waitTimes, today })
+        ? computePlan({ profile, records, intervalOverrides, waitTimes, today })
         : { profileId, generatedAt: today, items: [] },
-    [profile, profileId, records, waitTimes, today],
+    [profile, profileId, records, intervalOverrides, waitTimes, today],
   );
 
   const refresh = useCallback(() => setRefreshCount((n) => n + 1), []);

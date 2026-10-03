@@ -263,6 +263,16 @@ export default function PlanScreen() {
             </View>
           )}
 
+          <View style={divider}>
+            <Button
+              variant="secondary"
+              icon="plus"
+              label={t('plan.addCustom')}
+              onPress={() => router.push('/exam/custom')}
+              fullWidth
+            />
+          </View>
+
           <Disclaimer text={t('plan.disclaimer')} />
         </Plate>
       </View>

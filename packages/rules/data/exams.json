@@ -215,5 +215,100 @@
     },
     "verified": true,
     "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "blood_test",
+    "name": "Morfologia krwi i mocz",
+    "shortReason": "Podstawowe badanie pokazujące ogólny stan organizmu.",
+    "description": "Najprostszy sposób na wykrycie stanów zapalnych, niedoborów czy problemów z nerkami.",
+    "eligibility": {},
+    "intervalMonths": 12,
+    "booking": "walk_in",
+    "referral": true,
+    "referralNote": "Skierowanie wystawia lekarz POZ. Badanie jest darmowe w laboratorium.",
+    "source": {
+      "name": "Custom",
+      "url": "https://pacjent.gov.pl"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "eye_check",
+    "name": "Wizyta u okulisty",
+    "shortReason": "Sprawdzenie wady wzroku i ciśnienia w gałce ocznej.",
+    "description": "Szczególnie ważne, jeśli pracujesz przed komputerem. Okulista sprawdzi czy nie potrzebujesz mocniejszych okularów.",
+    "eligibility": {},
+    "intervalMonths": 24,
+    "booking": "queue",
+    "referral": true,
+    "referralNote": "Do okulisty na NFZ potrzebne jest skierowanie od lekarza rodzinnego.",
+    "nfzBenefits": ["PORADNIA OKULISTYCZNA"],
+    "source": {
+      "name": "Custom",
+      "url": "https://pacjent.gov.pl"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "kardiolog",
+    "name": "Kardiolog",
+    "shortReason": "Konsultacja kardiologiczna (np. nadciśnienie, arytmia).",
+    "description": "Zalecana przez lekarza rodzinnego po wstępnych badaniach (np. EKG).",
+    "eligibility": {},
+    "intervalMonths": 12,
+    "booking": "queue",
+    "referral": true,
+    "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
+    "nfzBenefits": ["PORADNIA KARDIOLOGICZNA"],
+    "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "dermatolog",
+    "name": "Dermatolog",
+    "shortReason": "Kontrola zmian skórnych, trądziku, alergii.",
+    "description": "Zalecana przy jakichkolwiek niepokojących zmianach na skórze.",
+    "eligibility": {},
+    "intervalMonths": 12,
+    "booking": "queue",
+    "referral": true,
+    "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
+    "nfzBenefits": ["PORADNIA DERMATOLOGICZNA"],
+    "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "endokrynolog",
+    "name": "Endokrynolog",
+    "shortReason": "Problemy z tarczycą, hormonami.",
+    "description": "Najczęstsze wizyty z powodu niedoczynności tarczycy lub Hashimoto.",
+    "eligibility": {},
+    "intervalMonths": 12,
+    "booking": "queue",
+    "referral": true,
+    "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
+    "nfzBenefits": ["PORADNIA ENDOKRYNOLOGICZNA"],
+    "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "neurolog",
+    "name": "Neurolog",
+    "shortReason": "Bóle głowy, zawroty, problemy z kręgosłupem.",
+    "description": "Zalecana przy przewlekłych bólach głowy i problemach neurologicznych.",
+    "eligibility": {},
+    "intervalMonths": 12,
+    "booking": "queue",
+    "referral": true,
+    "referralNote": "Wymagane skierowanie od lekarza rodzinnego.",
+    "nfzBenefits": ["PORADNIA NEUROLOGICZNA"],
+    "source": { "name": "Custom", "url": "https://pacjent.gov.pl/" },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
   }
 ]

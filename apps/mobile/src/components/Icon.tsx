@@ -16,6 +16,7 @@ const symbols = {
   booked: { ios: 'calendar.badge.checkmark', android: 'event_available', web: 'event_available' },
   info: { ios: 'info.circle', android: 'info', web: 'info' },
   plus: { ios: 'plus', android: 'add', web: 'add' },
+  minus: { ios: 'minus', android: 'remove', web: 'remove' },
   chevronDown: { ios: 'chevron.down', android: 'expand_more', web: 'expand_more' },
   chevronUp: { ios: 'chevron.up', android: 'expand_less', web: 'expand_less' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },

@@ -66,6 +66,8 @@ export default function ExamScreen() {
   const { activeProfile, plan, waitTimes, today } = usePlanData();
   const markDone = useRecordsStore((s) => s.markDone);
   const undo = useRecordsStore((s) => s.undo);
+  const intervalOverrides = useRecordsStore((s) => s.intervalOverrides);
+  const setIntervalOverride = useRecordsStore((s) => s.setIntervalOverride);
   // Profile the last "done" was recorded for — the toast's undo must target that one.
   const [doneFor, setDoneFor] = useState<string | null>(null);
   const hideToast = useCallback(() => setDoneFor(null), []);
@@ -85,6 +87,11 @@ export default function ExamScreen() {
   // Not in this person's plan (e.g. deep link while another profile is active): say so plainly
   // instead of a misleading "no queue data", and don't push booking actions (M3 L6).
   const notRecommended = Boolean(activeProfile) && !item;
+  const currentInterval = activeProfile
+    ? ((intervalOverrides as Record<string, number> | undefined)?.[
+        `${activeProfile.id}|${rule.id}`
+      ] ?? rule.intervalMonths)
+    : rule.intervalMonths;
   const queue = notRecommended ? null : queueInfo(rule, waitTimes[rule.id]);
   const ctas = notRecommended ? {} : examCtas(rule, item);
   // Queue exams that also have a no-referral programme (colonoscopy): the wait times are NFZ
@@ -230,7 +237,32 @@ export default function ExamScreen() {
         </Section>
 
         <Section title={t('exam.section.frequency')}>
-          <Text>{msg(frequencyMessage(rule.intervalMonths))}</Text>
+          <Text>{msg(frequencyMessage(currentInterval))}</Text>
+          {activeProfile && (
+            <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.sm }}>
+              <Button
+                variant="ghost"
+                icon="minus"
+                label="- 1m"
+                onPress={() =>
+                  setIntervalOverride(activeProfile.id, rule.id, Math.max(1, currentInterval - 1))
+                }
+              />
+              <Button
+                variant="ghost"
+                icon="plus"
+                label="+ 1m"
+                onPress={() => setIntervalOverride(activeProfile.id, rule.id, currentInterval + 1)}
+              />
+              {currentInterval !== rule.intervalMonths && (
+                <Button
+                  variant="ghost"
+                  label="Reset"
+                  onPress={() => setIntervalOverride(activeProfile.id, rule.id, null)}
+                />
+              )}
+            </View>
+          )}
           {!rule.verified && <Chip tone="later" icon="info" label={t('exam.approximate')} />}
         </Section>
 

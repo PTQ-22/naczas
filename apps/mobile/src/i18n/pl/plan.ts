@@ -1,6 +1,7 @@
 export const plan = {
   title: 'Plan badań',
   titleFor: 'Plan badań — {{name}}',
+  addCustom: 'Dodaj wizytę na NFZ',
   summary: {
     none: 'Nic pilnego — wszystko na czas.',
     one: '1 badanie wymaga działania',

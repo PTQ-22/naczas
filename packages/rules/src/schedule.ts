@@ -33,7 +33,14 @@ export const BOOKED_REMINDER_DAYS = 1;
 const toISO = (d: Date): ISODate => format(d, 'yyyy-MM-dd');
 
 /** Rule interval, overridden by the most restrictive matching modifier (§1). */
-export function effectiveIntervalMonths(rule: ExamRule, profile: Profile, today: ISODate): number {
+export function effectiveIntervalMonths(
+  rule: ExamRule,
+  profile: Profile,
+  today: ISODate,
+  overrideMonths?: number,
+): number {
+  if (overrideMonths !== undefined) return overrideMonths;
+
   const age = ageAt(profile.birthYear, today);
   const overrides = matchingModifiers(rule, profile)
     .filter((m) => !m.age || (age >= m.age[0] && age <= m.age[1]))
@@ -111,10 +118,11 @@ export function scheduleExam(input: {
   rule: ExamRule;
   profile: Profile;
   record?: ExamRecord;
+  intervalOverride?: number;
   waitTime?: WaitTimeSummary;
   today: ISODate;
 }): Omit<PlanItem, 'reasons'> {
-  const { rule, profile, record, waitTime, today } = input;
+  const { rule, profile, record, intervalOverride, waitTime, today } = input;
   const base = { examId: rule.id, profileId: profile.id };
 
   if (record?.status === 'booked') {
@@ -131,7 +139,7 @@ export function scheduleExam(input: {
     };
   }
 
-  const interval = effectiveIntervalMonths(rule, profile, today);
+  const interval = effectiveIntervalMonths(rule, profile, today, intervalOverride);
   const due = dueDate(record?.lastDone, interval, today);
   const lead = leadTime(rule, waitTime);
   const notifyDate = toISO(subDays(parseISO(due.dueDate), lead.days));

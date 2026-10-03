@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Disclaimer, OptionTile, Plate, Screen, Text } from '@/components';
+import { Button, Disclaimer, OptionTile, Plate, Screen, Text, TextField } from '@/components';
 import { t } from '@/i18n';
 import {
   cancelAllOurNotifications,
@@ -13,6 +13,7 @@ import {
   type TestNotificationResult,
 } from '@/notifications';
 import { usePlan } from '@/services';
+import { useCloudSync } from '@/services/cloud-sync';
 import { resetAllData, resolveToday, useProfilesStore, useSettingsStore, useToday } from '@/store';
 import { useTheme, type DarkModePreference } from '@/theme';
 
@@ -47,9 +48,12 @@ export default function SettingsScreen() {
   const setSeniorMode = useSettingsStore((s) => s.setSeniorMode);
   const setDarkMode = useSettingsStore((s) => s.setDarkMode);
   const setTodayOverride = useSettingsStore((s) => s.setTodayOverride);
+  const familyCode = useSettingsStore((s) => s.familyCode);
+  const setFamilyCode = useSettingsStore((s) => s.setFamilyCode);
   const activeProfile = useProfilesStore((s) => s.profiles.find((p) => p.id === s.activeProfileId));
   const today = useToday();
   const { plan } = usePlan(activeProfile?.id ?? '');
+  const { push, pull, syncing, lastSync, error } = useCloudSync();
 
   const [testStatus, setTestStatus] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -152,6 +156,35 @@ export default function SettingsScreen() {
 
         <SettingsSection title={t('settings.privacy.header')}>
           <Text>{t('settings.privacy.body')}</Text>
+        </SettingsSection>
+
+        <SettingsSection title="Synchronizacja w chmurze (Cloud Sync)">
+          <Text tone="textMuted">
+            Wpisz kod rodziny, aby synchronizować dane z bliskimi na innych urządzeniach.
+          </Text>
+          <TextField
+            label="Kod rodziny"
+            value={familyCode ?? ''}
+            onChangeText={(t) => setFamilyCode(t.trim() || null)}
+          />
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
+            <Button
+              variant="secondary"
+              label="Wyślij dane"
+              onPress={() => void push()}
+              loading={syncing}
+            />
+            <Button
+              variant="secondary"
+              label="Pobierz dane"
+              onPress={() => void pull()}
+              loading={syncing}
+            />
+          </View>
+          {lastSync && (
+            <Text tone="textSubtle">Ostatnia synchronizacja: {lastSync.toLocaleTimeString()}</Text>
+          )}
+          {error && <Text tone="danger">{error}</Text>}
         </SettingsSection>
 
         <SettingsSection title={t('settings.data.header')}>

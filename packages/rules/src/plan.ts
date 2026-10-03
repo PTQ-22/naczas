@@ -45,15 +45,17 @@ export function reasonsFor(rule: ExamRule, profile: Profile, today: ISODate): st
 export function computePlan(input: {
   profile: Profile;
   records: ExamRecord[];
+  intervalOverrides?: Record<string, number>;
   waitTimes: Record<string, WaitTimeSummary | undefined>;
   today: ISODate;
 }): Plan {
-  const { profile, records, waitTimes, today } = input;
+  const { profile, records, intervalOverrides = {}, waitTimes, today } = input;
   const items = eligibleExams(profile, today).map((rule): PlanItem => ({
     ...scheduleExam({
       rule,
       profile,
       record: records.find((r) => r.profileId === profile.id && r.examId === rule.id),
+      intervalOverride: intervalOverrides[`${profile.id}|${rule.id}`],
       waitTime: waitTimes[rule.id],
       today,
     }),

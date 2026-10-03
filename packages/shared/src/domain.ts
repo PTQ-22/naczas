@@ -67,6 +67,7 @@ export const ProfileSchema = z.object({
   activity: ActivityLevelSchema.optional(),
   heightCm: z.number().optional(),
   weightKg: z.number().optional(),
+  subscribedExams: z.array(z.string()).optional(),
   createdAt: ISODateSchema,
 });
 export type Profile = z.infer<typeof ProfileSchema>;

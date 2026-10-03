@@ -13,9 +13,9 @@ describe('data/exams.json', () => {
     expect(() => z.array(ExamRuleSchema).parse(rawRules)).not.toThrow();
   });
 
-  it('has 8–12 rules with unique ids', () => {
+  it('has 8–20 rules with unique ids', () => {
     expect(rules.length).toBeGreaterThanOrEqual(8);
-    expect(rules.length).toBeLessThanOrEqual(12);
+    expect(rules.length).toBeLessThanOrEqual(20);
     const ids = rules.map((r) => r.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
