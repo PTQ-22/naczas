@@ -198,18 +198,18 @@ export default function ExamScreen() {
               {msg(queue.lines.meta)}
             </Text>
           )}
-          {/* Outside the grouped (accessible) box so screen readers can reach the link. */}
-          {showProgramNote && programUrl && (
-            <Button
-              variant="ghost"
-              icon="external"
-              accessibilityRole="link"
-              label={t('exam.queue.programLink')}
-              accessibilityLabel={t('exam.queue.programLinkA11y')}
-              onPress={() => void Linking.openURL(programUrl)}
-            />
-          )}
         </View>
+      )}
+      {/* Outside the grouped (accessible) box so screen readers can reach the link. */}
+      {showProgramNote && programUrl && (
+        <Button
+          variant="ghost"
+          icon="external"
+          accessibilityRole="link"
+          label={t('exam.queue.programLink')}
+          accessibilityLabel={t('exam.queue.programLinkA11y')}
+          onPress={() => void Linking.openURL(programUrl)}
+        />
       )}
 
       {item && item.reasons.length > 0 && (

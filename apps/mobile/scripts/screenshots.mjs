@@ -129,25 +129,49 @@ async function prepare(mode) {
   await sleep(1500);
   const set = (k, state) =>
     `localStorage.setItem('naczas:${k}', ${JSON.stringify(JSON.stringify({ state, version: 1 }))});`;
+  // Start each mode from a clean slate (e.g. the onboarding draft from the previous mode).
+  const reset = `Object.keys(localStorage).filter((k) => k.startsWith('naczas:')).forEach((k) => localStorage.removeItem(k));`;
   await send('Runtime.evaluate', {
     expression:
+      reset +
       set('profiles', { profiles, activeProfileId: 'mama' }) +
       set('records', { records }) +
       set('settings', settings),
   });
 }
 
+// Optional `click`: accessible name of a radio/button to press before the shot (map view, start survey).
 const pages = {
-  plan: '/plan',
-  exam: '/exam/colonoscopy_screening',
-  components: '/dev/components',
-  family: '/family',
+  plan: { path: '/plan' },
+  exam: { path: '/exam/colonoscopy_screening' },
+  family: { path: '/family' },
+  components: { path: '/dev/components' },
+  'facilities-list': { path: '/exam/colonoscopy_screening/facilities' },
+  'facilities-map': { path: '/exam/colonoscopy_screening/facilities', click: 'Mapa', wait: 6000 },
+  'onboarding-welcome': { path: '/onboarding/welcome' },
+  'onboarding-step1': { path: '/onboarding/welcome', click: 'Zaczynamy', wait: 2500 },
+  'visit-prep': { path: '/visit-prep' },
 };
+const clickByName = (name) => `(() => {
+  const el = [...document.querySelectorAll('[role=radio],[role=button]')].find((e) =>
+    (e.getAttribute('aria-label') || e.textContent || '').trim().startsWith(${JSON.stringify(name)}));
+  el?.click();
+  return Boolean(el);
+})()`;
+
 for (const mode of ['light', 'dark', 'senior']) {
   await prepare(mode);
-  for (const [name, path] of Object.entries(pages)) {
+  for (const [name, { path, click, wait = 3500 }] of Object.entries(pages)) {
     await send('Page.navigate', { url: ORIGIN + path });
     await sleep(3500); // bundle + hydration + 300 ms entrance animations with stagger
+    if (click) {
+      const { result } = await send('Runtime.evaluate', {
+        expression: clickByName(click),
+        returnByValue: true,
+      });
+      if (!result.value) process.stdout.write(`warn: nothing named "${click}" on ${path}\n`);
+      await sleep(wait); // map tiles
+    }
     const { data } = await send('Page.captureScreenshot', { format: 'png' });
     writeFileSync(`${outDir}/${name}-${mode}.png`, Buffer.from(data, 'base64'));
     process.stdout.write(`${name}-${mode}.png\n`);
