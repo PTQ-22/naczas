@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -11,13 +9,14 @@ import {
 
 import { createApp } from '../src/app';
 import { fixtureFetch, loadAllFixtures, rateLimitedResponse } from './helpers/nfz-fixtures';
+import { buildSnapshotFromFixtures } from './helpers/snapshot-from-fixtures';
 import { createNfzClient } from '../src/nfz/client';
 import { createSnapshotStore } from '../src/nfz/snapshot';
 
 // Expected numbers computed independently (Python) from the recorded fixtures,
 // for coordinates already rounded to 2 decimals (the server rounds too).
 const WARSAW = 'lat=52.23&lng=21.01';
-const FIXTURES_AS_SNAPSHOT = path.resolve(import.meta.dirname, 'fixtures/queues');
+const FIXTURES_AS_SNAPSHOT = await buildSnapshotFromFixtures();
 const noWait = () => Promise.resolve();
 const now = () => new Date('2026-10-04T10:00:00Z');
 
