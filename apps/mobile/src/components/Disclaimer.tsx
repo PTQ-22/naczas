@@ -15,15 +15,16 @@ interface DisclaimerProps {
 
 /** Always visible, never inside an accordion (AGENTS.md §7). */
 export function Disclaimer({ text, onMore }: DisclaimerProps) {
-  const { colors, space, radius, layout } = useTheme();
+  const { colors, space, borderWidth } = useTheme();
   return (
     <View
       style={{
         flexDirection: 'row',
         gap: space.sm,
-        padding: layout.cardPadding,
-        borderRadius: radius.lg,
-        backgroundColor: colors.surfaceAlt,
+        paddingTop: space.md,
+        // Flat footnote under a hairline — never a box competing with the plate (redesign §7).
+        borderTopWidth: borderWidth.hairline,
+        borderTopColor: colors.border,
       }}
     >
       <Icon name="info" size="sm" color={colors.textMuted} />

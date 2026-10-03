@@ -14,7 +14,7 @@ import { Icon } from '@/components/Icon';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
-import { urgencyIcon } from '@/features/plan/ExamCard';
+import { urgencyIcon } from '@/features/plan/urgency-icon';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
 import { useRecordsStore } from '@/store';

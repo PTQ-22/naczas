@@ -20,24 +20,42 @@ interface ProfileSwitcherProps {
   onAdd?: () => void;
 }
 
-/** Horizontal avatar tabs. Data comes from the WS3 store; this is presentation only. */
+/**
+ * Folder-divider tabs that sit on top of a `<Plate tabbed>` (redesign v2: tabs like a patient
+ * file's dividers, not pills). The active tab takes the plate's colour and covers the plate's top
+ * frame under it, so it reads as part of the plate. Presentation only — data comes from WS3.
+ */
 export function ProfileSwitcher({ profiles, activeId, onSelect, onAdd }: ProfileSwitcherProps) {
   const { colors, layout, radius, space, borderWidth } = useTheme();
-  const avatar = layout.minTouch;
-  const act = colors.urgency.act_now;
+  const frame = borderWidth.plate;
+  const tab = (selected: boolean, pressed: boolean) => ({
+    minHeight: layout.minTouch + (selected ? frame : 0),
+    minWidth: layout.minTouch,
+    // The plate below is pulled up by `frame`: the active tab is `frame` taller and covers the
+    // plate's top border; inactive tabs stop on top of it.
+    marginBottom: selected ? 0 : frame,
+    paddingHorizontal: space.md,
+    paddingBottom: selected ? frame : 0,
+    flexDirection: 'row' as const,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+    gap: space.sm,
+    borderWidth: frame,
+    borderBottomWidth: 0,
+    borderColor: colors.text,
+    borderTopLeftRadius: radius.tab,
+    borderTopRightRadius: radius.tab,
+    backgroundColor: selected ? colors.surface : pressed ? colors.wall : colors.wallGrout,
+  });
 
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       accessibilityRole="tablist"
-      // Bleed to the screen edges so the row scrolls under the gutter and "+" can scroll fully in.
-      style={{ marginHorizontal: -layout.screenPaddingX }}
-      contentContainerStyle={{
-        gap: space.sm,
-        paddingVertical: space.xs,
-        paddingHorizontal: layout.screenPaddingX,
-      }}
+      // Above the plate so the active tab can cover the plate's top frame.
+      style={{ zIndex: 1, flexGrow: 0 }}
+      contentContainerStyle={{ gap: space.xs, alignItems: 'flex-end' }}
     >
       {profiles.map((p) => {
         const selected = p.id === activeId;
@@ -52,45 +70,25 @@ export function ProfileSwitcher({ profiles, activeId, onSelect, onAdd }: Profile
                 ? t('common.components.profileWithUrgent', { name: p.name, count: p.urgentCount })
                 : p.name
             }
-            style={({ pressed }) => ({
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: space.sm,
-              minHeight: layout.minTouch,
-              paddingLeft: space.xs,
-              paddingRight: space.md,
-              borderRadius: radius.full,
-              borderWidth: borderWidth.strong,
-              borderColor: selected ? colors.primary : colors.border,
-              backgroundColor: selected || pressed ? colors.primarySoft : colors.surface,
-            })}
+            style={({ pressed }) => tab(selected, pressed)}
           >
-            <View
-              style={{
-                width: avatar - space.sm * 2,
-                height: avatar - space.sm * 2,
-                borderRadius: radius.full,
-                backgroundColor: selected ? colors.primary : colors.surfaceAlt,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
+            <Text
+              variant={selected ? 'label' : 'body'}
+              color={selected ? colors.text : colors.onWall}
             >
-              <Text variant="label" tone={selected ? 'onPrimary' : 'text'}>
-                {p.name.slice(0, 1).toUpperCase()}
-              </Text>
-            </View>
-            <Text variant="label">{p.name}</Text>
+              {p.name}
+            </Text>
             {p.urgentCount > 0 && (
               <View
                 style={{
                   minWidth: layout.icon.md,
                   paddingHorizontal: space.xs,
                   borderRadius: radius.full,
-                  backgroundColor: act.bg,
+                  backgroundColor: colors.urgency.act_now.bg,
                   alignItems: 'center',
                 }}
               >
-                <Text variant="caption" color={act.fg} style={{ fontWeight: '700' }}>
+                <Text variant="data" tabular color={colors.urgency.act_now.fg}>
                   {p.urgentCount}
                 </Text>
               </View>
@@ -103,18 +101,9 @@ export function ProfileSwitcher({ profiles, activeId, onSelect, onAdd }: Profile
           onPress={onAdd}
           accessibilityRole="button"
           accessibilityLabel={t('common.components.addProfile')}
-          style={({ pressed }) => ({
-            width: avatar,
-            height: avatar,
-            borderRadius: radius.full,
-            borderWidth: borderWidth.strong,
-            borderColor: colors.borderStrong,
-            backgroundColor: pressed ? colors.surfaceAlt : 'transparent',
-            alignItems: 'center',
-            justifyContent: 'center',
-          })}
+          style={({ pressed }) => tab(false, pressed)}
         >
-          <Icon name="plus" color={colors.text} />
+          <Icon name="plus" color={colors.onWall} />
         </Pressable>
       )}
     </ScrollView>

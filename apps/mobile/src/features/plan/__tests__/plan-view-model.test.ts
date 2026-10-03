@@ -8,7 +8,12 @@ import {
   groupSections,
   isCollapsedByDefault,
   planCta,
+  pluralForm,
+  romanMonth,
+  rowDate,
   summaryMessage,
+  ticketContent,
+  ticketItem,
   waitWeeks,
   whyNowMessage,
 } from '../plan-view-model';
@@ -141,5 +146,99 @@ describe('planCta', () => {
 describe('countActNow', () => {
   it('counts urgent items for the profile badge', () => {
     expect(countActNow(plan.items)).toBe(1);
+  });
+});
+
+describe('pluralForm', () => {
+  it.each([
+    [1, 'one'],
+    [2, 'few'],
+    [4, 'few'],
+    [5, 'many'],
+    [12, 'many'],
+    [14, 'many'],
+    [22, 'few'],
+    [29, 'many'],
+  ] as const)('%i -> %s', (n, form) => {
+    expect(pluralForm(n)).toBe(form);
+  });
+});
+
+describe('ticketItem', () => {
+  it('picks the first act_now item', () => {
+    expect(ticketItem(plan.items)?.urgency).toBe('act_now');
+  });
+
+  it('falls back to this_year when nothing is urgent, and to nothing at all', () => {
+    const calm = plan.items.filter((i) => i.urgency !== 'act_now');
+    expect(ticketItem(calm)?.urgency).toBe('this_year');
+    expect(ticketItem(calm.filter((i) => i.urgency !== 'this_year'))).toBeUndefined();
+  });
+});
+
+describe('ticketContent', () => {
+  const summary = (p75Days: number | null): WaitTimeSummary => ({
+    examId: 'x',
+    province: '07',
+    radiusKm: 25,
+    facilitiesCount: 3,
+    p50Days: p75Days,
+    p75Days,
+    minDays: 7,
+    asOf: '2026-09',
+    source: 'nfz_snapshot',
+  });
+  const future: PlanItem = { ...byUrgency('act_now'), dueDate: '2027-04-15', overdue: false };
+
+  it('prints NFZ queue weeks with the Polish plural and a deadline sentence', () => {
+    const c = ticketContent(future, 'queue', summary(203), '2026-10-03');
+    expect(c.value).toBe('29');
+    expect(c.unit).toEqual({ key: 'plan.ticket.weeks.many' });
+    expect(c.message).toEqual({
+      key: 'plan.ticket.startTodayToMake',
+      params: { date: 'kwietnia 2027' },
+    });
+    expect(c.a11yValue).toEqual({ key: 'plan.ticket.weeksA11y.many', params: { weeks: 29 } });
+  });
+
+  it('drops the deadline once it has passed', () => {
+    const late = { ...future, dueDate: '2026-09-01', overdue: true };
+    expect(ticketContent(late, 'queue', summary(203), '2026-10-03').message).toEqual({
+      key: 'plan.ticket.startToday',
+    });
+  });
+
+  it('prints the due month instead of a made-up wait when there is no queue data', () => {
+    const c = ticketContent(future, 'program', undefined, '2026-10-03');
+    expect(c.value).toBe('IV.27');
+    expect(c.unit).toEqual({ key: 'plan.ticket.dueUnit' });
+    expect(ticketContent(future, 'queue', summary(null), '2026-10-03').value).toBe('IV.27');
+  });
+});
+
+describe('rowDate', () => {
+  const at = (urgency: PlanItem['urgency'], dueDate: string): PlanItem => ({
+    ...byUrgency('act_now'),
+    urgency,
+    dueDate,
+  });
+
+  it('booked: day.month, with year only when not this year', () => {
+    expect(rowDate(at('booked', '2026-10-17'), '2026-10-03')).toBe('17.10');
+    expect(rowDate(at('booked', '2027-01-05'), '2026-10-03')).toBe('05.01.27');
+  });
+
+  it('this year: roman month as on Polish forms', () => {
+    expect(rowDate(at('this_year', '2026-12-01'), '2026-10-03')).toBe('XII');
+    expect(rowDate(at('this_year', '2027-04-01'), '2026-10-03')).toBe('IV 2027');
+  });
+
+  it('later / done: year only', () => {
+    expect(rowDate(at('later', '2031-06-01'), '2026-10-03')).toBe('2031');
+  });
+
+  it('romanMonth covers January and December', () => {
+    expect(romanMonth('2026-01-10')).toBe('I');
+    expect(romanMonth('2026-12-10')).toBe('XII');
   });
 });

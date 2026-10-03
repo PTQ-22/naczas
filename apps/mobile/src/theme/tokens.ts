@@ -189,7 +189,7 @@ export interface TypeStyle {
 // Three roles (redesign §3): Bricolage = display, Atkinson Hyperlegible = body (designed for low
 // vision — the senior-mode argument), Plex Mono = every number/date/code (thermal-printer ticket).
 const baseType: Record<TypeVariant, TypeStyle> = {
-  ticket: { fontFamily: fonts.monoBold, fontSize: 96, lineHeight: 100, letterSpacing: -4 },
+  ticket: { fontFamily: fonts.display, fontSize: 96, lineHeight: 96, letterSpacing: -3 },
   display: { fontFamily: fonts.display, fontSize: 32, lineHeight: 36, letterSpacing: -0.8 },
   title: { fontFamily: fonts.display, fontSize: 22, lineHeight: 28, letterSpacing: -0.3 },
   heading: { fontFamily: fonts.displayBold, fontSize: 19, lineHeight: 24 },
