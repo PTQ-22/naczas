@@ -53,6 +53,14 @@ describe('ExamScreen', () => {
     });
   });
 
+  it('colonoscopy: notes the queue is for clinics and links the no-referral programme (L5)', () => {
+    renderExam('colonoscopy_screening');
+    expect(screen.getByText(/^To kolejki NFZ do poradni/)).toBeOnTheScreen();
+    expect(
+      screen.getByRole('link', { name: /Program przesiewowy bez skierowania/ }),
+    ).toBeOnTheScreen();
+  });
+
   it('links to visit prep even when no referral is needed (M3 H2)', () => {
     renderExam('colonoscopy_screening');
     fireEvent.press(screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza' }));

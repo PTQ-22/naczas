@@ -77,6 +77,10 @@ export default function ExamScreen() {
   const notRecommended = Boolean(activeProfile) && !item;
   const queue = notRecommended ? null : queueInfo(rule, waitTimes[rule.id]);
   const ctas = notRecommended ? {} : examCtas(rule, item);
+  // Queue exams that also have a no-referral programme (colonoscopy): the wait times are NFZ
+  // clinic (AOS) queues, not the programme — say so and link the programme (WS1, M3 L5).
+  const programUrl = rule.programUrl;
+  const showProgramNote = queue !== null && Boolean(programUrl);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;
 
@@ -184,10 +188,26 @@ export default function ExamScreen() {
         >
           {queue.lines.label && <Text>{msg(queue.lines.label)}</Text>}
           {queue.lines.value && <Text variant="heading">{msg(queue.lines.value)}</Text>}
+          {showProgramNote && (
+            <Text variant="caption" tone="textMuted">
+              {t('exam.queue.clinicNote')}
+            </Text>
+          )}
           {queue.lines.meta && (
             <Text variant="caption" tone="textSubtle">
               {msg(queue.lines.meta)}
             </Text>
+          )}
+          {/* Outside the grouped (accessible) box so screen readers can reach the link. */}
+          {showProgramNote && programUrl && (
+            <Button
+              variant="ghost"
+              icon="external"
+              accessibilityRole="link"
+              label={t('exam.queue.programLink')}
+              accessibilityLabel={t('exam.queue.programLinkA11y')}
+              onPress={() => void Linking.openURL(programUrl)}
+            />
           )}
         </View>
       )}
