@@ -37,6 +37,8 @@ export const facilities = {
     callA11y: 'Zadzwoń do: {{name}}',
     navigate: 'Nawiguj',
     navigateA11y: 'Nawiguj do: {{name}}, otwiera mapy',
+    booked: 'Umówiłem/am się',
+    bookedA11y: 'Umówiłem/am się w: {{name}}, zapisz datę wizyty',
   },
   map: {
     a11y: 'Mapa placówek. Te same placówki są na liście.',

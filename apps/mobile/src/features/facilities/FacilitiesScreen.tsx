@@ -152,7 +152,7 @@ export default function FacilitiesScreen() {
     const { items, source } = state.data;
     const selected = items.find((f) => f.id === selectedId);
     const list = items.map((f, i) => (
-      <FacilityCard key={f.id} facility={f} primary={i === 0} sort={sort} />
+      <FacilityCard key={f.id} facility={f} examId={examId} primary={i === 0} sort={sort} />
     ));
     const map = (
       <View style={{ gap: space.md }}>
@@ -164,7 +164,7 @@ export default function FacilitiesScreen() {
             onSelect={setSelectedId}
           />
         </View>
-        {selected && <FacilityCard facility={selected} primary sort={sort} />}
+        {selected && <FacilityCard facility={selected} examId={examId} primary sort={sort} />}
       </View>
     );
     body = (
