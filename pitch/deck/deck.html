@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>Pitch deck — HackYeah 2026</title>
+    <style>
+      /* Product name lives here only — change once, every slide follows. */
+      :root {
+        --app-name: '{NAZWA}';
+
+        /* Tokens: docs/design/tokens.md §2.1 (light) */
+        --bg: #faf7f2;
+        --surface: #ffffff;
+        --surface-alt: #f2ede5;
+        --border: #e3dcd1;
+        --border-strong: #857b6f;
+        --text: #1e2a2d;
+        --text-muted: #4e5a5e;
+        --text-subtle: #5f686b;
+        --primary: #1c6b66;
+        --on-primary: #ffffff;
+        --primary-soft: #dcedea;
+        --danger: #b3261e;
+        --u-now-fg: #a12f1b;
+        --u-now-bg: #fbe8e2;
+        --u-now-accent: #c2412a;
+        --u-year-fg: #7a4b00;
+        --u-year-bg: #fcefd6;
+        --u-year-accent: #a86b12;
+        --u-later-fg: #4a5560;
+        --u-later-bg: #eceff2;
+        --u-later-accent: #78838e;
+        --u-done-fg: #276338;
+        --u-done-bg: #e2f1e6;
+        --u-done-accent: #3b8752;
+        --u-booked-fg: #2f4c95;
+        --u-booked-bg: #e5ebfa;
+
+        /* Slide type scale. Floor is 28px so text stays readable from ~3 m on a 1920px slide. */
+        --fs-min: 28px;
+        --fs-body: 36px;
+        --fs-lead: 44px;
+        --fs-h2: 64px;
+        --fs-h1: 120px;
+        --space: 16px;
+        --radius-lg: 24px;
+        --radius-md: 16px;
+      }
+
+      .app-name::before {
+        content: var(--app-name);
+      }
+
+      @page {
+        size: 1920px 1080px;
+        margin: 0;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background: #6b7477;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      body {
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          'Helvetica Neue',
+          Arial,
+          sans-serif;
+        color: var(--text);
+        font-size: var(--fs-body);
+        line-height: 1.35;
+      }
+
+      .slide {
+        position: relative;
+        width: 1920px;
+        height: 1080px;
+        margin: 40px auto;
+        padding: 96px 120px 88px;
+        background: var(--bg);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      @media print {
+        body {
+          background: none;
+        }
+        .slide {
+          margin: 0;
+        }
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h2 {
+        font-size: var(--fs-h2);
+        line-height: 1.15;
+        font-weight: 700;
+        margin-bottom: 48px;
+        max-width: 1500px;
+      }
+
+      h3 {
+        font-size: var(--fs-lead);
+        line-height: 1.2;
+        font-weight: 700;
+      }
+
+      .eyebrow {
+        font-size: var(--fs-min);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--primary);
+        margin-bottom: 20px;
+      }
+
+      .muted {
+        color: var(--text-muted);
+      }
+
+      .lead {
+        font-size: var(--fs-lead);
+        line-height: 1.3;
+      }
+
+      .footer {
+        position: absolute;
+        left: 120px;
+        right: 120px;
+        bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        gap: 48px;
+        font-size: var(--fs-min);
+        color: var(--text-subtle);
+      }
+
+      .footer .page::after {
+        content: counter(slide) ' / 10';
+      }
+
+      body {
+        counter-reset: slide;
+      }
+
+      .slide {
+        counter-increment: slide;
+      }
+
+      .grid {
+        display: grid;
+        gap: 48px;
+        flex: 1;
+        min-height: 0;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 40px;
+      }
+
+      /* Placeholder frames for app screenshots (inserted after M3). */
+      .shot {
+        border: 4px dashed var(--border-strong);
+        border-radius: 40px;
+        background: var(--surface-alt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        font-size: var(--fs-min);
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      .shot.phone {
+        height: 560px;
+        aspect-ratio: 9 / 19.5;
+        margin: 0 auto;
+      }
+
+      .shot-caption {
+        margin-top: 20px;
+        font-size: var(--fs-min);
+        text-align: center;
+        font-weight: 600;
+      }
+
+      .todo {
+        display: inline-block;
+        border: 3px dashed var(--border-strong);
+        border-radius: 12px;
+        padding: 0 14px;
+        background: var(--surface-alt);
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+
+      /* Urgency chip + plan card, as specified in docs/design/screens.md §2 */
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: var(--fs-min);
+        font-weight: 600;
+        padding: 6px 20px;
+        border-radius: 999px;
+        align-self: flex-start;
+      }
+
+      .chip.now {
+        background: var(--u-now-bg);
+        color: var(--u-now-fg);
+      }
+      .chip.year {
+        background: var(--u-year-bg);
+        color: var(--u-year-fg);
+      }
+      .chip.later {
+        background: var(--u-later-bg);
+        color: var(--u-later-fg);
+      }
+      .chip.done {
+        background: var(--u-done-bg);
+        color: var(--u-done-fg);
+      }
+
+      .exam {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-left: 10px solid var(--u-now-accent);
+        border-radius: var(--radius-md);
+        padding: 28px 36px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        box-shadow: 0 2px 8px rgb(30 42 45 / 0.06);
+      }
+
+      .exam.year {
+        border-left-color: var(--u-year-accent);
+      }
+      .exam.later {
+        border-left-color: var(--u-later-accent);
+      }
+
+      .exam .name {
+        font-size: var(--fs-lead);
+        font-weight: 700;
+        line-height: 1.15;
+      }
+
+      .btn {
+        align-self: flex-start;
+        background: var(--primary);
+        color: var(--on-primary);
+        font-weight: 600;
+        font-size: var(--fs-min);
+        padding: 14px 28px;
+        border-radius: 16px;
+        margin-top: 8px;
+      }
+
+      .btn.secondary {
+        background: transparent;
+        color: var(--primary);
+        border: 3px solid var(--primary);
+      }
+
+      .stat {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .stat .num {
+        font-size: 96px;
+        font-weight: 700;
+        line-height: 1;
+        color: var(--u-now-fg);
+      }
+
+      .pillar {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .pillar .idx {
+        width: 88px;
+        height: 88px;
+        border-radius: 999px;
+        background: var(--primary-soft);
+        color: var(--primary);
+        font-size: var(--fs-lead);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      ul.points {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+
+      ul.points li {
+        padding-left: 52px;
+        position: relative;
+      }
+
+      ul.points li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 14px;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: var(--primary);
+      }
+
+      table.cmp {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: var(--fs-min);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+      }
+
+      table.cmp th,
+      table.cmp td {
+        padding: 9px 24px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        vertical-align: middle;
+      }
+
+      table.cmp tr:last-child td {
+        border-bottom: none;
+        background: var(--primary-soft);
+        font-weight: 700;
+      }
+
+      table.cmp th {
+        background: var(--surface-alt);
+        font-weight: 700;
+      }
+
+      table.cmp th.ours,
+      table.cmp td.ours {
+        background: var(--primary-soft);
+        font-weight: 700;
+      }
+
+      .yes {
+        color: var(--u-done-fg);
+        font-weight: 700;
+      }
+      .no {
+        color: var(--u-now-fg);
+        font-weight: 700;
+      }
+      .unk {
+        color: var(--text-muted);
+        font-weight: 700;
+      }
+
+      .formula {
+        background: var(--surface);
+        border: 3px solid var(--primary);
+        border-radius: var(--radius-lg);
+        padding: 24px 40px;
+        font-size: 40px;
+        line-height: 1.3;
+        font-weight: 600;
+      }
+
+      .formula b {
+        color: var(--primary);
+      }
+
+      .qr {
+        width: 280px;
+        height: 280px;
+        border: 4px dashed var(--border-strong);
+        border-radius: 24px;
+        background: var(--surface-alt);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: var(--fs-min);
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .small {
+        font-size: var(--fs-min);
+      }
+
+      .notes {
+        margin-top: auto;
+        font-size: var(--fs-min);
+        color: var(--text-subtle);
+        line-height: 1.3;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. Tytuł -->
+    <section class="slide" style="padding-top: 120px">
+      <div class="grid" style="grid-template-columns: 1.15fr 1fr; align-items: center">
+        <div>
+          <p class="eyebrow">HackYeah 2026 · Sport &amp; Healthcare</p>
+          <h1
+            class="app-name"
+            style="font-size: var(--fs-h1); line-height: 1; color: var(--primary); margin-bottom: 40px"
+          ></h1>
+          <p class="lead" style="font-size: 56px; font-weight: 700; max-width: 900px">
+            Wiesz co, kiedy i gdzie — zanim będzie za późno.
+          </p>
+          <p class="lead muted" style="margin-top: 48px">
+            Zespół <span class="todo">{NAZWA ZESPOŁU}</span>
+          </p>
+          <p class="small muted" style="margin-top: 16px">
+            <span class="todo">{imiona członków zespołu}</span>
+          </p>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 24px">
+          <div class="exam">
+            <span class="chip now">● Działaj teraz</span>
+            <span class="name">Kolonoskopia</span>
+            <span class="small" style="color: var(--u-now-fg)">Czeka się kilka miesięcy — zacznij szukać terminu teraz.</span>
+            <span class="btn">Znajdź termin</span>
+          </div>
+          <div class="exam year">
+            <span class="chip year">◆ W tym roku</span>
+            <span class="name">Mammografia</span>
+            <span class="small muted">Program NFZ, bez skierowania</span>
+          </div>
+          <div class="exam later">
+            <span class="chip later">○ Później</span>
+            <span class="name">Bilans zdrowia „Moje Zdrowie”</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer"><span>Ilustracja: fragment planu badań z aplikacji (makieta)</span><span class="page"></span></div>
+    </section>
+
+    <!-- 2. Problem -->
+    <section class="slide" style="padding-bottom: 48px">
+      <p class="eyebrow">Problem</p>
+      <h2>Kasia wie, że mama powinna się badać. Nie wie: co, kiedy i gdzie.</h2>
+      <div class="grid" style="grid-template-columns: 0.9fr 1.1fr; gap: 64px; flex: 0 0 auto">
+        <div class="card" style="display: flex; flex-direction: column; gap: 24px; justify-content: center; padding: 32px 40px">
+          <div>
+            <h3>Kasia, 34</h3>
+            <p class="muted">pracuje, „ogarnia” zdrowie mamy</p>
+          </div>
+          <div>
+            <h3>Mama, 58</h3>
+            <p class="muted">nie pamięta dat badań, w rodzinie był rak jelita grubego</p>
+          </div>
+        </div>
+        <ul class="points" style="justify-content: center">
+          <li><b>Zapominamy</b> — kiedy ostatnio i jak często?</li>
+          <li><b>Nie wiemy</b> — które badania dotyczą właśnie mnie?</li>
+          <li><b>Za późno</b> — na wiele świadczeń NFZ czeka się miesiącami.</li>
+        </ul>
+      </div>
+      <div class="grid" style="grid-template-columns: 1fr 1fr; flex: 0 0 auto; margin-top: 32px">
+        <div class="stat">
+          <span class="num">17,39%</span>
+          <span>uprawnionych objął program badań przesiewowych raka jelita grubego¹</span>
+        </div>
+        <div class="stat">
+          <span class="num">&gt; 4,5 mies.</span>
+          <span>średnio czeka się na kolonoskopię w połowie placówek NFZ²</span>
+        </div>
+      </div>
+      <div class="notes">
+        ¹ NFZ, „Dane o realizacji programów”, stan na 1.10.2026<br />
+        ² API NFZ Terminy Leczenia, stan na 2026-09, średni czas oczekiwania raportowany przez placówki; mediana: mazowieckie 137,5 dnia, małopolskie 158 dni
+      </div>
+    </section>
+
+    <!-- 3. Rozwiązanie -->
+    <section class="slide">
+      <p class="eyebrow">Rozwiązanie</p>
+      <h2 style="max-width: 1680px">
+        Mówimy nie tylko jakie badanie i kiedy, ale <span style="color: var(--primary)">kiedy zacząć je organizować</span> i
+        <span style="color: var(--primary)">gdzie zrobić je najszybciej na NFZ</span> — dla Ciebie i Twoich bliskich.
+      </h2>
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr); align-content: center">
+        <div class="card pillar">
+          <span class="idx">1</span>
+          <h3>Plan</h3>
+          <p class="muted">Indywidualne badania z uzasadnieniem i źródłem</p>
+        </div>
+        <div class="card pillar">
+          <span class="idx">2</span>
+          <h3>Kiedy zacząć</h3>
+          <p class="muted">Przypomnienie z wyprzedzeniem równym realnej kolejce</p>
+        </div>
+        <div class="card pillar">
+          <span class="idx">3</span>
+          <h3>Gdzie na NFZ</h3>
+          <p class="muted">Placówki według najbliższego terminu, przycisk „Zadzwoń”</p>
+        </div>
+      </div>
+      <div class="footer"><span class="app-name"></span><span class="page"></span></div>
+    </section>
+
+    <!-- 4. Jak to działa -->
+    <section class="slide">
+      <p class="eyebrow">Jak to działa</p>
+      <h2>Od ankiety do „Zadzwoń” w czterech krokach</h2>
+      <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 56px">
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Ankieta</div>
+          <p class="shot-caption">Ankieta: jeden temat na ekran</p>
+        </div>
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Plan — oś czasu</div>
+          <p class="shot-caption">Plan: co teraz, co później</p>
+        </div>
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Karta badania</div>
+          <p class="shot-caption">Ile się czeka w okolicy</p>
+        </div>
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Placówki</div>
+          <p class="shot-caption">Gdzie najszybciej + „Zadzwoń”</p>
+        </div>
+      </div>
+      <div class="footer"><span>Działa na iOS, Androidzie i w przeglądarce.</span><span class="page"></span></div>
+    </section>
+
+    <!-- 5. Wyróżnik -->
+    <section class="slide">
+      <p class="eyebrow">Nasz wyróżnik</p>
+      <h2 style="margin-bottom: 32px">Kiedy zacząć szukać terminu, żeby zdążyć</h2>
+      <div class="formula">
+        <b>kiedy zacząć</b> = termin badania − czas czekania w okolicy (p75 z NFZ) − zapas na skierowanie
+      </div>
+      <p class="small muted" style="margin: 14px 0 20px">
+        p75: w 3 na 4 placówkach w okolicy zdążysz. Przykład z demo: kolonoskopia, czeka się
+        <span class="todo">{N} tyg.</span> → przypomnienie <span class="todo">{N+2} tyg.</span> przed terminem.
+      </p>
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Doctor Robert</th>
+            <th>IKP / mojeIKP</th>
+            <th class="ours app-name"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Plan badań wg profilu</td>
+            <td><span class="yes">✓</span></td>
+            <td><span class="yes">✓</span> jednorazowy bilans</td>
+            <td class="ours"><span class="yes">✓</span> ciągły plan</td>
+          </tr>
+          <tr>
+            <td>Przypomnienia o badaniach</td>
+            <td><span class="yes">✓</span></td>
+            <td><span class="unk">?</span> (leki, wizyty)</td>
+            <td class="ours"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>Kolejki NFZ</td>
+            <td><span class="unk">?</span></td>
+            <td><span class="yes">✓</span> osobno, na portalu</td>
+            <td class="ours"><span class="yes">✓</span> w planie</td>
+          </tr>
+          <tr>
+            <td>Wskazanie placówek</td>
+            <td><span class="no">✗</span> w planach</td>
+            <td><span class="yes">✓</span> e-rejestracja</td>
+            <td class="ours"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>Profile rodzinne / opiekun</td>
+            <td><span class="unk">?</span></td>
+            <td><span class="yes">✓</span> dzieci, upoważnienia</td>
+            <td class="ours"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <td>„Kiedy zacząć” = plan × kolejka</td>
+            <td><span class="no">✗</span></td>
+            <td><span class="no">✗</span></td>
+            <td><span class="yes">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="footer">
+        <span>? = nie znaleziono potwierdzenia. Źródła: doctorrobert.com, App Store, Google Play, pacjent.gov.pl (2026-10-03)</span
+        ><span class="page"></span>
+      </div>
+    </section>
+
+    <!-- 6. Opiekun + przygotowanie do wizyty -->
+    <section class="slide">
+      <p class="eyebrow">Dla opiekunów</p>
+      <h2>Zdrowie mamy i swoje — na jednym telefonie</h2>
+      <div class="grid" style="grid-template-columns: 1fr 0.55fr 0.55fr; align-items: stretch">
+        <ul class="points" style="justify-content: center">
+          <li><b>Profile rodzinne</b> — przełącznik Ja / Mama, licznik pilnych badań przy profilu mamy</li>
+          <li><b>Przygotowanie do wizyty</b> — podsumowanie dla lekarza rodzinnego: „Proszę o skierowanie na…”, czynniki ryzyka, lista badań (ekran lub PDF)</li>
+          <li class="muted"><span class="todo">{Karta aktywności — tylko jeśli działa w demo}</span></li>
+        </ul>
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Przełącznik profili</div>
+        </div>
+        <div>
+          <div class="shot" style="height: 560px; aspect-ratio: 1 / 1.414; margin: 0 auto">SCREENSHOT<br />PDF dla lekarza (A4)</div>
+        </div>
+      </div>
+      <div class="footer"><span class="app-name"></span><span class="page"></span></div>
+    </section>
+
+    <!-- 7. Design i dostępność -->
+    <section class="slide">
+      <p class="eyebrow">Design i dostępność</p>
+      <h2 style="margin-bottom: 36px">Czytelne dla mamy, wygodne dla Kasi</h2>
+      <div class="grid" style="grid-template-columns: 1.1fr repeat(3, 0.55fr); gap: 40px">
+        <ul class="points" style="justify-content: center; gap: 24px">
+          <li>Kontrast WCAG AA dla wszystkich par kolorów</li>
+          <li>Tryb senior: tekst ×1.3, przyciski 56 pt, kontrast ≥ 7:1</li>
+          <li>Pilność = ikona + tekst, nigdy sam kolor</li>
+          <li>Jeden główny przycisk na ekran</li>
+          <li>Systemowe powiększenie czcionki i czytnik ekranu</li>
+        </ul>
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Plan</div>
+          <p class="shot-caption">Standard</p>
+        </div>
+        <div>
+          <div class="shot phone">SCREENSHOT<br />Plan — senior</div>
+          <p class="shot-caption">Tryb senior</p>
+        </div>
+        <div>
+          <div class="shot phone" style="background: #1a2120; color: #b3bdba; border-color: #7f8c89">
+            SCREENSHOT<br />Plan — dark
+          </div>
+          <p class="shot-caption">Dark mode</p>
+        </div>
+      </div>
+      <div class="footer"><span class="app-name"></span><span class="page"></span></div>
+    </section>
+
+    <!-- 8. Technologia -->
+    <section class="slide">
+      <p class="eyebrow">Technologia</p>
+      <h2 style="margin-bottom: 32px">Prawdziwe dane NFZ. Zero danych zdrowotnych na serwerze.</h2>
+      <div class="grid" style="grid-template-columns: 1.25fr 1fr; gap: 64px; align-items: center">
+        <svg
+          viewBox="0 0 960 620"
+          width="960"
+          height="620"
+          role="img"
+          aria-label="Architektura: telefon, API, API NFZ"
+          font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+        >
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill="#1c6b66" />
+            </marker>
+          </defs>
+          <!-- Phone -->
+          <rect x="10" y="10" width="940" height="170" rx="24" fill="#ffffff" stroke="#1c6b66" stroke-width="4" />
+          <text x="40" y="66" font-size="36" font-weight="700" fill="#1e2a2d">Telefon — Expo: iOS · Android · web</text>
+          <text x="40" y="112" font-size="28" fill="#4e5a5e">Profile i historia badań tylko lokalnie</text>
+          <text x="40" y="152" font-size="28" fill="#4e5a5e">Silnik reguł liczy plan offline</text>
+          <!-- Arrow phone -> API -->
+          <line x1="480" y1="184" x2="480" y2="262" stroke="#1c6b66" stroke-width="5" marker-end="url(#arrow)" />
+          <rect x="510" y="194" width="440" height="62" rx="12" fill="#dcedea" />
+          <text x="530" y="236" font-size="28" font-weight="600" fill="#1c6b66">świadczenie + lokalizacja ≈ 1 km</text>
+          <!-- API -->
+          <rect x="10" y="270" width="940" height="150" rx="24" fill="#ffffff" stroke="#857b6f" stroke-width="3" />
+          <text x="40" y="326" font-size="36" font-weight="700" fill="#1e2a2d">Cienkie API (Hono)</text>
+          <text x="40" y="374" font-size="28" fill="#4e5a5e">agregacja kolejek · cache · zapasowa kopia danych</text>
+          <!-- Arrow API -> NFZ -->
+          <line x1="480" y1="424" x2="480" y2="492" stroke="#1c6b66" stroke-width="5" marker-end="url(#arrow)" />
+          <!-- NFZ -->
+          <rect x="10" y="500" width="940" height="110" rx="24" fill="#f2ede5" stroke="#857b6f" stroke-width="3" />
+          <text x="40" y="568" font-size="36" font-weight="700" fill="#1e2a2d">API NFZ „Terminy leczenia”</text>
+        </svg>
+        <ul class="points">
+          <li><b>Privacy by design</b> — bez kont, dane zdrowotne nie opuszczają telefonu</li>
+          <li><b>Demo odporne na awarię NFZ</b> — cache i zapasowa kopia danych</li>
+          <li><b>Otwarte reguły</b> — każde zalecenie ze źródłem; niezweryfikowane oznaczone jako orientacyjne</li>
+          <li>Testy silnika reguł: <span class="todo">{N} testów, pokrycie {X}%</span></li>
+        </ul>
+      </div>
+      <div class="footer"><span>TypeScript · Expo · Hono · Zod · Vitest</span><span class="page"></span></div>
+    </section>
+
+    <!-- 9. Wdrożenie i roadmap -->
+    <section class="slide">
+      <p class="eyebrow">Wdrożenie i roadmap</p>
+      <h2>Publiczne, otwarte narzędzie — gotowe do rozwoju</h2>
+      <div class="grid" style="grid-template-columns: 1fr 1fr 1fr">
+        <div class="card" style="border-top: 10px solid var(--u-done-accent)">
+          <span class="chip done">✓ Teraz — MVP</span>
+          <ul class="points" style="margin-top: 32px; gap: 20px">
+            <li>Plan badań</li>
+            <li>„Kiedy zacząć szukać”</li>
+            <li>Placówki NFZ</li>
+            <li>Profile rodzinne</li>
+            <li>PDF dla lekarza</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top: 10px solid var(--u-year-accent)">
+          <span class="chip year">◆ Dalej</span>
+          <ul class="points" style="margin-top: 32px; gap: 20px">
+            <li>Wspólny plan opiekuna i rodzica (szyfrowany E2E)</li>
+            <li>Integracja z IKP</li>
+            <li>Harmonogram mammobusów</li>
+            <li>Eksport do kalendarza</li>
+          </ul>
+        </div>
+        <div class="card" style="border-top: 10px solid var(--primary)">
+          <span class="chip" style="background: var(--primary-soft); color: var(--primary)">■ Model</span>
+          <ul class="points" style="margin-top: 32px; gap: 20px">
+            <li>Open source / narzędzie publiczne</li>
+            <li>Partnerzy: NFZ, samorządy, organizacje pacjentów</li>
+            <li>Opcjonalnie: benefit profilaktyczny dla pracodawców</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><span class="app-name"></span><span class="page"></span></div>
+    </section>
+
+    <!-- 10. Demo + linki + ujawnienie AI -->
+    <section class="slide">
+      <p class="eyebrow">Sprawdź sam</p>
+      <h2 style="margin-bottom: 40px">Demo, kod i ujawnienie źródeł</h2>
+      <div class="grid" style="grid-template-columns: auto auto auto 1fr; gap: 48px; align-items: start">
+        <div>
+          <div class="qr">QR<br />web demo</div>
+          <p class="shot-caption">Demo w przeglądarce</p>
+        </div>
+        <div>
+          <div class="qr">QR<br />Expo Go</div>
+          <p class="shot-caption">Na telefonie</p>
+        </div>
+        <div>
+          <div class="qr">QR<br />repozytorium</div>
+          <p class="shot-caption">Kod</p>
+        </div>
+        <div class="card" style="padding: 32px 40px">
+          <h3 style="font-size: var(--fs-body); margin-bottom: 16px">Ujawnienie AI i zasobów</h3>
+          <ul class="points small" style="gap: 14px">
+            <li><b>AI:</b> Claude Code (Claude Opus 5.5) — kod, testy, research źródeł, dokumentacja. Zalecenia medyczne nie pochodzą od AI.</li>
+            <li><b>Dane:</b> API NFZ „Terminy leczenia”, pacjent.gov.pl, nfz.gov.pl</li>
+            <li><b>Open source:</b> Expo, React Native, Hono, Zod, Leaflet + OpenStreetMap</li>
+          </ul>
+        </div>
+      </div>
+      <p class="lead" style="margin-top: 40px; font-weight: 600">
+        Aplikacja przypomina i edukuje — nie diagnozuje.
+      </p>
+      <div class="footer"><span>Pełna lista źródeł i bibliotek: README w repozytorium</span><span class="page"></span></div>
+    </section>
+  </body>
+</html>
