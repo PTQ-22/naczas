@@ -5,6 +5,7 @@ import type { Profile } from '@naczas/shared';
 
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
+import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
@@ -18,7 +19,7 @@ import { FamilyMemberRow } from './FamilyMemberRow';
 const addPerson = () => router.push({ pathname: '/onboarding/welcome', params: { for: 'other' } });
 
 export default function FamilyScreen() {
-  const { space } = useTheme();
+  const { colors, borderWidth } = useTheme();
   const profiles = useProfilesStore((s) => s.profiles);
   const activeProfileId = useProfilesStore((s) => s.activeProfileId);
   const setActiveProfile = useProfilesStore((s) => s.setActiveProfile);
@@ -37,18 +38,21 @@ export default function FamilyScreen() {
 
   if (profiles.length === 0) {
     return (
-      <Screen edges={['left', 'right']}>
-        <EmptyState
-          icon="people"
-          title={t('profiles.empty')}
-          action={{ label: t('profiles.emptyCta'), onPress: addPerson }}
-        />
+      <Screen wall edges={['left', 'right']}>
+        <Plate>
+          <EmptyState
+            icon="people"
+            title={t('profiles.empty')}
+            action={{ label: t('profiles.emptyCta'), onPress: addPerson }}
+          />
+        </Plate>
       </Screen>
     );
   }
 
   return (
     <Screen
+      wall
       edges={['left', 'right']}
       footer={
         <Button
@@ -60,21 +64,31 @@ export default function FamilyScreen() {
         />
       }
     >
-      <Text variant="bodyLarge" tone="textMuted">
+      <Text variant="bodyLarge" color={colors.onWall}>
         {t('profiles.subtitle')}
       </Text>
-      <View accessibilityRole="radiogroup" style={{ gap: space.md }}>
-        {profiles.map((p) => (
-          <FamilyMemberRow
-            key={p.id}
-            profile={p}
-            active={p.id === activeProfileId}
-            today={today}
-            onSelect={setActiveProfile}
-            onRemove={(profile) => void remove(profile)}
-          />
-        ))}
-      </View>
+      <Plate style={{ gap: 0 }}>
+        <View accessibilityRole="radiogroup">
+          {profiles.map((p, i) => (
+            <View
+              key={p.id}
+              style={
+                i > 0
+                  ? { borderTopWidth: borderWidth.hairline, borderTopColor: colors.border }
+                  : undefined
+              }
+            >
+              <FamilyMemberRow
+                profile={p}
+                active={p.id === activeProfileId}
+                today={today}
+                onSelect={setActiveProfile}
+                onRemove={(profile) => void remove(profile)}
+              />
+            </View>
+          ))}
+        </View>
+      </Plate>
     </Screen>
   );
 }

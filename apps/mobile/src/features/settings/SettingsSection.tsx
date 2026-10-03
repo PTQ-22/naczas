@@ -1,20 +1,35 @@
 import { View } from 'react-native';
 
-import { Card, Text } from '@/components';
+import { Text } from '@/components';
 import { useTheme } from '@/theme';
 
 import type { ReactNode } from 'react';
 
-export function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
-  const { space } = useTheme();
+interface SettingsSectionProps {
+  title: string;
+  /** First section on the plate: no ink rule above it (the plate frame is already there). */
+  first?: boolean;
+  children: ReactNode;
+}
+
+/** A group on the settings plate: ink rule + mono eyebrow, no card (redesign v2 §4). */
+export function SettingsSection({ title, first = false, children }: SettingsSectionProps) {
+  const { colors, space, borderWidth } = useTheme();
   return (
-    <View style={{ gap: space.sm }}>
-      <Text variant="heading" accessibilityRole="header">
+    <View
+      style={{
+        gap: space.md,
+        ...(!first && {
+          paddingTop: space.md,
+          borderTopWidth: borderWidth.strong,
+          borderTopColor: colors.text,
+        }),
+      }}
+    >
+      <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
         {title}
       </Text>
-      <Card>
-        <View style={{ gap: space.md }}>{children}</View>
-      </Card>
+      {children}
     </View>
   );
 }
