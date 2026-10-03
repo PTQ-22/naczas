@@ -26,6 +26,15 @@ describe('postal codes', () => {
   });
 });
 
+describe('city from postal prefix', () => {
+  it('names the city only where the whole prefix is one city', () => {
+    expect(postalCodeToLocation('00-950')?.city).toBe('Warszawa');
+    expect(postalCodeToLocation('31-120')?.city).toBe('Kraków');
+    expect(postalCodeToLocation('05-400')?.city).toBeUndefined(); // Otwock area
+    expect(postalCodeToLocation('81-700')?.city).toBeUndefined(); // Gdynia + Sopot
+  });
+});
+
 describe('provinceForCoords', () => {
   it.each([
     [52.23, 21.01, '07'], // Warszawa

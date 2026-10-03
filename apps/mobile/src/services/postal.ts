@@ -54,6 +54,29 @@ const PREFIX_RANGES: [from: number, to: number, province: ProvinceCode][] = [
   [90, 99, '05'], // Łódź, Piotrków, Sieradz
 ];
 
+/**
+ * Two-digit prefixes used only by one city — there the city is a fair label. Mixed zones
+ * (e.g. 81 = Gdynia + Sopot) are left out on purpose and fall back to the province.
+ */
+const CITY_PREFIXES: [from: number, to: number, city: string][] = [
+  [0, 4, 'Warszawa'],
+  [10, 10, 'Olsztyn'],
+  [15, 15, 'Białystok'],
+  [20, 20, 'Lublin'],
+  [25, 25, 'Kielce'],
+  [30, 31, 'Kraków'],
+  [35, 35, 'Rzeszów'],
+  [40, 40, 'Katowice'],
+  [45, 45, 'Opole'],
+  [50, 54, 'Wrocław'],
+  [60, 61, 'Poznań'],
+  [65, 65, 'Zielona Góra'],
+  [70, 71, 'Szczecin'],
+  [80, 80, 'Gdańsk'],
+  [85, 85, 'Bydgoszcz'],
+  [90, 94, 'Łódź'],
+];
+
 const POSTAL_CODE = /^(\d{2})-?(\d{3})$/;
 
 export function normalizePostalCode(input: string): string | null {
@@ -61,15 +84,21 @@ export function normalizePostalCode(input: string): string | null {
   return match ? `${match[1]}-${match[2]}` : null;
 }
 
-/** Province + capital coordinates for a postal code, or null if it isn't one. */
-export function postalCodeToLocation(input: string): ProvincePoint | null {
+export interface PostalLocation extends ProvincePoint {
+  /** Set only when the prefix belongs to a single city. */
+  city?: string;
+}
+
+/** Province + capital coordinates (+ city when unambiguous) for a postal code, or null. */
+export function postalCodeToLocation(input: string): PostalLocation | null {
   const code = normalizePostalCode(input);
   if (!code) return null;
   const prefix = Number(code.slice(0, 2));
   const range = PREFIX_RANGES.find(([from, to]) => prefix >= from && prefix <= to);
   if (!range) return null;
   const province = range[2];
-  return { province, ...PROVINCE_CAPITALS[province] };
+  const city = CITY_PREFIXES.find(([from, to]) => prefix >= from && prefix <= to)?.[2];
+  return { province, ...PROVINCE_CAPITALS[province], ...(city && { city }) };
 }
 
 /** Reference towns for nearest-town province lookup from GPS (approximate coordinates). */

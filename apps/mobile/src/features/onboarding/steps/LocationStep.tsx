@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { Button, Text, TextField } from '@/components';
 import { t } from '@/i18n';
 import { locateWithGps } from '@/services/location';
-import { normalizePostalCode, postalCodeToLocation } from '@/services/postal';
+import { postalCodeToLocation } from '@/services/postal';
+
+import { postalLocationLabel } from '../location-label';
 
 import type { StepProps } from './step-props';
 
@@ -30,19 +32,13 @@ export function LocationStep({ draft, update }: StepProps) {
   // Applies as soon as the code is complete — no extra "confirm" button to find.
   const onPostalChange = (postalCode: string) => {
     const point = postalCodeToLocation(postalCode);
-    const code = normalizePostalCode(postalCode);
-    if (!point || !code) {
+    if (!point) {
       update({ postalCode, location: draft.postalCode ? null : draft.location });
       return;
     }
-    const province = t(`onboarding.steps.location.provinces.${point.province}`);
-    update({
-      postalCode,
-      location: {
-        ...point,
-        label: t('onboarding.steps.location.postalLocationLabel', { code, province }),
-      },
-    });
+    // `city` only feeds the label — Profile.location has no such field.
+    const { city: _city, ...coords } = point;
+    update({ postalCode, location: { ...coords, label: postalLocationLabel(point) } });
   };
 
   const postalError =

@@ -57,7 +57,8 @@ export const onboarding = {
       locating: 'Ustalam lokalizację…',
       selected: 'Wybrano: {{label}}',
       gpsLabel: 'Moja lokalizacja, woj. {{province}}',
-      postalLocationLabel: 'Kod {{code}}, woj. {{province}}',
+      cityLabel: '{{city}}, woj. {{province}}',
+      provinceLabel: 'woj. {{province}}',
       privacy:
         'Lokalizacja zostaje w telefonie; do wyszukiwania placówek wysyłamy ją zaokrągloną do ok. 1 km.',
       provinces: {
