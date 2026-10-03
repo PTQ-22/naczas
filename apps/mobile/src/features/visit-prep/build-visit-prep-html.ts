@@ -73,13 +73,13 @@ export function buildVisitPrepHtml(summary: VisitPrepSummary, today: ISODate): s
         t('visitPrep.empty.recentlyDone'),
       ),
     ),
-    section(
+    // Last section + disclaimer stay together, so the disclaimer never sits alone on page 2 (P2).
+    `<div class="closing">${section(
       t('visitPrep.sections.questions'),
       summary.questions.length
         ? `<ol>${summary.questions.map((q) => `<li>${e(q)}</li>`).join('')}</ol>`
         : '',
-    ),
-    `<p class="disclaimer">${e(t('visitPrep.pdf.disclaimer'))}</p>`,
+    )}<p class="disclaimer">${e(t('visitPrep.pdf.disclaimer'))}</p></div>`,
   ].join('\n');
 
   return `<!doctype html>
@@ -96,12 +96,13 @@ export function buildVisitPrepHtml(summary: VisitPrepSummary, today: ISODate): s
   h1 { font-size: ${type.title.fontSize}px; line-height: ${type.title.lineHeight}px; margin: 0 0 8px; }
   h2 { font-size: ${type.heading.fontSize}px; line-height: ${type.heading.lineHeight}px;
     margin: 0 0 6px; border-bottom: 1px solid ${c.border}; padding-bottom: 4px; }
-  section { margin-top: 18px; break-inside: avoid; page-break-inside: avoid; }
+  section { margin-top: 14px; break-inside: avoid; page-break-inside: avoid; }
+  .closing { break-inside: avoid; page-break-inside: avoid; }
   ul, ol { margin: 0; padding-left: 22px; }
   li { margin-bottom: 4px; }
   .person { font-size: ${type.bodyLarge.fontSize}px; font-weight: 600; margin: 0 0 4px; }
   .muted { color: ${c.textMuted}; margin: 0; }
-  .disclaimer { margin-top: 24px; color: ${c.textMuted}; font-size: ${type.caption.fontSize}px; }
+  .disclaimer { margin-top: 12px; break-before: avoid; page-break-before: avoid; color: ${c.textMuted}; font-size: ${type.caption.fontSize}px; }
 </style>
 </head>
 <body>
