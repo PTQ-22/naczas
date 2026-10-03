@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { computePlan, mockPlan } from '@naczas/rules';
+import { computePlan } from '@naczas/rules';
 import type { Plan } from '@naczas/shared';
 
 import { recordsForProfile, useProfilesStore, useRecordsStore, useToday } from '@/store';
@@ -27,7 +27,7 @@ export interface PlanState {
 
 export interface UsePlanOptions {
   loader?: WaitTimesLoader;
-  /** Defaults to EXPO_PUBLIC_USE_MOCKS. */
+  /** Defaults to EXPO_PUBLIC_USE_MOCKS. Only adds sample wait times for profiles without a location. */
   useMocks?: boolean;
 }
 
@@ -58,7 +58,7 @@ export function usePlan(profileId: string, options: UsePlanOptions = {}): PlanSt
 
   // Without a location there's nothing to ask the API for — defaults it is.
   const locationKey =
-    !useMocks && location && examIds.length > 0
+    location && examIds.length > 0
       ? examIds.map((id) => waitTimesKey(id, location)).join(',')
       : null;
   const requestKey = locationKey ? `${locationKey}#${refreshCount}` : null;
@@ -82,16 +82,19 @@ export function usePlan(profileId: string, options: UsePlanOptions = {}): PlanSt
   // While refreshing, keep the previous wait times instead of flashing defaults — but never
   // reuse them for another profile/location.
   const waitTimes = useMemo(() => {
-    if (useMocks) return mockWaitTimes(location?.province ?? '07');
+    // Mock mode still asks the (mock) API when it can; samples only fill the no-location gap.
+    if (useMocks && !location) return mockWaitTimes('07');
     return fetched && fetched.locationKey === locationKey ? fetched.waitTimes : NO_WAIT_TIMES;
-  }, [useMocks, location?.province, fetched, locationKey]);
+  }, [useMocks, location, fetched, locationKey]);
 
-  const plan = useMemo((): Plan => {
-    // Mock mode (agreed with WS4): fixed demo plan, independent of the stored profile.
-    if (useMocks) return mockPlan({ today, profileId });
-    if (!profile) return { profileId, generatedAt: today, items: [] };
-    return computePlan({ profile, records, waitTimes, today });
-  }, [useMocks, profile, profileId, records, waitTimes, today]);
+  // Always the real engine — in mock mode too, so survey answers and booked/done change the plan.
+  const plan = useMemo(
+    (): Plan =>
+      profile
+        ? computePlan({ profile, records, waitTimes, today })
+        : { profileId, generatedAt: today, items: [] },
+    [profile, profileId, records, waitTimes, today],
+  );
 
   const refresh = useCallback(() => setRefreshCount((n) => n + 1), []);
 
