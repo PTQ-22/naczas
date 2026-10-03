@@ -1,26 +1,30 @@
-import { Linking } from 'react-native';
+import { Linking, View } from 'react-native';
 
 import type { ActivityTip } from '@naczas/rules';
 
 import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { Chip } from '@/components/Chip';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
+import { useTheme } from '@/theme';
 
 interface ActivityCardProps {
   tip: ActivityTip;
 }
 
-/** Single activity tip under the plan (deck slide 6). Content + source come from @naczas/rules. */
+/** One quiet "small step" line under the plan (deck slide 6). Content + source from @naczas/rules. */
 export function ActivityCard({ tip }: ActivityCardProps) {
+  const { space } = useTheme();
   return (
-    <Card>
-      <Chip tone="primary" icon="time" label={t('plan.activity.heading')} />
-      <Text variant="heading" accessibilityRole="header">
+    <View style={{ gap: space.xs }}>
+      <Text variant="eyebrow" tone="textMuted">
+        {t('plan.activity.heading')}
+      </Text>
+      <Text variant="label" accessibilityRole="header">
         {tip.title}
       </Text>
-      <Text>{tip.body}</Text>
+      <Text variant="caption" tone="textMuted">
+        {tip.body}
+      </Text>
       <Button
         variant="ghost"
         icon="external"
@@ -29,6 +33,6 @@ export function ActivityCard({ tip }: ActivityCardProps) {
         accessibilityLabel={t('plan.activity.sourceA11y', { name: tip.source.name })}
         onPress={() => void Linking.openURL(tip.source.url)}
       />
-    </Card>
+    </View>
   );
 }

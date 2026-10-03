@@ -1,5 +1,6 @@
-// Source of truth for values: docs/design/tokens.md (WS5). Change hexes there first —
-// contrast tests in __tests__/tokens.test.ts mirror the pairs verified in §3.
+// Redesign v2: docs/design/redesign.md, palette switched to cobalt tiles + enamel plates by team
+// pick. Contrast pairs are verified in __tests__/tokens.test.ts — a hex change that breaks AA
+// fails `pnpm check`.
 import type { Urgency } from '@naczas/shared';
 
 export type ColorScheme = 'light' | 'dark';
@@ -14,68 +15,93 @@ export interface UrgencyColor {
 }
 
 export interface ColorTokens {
+  /** Screen background where there is no tile wall — the enamel plate's cream. */
   bg: string;
+  /** Enamel plate / sheet. */
   surface: string;
+  /** Pressed rows, inactive folder tabs on a plate. */
   surfaceAlt: string;
+  /** Hairline separators between list rows. */
   border: string;
+  /** Radio rings, input outlines — >= 3:1. */
   borderStrong: string;
+  /** Ink — primary text and the plate's 3 px frame. */
   text: string;
   textMuted: string;
   textSubtle: string;
+  /** Cobalt — buttons, links, focus, "booked". */
   primary: string;
   primaryPressed: string;
   onPrimary: string;
   primarySoft: string;
   focus: string;
   danger: string;
+  /** Highlighter behind an urgent number — never text colour. */
+  marker: string;
+  /** Tile wall behind the plates (plan, onboarding). */
+  wall: string;
+  /** Grout lines between tiles — decorative. */
+  wallGrout: string;
+  /** Text placed straight on the wall. */
+  onWall: string;
   urgency: Record<Urgency, UrgencyColor>;
 }
 
+// Redesign v2 — cobalt hospital tiles + cream enamel plates (direction picked by the team over
+// docs/design/redesign.md §3). Contrast pairs are guarded in __tests__/tokens.test.ts.
 export const colors: Record<ColorScheme, ColorTokens> = {
   light: {
-    bg: '#FAF7F2',
-    surface: '#FFFFFF',
-    surfaceAlt: '#F2EDE5',
-    border: '#E3DCD1',
-    borderStrong: '#857B6F',
-    text: '#1E2A2D',
-    textMuted: '#4E5A5E',
-    textSubtle: '#5F686B',
-    primary: '#1C6B66',
-    primaryPressed: '#155450',
+    bg: '#F6F3EA',
+    surface: '#FBF9F3',
+    surfaceAlt: '#ECE7DB',
+    border: '#DDD6C6',
+    borderStrong: '#6E6A60',
+    text: '#0E1B2C',
+    textMuted: '#4A5160',
+    textSubtle: '#4A5160',
+    primary: '#24477A',
+    primaryPressed: '#1C3964',
     onPrimary: '#FFFFFF',
-    primarySoft: '#DCEDEA',
-    focus: '#1C6B66',
-    danger: '#B3261E',
+    primarySoft: '#E1E6EF',
+    focus: '#24477A',
+    danger: '#B4231A',
+    marker: '#FFE24A',
+    wall: '#24477A',
+    wallGrout: '#1C3964',
+    onWall: '#FFFFFF',
     urgency: {
-      act_now: { fg: '#A12F1B', bg: '#FBE8E2', accent: '#C2412A' },
-      this_year: { fg: '#7A4B00', bg: '#FCEFD6', accent: '#A86B12' },
-      later: { fg: '#4A5560', bg: '#ECEFF2', accent: '#78838E' },
-      done: { fg: '#276338', bg: '#E2F1E6', accent: '#3B8752' },
-      booked: { fg: '#2F4C95', bg: '#E5EBFA', accent: '#4D69B5' },
+      act_now: { fg: '#B4231A', bg: '#F7E0DA', accent: '#C8322A' },
+      this_year: { fg: '#0E1B2C', bg: '#ECE7DB', accent: '#6E6A60' },
+      later: { fg: '#4A5160', bg: '#ECE7DB', accent: '#6E6A60' },
+      done: { fg: '#17693F', bg: '#DDEEE2', accent: '#1F7A4C' },
+      booked: { fg: '#24477A', bg: '#E1E6EF', accent: '#24477A' },
     },
   },
   dark: {
-    bg: '#111615',
-    surface: '#1A2120',
-    surfaceAlt: '#232B2A',
-    border: '#33403D',
-    borderStrong: '#7F8C89',
-    text: '#EDF1EF',
-    textMuted: '#B3BDBA',
-    textSubtle: '#949F9C',
-    primary: '#62C4B9',
-    primaryPressed: '#7FD3C9',
-    onPrimary: '#0B1E1C',
-    primarySoft: '#1D3532',
-    focus: '#62C4B9',
-    danger: '#FF8A80',
+    bg: '#0B1628',
+    surface: '#152440',
+    surfaceAlt: '#1C2D50',
+    border: '#2A3B5E',
+    borderStrong: '#7A8CAE',
+    text: '#E8EEF5',
+    textMuted: '#AEBAD0',
+    textSubtle: '#AEBAD0',
+    primary: '#8EA9FF',
+    primaryPressed: '#A9BDFF',
+    onPrimary: '#0B1628',
+    primarySoft: '#22325C',
+    focus: '#8EA9FF',
+    danger: '#FF8F85',
+    marker: '#FFE24A',
+    wall: '#0B1628',
+    wallGrout: '#08111F',
+    onWall: '#E8EEF5',
     urgency: {
-      act_now: { fg: '#FF9F88', bg: '#3A1F19', accent: '#EE7A5E' },
-      this_year: { fg: '#F2C063', bg: '#35290F', accent: '#D4A03D' },
-      later: { fg: '#B9C3CB', bg: '#252B30', accent: '#8B97A2' },
-      done: { fg: '#8FD3A2', bg: '#17301F', accent: '#5DB476' },
-      booked: { fg: '#A9BCF4', bg: '#1C2541', accent: '#7F9BE5' },
+      act_now: { fg: '#FF8F85', bg: '#3A1C24', accent: '#F0564B' },
+      this_year: { fg: '#E8EEF5', bg: '#1C2D50', accent: '#7A8CAE' },
+      later: { fg: '#AEBAD0', bg: '#1C2D50', accent: '#7A8CAE' },
+      done: { fg: '#7FD8A8', bg: '#123227', accent: '#3DB27A' },
+      booked: { fg: '#A9BDFF', bg: '#22325C', accent: '#8EA9FF' },
     },
   },
 };
@@ -85,8 +111,8 @@ export const seniorColorOverrides: Record<
   ColorScheme,
   Pick<ColorTokens, 'textMuted' | 'textSubtle' | 'borderStrong'>
 > = {
-  light: { textMuted: '#3B4649', textSubtle: '#3B4649', borderStrong: '#6E655B' },
-  dark: { textMuted: '#CDD5D2', textSubtle: '#CDD5D2', borderStrong: '#98A4A1' },
+  light: { textMuted: '#323846', textSubtle: '#323846', borderStrong: '#4A5160' },
+  dark: { textMuted: '#CDD6E6', textSubtle: '#CDD6E6', borderStrong: '#95A5C4' },
 };
 
 export const space = {
@@ -100,38 +126,86 @@ export const space = {
   '3xl': 48,
 } as const;
 
-export const radius = { sm: 8, md: 12, lg: 16, xl: 24, full: 999 } as const;
+// plate: enamel sign corners; tab: folder-tab top corners.
+export const radius = {
+  sm: 8,
+  md: 12,
+  plate: 10,
+  tab: 8,
+  sheet: 14,
+  lg: 16,
+  xl: 24,
+  full: 999,
+} as const;
 
-export const borderWidth = { hairline: 1, strong: 2, focus: 3, accent: 4 } as const;
+export const borderWidth = {
+  hairline: 1,
+  strong: 2,
+  plate: 3,
+  marker: 3,
+  focus: 3,
+  accent: 4,
+} as const;
 
-// stagger: delay between consecutive timeline cards entering (screens.md §2).
-export const motion = { fast: 150, base: 300, reduced: 0, stagger: 40 } as const;
+// stagger kept for list entering; the only signature animation is the ticket slide-in.
+export const motion = { fast: 150, base: 300, reduced: 0, stagger: 40, plate: 420 } as const;
 
-/** Light-mode card shadow. Dark mode has no shadow — surface vs bg + border separate cards. */
-export const cardElevation = {
-  shadowOpacity: 0.06,
-  shadowRadius: 8,
-  shadowOffset: { width: 0, height: 2 },
-  elevation: 1,
+/** Tile size of the wall pattern (cobalt hospital tiles). */
+export const tile = { size: 24 } as const;
+
+/**
+ * Font family names as registered by `useAppFonts` (keys of `fontAssets`). One family per weight:
+ * custom fonts must not combine with `fontWeight`, or Android/iOS fall back to the system face.
+ */
+export const fonts = {
+  display: 'BricolageGrotesque_800ExtraBold',
+  displayBold: 'BricolageGrotesque_700Bold',
+  body: 'AtkinsonHyperlegibleNext_400Regular',
+  bodyBold: 'AtkinsonHyperlegibleNext_700Bold',
+  mono: 'IBMPlexMono_500Medium',
+  monoBold: 'IBMPlexMono_600SemiBold',
 } as const;
 
 export type TypeVariant =
-  'display' | 'title' | 'heading' | 'bodyLarge' | 'body' | 'label' | 'caption';
+  | 'ticket'
+  | 'display'
+  | 'title'
+  | 'heading'
+  | 'bodyLarge'
+  | 'body'
+  | 'label'
+  | 'caption'
+  | 'eyebrow'
+  | 'data';
 
 export interface TypeStyle {
+  fontFamily: (typeof fonts)[keyof typeof fonts];
   fontSize: number;
   lineHeight: number;
-  fontWeight: '400' | '600' | '700';
+  letterSpacing?: number;
+  textTransform?: 'uppercase';
 }
 
+// Three roles (redesign §3): Bricolage = display, Atkinson Hyperlegible = body (designed for low
+// vision — the senior-mode argument), Plex Mono = every number/date/code (thermal-printer ticket).
 const baseType: Record<TypeVariant, TypeStyle> = {
-  display: { fontSize: 32, lineHeight: 40, fontWeight: '700' },
-  title: { fontSize: 24, lineHeight: 32, fontWeight: '700' },
-  heading: { fontSize: 20, lineHeight: 28, fontWeight: '600' },
-  bodyLarge: { fontSize: 18, lineHeight: 26, fontWeight: '400' },
-  body: { fontSize: 16, lineHeight: 24, fontWeight: '400' },
-  label: { fontSize: 16, lineHeight: 20, fontWeight: '600' },
-  caption: { fontSize: 14, lineHeight: 20, fontWeight: '400' },
+  ticket: { fontFamily: fonts.display, fontSize: 96, lineHeight: 96, letterSpacing: -3 },
+  display: { fontFamily: fonts.display, fontSize: 32, lineHeight: 36, letterSpacing: -0.8 },
+  title: { fontFamily: fonts.display, fontSize: 22, lineHeight: 28, letterSpacing: -0.3 },
+  heading: { fontFamily: fonts.displayBold, fontSize: 19, lineHeight: 24 },
+  bodyLarge: { fontFamily: fonts.body, fontSize: 19, lineHeight: 28 },
+  body: { fontFamily: fonts.body, fontSize: 17, lineHeight: 25 },
+  label: { fontFamily: fonts.bodyBold, fontSize: 17, lineHeight: 22 },
+  caption: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
+  // Uppercase mono section labels; 13 pt is legible because caps + tracking (redesign §3).
+  eyebrow: {
+    fontFamily: fonts.monoBold,
+    fontSize: 13,
+    lineHeight: 18,
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
+  },
+  data: { fontFamily: fonts.mono, fontSize: 17, lineHeight: 24 },
 };
 
 export const SENIOR_SCALE = 1.3;
@@ -145,6 +219,9 @@ const scaleType = (scale: number): Record<TypeVariant, TypeStyle> =>
         ...style,
         fontSize: Math.round(style.fontSize * scale),
         lineHeight: Math.round(style.lineHeight * scale),
+        ...(style.letterSpacing !== undefined && {
+          letterSpacing: Math.round(style.letterSpacing * scale * 10) / 10,
+        }),
       },
     ]),
   ) as Record<TypeVariant, TypeStyle>;

@@ -4,8 +4,6 @@ import { ageAt } from '@naczas/rules';
 import type { ISODate, Profile } from '@naczas/shared';
 
 import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { Chip } from '@/components/Chip';
 import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { countActNow } from '@/features/plan/plan-view-model';
@@ -21,7 +19,10 @@ interface FamilyMemberRowProps {
   onRemove: (profile: Profile) => void;
 }
 
-/** One person: tap the body to make them active; "Usuń" is a separate, sibling button. */
+/**
+ * One person as a row on the plate (redesign v2): radio + name + relation/age, urgent count as a
+ * mono caption. Tap the body to make them active; "Usuń" is a separate, sibling button.
+ */
 export function FamilyMemberRow({
   profile,
   active,
@@ -30,12 +31,12 @@ export function FamilyMemberRow({
   onRemove,
 }: FamilyMemberRowProps) {
   const { colors, layout, radius, space, borderWidth } = useTheme();
+  const dot = layout.icon.md;
   // One usePlan per row: hooks can't run in a loop, and the badge needs each person's plan.
   const { plan } = usePlan(profile.id);
   const urgent = countActNow(plan.items);
   const relation = t(`profiles.relation.${profile.relation}`);
   const age = t('profiles.age', { age: ageAt(profile.birthYear, today) });
-  const avatar = layout.minTouch;
 
   const a11yLabel = [
     profile.name,
@@ -47,9 +48,7 @@ export function FamilyMemberRow({
     .join(', ');
 
   return (
-    <Card
-      style={active ? { borderColor: colors.primary, borderWidth: borderWidth.strong } : undefined}
-    >
+    <View style={{ gap: space.xs, paddingVertical: space.sm }}>
       <Pressable
         onPress={() => onSelect(profile.id)}
         accessibilityRole="radio"
@@ -58,41 +57,51 @@ export function FamilyMemberRow({
         accessibilityHint={
           active ? t('profiles.active') : t('profiles.switchTo', { name: profile.name })
         }
-        style={{
+        style={({ pressed }) => ({
           flexDirection: 'row',
           alignItems: 'center',
           gap: space.md,
           minHeight: layout.minTouch,
-        }}
+          opacity: pressed ? 0.6 : 1,
+        })}
       >
+        {/* Radio, not an avatar: which plan the app shows is the one choice made here. */}
         <View
           style={{
-            width: avatar,
-            height: avatar,
+            width: dot,
+            height: dot,
             borderRadius: radius.full,
-            backgroundColor: active ? colors.primary : colors.surfaceAlt,
+            borderWidth: borderWidth.strong,
+            borderColor: active ? colors.primary : colors.borderStrong,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text variant="heading" tone={active ? 'onPrimary' : 'text'}>
-            {profile.name.slice(0, 1).toUpperCase()}
+          {active && (
+            <View
+              style={{
+                width: dot / 2,
+                height: dot / 2,
+                borderRadius: radius.full,
+                backgroundColor: colors.primary,
+              }}
+            />
+          )}
+        </View>
+        <View style={{ flex: 1, gap: space.xs / 2 }}>
+          <Text variant="title">{profile.name}</Text>
+          <Text variant="caption" tone="textMuted">{`${relation} · ${age}`}</Text>
+          {active && (
+            <Text variant="eyebrow" color={colors.primary}>
+              {t('profiles.active')}
+            </Text>
+          )}
+        </View>
+        {urgent > 0 && (
+          <Text variant="eyebrow" color={colors.urgency.act_now.fg}>
+            {t('profiles.urgentBadge', { count: urgent })}
           </Text>
-        </View>
-        <View style={{ flex: 1, gap: space.xs }}>
-          <Text variant="heading">{profile.name}</Text>
-          <Text tone="textMuted">{`${relation} · ${age}`}</Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
-            {urgent > 0 && (
-              <Chip
-                tone="act_now"
-                icon="alert"
-                label={t('profiles.urgentBadge', { count: urgent })}
-              />
-            )}
-            {active && <Chip tone="primary" icon="check" label={t('profiles.active')} />}
-          </View>
-        </View>
+        )}
         {!active && <Icon name="chevronRight" color={colors.textMuted} />}
       </Pressable>
       <Button
@@ -101,6 +110,6 @@ export function FamilyMemberRow({
         accessibilityLabel={t('profiles.removeA11y', { name: profile.name })}
         onPress={() => onRemove(profile)}
       />
-    </Card>
+    </View>
   );
 }

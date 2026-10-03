@@ -7,6 +7,7 @@ import { rules } from '@naczas/rules';
 
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
+import { successHaptic } from '@/components/haptics';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
@@ -54,6 +55,7 @@ export default function BookScreen() {
     if (error) return;
     // markBooked keeps lastDone and remembers the previous record for undo.
     markBooked(profile.id, rule.id, value);
+    successHaptic();
     router.back();
   };
 

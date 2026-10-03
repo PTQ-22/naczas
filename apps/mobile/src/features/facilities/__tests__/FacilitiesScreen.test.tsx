@@ -42,11 +42,11 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     jest.restoreAllMocks();
   });
 
-  it('shows skeletons first, then the list with wait chips and snapshot info', async () => {
+  it('shows skeletons first, then the rows with weeks of waiting and snapshot info', async () => {
     render(<FacilitiesScreen />);
     expect(screen.getAllByTestId('facility-skeleton')).toHaveLength(3);
     expect(await screen.findByText('Kolonoskopia — gdzie na NFZ')).toBeTruthy();
-    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+    await screen.findAllByText('tyg.');
     expect(screen.getByText('Dane z kopii NFZ, stan na 09.2026.')).toBeTruthy();
     expect(screen.queryByTestId('facility-skeleton')).toBeNull();
   });
@@ -62,7 +62,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
 
   it('sort and view toggles are radio groups', async () => {
     render(<FacilitiesScreen />);
-    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+    await screen.findAllByText('tyg.');
     const nearest = screen.getByRole('radio', { name: 'Najbliżej' });
     fireEvent.press(nearest);
     await waitFor(() =>
@@ -97,7 +97,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
 
   it('asks without radiusKm and shows how many are shown and how far they reach (M3)', async () => {
     render(<FacilitiesScreen />);
-    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+    await screen.findAllByText('tyg.');
     const [params] = mockGetFacilities.mock.calls[0] as [Record<string, unknown>];
     expect(params).not.toHaveProperty('radiusKm');
     expect(
@@ -119,7 +119,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     );
     expect(openURL).toHaveBeenCalledWith('https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne');
     // Let the list load so no state update lands after the test ends.
-    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+    await screen.findAllByText('tyg.');
   });
 
   it('queue exams without a programme get no programme note', async () => {
@@ -127,7 +127,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     render(<FacilitiesScreen />);
     await screen.findByText('Badanie u okulisty — gdzie na NFZ');
     expect(screen.queryByText(/^To kolejki NFZ do poradni/)).toBeNull();
-    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+    await screen.findAllByText('tyg.');
   });
 
   it('exams without an NFZ queue show an explanation instead of a list', () => {

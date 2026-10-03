@@ -56,21 +56,26 @@ describe('PlanScreen (mockPlan)', () => {
     mockUsePlanData.mockReturnValue(mockPlanData());
   });
 
-  it('shows the profile title, urgent summary and one primary CTA on the act_now card', () => {
+  it('leads with the queue number of the most urgent exam and its one CTA', () => {
     renderPlan();
     expect(screen.getByRole('header', { name: 'Plan badań — Mama' })).toBeOnTheScreen();
-    expect(screen.getByText('1 badanie wymaga działania')).toBeOnTheScreen();
+    // p75 213 days ≈ 30 weeks, printed big and read out in full.
+    expect(screen.getByText('30')).toBeOnTheScreen();
     expect(
-      screen.getByText('W okolicy czeka się ok. 30 tyg. — zacznij szukać teraz.'),
+      screen.getByRole('button', { name: /^Kolonoskopia, Pilne, Czeka się około 30 tygodni/ }),
     ).toBeOnTheScreen();
-    expect(
-      screen.getByRole('button', { name: /Znajdź termin na: Kolonoskopia/ }),
-    ).toBeOnTheScreen();
+    expect(screen.getByText(/^Zacznij szukać terminu dziś/)).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: /Znajdź placówkę: Kolonoskopia/ })).toBeOnTheScreen();
+  });
+
+  it('does not repeat the hero exam in the list below it', () => {
+    renderPlan();
+    expect(screen.getAllByText('Kolonoskopia')).toHaveLength(1);
   });
 
   it('queue CTA opens facilities for that exam', () => {
     renderPlan();
-    fireEvent.press(screen.getByRole('button', { name: /Znajdź termin na: Kolonoskopia/ }));
+    fireEvent.press(screen.getByRole('button', { name: /Znajdź placówkę: Kolonoskopia/ }));
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/exam/[examId]/facilities',
       params: { examId: 'colonoscopy_screening' },
@@ -87,7 +92,7 @@ describe('PlanScreen (mockPlan)', () => {
 
   it('shows the activity tip for the profile with a source link', () => {
     renderPlan();
-    expect(screen.getByText('Aktywność')).toBeOnTheScreen();
+    expect(screen.getByText('Mały krok')).toBeOnTheScreen();
     expect(
       screen.getByRole('link', { name: /^Źródło: .+, otwiera przeglądarkę$/ }),
     ).toBeOnTheScreen();

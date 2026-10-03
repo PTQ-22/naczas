@@ -3,6 +3,8 @@ import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 import { useTheme } from '@/theme';
 
+import { TileWall } from './TileWall';
+
 import type { ReactNode } from 'react';
 
 interface ScreenProps {
@@ -12,6 +14,8 @@ interface ScreenProps {
   scroll?: boolean;
   /** Screens under a native header / tab bar don't need the top / bottom inset. */
   edges?: Edge[];
+  /** Cobalt tile wall behind the content instead of the plain background (plan, onboarding). */
+  wall?: boolean;
   testID?: string;
 }
 
@@ -21,6 +25,7 @@ export function Screen({
   footer,
   scroll = true,
   edges = ['top', 'left', 'right'],
+  wall = false,
   testID,
 }: ScreenProps) {
   const { colors, layout, space, borderWidth } = useTheme();
@@ -31,8 +36,12 @@ export function Screen({
     paddingHorizontal: layout.screenPaddingX,
   };
 
-  return (
-    <SafeAreaView testID={testID} edges={edges} style={{ flex: 1, backgroundColor: colors.bg }}>
+  const screen = (
+    <SafeAreaView
+      testID={testID}
+      edges={edges}
+      style={{ flex: 1, backgroundColor: wall ? 'transparent' : colors.bg }}
+    >
       {scroll ? (
         <ScrollView
           style={{ flex: 1 }}
@@ -58,4 +67,5 @@ export function Screen({
       )}
     </SafeAreaView>
   );
+  return wall ? <TileWall>{screen}</TileWall> : screen;
 }

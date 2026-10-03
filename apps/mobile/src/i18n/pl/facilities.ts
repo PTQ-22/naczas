@@ -27,6 +27,7 @@ export const facilities = {
   wait: {
     // "tyg." avoids declension (1 tydzień / 2 tygodnie / 5 tygodni).
     weeks: 'ok. {{weeks}} tyg.',
+    unit: 'tyg.',
     unknown: 'Brak danych o terminie',
     a11yWeeks: 'średnio około {{weeks}} tyg. oczekiwania',
     a11yUnknown: 'brak danych o czasie oczekiwania',

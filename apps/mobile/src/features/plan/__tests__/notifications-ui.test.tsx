@@ -18,6 +18,8 @@ jest.mock('@/notifications', () => ({
   getNotificationPermission: jest.fn(),
   requestNotificationPermission: jest.fn(),
   useInAppReminders: jest.fn(),
+  notificationId: (profileId: string, examId: string, kind: string) =>
+    `${profileId}:${examId}:${kind}`,
 }));
 
 const mockGet = getNotificationPermission as jest.Mock;
@@ -74,6 +76,16 @@ describe('ReminderBanner', () => {
     expect(screen.queryByText('Druga')).toBeNull();
     fireEvent.press(screen.getByRole('button', { name: /Zamknij przypomnienie/ }));
     expect(dismiss).toHaveBeenCalledWith('a');
+  });
+
+  it('skips "time to book" reminders for exams already shown on the plan', () => {
+    const item = plan.items[0]!;
+    mockReminders.mockReturnValue({
+      reminders: [{ id: `${item.profileId}:${item.examId}:notify`, title: 'Dubel', body: '…' }],
+      dismiss: jest.fn(),
+    });
+    renderThemed(<ReminderBanner plan={plan} />);
+    expect(screen.queryByText('Dubel')).toBeNull();
   });
 
   it('renders nothing without reminders', () => {

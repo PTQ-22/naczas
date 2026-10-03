@@ -1,53 +1,55 @@
-import { Text, type ColorValue } from 'react-native';
+import { SymbolView, type SymbolViewProps } from 'expo-symbols';
+import { type ColorValue } from 'react-native';
 
 import { useTheme } from '@/theme';
 
-// No icon library is installed (AGENTS.md: no new deps without the team), so icons are
-// Unicode glyphs. Always decorative — meaning is carried by the adjacent text label.
-const glyphs = {
-  alert: '!',
-  calendar: '▦',
-  time: '◷',
-  check: '✓',
-  booked: '◉',
-  info: 'i',
-  plus: '+',
-  chevronDown: '▾',
-  chevronUp: '▴',
-  chevronRight: '›',
-  external: '↗',
-  phone: '☎',
-  people: '☺',
-  settings: '⚙',
-  trophy: '★',
-  heart: '♥',
-} as const;
+type SymbolName = Extract<SymbolViewProps['name'], { ios?: unknown }>;
 
-export type IconName = keyof typeof glyphs;
+// One name per meaning: SF Symbols on iOS, Material Symbols (bundled font, works offline) on
+// Android and web. Always decorative — meaning is carried by the adjacent text label.
+const symbols = {
+  alert: { ios: 'exclamationmark.circle', android: 'error', web: 'error' },
+  calendar: { ios: 'calendar', android: 'calendar_month', web: 'calendar_month' },
+  plan: { ios: 'list.bullet.clipboard', android: 'assignment', web: 'assignment' },
+  time: { ios: 'clock', android: 'schedule', web: 'schedule' },
+  check: { ios: 'checkmark', android: 'check', web: 'check' },
+  booked: { ios: 'calendar.badge.checkmark', android: 'event_available', web: 'event_available' },
+  info: { ios: 'info.circle', android: 'info', web: 'info' },
+  plus: { ios: 'plus', android: 'add', web: 'add' },
+  chevronDown: { ios: 'chevron.down', android: 'expand_more', web: 'expand_more' },
+  chevronUp: { ios: 'chevron.up', android: 'expand_less', web: 'expand_less' },
+  chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
+  external: { ios: 'arrow.up.right', android: 'open_in_new', web: 'open_in_new' },
+  phone: { ios: 'phone.fill', android: 'call', web: 'call' },
+  people: { ios: 'person.2', android: 'group', web: 'group' },
+  settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
+  trophy: { ios: 'trophy', android: 'emoji_events', web: 'emoji_events' },
+  heart: { ios: 'heart', android: 'favorite', web: 'favorite' },
+} as const satisfies Record<string, SymbolName>;
+
+export type IconName = keyof typeof symbols;
 
 interface IconProps {
   name: IconName;
   size?: 'sm' | 'md' | 'lg';
+  /** Explicit pixel size (e.g. tab bar icons sized by the navigator). */
+  px?: number;
   color?: ColorValue;
 }
 
-export function Icon({ name, size = 'md', color }: IconProps) {
+export function Icon({ name, size = 'md', px, color }: IconProps) {
   const theme = useTheme();
-  const px = theme.layout.icon[size];
+  const dim = px ?? theme.layout.icon[size];
   return (
-    <Text
+    <SymbolView
+      name={symbols[name]}
+      size={dim}
+      tintColor={color ?? theme.colors.text}
+      // Reserve the box while the web/Android symbol font loads, so rows don't jump.
+      style={{ width: dim, height: dim }}
       accessible={false}
-      importantForAccessibility="no"
+      importantForAccessibility="no-hide-descendants"
       accessibilityElementsHidden
-      style={{
-        fontSize: px,
-        minWidth: px,
-        textAlign: 'center',
-        fontWeight: '700',
-        color: color ?? theme.colors.text,
-      }}
-    >
-      {glyphs[name]}
-    </Text>
+    />
   );
 }

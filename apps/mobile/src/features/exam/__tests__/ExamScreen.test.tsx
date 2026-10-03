@@ -10,6 +10,13 @@ import { ThemeProvider } from '@/theme';
 
 import ExamScreen from '../ExamScreen';
 
+// QueueNumber uses Reanimated; its official mock renders Animated.View as a plain View.
+jest.mock('react-native-worklets', () =>
+  jest.requireActual<object>('react-native-worklets/src/mock'),
+);
+jest.mock('react-native-reanimated', () =>
+  jest.requireActual<object>('react-native-reanimated/mock'),
+);
 jest.mock('@react-native-async-storage/async-storage', () =>
   jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
@@ -44,9 +51,10 @@ describe('ExamScreen', () => {
     expect(screen.getByText(rule.referralNote ?? '')).toBeOnTheScreen();
     expect(screen.getByText(/To informacja edukacyjna/)).toBeOnTheScreen();
     expect(screen.getByText('W promieniu 25 km czeka się')).toBeOnTheScreen();
-    expect(screen.getByText('ok. 30 tyg.')).toBeOnTheScreen();
+    expect(screen.getByText('30')).toBeOnTheScreen();
+    expect(screen.getByText('tygodni w kolejce')).toBeOnTheScreen();
 
-    fireEvent.press(screen.getByRole('button', { name: 'Znajdź termin w okolicy' }));
+    fireEvent.press(screen.getByRole('button', { name: 'Znajdź placówkę' }));
     expect(router.push).toHaveBeenCalledWith({
       pathname: '/exam/[examId]/facilities',
       params: { examId: 'colonoscopy_screening' },

@@ -16,10 +16,8 @@ describe('contrastRatio', () => {
     expect(contrastRatio('#777777', '#777777')).toBeCloseTo(1, 5);
   });
 
-  it('is symmetric and matches values published in tokens.md §3', () => {
-    expect(contrastRatio('#1E2A2D', '#FAF7F2')).toBeCloseTo(13.8, 1);
-    expect(contrastRatio('#FAF7F2', '#1E2A2D')).toBeCloseTo(13.8, 1);
-    expect(contrastRatio(colors.light.textSubtle, colors.light.surfaceAlt)).toBeCloseTo(4.9, 1);
+  it('is symmetric', () => {
+    expect(contrastRatio('#0E1B2C', '#E9EEF2')).toBeCloseTo(contrastRatio('#E9EEF2', '#0E1B2C'), 5);
   });
 
   it('rejects non-#RRGGBB input', () => {
@@ -65,6 +63,25 @@ describe.each(schemes)('%s palette contrast', (scheme) => {
     expect(contrastRatio(accent, c.bg)).toBeGreaterThanOrEqual(UI_NON_TEXT);
   });
 
+  it('text on the tile wall is AA and plates stand out from the wall', () => {
+    expect(contrastRatio(c.onWall, c.wall)).toBeGreaterThanOrEqual(AA_TEXT);
+    expect(contrastRatio(c.onWall, c.wallGrout)).toBeGreaterThanOrEqual(AA_TEXT);
+    // A plate's edge is its fill (light: cream on cobalt) or its 3 px ink frame (dark) — one of
+    // the two must be a >= 3:1 UI boundary against the wall.
+    const edge = Math.max(contrastRatio(c.surface, c.wall), contrastRatio(c.text, c.wall));
+    expect(edge).toBeGreaterThanOrEqual(UI_NON_TEXT);
+  });
+
+  it('marker: ink text on the highlighter is AA, the marker itself is visible on bg/surface', () => {
+    // Light: marker is a fill behind ink. Dark: a 3 px underline — must read as a mark (>= 3:1).
+    if (scheme === 'light') {
+      expect(contrastRatio(c.text, c.marker)).toBeGreaterThanOrEqual(AAA_TEXT);
+    } else {
+      expect(contrastRatio(c.marker, c.surface)).toBeGreaterThanOrEqual(UI_NON_TEXT);
+      expect(contrastRatio(c.marker, c.bg)).toBeGreaterThanOrEqual(UI_NON_TEXT);
+    }
+  });
+
   it('senior overrides reach AAA for secondary text', () => {
     const s = seniorColorOverrides[scheme];
     for (const bg of Object.values(backgrounds)) {
@@ -77,18 +94,26 @@ describe.each(schemes)('%s palette contrast', (scheme) => {
 
 describe('typography', () => {
   it('derives senior scale as normal x 1.3, rounded', () => {
-    expect(typography.senior.body.fontSize).toBe(21);
-    expect(typography.senior.display).toMatchObject({ fontSize: 42, lineHeight: 52 });
+    expect(typography.senior.body.fontSize).toBe(22);
+    expect(typography.senior.display).toMatchObject({ fontSize: 42, lineHeight: 47 });
     expect(typography.senior.caption).toMatchObject({ fontSize: 18, lineHeight: 26 });
   });
 
-  it('never goes below 14 pt (normal) / 18 pt (senior)', () => {
-    for (const style of Object.values(typography.normal)) {
-      expect(style.fontSize).toBeGreaterThanOrEqual(14);
-    }
-    for (const style of Object.values(typography.senior)) {
-      expect(style.fontSize).toBeGreaterThanOrEqual(18);
-    }
+  it('keeps the font family per role when scaling', () => {
+    expect(typography.senior.ticket.fontFamily).toBe(typography.normal.ticket.fontFamily);
+    expect(typography.normal.data.fontFamily).toMatch(/^IBMPlexMono/);
+    expect(typography.normal.body.fontFamily).toMatch(/^AtkinsonHyperlegibleNext/);
+    expect(typography.normal.display.fontFamily).toMatch(/^BricolageGrotesque/);
+  });
+
+  it('never goes below 14 pt (normal) / 18 pt (senior) for mixed-case text', () => {
+    // Uppercase mono eyebrow is the only exception: 13 pt caps read like 15 pt lowercase.
+    const mixed = (scale: typeof typography.normal) =>
+      Object.values(scale).filter((style) => style.textTransform !== 'uppercase');
+    for (const style of mixed(typography.normal)) expect(style.fontSize).toBeGreaterThanOrEqual(14);
+    for (const style of mixed(typography.senior)) expect(style.fontSize).toBeGreaterThanOrEqual(18);
+    expect(typography.normal.eyebrow.fontSize).toBeGreaterThanOrEqual(13);
+    expect(typography.senior.eyebrow.fontSize).toBeGreaterThanOrEqual(17);
   });
 });
 
@@ -96,7 +121,7 @@ describe('createTheme', () => {
   it('uses base colors and normal scale by default', () => {
     const theme = createTheme({ scheme: 'light', seniorMode: false });
     expect(theme.colors).toBe(colors.light);
-    expect(theme.type.body.fontSize).toBe(16);
+    expect(theme.type.body.fontSize).toBe(17);
     expect(theme.layout.minTouch).toBe(44);
   });
 
@@ -104,7 +129,7 @@ describe('createTheme', () => {
     const theme = createTheme({ scheme: 'dark', seniorMode: true });
     expect(theme.colors.textMuted).toBe(seniorColorOverrides.dark.textMuted);
     expect(theme.colors.primary).toBe(colors.dark.primary);
-    expect(theme.type.body.fontSize).toBe(21);
+    expect(theme.type.body.fontSize).toBe(22);
     expect(theme.layout.minTouch).toBe(56);
   });
 

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
 import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
@@ -23,14 +22,16 @@ export function NotificationPrompt() {
   if (status !== 'undetermined' || dismissed) return null;
 
   return (
-    <Card>
+    <View style={{ gap: space.sm }}>
       <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' }}>
         <Icon name="time" color={colors.primary} />
-        <Text variant="heading" accessibilityRole="header" style={{ flex: 1 }}>
+        <Text variant="label" accessibilityRole="header" style={{ flex: 1 }}>
           {t('plan.notifications.title')}
         </Text>
       </View>
-      <Text tone="textMuted">{t('plan.notifications.body')}</Text>
+      <Text variant="caption" tone="textMuted">
+        {t('plan.notifications.body')}
+      </Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
         <Button
           variant="secondary"
@@ -43,6 +44,6 @@ export function NotificationPrompt() {
           onPress={() => setDismissed(true)}
         />
       </View>
-    </Card>
+    </View>
   );
 }

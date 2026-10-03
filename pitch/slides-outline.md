@@ -33,7 +33,7 @@
 - Jedno zdanie: **„Mówimy nie tylko jakie badanie i kiedy, ale kiedy zacząć je organizować i gdzie zrobić je najszybciej na NFZ — dla Ciebie i Twoich bliskich.”**
 - 3 filary (ikona + 3–4 słowa):
   1. **Plan** — indywidualne badania z uzasadnieniem i źródłem
-  2. **Kiedy zacząć** — przypomnienie z wyprzedzeniem = realna kolejka
+  2. **Kiedy zacząć** — przypomnienie z wyprzedzeniem = szacunek z kolejek NFZ w okolicy (p75)
   3. **Gdzie na NFZ** — placówki posortowane po pierwszym terminie, „Zadzwoń”
 
 **Kryterium:** Idea & Innovation (30%)

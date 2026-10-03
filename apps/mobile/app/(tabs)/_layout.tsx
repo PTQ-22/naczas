@@ -15,7 +15,7 @@ function tabIcon(name: IconName) {
 }
 
 export default function TabsLayout() {
-  const { colors, type, layout, space } = useTheme();
+  const { colors, type, layout, space, borderWidth } = useTheme();
   const insets = useSafeAreaInsets();
   // The default 49 pt bar clips a 14 pt (senior: 18 pt) label; size it from tokens instead.
   const tabBarHeight = layout.minTouch + type.caption.lineHeight + space.sm * 2 + insets.bottom;
@@ -25,8 +25,10 @@ export default function TabsLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         tabBarStyle: {
+          // Same enamel as the plates, with the plate's ink frame as the top edge.
           backgroundColor: colors.surface,
-          borderTopColor: colors.border,
+          borderTopColor: colors.text,
+          borderTopWidth: borderWidth.plate,
           height: tabBarHeight,
           paddingTop: space.sm,
           paddingBottom: space.sm + insets.bottom,
@@ -34,12 +36,13 @@ export default function TabsLayout() {
         tabBarLabelStyle: {
           fontSize: type.caption.fontSize,
           lineHeight: type.caption.lineHeight,
-          fontWeight: type.label.fontWeight,
+          fontFamily: type.label.fontFamily,
         },
         headerStyle: { backgroundColor: colors.surface },
         // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
         headerShadowVisible: false,
         headerTintColor: colors.text,
+        headerTitleStyle: { fontFamily: type.heading.fontFamily },
         sceneStyle: { backgroundColor: colors.bg },
       }}
     >
@@ -48,7 +51,7 @@ export default function TabsLayout() {
         options={{
           title: t('common.tabs.plan'),
           tabBarAccessibilityLabel: t('common.tabs.plan'),
-          tabBarIcon: tabIcon('calendar'),
+          tabBarIcon: tabIcon('plan'),
           // Plan renders its own title + profile switcher; a native header would duplicate it.
           headerShown: false,
         }}
@@ -73,6 +76,8 @@ export default function TabsLayout() {
         name="settings"
         options={{
           title: t('common.tabs.settings'),
+          tabBarLabel: t('common.tabs.settingsShort'),
+          // Screen readers keep the full word; only the visible tab label is shortened.
           tabBarAccessibilityLabel: t('common.tabs.settings'),
           tabBarIcon: tabIcon('settings'),
         }}

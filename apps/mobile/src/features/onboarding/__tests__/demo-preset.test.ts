@@ -40,12 +40,11 @@ describe('buildDemoPreset', () => {
     expect(items.find((i) => i.examId === 'mammography')?.dueDate).toBe('2026-10-18');
   });
 
-  it('makes cervical screening urgent for Kasia', () => {
-    const urgency = Object.fromEntries(
-      planFor(DEMO_KASIA_ID).items.map((i) => [i.examId, i.urgency]),
-    );
-    expect(urgency.cervical_screening).toBe('act_now');
-    expect(urgency.dental_checkup).not.toBe('act_now');
+  it("makes cervical screening Kasia's only red card", () => {
+    const { items } = planFor(DEMO_KASIA_ID);
+    expect(items.filter((i) => i.urgency === 'act_now').map((i) => i.examId)).toEqual([
+      'cervical_screening',
+    ]);
   });
 });
 
@@ -55,7 +54,7 @@ describe('loadDemoPreset', () => {
     const { profiles, activeProfileId } = useProfilesStore.getState();
     expect(profiles.map((p) => p.id)).toEqual([DEMO_MAMA_ID, DEMO_KASIA_ID]);
     expect(activeProfileId).toBe(DEMO_MAMA_ID);
-    expect(recordsForProfile(useRecordsStore.getState().records, DEMO_KASIA_ID)).toHaveLength(2);
+    expect(recordsForProfile(useRecordsStore.getState().records, DEMO_KASIA_ID)).toHaveLength(4);
   });
 
   it('replaces an earlier preset instead of duplicating, and keeps own profiles', () => {

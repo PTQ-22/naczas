@@ -1,4 +1,5 @@
 import { format, parseISO } from 'date-fns';
+import { pl } from 'date-fns/locale';
 
 import { URGENCY_ORDER } from '@naczas/rules';
 import type { BookingType, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
@@ -42,15 +43,23 @@ export interface Message {
   params?: TranslateParams;
 }
 
+export type PluralForm = 'one' | 'few' | 'many';
+
+/** Polish plural form: 1 / 2–4 (except 12–14) / everything else. */
+export function pluralForm(n: number): PluralForm {
+  if (n === 1) return 'one';
+  const lastDigit = n % 10;
+  const lastTwo = n % 100;
+  return lastDigit >= 2 && lastDigit <= 4 && !(lastTwo >= 12 && lastTwo <= 14) ? 'few' : 'many';
+}
+
 /** Polish plural for "N badań wymaga działania" (1 / 2–4 / 5+, with 12–14 as "many"). */
 export function summaryMessage(actNowCount: number): Message {
   const n = actNowCount;
   if (n === 0) return { key: 'plan.summary.none' };
-  if (n === 1) return { key: 'plan.summary.one' };
-  const lastDigit = n % 10;
-  const lastTwo = n % 100;
-  const few = lastDigit >= 2 && lastDigit <= 4 && !(lastTwo >= 12 && lastTwo <= 14);
-  return { key: few ? 'plan.summary.few' : 'plan.summary.many', params: { count: n } };
+  const form = pluralForm(n);
+  if (form === 'one') return { key: 'plan.summary.one' };
+  return { key: form === 'few' ? 'plan.summary.few' : 'plan.summary.many', params: { count: n } };
 }
 
 const monthYear = (iso: string) => format(parseISO(iso), 'MM.yyyy');
@@ -137,4 +146,99 @@ export function planCta(
 
 export function countActNow(items: readonly PlanItem[]): number {
   return items.filter((i) => i.urgency === 'act_now').length;
+}
+
+// ---- Redesign v2 „Numerek”: queue ticket + quiet list (docs/design/redesign.md §2, §4) ----
+
+/**
+ * The single ticket on the plan: the most urgent item. act_now first; with nothing urgent the
+ * next this_year item still gets it, so the screen always leads with "what to do next".
+ */
+export function ticketItem(items: readonly PlanItem[]): PlanItem | undefined {
+  return items.find((i) => i.urgency === 'act_now') ?? items.find((i) => i.urgency === 'this_year');
+}
+
+export interface TicketContent {
+  /** The big printed number: weeks in the queue, or the due month when there is no queue data. */
+  value: string;
+  /** Uppercase line under the number. */
+  unit: Message;
+  /** One sentence with the concrete next step. */
+  message: Message;
+  /** Accessible reading of value + unit ("29 tygodni w kolejce"). */
+  a11yValue: Message;
+}
+
+const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+/** Month as written on Polish forms and calendars: "X 2026" (roman month). */
+export function romanMonth(iso: string): string {
+  return ROMAN_MONTHS[parseISO(iso).getMonth()] ?? '';
+}
+
+// Genitive month name for sentences: "do października 2026" reads naturally and aloud.
+const monthYearWords = (iso: string) => format(parseISO(iso), 'LLLL yyyy', { locale: pl });
+const monthYearGenitive = (iso: string) => format(parseISO(iso), 'MMMM yyyy', { locale: pl });
+
+export function ticketContent(
+  item: PlanItem,
+  booking: BookingType,
+  summary: WaitTimeSummary | undefined,
+  today: string,
+): TicketContent {
+  const weeks = booking === 'queue' ? queueWaitWeeks(summary) : null;
+  const pastDue = item.overdue || item.dueDate <= today;
+  const date = monthYearGenitive(item.dueDate);
+
+  let message: Message;
+  if (item.urgency === 'this_year') {
+    message = { key: 'plan.ticket.startFrom', params: { date: fullDate(item.notifyDate) } };
+  } else if (booking === 'queue') {
+    message = pastDue
+      ? { key: 'plan.ticket.startToday' }
+      : { key: 'plan.ticket.startTodayToMake', params: { date } };
+  } else {
+    message = pastDue
+      ? { key: 'plan.ticket.dueNow' }
+      : { key: 'plan.ticket.dueBy', params: { date } };
+  }
+
+  if (weeks !== null) {
+    const unit: Message = { key: `plan.ticket.weeks.${pluralForm(weeks)}` };
+    return {
+      value: String(weeks),
+      unit,
+      message,
+      a11yValue: { key: `plan.ticket.weeksA11y.${pluralForm(weeks)}`, params: { weeks } },
+    };
+  }
+  // No queue data (program / walk-in / missing NFZ): print the due month instead of a made-up wait.
+  return {
+    value: `${romanMonth(item.dueDate)}.${item.dueDate.slice(2, 4)}`,
+    unit: { key: pastDue ? 'plan.ticket.overdueUnit' : 'plan.ticket.dueUnit' },
+    message,
+    a11yValue: {
+      key: pastDue ? 'plan.ticket.overdueA11y' : 'plan.ticket.dueA11y',
+      params: { date: monthYearWords(item.dueDate) },
+    },
+  };
+}
+
+/**
+ * Right-hand column of a list row, in mono: booked → "17.10", this year → "XII", later/done → year.
+ * Year is added to month/day when it is not the current one.
+ */
+export function rowDate(item: PlanItem, today: string): string {
+  const sameYear = item.dueDate.slice(0, 4) === today.slice(0, 4);
+  switch (item.urgency) {
+    case 'booked':
+      return format(parseISO(item.dueDate), sameYear ? 'dd.MM' : 'dd.MM.yy');
+    case 'act_now':
+    case 'this_year':
+      return sameYear
+        ? romanMonth(item.dueDate)
+        : `${romanMonth(item.dueDate)} ${item.dueDate.slice(0, 4)}`;
+    default:
+      return item.dueDate.slice(0, 4);
+  }
 }

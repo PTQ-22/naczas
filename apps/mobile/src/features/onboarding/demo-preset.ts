@@ -87,6 +87,12 @@ export function buildDemoPreset(today: ISODate): { profiles: Profile[]; records:
     record(DEMO_MAMA_ID, 'skin_check', { lastDone: 'within_1y', status: 'none' }),
     record(DEMO_KASIA_ID, 'cervical_screening', { lastDone: 'over_3y', status: 'none' }),
     record(DEMO_KASIA_ID, 'dental_checkup', { lastDone: 'within_1y', status: 'none' }),
+    // Without these Kasia would get 3 red cards (unknown = due today); keep HPV as her only one.
+    record(DEMO_KASIA_ID, 'skin_check', { lastDone: 'within_1y', status: 'none' }),
+    record(DEMO_KASIA_ID, 'health_check_adult', {
+      lastDone: toISO(subMonths(now, 18)),
+      status: 'done',
+    }),
   ];
   return { profiles: [mama, kasia], records };
 }

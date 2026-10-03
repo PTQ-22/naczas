@@ -69,15 +69,15 @@ describe('VisitPrepScreen (active profile from the store)', () => {
 
   it('shows data from visitPrepSummary', () => {
     render(<VisitPrepScreen />);
-    expect(screen.getByText('• Rak jelita grubego w rodzinie')).toBeTruthy();
-    expect(screen.getByText(/^• Badanie u okulisty — /)).toBeTruthy();
-    expect(screen.getByText(/^• Kolonoskopia — /)).toBeTruthy();
-    expect(screen.getByText(/^• Mammografia — zrobione 15\.06\.2026$/)).toBeTruthy();
+    expect(screen.getByText('Rak jelita grubego w rodzinie')).toBeTruthy();
+    expect(screen.getByText(/^Badanie u okulisty — /)).toBeTruthy();
+    expect(screen.getByText(/^Kolonoskopia — /)).toBeTruthy();
+    expect(screen.getByText(/^Mammografia — zrobione 15\.06\.2026$/)).toBeTruthy();
   });
 
   it('uses the real profile: no "low activity" for activity medium (bug B3)', () => {
     render(<VisitPrepScreen />);
-    expect(screen.queryByText('• Niska aktywność fizyczna')).toBeNull();
+    expect(screen.queryByText('Niska aktywność fizyczna')).toBeNull();
   });
 
   it('switching the active profile shows that person', () => {

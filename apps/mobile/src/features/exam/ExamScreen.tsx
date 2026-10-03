@@ -10,11 +10,14 @@ import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Disclaimer } from '@/components/Disclaimer';
 import { EmptyState } from '@/components/EmptyState';
+import { successHaptic } from '@/components/haptics';
 import { Icon } from '@/components/Icon';
+import { Plate } from '@/components/Plate';
+import { QueueNumber } from '@/components/QueueNumber';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
-import { urgencyIcon } from '@/features/plan/ExamCard';
+import { pluralForm } from '@/features/plan/plan-view-model';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
 import { useRecordsStore } from '@/store';
@@ -37,11 +40,19 @@ const msg = (m: Message) => t(m.key, m.params);
 // URL params are external input (AGENTS.md §3): validate before touching rules.
 const ParamsSchema = z.object({ examId: z.string().min(1) });
 
+/** Plain-text section on the plate: ink rule + mono eyebrow, no card (redesign §4). */
 function Section({ title, children }: { title: string; children: ReactNode }) {
-  const { space } = useTheme();
+  const { colors, space, borderWidth } = useTheme();
   return (
-    <View style={{ gap: space.sm }}>
-      <Text variant="heading" accessibilityRole="header">
+    <View
+      style={{
+        gap: space.sm,
+        paddingTop: space.md,
+        borderTopWidth: borderWidth.strong,
+        borderTopColor: colors.text,
+      }}
+    >
+      <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
         {title}
       </Text>
       {children}
@@ -50,8 +61,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 export default function ExamScreen() {
-  const theme = useTheme();
-  const { colors, space, layout, radius } = theme;
+  const { colors, space } = useTheme();
   const params = ParamsSchema.safeParse(useLocalSearchParams());
   const { activeProfile, plan, waitTimes, today } = usePlanData();
   const markDone = useRecordsStore((s) => s.markDone);
@@ -100,6 +110,7 @@ export default function ExamScreen() {
         if (!activeProfile) return;
         // Stay on the screen: the card flips to "done / next around …" — the demo loop's payoff.
         markDone(activeProfile.id, rule.id, today);
+        successHaptic();
         setDoneFor(activeProfile.id);
     }
   };
@@ -138,126 +149,121 @@ export default function ExamScreen() {
     ) : undefined;
 
   return (
-    <Screen edges={['left', 'right']} footer={footer}>
-      <View style={{ gap: space.sm }}>
-        {item && (
-          <Chip
-            tone={item.urgency}
-            icon={urgencyIcon[item.urgency]}
-            label={t(`plan.urgency.${item.urgency}`)}
+    <Screen wall edges={['left', 'right']} footer={footer}>
+      <Plate>
+        <View style={{ gap: space.sm }}>
+          {item && (
+            <Text variant="eyebrow" color={palette?.fg}>
+              {t(`plan.urgency.${item.urgency}`)}
+            </Text>
+          )}
+          <Text variant="display" accessibilityRole="header">
+            {rule.name}
+          </Text>
+          {item &&
+            timingMessages(item, today).map((m, i) => (
+              <Text key={m.key} variant="bodyLarge" color={i === 1 ? palette?.fg : undefined}>
+                {msg(m)}
+              </Text>
+            ))}
+        </View>
+
+        {notRecommended && activeProfile && (
+          <View accessible style={{ flexDirection: 'row', gap: space.sm }}>
+            <Icon name="info" size="sm" color={colors.textMuted} />
+            <Text style={{ flex: 1 }}>
+              {t('exam.notRecommended', { name: activeProfile.name })}
+            </Text>
+          </View>
+        )}
+
+        {queue?.weeks !== undefined && queue.lines.label && (
+          <QueueNumber
+            size="compact"
+            title={msg(queue.lines.label)}
+            tone={item?.urgency ?? 'later'}
+            value={String(queue.weeks)}
+            unit={t(`plan.ticket.weeks.${pluralForm(queue.weeks)}`)}
+            valueA11y={t(`plan.ticket.weeksA11y.${pluralForm(queue.weeks)}`, {
+              weeks: queue.weeks,
+            })}
           />
         )}
-        <Text variant="title" accessibilityRole="header">
-          {rule.name}
-        </Text>
-        {item &&
-          timingMessages(item, today).map((m, i) => (
-            <Text key={m.key} variant="bodyLarge" color={i === 1 ? palette?.fg : undefined}>
-              {msg(m)}
-            </Text>
-          ))}
-      </View>
+        {queue && !queue.hasData && queue.lines.label && (
+          <Text tone="textMuted">{msg(queue.lines.label)}</Text>
+        )}
+        {(showProgramNote || queue?.lines.meta) && (
+          <View style={{ gap: space.xs }}>
+            {showProgramNote && (
+              <Text variant="caption" tone="textMuted">
+                {t('exam.queue.clinicNote')}
+              </Text>
+            )}
+            {queue?.lines.meta && (
+              <Text variant="caption" tone="textSubtle">
+                {msg(queue.lines.meta)}
+              </Text>
+            )}
+          </View>
+        )}
+        {showProgramNote && programUrl && (
+          <Button
+            variant="ghost"
+            icon="external"
+            accessibilityRole="link"
+            label={t('exam.queue.programLink')}
+            accessibilityLabel={t('exam.queue.programLinkA11y')}
+            onPress={() => void Linking.openURL(programUrl)}
+          />
+        )}
 
-      {notRecommended && activeProfile && (
-        <View
-          accessible
-          style={{
-            flexDirection: 'row',
-            gap: space.sm,
-            padding: layout.cardPadding,
-            borderRadius: radius.lg,
-            backgroundColor: colors.surfaceAlt,
-          }}
-        >
-          <Icon name="info" size="sm" color={colors.textMuted} />
-          <Text style={{ flex: 1 }}>{t('exam.notRecommended', { name: activeProfile.name })}</Text>
-        </View>
-      )}
+        {item && item.reasons.length > 0 && (
+          <Section title={t('exam.section.why')}>
+            {item.reasons.map((reason) => (
+              <Text key={reason}>{`• ${reason}`}</Text>
+            ))}
+          </Section>
+        )}
 
-      {queue && (
-        <View
-          accessible
-          style={{
-            gap: space.xs,
-            padding: layout.cardPadding,
-            borderRadius: radius.lg,
-            backgroundColor: queue.hasData
-              ? (palette?.bg ?? colors.primarySoft)
-              : colors.surfaceAlt,
-          }}
-        >
-          {queue.lines.label && <Text>{msg(queue.lines.label)}</Text>}
-          {queue.lines.value && <Text variant="heading">{msg(queue.lines.value)}</Text>}
-          {showProgramNote && (
-            <Text variant="caption" tone="textMuted">
-              {t('exam.queue.clinicNote')}
-            </Text>
-          )}
-          {queue.lines.meta && (
-            <Text variant="caption" tone="textSubtle">
-              {msg(queue.lines.meta)}
-            </Text>
-          )}
-        </View>
-      )}
-      {/* Outside the grouped (accessible) box so screen readers can reach the link. */}
-      {showProgramNote && programUrl && (
+        <Section title={t('exam.section.about')}>
+          <Text>{rule.description}</Text>
+        </Section>
+
+        <Section title={t('exam.section.frequency')}>
+          <Text>{msg(frequencyMessage(rule.intervalMonths))}</Text>
+          {!rule.verified && <Chip tone="later" icon="info" label={t('exam.approximate')} />}
+        </Section>
+
+        <Section title={t('exam.section.referral')}>
+          <Text>{typeof referral === 'string' ? referral : msg(referral)}</Text>
+          {/* Always reachable (M3 H2): even without a referral the GP visit summary is useful. */}
+          <Button
+            variant="ghost"
+            icon="chevronRight"
+            label={t(rule.referral ? 'exam.referral.prepareRequest' : 'exam.referral.prepareVisit')}
+            onPress={() => router.push('/visit-prep')}
+          />
+        </Section>
+
+        {rule.prepTips && rule.prepTips.length > 0 && (
+          <Accordion title={t('exam.section.prep')}>
+            {rule.prepTips.map((tip) => (
+              <Text key={tip}>{`• ${tip}`}</Text>
+            ))}
+          </Accordion>
+        )}
+
         <Button
           variant="ghost"
           icon="external"
           accessibilityRole="link"
-          label={t('exam.queue.programLink')}
-          accessibilityLabel={t('exam.queue.programLinkA11y')}
-          onPress={() => void Linking.openURL(programUrl)}
+          label={t('exam.source', { name: rule.source.name })}
+          accessibilityLabel={t('exam.sourceA11y', { name: rule.source.name })}
+          onPress={() => void Linking.openURL(rule.source.url)}
         />
-      )}
 
-      {item && item.reasons.length > 0 && (
-        <Section title={t('exam.section.why')}>
-          {item.reasons.map((reason) => (
-            <Text key={reason}>{`• ${reason}`}</Text>
-          ))}
-        </Section>
-      )}
-
-      <Section title={t('exam.section.about')}>
-        <Text>{rule.description}</Text>
-      </Section>
-
-      <Section title={t('exam.section.frequency')}>
-        <Text>{msg(frequencyMessage(rule.intervalMonths))}</Text>
-        {!rule.verified && <Chip tone="later" icon="info" label={t('exam.approximate')} />}
-      </Section>
-
-      <Section title={t('exam.section.referral')}>
-        <Text>{typeof referral === 'string' ? referral : msg(referral)}</Text>
-        {/* Always reachable (M3 H2): even without a referral the GP visit summary is useful. */}
-        <Button
-          variant="ghost"
-          icon="chevronRight"
-          label={t(rule.referral ? 'exam.referral.prepareRequest' : 'exam.referral.prepareVisit')}
-          onPress={() => router.push('/visit-prep')}
-        />
-      </Section>
-
-      {rule.prepTips && rule.prepTips.length > 0 && (
-        <Accordion title={t('exam.section.prep')}>
-          {rule.prepTips.map((tip) => (
-            <Text key={tip}>{`• ${tip}`}</Text>
-          ))}
-        </Accordion>
-      )}
-
-      <Button
-        variant="ghost"
-        icon="external"
-        accessibilityRole="link"
-        label={t('exam.source', { name: rule.source.name })}
-        accessibilityLabel={t('exam.sourceA11y', { name: rule.source.name })}
-        onPress={() => void Linking.openURL(rule.source.url)}
-      />
-
-      <Disclaimer text={t('exam.disclaimer')} />
+        <Disclaimer text={t('exam.disclaimer')} />
+      </Plate>
     </Screen>
   );
 }

@@ -3,16 +3,7 @@ import { pl as plLocale } from 'date-fns/locale';
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 
-import {
-  Button,
-  Card,
-  Chip,
-  Disclaimer,
-  EmptyState,
-  ProgressBar,
-  Screen,
-  Text,
-} from '@/components';
+import { Button, Disclaimer, EmptyState, Plate, ProgressBar, Screen, Text } from '@/components';
 import { t } from '@/i18n';
 import { usePlan } from '@/services';
 import {
@@ -42,7 +33,14 @@ function motivationMessage(ratio: number): string {
 }
 
 export default function BetScreen() {
-  const { space, colors } = useTheme();
+  const { space, colors, borderWidth, type } = useTheme();
+  // Sections on the plate are separated by the plate's ink rule (redesign v2), not cards.
+  const section = {
+    gap: space.sm,
+    paddingTop: space.md,
+    borderTopWidth: borderWidth.strong,
+    borderTopColor: colors.text,
+  };
   const today = useToday();
   const activeProfile = useProfilesStore(selectActiveProfile);
   const records = useRecordsStore((s) => s.records);
@@ -119,147 +117,157 @@ export default function BetScreen() {
   }
 
   return (
-    <Screen testID="bet-screen" edges={['left', 'right']}>
+    <Screen wall testID="bet-screen" edges={['left', 'right']}>
       <Confetti fire={justWon} />
-      <Text variant="title" accessibilityRole="header">
-        {t('bet.screen.title')}
-      </Text>
-      <Text tone="textMuted">{t('bet.screen.subtitle')}</Text>
+      <View style={{ gap: space.xs }}>
+        <Text variant="display" color={colors.onWall} accessibilityRole="header">
+          {t('bet.screen.title')}
+        </Text>
+        <Text color={colors.onWall}>{t('bet.screen.subtitle')}</Text>
+      </View>
 
-      {/* ── Active bet card ── */}
-      {currentActiveBet && progress && currentActiveBet.status === 'active' ? (
-        <Card accent={colors.urgency.act_now.accent} testID="bet-active-card">
-          <Text variant="heading">{t('bet.active.title')}</Text>
-          <Text variant="bodyLarge" style={{ fontWeight: '700' }}>
-            {t('bet.active.amount', { amount: currentActiveBet.amountPln })}
-          </Text>
-          <Text tone="textMuted">
-            {t('bet.active.deadline', { date: longDate(currentActiveBet.expiresAt) })}
-          </Text>
-          <ProgressBar
-            value={progress.ratio}
-            accessibilityLabel={t('bet.active.progress', {
-              completed: progress.completed,
-              total: progress.total,
-            })}
-          />
-          <Text>
-            {t('bet.active.progress', {
-              completed: progress.completed,
-              total: progress.total,
-            })}
-          </Text>
-          <Text tone="textMuted" style={{ fontStyle: 'italic' }}>
-            {motivationMessage(progress.ratio)}
-          </Text>
-          <View style={{ flexDirection: 'row', gap: space.sm }}>
-            <Text tone="textMuted">
+      <Plate>
+        {/* ── Active bet ── */}
+        {currentActiveBet && progress && currentActiveBet.status === 'active' ? (
+          <View testID="bet-active-card" style={{ gap: space.sm }}>
+            <Text variant="eyebrow" color={colors.urgency.act_now.fg}>
+              {t('bet.active.title')}
+            </Text>
+            {/* Two-thirds of the plan's queue number: "20 zł" is wider than "29". */}
+            <Text
+              variant="ticket"
+              tabular
+              style={{
+                fontSize: Math.round(type.ticket.fontSize * (2 / 3)),
+                lineHeight: Math.round(type.ticket.lineHeight * (2 / 3)),
+              }}
+            >
+              {t('bet.active.amount', { amount: currentActiveBet.amountPln })}
+            </Text>
+            <ProgressBar
+              value={progress.ratio}
+              accessibilityLabel={t('bet.active.progress', {
+                completed: progress.completed,
+                total: progress.total,
+              })}
+            />
+            <Text variant="label">
+              {t('bet.active.progress', {
+                completed: progress.completed,
+                total: progress.total,
+              })}
+            </Text>
+            <Text tone="textMuted">{motivationMessage(progress.ratio)}</Text>
+            <Text variant="caption" tone="textMuted">
               {t('bet.active.deadline', { date: longDate(currentActiveBet.expiresAt) })}
             </Text>
           </View>
-        </Card>
-      ) : null}
+        ) : null}
 
-      {/* ── Place new bet ── */}
-      {!currentActiveBet ? (
-        <Card testID="bet-place-card">
-          <Text variant="heading">{t('bet.place.title')}</Text>
-          <Text tone="textMuted">{t('bet.place.description')}</Text>
+        {/* ── Place new bet ── */}
+        {!currentActiveBet ? (
+          <View testID="bet-place-card" style={{ gap: space.sm }}>
+            <Text variant="eyebrow" tone="textMuted">
+              {t('bet.place.title')}
+            </Text>
+            <Text>{t('bet.place.description')}</Text>
 
-          {urgentExamIds.length > 0 ? (
-            <>
-              <Text variant="label">{t('bet.place.amountLabel')}</Text>
-              <View
-                accessibilityRole="radiogroup"
-                accessibilityLabel={t('bet.place.amountLabel')}
-                style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}
-              >
-                {BET_AMOUNTS.map((amount) => (
-                  <Button
-                    key={amount}
-                    testID={`bet-amount-${amount}`}
-                    variant={selectedAmount === amount ? 'primary' : 'secondary'}
-                    label={`${amount} zł`}
-                    onPress={() => setSelectedAmount(amount)}
-                    accessibilityLabel={`${amount} złotych`}
-                  />
-                ))}
-              </View>
-              <Text tone="textMuted">
-                {t('bet.place.examCount', { count: urgentExamIds.length })}
-              </Text>
-              <Text tone="textMuted">
-                {t('bet.place.deadlineInfo', { days: BET_DURATION_DAYS })}
-              </Text>
-
-              <View
-                style={{
-                  backgroundColor: colors.surfaceAlt,
-                  padding: space.sm,
-                  borderRadius: space.sm,
-                  marginVertical: space.sm,
-                }}
-              >
-                <Text tone="textMuted" variant="label" style={{ textAlign: 'center' }}>
+            {urgentExamIds.length > 0 ? (
+              <>
+                <Text variant="label">{t('bet.place.amountLabel')}</Text>
+                <View
+                  accessibilityRole="radiogroup"
+                  accessibilityLabel={t('bet.place.amountLabel')}
+                  style={{ flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' }}
+                >
+                  {BET_AMOUNTS.map((amount) => (
+                    <Button
+                      key={amount}
+                      testID={`bet-amount-${amount}`}
+                      variant={selectedAmount === amount ? 'primary' : 'secondary'}
+                      label={`${amount} zł`}
+                      onPress={() => setSelectedAmount(amount)}
+                      accessibilityLabel={`${amount} złotych`}
+                    />
+                  ))}
+                </View>
+                <Text tone="textMuted">
+                  {t('bet.place.examCount', { count: urgentExamIds.length })}
+                </Text>
+                <Text tone="textMuted">
+                  {t('bet.place.deadlineInfo', { days: BET_DURATION_DAYS })}
+                </Text>
+                <Text variant="caption" tone="textMuted">
                   {t('bet.place.payDisclaimer')}
                 </Text>
-              </View>
+                <Button
+                  testID="bet-place-confirm"
+                  label={t('bet.place.payButton', { amount: selectedAmount })}
+                  accessibilityLabel={t('bet.place.confirmA11y')}
+                  icon="heart"
+                  onPress={onPlaceBet}
+                  fullWidth
+                />
+              </>
+            ) : (
+              <EmptyState title={t('bet.place.noExams')} icon="check" />
+            )}
+          </View>
+        ) : null}
 
-              <Button
-                testID="bet-place-confirm"
-                label={t('bet.place.payButton', { amount: selectedAmount })}
-                accessibilityLabel={t('bet.place.confirmA11y')}
-                icon="heart"
-                onPress={onPlaceBet}
-                fullWidth
-              />
-            </>
+        {/* ── History ── */}
+        <View style={section}>
+          <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
+            {t('bet.history.title')}
+          </Text>
+          {history.length === 0 ? (
+            <Text tone="textMuted">{t('bet.history.empty')}</Text>
           ) : (
-            <EmptyState title={t('bet.place.noExams')} icon="check" />
+            history.map((b, i) => (
+              <View
+                key={b.id}
+                testID={`bet-history-${b.id}`}
+                style={{
+                  gap: space.xs,
+                  paddingVertical: space.sm,
+                  ...(i > 0 && {
+                    borderTopWidth: borderWidth.hairline,
+                    borderTopColor: colors.border,
+                  }),
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text variant="data" tabular>
+                    {b.amountPln} zł
+                  </Text>
+                  <Text
+                    variant="eyebrow"
+                    color={b.status === 'won' ? colors.urgency.done.fg : colors.urgency.act_now.fg}
+                  >
+                    {t(`bet.history.${b.status}`)}
+                  </Text>
+                </View>
+                <Text variant="caption" tone="textMuted">
+                  {longDate(b.createdAt)} — {longDate(b.expiresAt)}
+                </Text>
+                <Text>
+                  {b.status === 'won'
+                    ? t('bet.history.wonMessage')
+                    : t('bet.history.lostMessage', { amount: b.amountPln })}
+                </Text>
+              </View>
+            ))
           )}
-        </Card>
-      ) : null}
+        </View>
 
-      {/* ── History ── */}
-      <Text variant="heading" accessibilityRole="header">
-        {t('bet.history.title')}
-      </Text>
-      {history.length === 0 ? (
-        <Text tone="textMuted">{t('bet.history.empty')}</Text>
-      ) : (
-        history.map((b) => (
-          <Card
-            key={b.id}
-            testID={`bet-history-${b.id}`}
-            accent={b.status === 'won' ? colors.urgency.done.accent : colors.urgency.act_now.accent}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-              }}
-            >
-              <Text variant="label">{b.amountPln} zł</Text>
-              <Chip
-                label={t(`bet.history.${b.status}`)}
-                tone={b.status === 'won' ? 'done' : 'act_now'}
-                icon={b.status === 'won' ? 'check' : 'alert'}
-              />
-            </View>
-            <Text tone="textMuted">
-              {longDate(b.createdAt)} — {longDate(b.expiresAt)}
-            </Text>
-            <Text style={{ fontStyle: 'italic' }}>
-              {b.status === 'won'
-                ? t('bet.history.wonMessage')
-                : t('bet.history.lostMessage', { amount: b.amountPln })}
-            </Text>
-          </Card>
-        ))
-      )}
-
-      <Disclaimer text={t('bet.disclaimer')} />
+        <Disclaimer text={t('bet.disclaimer')} />
+      </Plate>
     </Screen>
   );
 }

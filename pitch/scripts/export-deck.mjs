@@ -35,6 +35,8 @@ const result = spawnSync(
   [
     '--headless=new',
     '--disable-gpu',
+    // Give Google Fonts time to load before printing (font-display: block in deck.html).
+    '--virtual-time-budget=8000',
     '--no-pdf-header-footer',
     `--print-to-pdf=${output}`,
     pathToFileURL(input).href,

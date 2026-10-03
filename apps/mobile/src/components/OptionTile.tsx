@@ -15,7 +15,10 @@ interface OptionTileProps {
   testID?: string;
 }
 
-/** Large survey choice. Selection = primarySoft + 2px primary border + ✓, not colour alone. */
+/**
+ * Survey choice as a full-width row on the plate (redesign §4: rows with a radio, no cards).
+ * Selection = filled radio/checkbox with ✓ + soft cobalt row + bold label, not colour alone.
+ */
 export function OptionTile({
   label,
   description,
@@ -39,12 +42,12 @@ export function OptionTile({
         flexDirection: 'row',
         alignItems: 'center',
         gap: space.md,
-        paddingHorizontal: layout.cardPadding,
+        paddingHorizontal: space.sm,
         paddingVertical: space.md,
-        borderRadius: radius.lg,
-        borderWidth: borderWidth.strong,
-        borderColor: selected ? colors.primary : colors.borderStrong,
-        backgroundColor: selected || pressed ? colors.primarySoft : colors.surface,
+        borderRadius: radius.sm,
+        borderBottomWidth: borderWidth.hairline,
+        borderBottomColor: colors.border,
+        backgroundColor: selected || pressed ? colors.primarySoft : 'transparent',
       })}
     >
       <View
@@ -62,7 +65,7 @@ export function OptionTile({
         {selected && <Icon name="check" size="sm" color={colors.onPrimary} />}
       </View>
       <View style={{ flex: 1, gap: space.xs }}>
-        <Text variant="bodyLarge">{label}</Text>
+        <Text variant={selected ? 'label' : 'bodyLarge'}>{label}</Text>
         {description && <Text tone="textMuted">{description}</Text>}
       </View>
     </Pressable>

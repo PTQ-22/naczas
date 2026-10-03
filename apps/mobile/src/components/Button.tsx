@@ -42,6 +42,8 @@ export function Button({
   const { colors, layout, radius, space, borderWidth } = theme;
   const inactive = disabled || loading;
   const fg = variant === 'primary' ? colors.onPrimary : colors.primary;
+  // Inline ghost buttons read as links in running text: left-aligned when they wrap.
+  const leftAligned = variant === 'ghost' && !fullWidth;
 
   return (
     <Pressable
@@ -63,7 +65,7 @@ export function Button({
           paddingHorizontal: variant === 'ghost' ? space.sm : space.lg,
           paddingVertical: space.sm,
           borderRadius: radius.md,
-          alignItems: 'center',
+          alignItems: leftAligned ? 'flex-start' : 'center',
           justifyContent: 'center',
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
           opacity: disabled ? 0.5 : 1,
@@ -85,7 +87,11 @@ export function Button({
         ) : (
           icon && <Icon name={icon} size="sm" color={fg} />
         )}
-        <Text variant="label" color={fg} style={{ textAlign: 'center', flexShrink: 1 }}>
+        <Text
+          variant="label"
+          color={fg}
+          style={{ textAlign: leftAligned ? 'left' : 'center', flexShrink: 1 }}
+        >
           {label}
         </Text>
       </View>
