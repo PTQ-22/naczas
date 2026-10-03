@@ -84,6 +84,14 @@ describe('GET /v1/wait-times', () => {
     });
   });
 
+  it('without coordinates aggregates the whole province (incl. facilities without lat/lng)', async () => {
+    const { body } = await get(
+      makeApp('up'),
+      '/v1/wait-times?examId=colonoscopy_screening&province=07',
+    );
+    expect(body).toMatchObject({ radiusKm: 0, facilitiesCount: 96, p50Days: 138, p75Days: 213 });
+  });
+
   it('falls back to the snapshot when NFZ is down', async () => {
     const { status, body } = await get(makeApp('down'), url);
     expect(status).toBe(200);

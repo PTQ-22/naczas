@@ -3,8 +3,8 @@ import { Hono } from 'hono';
 import type { WaitTimeSummary } from '@naczas/shared';
 
 import { errorResponse, LocationQuerySchema, originOf, validationMessage } from './common';
-import { selectAdultQueues, normalizeQueue } from '../aggregate/normalize';
-import { summarizeWaitTimes } from '../aggregate/wait-times';
+import { selectAdultQueues } from '../aggregate/normalize';
+import { summarizeWaitTimes, toWaitSamples } from '../aggregate/wait-times';
 import { benefitsForExam } from '../temp-benefits';
 
 import type { QueueLoader } from '../queues';
@@ -23,14 +23,10 @@ export function waitTimesRoutes(loader: QueueLoader) {
 
     const origin = originOf(q);
     const loaded = await loader.load(q.province, benefits);
-    const facilities = selectAdultQueues(loaded.queues, benefits)
-      .map((queue) => normalizeQueue(queue, { origin, fallbackAsOf: `${loaded.fallbackMonth}-01` }))
-      .filter((f) => f !== null);
-
     const body: WaitTimeSummary = summarizeWaitTimes({
       examId: q.examId,
       province: q.province,
-      facilities,
+      samples: toWaitSamples(selectAdultQueues(loaded.queues, benefits), origin),
       hasOrigin: origin !== undefined,
       radiusKm: q.radiusKm,
       fallbackAsOf: loaded.fallbackMonth,
