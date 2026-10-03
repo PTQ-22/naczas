@@ -41,7 +41,7 @@ Zmienne ustawione przez `render.yaml`: `NODE_ENV=production`, `TRUST_PROXY=true`
 3. **Root Directory:** zostaw katalog główny repo (`./`). Build, install i katalog wyjściowy są w `vercel.json`. Framework: *Other*.
 4. **Environment Variables** (Production):
    - `EXPO_PUBLIC_API_URL` = adres API z kroku 1, bez ukośnika na końcu
-   - `EXPO_PUBLIC_USE_MOCKS` = `false`
+   - `EXPO_PUBLIC_USE_MOCKS` = `0` (mocki włącza wyłącznie wartość `1`)
    - `ENABLE_EXPERIMENTAL_COREPACK` = `1` (Vercel użyje wtedy pnpm w wersji z `packageManager` w `package.json`)
 5. **Deploy**. Skopiuj adres produkcyjny, np. `https://naczas.vercel.app`.
 

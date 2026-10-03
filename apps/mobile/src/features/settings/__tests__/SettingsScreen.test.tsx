@@ -8,9 +8,6 @@ import { ThemeProvider } from '@/theme';
 
 import SettingsScreen from '../SettingsScreen';
 
-jest.mock('@react-native-async-storage/async-storage', () =>
-  jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
-);
 jest.mock('expo-router', () => ({ router: { replace: jest.fn() } }));
 jest.mock('expo-notifications', () => ({
   getAllScheduledNotificationsAsync: jest.fn(() => Promise.resolve([])),

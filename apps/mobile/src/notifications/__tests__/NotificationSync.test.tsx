@@ -8,10 +8,6 @@ import { makeProfile } from '@/store/__fixtures__/fixtures';
 
 import { NotificationSync } from '../NotificationSync';
 
-jest.mock('@react-native-async-storage/async-storage', () =>
-  jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
-);
-
 // usePlan driven by the test: profileId → { plan, status }
 const mockPlanState: Record<string, { plan: Plan; status: 'loading' | 'ready' | 'offline' }> = {};
 jest.mock('@/services', () => ({
