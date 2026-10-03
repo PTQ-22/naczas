@@ -1,6 +1,8 @@
 import { addDays, addMonths, format, parseISO, subDays } from 'date-fns';
 
-import type { ISODate, Plan, PlanItem, Profile, Urgency } from '@naczas/shared';
+import type { ISODate, Plan, PlanItem, Profile } from '@naczas/shared';
+
+import { comparePlanItems } from './plan';
 
 /**
  * Mock data for WS3/WS4 until computePlan() lands (WS1-6).
@@ -22,14 +24,6 @@ export const mockProfileMama: Profile = {
   smoking: { status: 'never' },
   activity: 'low',
   createdAt: MOCK_TODAY,
-};
-
-const URGENCY_ORDER: Record<Urgency, number> = {
-  act_now: 0,
-  booked: 1,
-  this_year: 2,
-  later: 3,
-  done: 4,
 };
 
 const toISO = (d: Date): ISODate => format(d, 'yyyy-MM-dd');
@@ -109,11 +103,7 @@ export function mockPlan(options: { today?: ISODate; profileId?: string } = {}):
     }),
   ];
 
-  items.sort(
-    (a, b) =>
-      URGENCY_ORDER[a.urgency] - URGENCY_ORDER[b.urgency] ||
-      a.notifyDate.localeCompare(b.notifyDate),
-  );
+  items.sort(comparePlanItems);
 
   return { profileId, generatedAt: todayStr, items };
 }

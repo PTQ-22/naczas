@@ -8,7 +8,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests"
+    "test": "vitest run --coverage"
   },
   "dependencies": {
     "@naczas/shared": "workspace:*",
