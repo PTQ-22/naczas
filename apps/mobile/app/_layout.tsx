@@ -61,6 +61,10 @@ function ThemedStack() {
         <Stack.Screen name="onboarding/[step]" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
+          name="login"
+          options={{ presentation: 'modal', title: 'Konto Rodzinne', headerShown: true }}
+        />
+        <Stack.Screen
           name="exam/[examId]/index"
           options={{ headerShown: true, title: t('exam.title') }}
         />

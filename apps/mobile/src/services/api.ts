@@ -19,7 +19,7 @@ export const DEFAULT_TIMEOUT_MS = 10_000;
 // Typed via `unknown`: process.env is `any` or typed depending on whether `expo start` has
 // generated expo-env.d.ts (gitignored), and lint must pass either way.
 const envApiUrl: unknown = process.env.EXPO_PUBLIC_API_URL;
-const API_BASE_URL =
+export const API_BASE_URL =
   typeof envApiUrl === 'string' && envApiUrl ? envApiUrl : 'http://localhost:8787';
 
 export interface LocationParams {

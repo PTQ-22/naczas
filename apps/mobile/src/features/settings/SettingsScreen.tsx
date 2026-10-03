@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Disclaimer, OptionTile, Plate, Screen, Text, TextField } from '@/components';
+import { Button, Disclaimer, OptionTile, Plate, Screen, Text } from '@/components';
 import { t } from '@/i18n';
 import {
   cancelAllOurNotifications,
@@ -41,7 +41,7 @@ function testResultText(result: TestNotificationResult, title: string): string {
 }
 
 export default function SettingsScreen() {
-  const { space } = useTheme();
+  const { space, colors } = useTheme();
   const seniorMode = useSettingsStore((s) => s.seniorMode);
   const darkMode = useSettingsStore((s) => s.darkMode);
   const todayOverride = useSettingsStore((s) => s.todayOverride);
@@ -53,7 +53,7 @@ export default function SettingsScreen() {
   const activeProfile = useProfilesStore((s) => s.profiles.find((p) => p.id === s.activeProfileId));
   const today = useToday();
   const { plan } = usePlan(activeProfile?.id ?? '');
-  const { push, pull, syncing, lastSync, error } = useCloudSync();
+  const { lastSync, error } = useCloudSync();
 
   const [testStatus, setTestStatus] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -159,32 +159,35 @@ export default function SettingsScreen() {
         </SettingsSection>
 
         <SettingsSection title="Synchronizacja w chmurze (Cloud Sync)">
-          <Text tone="textMuted">
-            Wpisz kod rodziny, aby synchronizować dane z bliskimi na innych urządzeniach.
-          </Text>
-          <TextField
-            label="Kod rodziny"
-            value={familyCode ?? ''}
-            onChangeText={(t) => setFamilyCode(t.trim() || null)}
-          />
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
-            <Button
-              variant="secondary"
-              label="Wyślij dane"
-              onPress={() => void push()}
-              loading={syncing}
-            />
-            <Button
-              variant="secondary"
-              label="Pobierz dane"
-              onPress={() => void pull()}
-              loading={syncing}
-            />
-          </View>
-          {lastSync && (
-            <Text tone="textSubtle">Ostatnia synchronizacja: {lastSync.toLocaleTimeString()}</Text>
+          {familyCode ? (
+            <View style={{ gap: space.sm }}>
+              <Text tone="textMuted">Zalogowano kodem rodziny:</Text>
+              <Text variant="heading" style={{ color: colors.primary, fontSize: 24 }}>
+                {familyCode}
+              </Text>
+              <Text tone="textSubtle">
+                Twoje dane są bezpieczne i synchronizują się automatycznie w tle.
+              </Text>
+              {lastSync && (
+                <Text tone="textSubtle">
+                  Ostatnia synchronizacja: {lastSync.toLocaleTimeString()}
+                </Text>
+              )}
+              {error && <Text tone="danger">{error}</Text>}
+              <Button
+                variant="secondary"
+                label="Wyloguj"
+                onPress={() => {
+                  setFamilyCode(null);
+                  router.replace('/onboarding/login');
+                }}
+              />
+            </View>
+          ) : (
+            <Text tone="textMuted">
+              Brak kodu rodziny. Zaloguj się w ekranie powitalnym, aby uaktywnić chmurę.
+            </Text>
           )}
-          {error && <Text tone="danger">{error}</Text>}
         </SettingsSection>
 
         <SettingsSection title={t('settings.data.header')}>

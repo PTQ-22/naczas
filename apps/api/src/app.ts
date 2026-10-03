@@ -4,6 +4,7 @@ import { cors } from 'hono/cors';
 import { rateLimit, type RateLimitOptions } from './middleware/rate-limit';
 import { requestLog } from './middleware/request-log';
 import { createQueueLoader, DataUnavailableError, type QueueLoader } from './queues';
+import { authRoutes } from './routes/auth';
 import { errorResponse } from './routes/common';
 import { coverageRoutes } from './routes/coverage';
 import { facilitiesRoutes } from './routes/facilities';
@@ -61,7 +62,7 @@ export function createApp({
         (corsOptions.allowLocalhost && LOCALHOST.test(origin))
           ? origin
           : null,
-      allowMethods: ['GET', 'OPTIONS'],
+      allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     }),
   );
   app.route('/', healthRoutes(loader, snapshot)); // before the limiter: platform health checks
@@ -73,6 +74,7 @@ export function createApp({
   app.route('/', facilitiesRoutes(loader));
   app.route('/', syncRoutes());
   app.route('/', coverageRoutes(coverage, communes));
+  app.route('/', authRoutes());
 
   app.notFound((c) => errorResponse(c, 404, 'not_found', 'Unknown endpoint'));
   app.onError((err, c) => {
