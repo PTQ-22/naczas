@@ -533,12 +533,12 @@
         </div>
         <div class="stat">
           <span class="num">&gt; 4,5 mies.</span>
-          <span>średnio czeka się na kolonoskopię w połowie placówek NFZ²</span>
+          <span>lub dłużej — taki średni czas oczekiwania na kolonoskopię raportuje połowa poradni NFZ²</span>
         </div>
       </div>
       <div class="notes">
         ¹ NFZ, „Dane o realizacji programów”, stan na 1.10.2026<br />
-        ² API NFZ Terminy Leczenia, stan na 2026-09, średni czas oczekiwania raportowany przez placówki; mediana: mazowieckie 137,5 dnia, małopolskie 158 dni
+        ² API NFZ Terminy Leczenia, stan na 2026-09: średni czas oczekiwania raportowany przez placówki (kolejki do poradni, nie program przesiewowy, nie pierwszy wolny termin); mediana: mazowieckie 137,5 dnia, małopolskie 158 dni
       </div>
     </section>
 
@@ -558,7 +558,7 @@
         <div class="card pillar">
           <span class="idx">2</span>
           <h3>Kiedy zacząć</h3>
-          <p class="muted">Przypomnienie z wyprzedzeniem równym realnej kolejce</p>
+          <p class="muted">Przypomnienie z wyprzedzeniem szacowanym z kolejek NFZ w okolicy</p>
         </div>
         <div class="card pillar">
           <span class="idx">3</span>
@@ -599,10 +599,10 @@
       <p class="eyebrow">Nasz wyróżnik</p>
       <h2 style="margin-bottom: 32px">Kiedy zacząć szukać terminu, żeby zdążyć</h2>
       <div class="formula">
-        <b>kiedy zacząć</b> = termin badania − czas czekania w okolicy (p75 z NFZ) − zapas na skierowanie
+        <b>kiedy zacząć</b> = termin badania − szacowany czas oczekiwania w okolicy (p75 z kolejek NFZ) − zapas na skierowanie
       </div>
       <p class="small muted" style="margin: 14px 0 20px">
-        p75: w 3 na 4 placówkach w okolicy zdążysz. Przykład z demo: na kolonoskopię w okolicy czeka się ok. 30 tyg. — więc przypomnienie przychodzi z takim wyprzedzeniem.
+        Szacunek z kolejek NFZ w Twojej okolicy: średni czas oczekiwania raportowany przez placówki (co miesiąc). Bierzemy ostrożnie p75 — u 3 na 4 placówek średnie czekanie jest krótsze. Przykład z demo: kolonoskopia w poradniach w okolicy — ok. 29 tyg., więc przypomnienie przychodzi z takim wyprzedzeniem. Badania w programach (mammografia, HPV, LDCT) i bilans: stałe 21 dni wyprzedzenia.
       </p>
       <table class="cmp">
         <thead>
@@ -770,11 +770,11 @@
         </div>
         <div class="card" style="border-top: 10px solid var(--u-year-accent)">
           <span class="chip year">◆ Dalej</span>
-          <ul class="points" style="margin-top: 32px; gap: 20px">
+          <ul class="points" style="margin-top: 32px; gap: 12px">
             <li>Wspólny plan opiekuna i rodzica (szyfrowany E2E)</li>
             <li>Integracja z IKP</li>
-            <li>Harmonogram mammobusów</li>
-            <li>Eksport do kalendarza</li>
+            <li>Realizatorzy programów przesiewowych z API NFZ „Umowy”: mammografia, HPV, kolonoskopia w programie</li>
+            <li>Harmonogram mammobusów, eksport do kalendarza</li>
           </ul>
         </div>
         <div class="card" style="border-top: 10px solid var(--primary)">

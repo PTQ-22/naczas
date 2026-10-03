@@ -33,13 +33,13 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 **1:15–1:55 · Plan**
 [AKCJA] Ekran planu, animacja osi czasu. D wskazuje czerwoną kartę.
 **P:**
-> To plan mamy. Na górze: „Działaj teraz”. Kolonoskopia — w okolicy czeka się około {N} tygodni, więc trzeba zacząć szukać terminu już dziś, a nie w dniu, w którym badanie powinno być zrobione.
+> To plan mamy. Na górze wielki numer: kolonoskopia — w poradniach NFZ w okolicy czeka się średnio około 29 tygodni. To szacunek z danych, które placówki raportują do NFZ — więc trzeba zacząć szukać terminu już dziś, a nie w dniu, w którym badanie powinno być zrobione.
 > Mammografia — program NFZ, bez skierowania. Każde badanie ma uzasadnienie i źródło.
 
 **1:55–2:15 · Placówki → przygotowanie → zamknięcie pętli (skrót)**
 [AKCJA] „Znajdź termin” → lista placówek posortowana „najszybciej”, widoczne „stan na …” → „Zadzwoń” (nie dzwonić naprawdę — pokazać ekran wybierania) → wróć → „Umówiłam się” → data.
 **P:**
-> Tu są prawdziwe dane NFZ: placówki posortowane po najbliższym terminie. Jeden przycisk — dzwonimy. Umówione — aplikacja przypomni dzień przed wizytą i przeliczy kolejny termin.
+> Tu są prawdziwe dane NFZ: placówki posortowane od najkrótszego średniego czasu oczekiwania. Jeden przycisk — dzwonimy. Umówione — aplikacja przypomni dzień przed wizytą i przeliczy kolejny termin.
 
 > ✂️ **Jeśli brakuje czasu:** pomiń „Umówiłam się”, zostaw tylko listę placówek.
 > 🔁 **Jeśli demo padnie:** „Pokażę to na nagraniu” → wideo od 0:20. Nie debuguj na scenie.
@@ -47,7 +47,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 ## 2:15–2:45 · Wyróżnik + technologia  [SLAJD 5 → 8]
 
 **P:**
-> Co jest nowe? Są aplikacje, które przypominają o badaniach, i jest IKP, w którym znajdziesz termin. My liczymy, **kiedy zacząć**: termin badania minus realny czas czekania w Twojej okolicy z danych NFZ, plus zapas na skierowanie.
+> Co jest nowe? Są aplikacje, które przypominają o badaniach, i jest IKP, w którym znajdziesz termin. My liczymy, **kiedy zacząć**: termin badania minus szacowany czas czekania w Twojej okolicy z kolejek NFZ, plus zapas na skierowanie.
 > Technicznie: aplikacja na iOS, Androida i web, prawdziwe dane NFZ z zapasową kopią, a dane zdrowotne nigdy nie opuszczają telefonu. Reguły badań są otwarte, każda ze źródłem i przetestowana.
 
 (~65 słów)
@@ -72,7 +72,8 @@ Pełne odpowiedzi: `docs/07-pitch-and-submission.md` §Q&A. Jedno zdanie na star
 | RODO? | „Dane zdrowotne nie opuszczają telefonu; serwer dostaje tylko nazwę świadczenia i lokalizację z dokładnością do ok. 1 km.” |
 | Aktualność kolejek? | „API NFZ, aktualizacja mniej więcej co miesiąc — zawsze pokazujemy »stan na«.” |
 | Czym różnicie się od Doctor Robert / IKP? | „Doctor Robert mówi, co i kiedy zbadać; IKP pozwala znaleźć termin. My łączymy jedno z drugim i mówimy, kiedy zacząć szukać, żeby zdążyć — także dla bliskich.” (Nie mówić, że IKP nie ma danych o kolejkach — ma; tabela w `slides-outline.md` slajd 5.) |
-| Mammografia / cytologia nie ma w API kolejek? | „Dla programów jest osobna ścieżka: bez skierowania, link do wyszukiwarki programu; mammobusy w roadmapie.” |
+| Czy 29 tygodni to prawdziwy czas oczekiwania? | „To szacunek, nie pierwszy wolny termin: NFZ co miesiąc publikuje średni czas oczekiwania, który raportuje każda poradnia. Bierzemy ostrożnie 75. percentyl z placówek w okolicy — u trzech na cztery czeka się średnio krócej — i zawsze pokazujemy »stan na«.” Na dopytanie: to kolejki do poradni (zwykle ze skierowaniem), nie program przesiewowy. |
+| A co z programem przesiewowym / mammografią? | „Programy nie mają danych o kolejkach w API Terminy Leczenia, więc dla mammografii, HPV, LDCT i bilansu przypominamy ze stałym wyprzedzeniem 21 dni i linkujemy wyszukiwarkę programów. Następny krok: realizatorzy programów z API NFZ »Umowy« — placówki i terminy także dla kolonoskopii w programie.” |
 | Jak użyliście AI? | „Jako narzędzia w developmencie — ujawniamy to na ostatnim slajdzie; zalecenia medyczne nie pochodzą z AI, a algorytm i architekturę tłumaczymy sami.” |
 | Model biznesowy? | „Narzędzie publiczne / open source z partnerami jak NFZ i samorządy; opcjonalnie white-label dla pracodawców.” |
 | Skąd liczba X na slajdzie? | Pokaż przypis — dlatego każda liczba musi mieć URL. |
