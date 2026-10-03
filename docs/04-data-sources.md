@@ -68,9 +68,15 @@ Priorytet źródeł: 1) programy MZ/NFZ (pacjent.gov.pl, nfz.gov.pl), 2) rekomen
 
 ## Do weryfikacji (WS1 prowadzi tę listę)
 
-- [ ] Aktualne przedziały wieku i interwały dla każdej pozycji z tabeli D
-- [ ] Czy kolonoskopia przesiewowa w programie wymaga skierowania
-- [ ] Aktualny stan programu LDCT (wiek, kryteria)
-- [ ] Program raka szyjki macicy: cytologia vs. HPV, interwały
-- [ ] Dokładne nazwy świadczeń w `/benefits` dla okulisty, dermatologa, poradni proktologicznej / gastroenterologicznej
-- [ ] Link „gdzie zrobić” dla programów (wyszukiwarka NFZ / pacjent.gov.pl)
+> Tabela D powyżej to hipotezy historyczne. **Aktualne wartości: `docs/research/exams-verified.md`, nazwy świadczeń i linki: `docs/research/nfz-benefits.md`, teksty: `docs/research/exam-content.md`.**
+
+- [x] Aktualne przedziały wieku i interwały dla każdej pozycji z tabeli D
+- [x] Czy kolonoskopia przesiewowa w programie wymaga skierowania (nie)
+- [x] Aktualny stan programu LDCT (Dz.U. 2026 poz. 976; start X 2026)
+- [x] Program raka szyjki macicy: test HPV HR co 5 lat
+- [x] Dokładne nazwy świadczeń w `/benefits`
+- [x] Link „gdzie zrobić” dla programów
+- [ ] `eye_exam`, `skin_check`: wiek i interwał bez oficjalnego źródła (`verified: false`)
+- [ ] `lung_ldct` wariant 50–54 z czynnikami ryzyka i abstynencja ≤ 15 lat — poza modelem `Profile` (MVP: tylko 55–74 + ≥ 20 paczkolat)
+- [ ] `psa_discussion` wariant 45+ przy obciążeniu rodzinnym — brak źródła
+- [ ] `blood_basic`, `blood_pressure` — tylko w ramach „Moje Zdrowie”, nie są osobnymi regułami

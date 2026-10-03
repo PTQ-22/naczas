@@ -63,7 +63,7 @@ Powiadomienia (WS3): planowane lokalnie na `notifyDate 09:00` (i dodatkowo `book
 ## 5. Wymagane przypadki testowe (WS1, Vitest)
 
 - [ ] Brak historii → dueDate = today, urgency = act_now
-- [ ] Badanie zrobione wczoraj, interwał 24 mies. → later, notifyDate ≈ today + 24 mies. − leadTime
+- [ ] Badanie zrobione wczoraj (`lastDone` = data, `status: 'none'`), interwał 24 mies. → later, notifyDate ≈ today + 24 mies. − leadTime. (Przy `status: 'done'` obowiązuje §4 → urgency `done`.)
 - [ ] queue z p75 = 70 dni + referral → leadTime = 84
 - [ ] queue bez danych NFZ → default 60, leadTimeSource = 'default'
 - [ ] modifier z historią rodzinną obniża wiek startu (kolonoskopia od 40)
