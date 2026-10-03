@@ -1,0 +1,32 @@
+name: Keep API awake
+
+# Free Render instances sleep after ~15 min idle and take ~1 min to wake up — too slow for the
+# jury link and the stage demo. Pings /v1/health every 10 min. Runs only when the repository
+# variable API_URL is set (Settings → Secrets and variables → Actions → Variables), so it is
+# a no-op before the deploy. GitHub runs scheduled workflows on the default branch only and may
+# delay them by a few minutes under load.
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: keepalive
+  cancel-in-progress: true
+
+jobs:
+  ping:
+    if: ${{ vars.API_URL != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: GET /v1/health
+        env:
+          API_URL: ${{ vars.API_URL }}
+        # --retry covers the ~1 min cold start if the instance did fall asleep
+        run: |
+          curl -fsS --max-time 90 --retry 3 --retry-delay 10 --retry-all-errors \
+            "${API_URL%/}/v1/health"

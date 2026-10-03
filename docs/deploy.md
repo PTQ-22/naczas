@@ -59,9 +59,28 @@ Zmienne ustawione przez `render.yaml`: `NODE_ENV=production`, `TRUST_PROXY=true`
 - [ ] W DevTools → Network zapytania do API mają status 200 i nie ma błędów CORS w konsoli.
 - [ ] `/v1/health` na API zwraca `snapshotAsOf`.
 
+## 5. Nie pozwól Renderowi zasnąć (keepalive)
+
+Workflow `.github/workflows/keepalive.yml` co 10 min odpytuje `/v1/health`, żeby darmowa usługa się nie usypiała. Działa tylko wtedy, gdy w repo jest ustawiona zmienna `API_URL`:
+
+1. GitHub → repo `PTQ-22/naczas` → **Settings → Secrets and variables → Actions**.
+2. Zakładka **Variables** (nie *Secrets*) → **New repository variable**.
+3. Name: `API_URL`, Value: adres API z kroku 1, np. `https://naczas-api.onrender.com`, bez ukośnika na końcu.
+4. **Actions → Keep API awake → Run workflow**, żeby sprawdzić od razu. Krok `GET /v1/health` ma być zielony.
+
+Usunięcie zmiennej wyłącza pingowanie (job się pomija). Darmowy plan Rendera ma 750 h/mies., więc jedna usługa działająca bez przerwy się w nim mieści.
+
+## 6. Smoke test po deployu
+
+```bash
+./scripts/smoke.sh https://naczas-api.onrender.com https://naczas.vercel.app
+```
+
+Sprawdza health, `wait-times` (kolonoskopia, woj. 07; ze snapshotu oczekiwane p75 = 213), `facilities` (Warszawa), 400 dla badania programowego oraz SPA fallback (`/` i `/plan`). Wymaga `curl` i `jq`. Kod wyjścia to liczba nieudanych kroków.
+
 ## Uwagi do demo
 
-- **Darmowy Render usypia usługę po ~15 min bez ruchu.** Pierwsze zapytanie po uśpieniu czeka ~1 min na start. **2–3 min przed pokazem otwórz `/v1/health`**, żeby obudzić API.
+- **Darmowy Render usypia usługę po ~15 min bez ruchu.** Pierwsze zapytanie po uśpieniu czeka ~1 min na start. Zapobiega temu keepalive (krok 5). Bez niego **2–3 min przed pokazem otwórz `/v1/health`**, żeby obudzić API.
   Po starcie dane są od razu dostępne ze snapshotu. W tle API przez ~10 min odświeża je z NFZ (ok. 600 zapytań, 1/s).
   Jeśli NFZ nie odpowiada, API cały czas działa na snapshocie (`source: "nfz_snapshot"`).
 - Aktualizacja snapshotu: lokalnie `pnpm --filter @naczas/api snapshot --force` (~15 min), commit, push. Render zbuduje nową wersję sam.
