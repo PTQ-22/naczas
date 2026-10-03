@@ -6,3 +6,4 @@ export { MOCK_TODAY, mockPlan, mockProfileMama } from './mock-plan';
 export * from './schedule';
 export { URGENCY_ORDER, comparePlanItems, computePlan, reasonsFor } from './plan';
 export { ACTIVITY_TIPS, activityTip, type ActivityTip } from './activity';
+export { visitPrepSummary, type VisitPrepSummary } from './visit-prep';
