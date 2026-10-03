@@ -15,6 +15,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 > To jest Kasia. Ma 34 lata i — jak wielu z nas — pilnuje zdrowia swojej mamy.
 > Mama ma 58 lat, a w rodzinie był rak jelita grubego. Kasia wie, że mama powinna się badać.
 > Nie wie tylko: **jakie** badania, **kiedy** — i że na część z nich na NFZ czeka się tygodniami. Kiedy sobie przypomni, często jest już za późno, żeby zdążyć.
+> A na kolonoskopię w połowie placówek NFZ czeka się średnio ponad cztery i pół miesiąca. *(S10: mediana 137,5–158 dni, woj. 07/06, API NFZ, stan na 2026-09)*
 > I Kasia nie jest wyjątkiem: badaniami przesiewowymi w kierunku raka jelita grubego NFZ objął dotąd mniej niż co piątą uprawnioną osobę.  *(S2: 17,39%, NFZ, stan na 1.10.2026; jeśli jury dopyta — podać dokładną liczbę)*
 
 (~75 słów)
@@ -46,7 +47,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 ## 2:15–2:45 · Wyróżnik + technologia  [SLAJD 5 → 8]
 
 **P:**
-> Co jest nowe? Inne aplikacje przypominają o badaniach. My liczymy, **kiedy zacząć**: termin badania minus realny czas czekania w Twojej okolicy z danych NFZ, plus zapas na skierowanie.
+> Co jest nowe? Są aplikacje, które przypominają o badaniach, i jest IKP, w którym znajdziesz termin. My liczymy, **kiedy zacząć**: termin badania minus realny czas czekania w Twojej okolicy z danych NFZ, plus zapas na skierowanie.
 > Technicznie: aplikacja na iOS, Androida i web, prawdziwe dane NFZ z zapasową kopią, a dane zdrowotne nigdy nie opuszczają telefonu. Reguły badań są otwarte, każda ze źródłem i przetestowana.
 
 (~65 słów)
@@ -70,7 +71,7 @@ Pełne odpowiedzi: `docs/07-pitch-and-submission.md` §Q&A. Jedno zdanie na star
 | Skąd zalecenia? | „Z oficjalnych programów MZ i NFZ — każda reguła ma źródło w otwartym pliku, a te jeszcze niezweryfikowane aplikacja oznacza jako orientacyjne.” |
 | RODO? | „Dane zdrowotne nie opuszczają telefonu; serwer dostaje tylko nazwę świadczenia i lokalizację z dokładnością do ok. 1 km.” |
 | Aktualność kolejek? | „API NFZ, aktualizacja mniej więcej co miesiąc — zawsze pokazujemy »stan na«.” |
-| Czym różnicie się od Doctor Robert / IKP? | „Liczymy, kiedy zacząć szukać terminu z realnych kolejek, i pokazujemy gdzie — także dla bliskich.” |
+| Czym różnicie się od Doctor Robert / IKP? | „Doctor Robert mówi, co i kiedy zbadać; IKP pozwala znaleźć termin. My łączymy jedno z drugim i mówimy, kiedy zacząć szukać, żeby zdążyć — także dla bliskich.” (Nie mówić, że IKP nie ma danych o kolejkach — ma; tabela w `slides-outline.md` slajd 5.) |
 | Mammografia / cytologia nie ma w API kolejek? | „Dla programów jest osobna ścieżka: bez skierowania, link do wyszukiwarki programu; mammobusy w roadmapie.” |
 | Jak użyliście AI? | „Jako narzędzia w developmencie — ujawniamy to na ostatnim slajdzie; zalecenia medyczne nie pochodzą z AI, a algorytm i architekturę tłumaczymy sami.” |
 | Model biznesowy? | „Narzędzie publiczne / open source z partnerami jak NFZ i samorządy; opcjonalnie white-label dla pracodawców.” |

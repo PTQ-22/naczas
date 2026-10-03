@@ -47,7 +47,7 @@ Jeden temat na ekran, duże przyciski, zawsze opcja „Nie wiem / pomiń”.
 
 Tryb demo: `settings → Data demo = 2026-10-04`, preset profili można wczytać jednym przyciskiem (fallback, gdyby ankieta zawiodła na scenie).
 
-1. **Hook (20 s):** „Kasia wie, że mama powinna się badać. Nie wie, co, kiedy ani gdzie — i że na kolonoskopię czeka się 3 miesiące.”
+1. **Hook (20 s):** „Kasia wie, że mama powinna się badać. Nie wie, co, kiedy ani gdzie — i że na kolonoskopię w połowie placówek NFZ czeka się średnio ponad 4,5 miesiąca.” *(mediana `average-period` z API NFZ, stan na 2026-09: 137,5 dnia mazowieckie, 158 dni małopolskie — `pitch/slides-outline.md` S10)*
 2. **Onboarding mamy (40 s):** 58 lat, kobieta, rak jelita w rodzinie, nie pamięta ostatnich badań.
 3. **Plan (40 s):** oś czasu. Czerwona karta: *„Kolonoskopia — w Twojej okolicy czeka się ~10 tyg. Zacznij szukać teraz.”* Mammografia: „bez skierowania, program NFZ”.
 4. **Placówki (30 s):** mapa, 5 placówek posortowanych po średnim czasie oczekiwania, dane „stan na 2026-09”. Klik „Zadzwoń”.
