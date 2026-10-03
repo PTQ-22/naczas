@@ -7,6 +7,7 @@ import { createQueueLoader, DataUnavailableError, type QueueLoader } from './que
 import { errorResponse } from './routes/common';
 import { facilitiesRoutes } from './routes/facilities';
 import { healthRoutes } from './routes/health';
+import { syncRoutes } from './routes/sync';
 import { waitTimesRoutes } from './routes/wait-times';
 
 import type { NfzClient } from './nfz/client';
@@ -62,6 +63,7 @@ export function createApp({
   );
   app.route('/', waitTimesRoutes(loader));
   app.route('/', facilitiesRoutes(loader));
+  app.route('/', syncRoutes());
 
   app.notFound((c) => errorResponse(c, 404, 'not_found', 'Unknown endpoint'));
   app.onError((err, c) => {

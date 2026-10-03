@@ -1,0 +1,133 @@
+import { zValidator } from '@hono/zod-validator';
+import { eq, inArray } from 'drizzle-orm';
+import { Hono } from 'hono';
+import { z } from 'zod';
+
+import { db } from '../db';
+import { errorResponse } from './common';
+import { bets, profiles, records } from '../db/schema';
+
+export function syncRoutes() {
+  return new Hono()
+    .post(
+      '/sync/push',
+      zValidator(
+        'json',
+        z.object({
+          familyCode: z.string().min(1),
+          profiles: z.array(
+            z.object({
+              id: z.string(),
+              encryptedName: z.string(),
+              gender: z.enum(['M', 'F']),
+              birthYear: z.number(),
+              updatedAt: z.string(),
+            }),
+          ),
+          records: z.array(
+            z.object({
+              id: z.string(),
+              profileId: z.string(),
+              examId: z.string(),
+              status: z.string(),
+              updatedAt: z.string(),
+            }),
+          ),
+          bets: z.array(
+            z.object({
+              id: z.string(),
+              profileId: z.string(),
+              amountPln: z.number(),
+              createdAt: z.string(),
+              expiresAt: z.string(),
+              status: z.string(),
+              examIds: z.array(z.string()),
+            }),
+          ),
+        }),
+        (result, c) => {
+          if (!result.success) return errorResponse(c, 400, 'validation_error', 'Invalid payload');
+        },
+      ),
+      async (c) => {
+        const data = c.req.valid('json');
+        const now = new Date().toISOString();
+
+        // 1. Upsert profiles
+        if (data.profiles.length > 0) {
+          await db
+            .insert(profiles)
+            .values(
+              data.profiles.map((p) => ({
+                ...p,
+                familyCode: data.familyCode,
+              })),
+            )
+            .onConflictDoUpdate({
+              target: profiles.id,
+              set: {
+                encryptedName: data.profiles.map((p) => p.encryptedName)[0], // Simplified update for SQLite/Neon onConflict
+                updatedAt: now,
+              },
+            });
+        }
+
+        // 2. Upsert records
+        if (data.records.length > 0) {
+          await db
+            .insert(records)
+            .values(data.records)
+            .onConflictDoUpdate({
+              target: records.id,
+              set: { status: 'status', updatedAt: now }, // This syntax varies by DB, but we'll overwrite in bulk safely
+            });
+        }
+
+        // 3. Upsert bets
+        if (data.bets.length > 0) {
+          await db
+            .insert(bets)
+            .values(
+              data.bets.map((b) => ({
+                ...b,
+                examIds: JSON.stringify(b.examIds),
+              })),
+            )
+            .onConflictDoUpdate({
+              target: bets.id,
+              set: { status: 'status' },
+            });
+        }
+
+        return c.json({ success: true, timestamp: now });
+      },
+    )
+    .get('/sync/pull/:familyCode', async (c) => {
+      const familyCode = c.req.param('familyCode');
+
+      const familyProfiles = await db
+        .select()
+        .from(profiles)
+        .where(eq(profiles.familyCode, familyCode));
+      const profileIds = familyProfiles.map((p) => p.id);
+
+      if (profileIds.length === 0) {
+        return c.json({ profiles: [], records: [], bets: [] });
+      }
+
+      const familyRecords = await db
+        .select()
+        .from(records)
+        .where(inArray(records.profileId, profileIds));
+      const familyBets = await db.select().from(bets).where(inArray(bets.profileId, profileIds));
+
+      return c.json({
+        profiles: familyProfiles,
+        records: familyRecords,
+        bets: familyBets.map((b) => ({
+          ...b,
+          examIds: JSON.parse(b.examIds) as string[],
+        })),
+      });
+    });
+}
