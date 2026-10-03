@@ -128,11 +128,12 @@ export const space = {
 
 // plate: enamel sign corners; tab: folder-tab top corners.
 export const radius = {
-  sm: 8,
-  md: 12,
-  plate: 10,
-  tab: 8,
-  sheet: 14,
+  sm: 10,
+  md: 14,
+  // Rounder, continuous corners read as native on iOS; the earlier 10 pt felt boxy.
+  plate: 22,
+  tab: 14,
+  sheet: 22,
   lg: 16,
   xl: 24,
   full: 999,
@@ -140,8 +141,8 @@ export const radius = {
 
 export const borderWidth = {
   hairline: 1,
-  strong: 2,
-  plate: 3,
+  strong: 1.5,
+  plate: 2,
   marker: 3,
   focus: 3,
   accent: 4,

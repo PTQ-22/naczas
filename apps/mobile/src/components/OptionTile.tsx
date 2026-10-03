@@ -45,6 +45,7 @@ export function OptionTile({
         paddingHorizontal: space.sm,
         paddingVertical: space.md,
         borderRadius: radius.sm,
+        borderCurve: 'continuous',
         borderBottomWidth: borderWidth.hairline,
         borderBottomColor: colors.border,
         backgroundColor: selected || pressed ? colors.primarySoft : 'transparent',

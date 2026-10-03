@@ -33,18 +33,17 @@ interface FacilityRowProps {
 
 /**
  * One facility as a row on the plate (redesign §4): weeks of waiting on the left in mono, like a
- * position on a departures board; name, address and distance on the right; a 44 pt call button.
+ * position on a departures board; distance under the wait figure; name and address on the right; a 44 pt call button.
  */
-export function FacilityRow({ facility: f, examId, primary = false, sort }: FacilityRowProps) {
-  const { colors, seniorMode, space, type, layout } = useTheme();
+export function FacilityRow({ facility: f, examId, primary = false }: FacilityRowProps) {
+  const { colors, seniorMode, space, layout } = useTheme();
   const placeLine = distinctPlaceName(f.providerName, f.placeName);
   const tel = telUrl(f.phone);
   const weeks = waitWeeks(f.waitDays);
   const tone = colors.urgency[waitTone(f.waitDays)].fg;
   const distance = distanceLabel(f.distanceKm);
   const access = accessibilityLabels(f.accessibility);
-  // "Najbliżej" promotes distance to the front of the meta row.
-  const meta = sort === 'nearest' ? [distance, ...access] : [...access, distance];
+  // Distance lives under the wait figure (never wraps); amenities stay a quiet text line.
 
   return (
     <View style={{ gap: space.sm, paddingVertical: space.md }}>
@@ -67,6 +66,14 @@ export function FacilityRow({ facility: f, examId, primary = false, sort }: Faci
             <Text variant="eyebrow" tone="textMuted">
               {t('facilities.wait.unit')}
             </Text>
+            <Text
+              variant="caption"
+              tone="textMuted"
+              numberOfLines={1}
+              style={{ marginTop: space.xs }}
+            >
+              {distance}
+            </Text>
           </View>
           <View style={{ flex: 1, gap: space.xs / 2 }}>
             <Text variant="label">{nfzTitleCase(f.providerName)}</Text>
@@ -78,14 +85,11 @@ export function FacilityRow({ facility: f, examId, primary = false, sort }: Faci
             <Text variant="caption" tone="textMuted">
               {`${nfzTitleCase(f.address)}, ${nfzTitleCase(f.locality)}`}
             </Text>
-            <Text
-              variant="caption"
-              tone="textMuted"
-              tabular
-              style={{ fontFamily: type.data.fontFamily }}
-            >
-              {meta.join(' · ')}
-            </Text>
+            {access.length > 0 && (
+              <Text variant="caption" tone="textMuted">
+                {access.join(' · ')}
+              </Text>
+            )}
           </View>
         </View>
         {tel && !seniorMode && (

@@ -20,19 +20,19 @@ export function SegmentedControl<T extends string>({
   value,
   onChange,
 }: SegmentedControlProps<T>) {
-  const { colors, layout, radius, borderWidth, space } = useTheme();
+  const { colors, layout, radius, space } = useTheme();
   return (
     <View
       accessibilityRole="radiogroup"
       accessibilityLabel={label}
       style={{
+        // iOS-style segmented track: soft fill, no outline.
         flexDirection: 'row',
-        borderWidth: borderWidth.hairline,
-        borderColor: colors.borderStrong,
         borderRadius: radius.md,
-        padding: space.xs,
-        gap: space.xs,
-        backgroundColor: colors.surface,
+        borderCurve: 'continuous',
+        padding: 3,
+        gap: 3,
+        backgroundColor: colors.surfaceAlt,
       }}
     >
       {options.map((o) => {
@@ -49,7 +49,8 @@ export function SegmentedControl<T extends string>({
               minHeight: layout.minTouch,
               alignItems: 'center',
               justifyContent: 'center',
-              borderRadius: radius.sm,
+              borderRadius: radius.md - 3,
+              borderCurve: 'continuous',
               paddingHorizontal: space.sm,
               backgroundColor: selected ? colors.primary : 'transparent',
             }}

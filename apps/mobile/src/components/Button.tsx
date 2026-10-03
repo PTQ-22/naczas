@@ -65,6 +65,7 @@ export function Button({
           paddingHorizontal: variant === 'ghost' ? space.sm : space.lg,
           paddingVertical: space.sm,
           borderRadius: radius.md,
+          borderCurve: 'continuous',
           alignItems: leftAligned ? 'flex-start' : 'center',
           justifyContent: 'center',
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
