@@ -3,6 +3,7 @@ export {
   buildNotificationRequests,
   MAX_SCHEDULED,
   notificationId,
+  notifyContent,
   type NotificationKind,
   type PlannedNotification,
 } from './build-requests';

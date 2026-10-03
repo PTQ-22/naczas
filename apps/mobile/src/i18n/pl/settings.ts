@@ -23,7 +23,32 @@ export const settings = {
     todayOverrideHint: 'Przewiń czas, żeby zobaczyć, jak zmienia się plan i przypomnienia.',
     todayOverrideOff: 'Wyłączona (dzisiejsza data)',
     clearOverride: 'Wróć do dzisiejszej daty',
+    current: 'Data w aplikacji: {{date}}',
+    presets: {
+      today: 'Dziś',
+      plus1m: '+1 mies.',
+      plus3m: '+3 mies.',
+      plus1y: '+1 rok',
+      reset: 'Reset',
+    },
+    presetA11y: {
+      today: 'Ustaw datę demo na dzisiaj',
+      plus1m: 'Przesuń datę demo o miesiąc do przodu',
+      plus3m: 'Przesuń datę demo o 3 miesiące do przodu',
+      plus1y: 'Przesuń datę demo o rok do przodu',
+      reset: 'Wyłącz datę demo i wróć do prawdziwej daty',
+    },
     testNotification: 'Wyślij testowe powiadomienie teraz',
+    testResult: {
+      sent: 'Wysłano. Powiadomienie pojawi się za kilka sekund.',
+      inApp: 'W przeglądarce przypomnienia pokazujemy w aplikacji: „{{title}}”.',
+      denied: 'Brak zgody na powiadomienia. Włącz je w ustawieniach telefonu.',
+      undetermined: 'Nie udzielono zgody na powiadomienia.',
+    },
+  },
+  privacy: {
+    header: 'Prywatność',
+    body: 'Profile i historia badań są zapisane tylko na tym urządzeniu. Do serwera wysyłamy wyłącznie nazwę badania, województwo i przybliżoną lokalizację (ok. 1 km), żeby znaleźć placówki NFZ.',
   },
   data: {
     header: 'Dane',
@@ -31,6 +56,7 @@ export const settings = {
     resetConfirmTitle: 'Usunąć wszystkie dane?',
     resetConfirmBody: 'Profile, plany i historia badań zostaną usunięte z tego urządzenia.',
     resetConfirm: 'Usuń',
+    resetConfirmA11y: 'Potwierdź: usuń wszystkie dane z tego urządzenia',
     cancel: 'Anuluj',
   },
   notifications: {
