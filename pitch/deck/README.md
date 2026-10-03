@@ -21,7 +21,7 @@ Ręcznie: otwórz `deck.html` w Chrome → Drukuj (⌘P / Ctrl+P) → *Zapisz ja
 | Nazwa produktu `{NAZWA}` | **jedno miejsce:** `--app-name` w `:root` na górze `deck.html` (wszystkie slajdy czytają ją przez klasę `.app-name`) |
 | Nazwa zespołu, imiona | slajd 1 — elementy `.todo` |
 | Screenshoty (po M3) | ramki `.shot` na slajdach 4, 6, 7 — zamień `<div class="shot phone">…</div>` na `<img class="shot phone" src="screens/plan.png" alt="…">` (wymiar ramki zostaje); pliki w `pitch/deck/screens/` |
-| Wartości z demo | slajd 5 `{N} tyg.`, slajd 8 liczba testów i pokrycie, slajd 6 „Karta aktywności” — usunąć, jeśli nie działa |
+| Wartości z demo | slajd 5 `{N} tyg.`, slajd 8 liczba testów i pokrycie (stan 2026-10-03: rules 123 / 100% linii, API 74 — zaktualizować z `pnpm test`), slajd 6 „Karta aktywności” — usunąć, jeśli nie działa |
 | Kody QR | slajd 10 — ramki `.qr` (web demo, Expo Go, repo) |
 
 Wszystkie placeholdery mają klasę `.todo`, `.shot` lub `.qr` — przed eksportem finalnym nie powinno ich być:
