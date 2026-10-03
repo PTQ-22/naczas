@@ -49,6 +49,7 @@ describe('data/exams.json', () => {
   });
 
   it.each(rules.map((r) => [r.id, r] as const))('%s has non-empty PL texts', (_, rule) => {
+    expect(rule.referralNote?.trim()).toBeTruthy();
     expect(rule.name.trim()).not.toBe('');
     expect(rule.shortReason.trim()).not.toBe('');
     expect(rule.description.trim()).not.toBe('');

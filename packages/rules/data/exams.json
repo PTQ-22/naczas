@@ -5,11 +5,12 @@
     "shortReason": "Bezpłatny przegląd zdrowia, dzięki któremu wiesz, jakie badania są dla Ciebie zalecane.",
     "description": "Najpierw wypełniasz ankietę o swoim zdrowiu i stylu życia. Potem przychodnia zleca Ci badania, m.in. krwi i moczu. Na wizycie podsumowującej ktoś z personelu zmierzy Ci ciśnienie, tętno, wagę i wzrost, omówi wyniki i przygotuje Twój plan dbania o zdrowie.",
     "eligibility": {
-      "age": [20, 49]
+      "age": [20, 120]
     },
     "intervalMonths": 60,
     "booking": "program",
     "referral": false,
+    "referralNote": "Nie potrzebujesz skierowania — wystarczy ankieta, a Twoja przychodnia skontaktuje się z Tobą w ciągu 30 dni.",
     "programUrl": "https://pacjent.gov.pl/program-moje-zdrowie",
     "prepTips": [
       "Wypełnij ankietę w Internetowym Koncie Pacjenta, w aplikacji mojeIKP albo w swojej przychodni.",
@@ -21,31 +22,14 @@
       "url": "https://pacjent.gov.pl/program-moje-zdrowie"
     },
     "verified": true,
-    "verifiedAt": "2026-10-03"
-  },
-  {
-    "id": "health_check_adult_50",
-    "name": "Bilans zdrowia „Moje Zdrowie” (50+)",
-    "shortReason": "Bezpłatny przegląd zdrowia, dzięki któremu wiesz, jakie badania są dla Ciebie zalecane.",
-    "description": "Najpierw wypełniasz ankietę o swoim zdrowiu i stylu życia. Potem przychodnia zleca Ci badania, m.in. krwi i moczu. Na wizycie podsumowującej ktoś z personelu zmierzy Ci ciśnienie, tętno, wagę i wzrost, omówi wyniki i przygotuje Twój plan dbania o zdrowie.",
-    "eligibility": {
-      "age": [50, 120]
-    },
-    "intervalMonths": 36,
-    "booking": "program",
-    "referral": false,
-    "programUrl": "https://pacjent.gov.pl/program-moje-zdrowie",
-    "prepTips": [
-      "Wypełnij ankietę w Internetowym Koncie Pacjenta, w aplikacji mojeIKP albo w swojej przychodni.",
-      "Ankietę wypełnij za jednym razem — nie da się zapisać jej w połowie.",
-      "Na pobranie krwi przyjdź rano, na czczo."
-    ],
-    "source": {
-      "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
-      "url": "https://pacjent.gov.pl/program-moje-zdrowie"
-    },
-    "verified": true,
-    "verifiedAt": "2026-10-03"
+    "verifiedAt": "2026-10-03",
+    "modifiers": [
+      {
+        "age": [50, 120],
+        "intervalMonths": 36,
+        "note": "Od 50. roku życia z programu „Moje Zdrowie” można korzystać co 3 lata."
+      }
+    ]
   },
   {
     "id": "dental_checkup",
@@ -56,6 +40,7 @@
     "intervalMonths": 12,
     "booking": "queue",
     "referral": false,
+    "referralNote": "Do dentysty nie potrzebujesz skierowania — umów się w gabinecie, który ma umowę z NFZ.",
     "nfzBenefits": ["PORADNIA STOMATOLOGICZNA"],
     "source": {
       "name": "Zasady leczenia u dentysty — pacjent.gov.pl",
@@ -76,6 +61,7 @@
     "intervalMonths": 60,
     "booking": "program",
     "referral": false,
+    "referralNote": "Nie potrzebujesz skierowania — zapiszesz się w Internetowym Koncie Pacjenta, w mojeIKP albo bezpośrednio w poradni ginekologicznej z umową NFZ.",
     "programUrl": "https://pacjent.gov.pl/aktualnosc/umow-sie-na-test-hpv-hr-przez-mojeikp",
     "prepTips": [
       "Nie umawiaj się w czasie miesiączki ani 4 dni przed i po niej.",
@@ -102,6 +88,7 @@
     "intervalMonths": 24,
     "booking": "program",
     "referral": false,
+    "referralNote": "Nie potrzebujesz skierowania — wystarczy dowód osobisty; placówkę lub mammobus znajdziesz w wyszukiwarce NFZ.",
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
     "prepTips": [
       "W dniu badania nie używaj dezodorantu, balsamu, pudru ani talku na piersi i pod pachami.",
@@ -134,6 +121,7 @@
     "intervalMonths": 120,
     "booking": "queue",
     "referral": false,
+    "referralNote": "W programie badań przesiewowych nie potrzebujesz skierowania — placówkę znajdziesz w wyszukiwarce NFZ.",
     "nfzBenefits": ["KOLONOSKOPIA"],
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
     "prepTips": ["Placówka da Ci dokładną instrukcję przygotowania — postępuj według niej."],
@@ -156,6 +144,7 @@
     "intervalMonths": 12,
     "booking": "program",
     "referral": false,
+    "referralNote": "Nie potrzebujesz skierowania — program na NFZ rusza w październiku 2026, a placówki znajdziesz w wyszukiwarce NFZ.",
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
     "source": {
       "name": "Rozporządzenie — program profilaktyki raka płuca (Dziennik Ustaw 2026 poz. 976)",
@@ -175,6 +164,7 @@
     "intervalMonths": 24,
     "booking": "queue",
     "referral": true,
+    "referralNote": "Do okulisty na NFZ potrzebujesz skierowania od lekarza — bez skierowania możesz pójść do optometrysty.",
     "nfzBenefits": ["ŚWIADCZENIA Z ZAKRESU OKULISTYKI"],
     "source": {
       "name": "Kto i kiedy nie potrzebuje skierowania — pacjent.gov.pl (wiek i interwał: wartość orientacyjna)",
@@ -194,6 +184,7 @@
     "intervalMonths": 12,
     "booking": "queue",
     "referral": true,
+    "referralNote": "Do dermatologa na NFZ potrzebujesz skierowania — poproś o nie lekarza rodzinnego.",
     "nfzBenefits": ["PORADNIA DERMATOLOGICZNA"],
     "prepTips": [
       "Raz w miesiącu obejrzyj swoje znamiona według zasady ABCDE (kształt, brzegi, kolor, wielkość, zmiany)."
@@ -217,6 +208,7 @@
     "intervalMonths": 36,
     "booking": "walk_in",
     "referral": false,
+    "referralNote": "Porozmawiaj z lekarzem rodzinnym — w programie „Moje Zdrowie” przychodnia zleci PSA po wypełnieniu ankiety.",
     "source": {
       "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
       "url": "https://pacjent.gov.pl/program-moje-zdrowie"

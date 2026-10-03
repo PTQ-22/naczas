@@ -3,7 +3,7 @@ import type { ExamRule, ISODate, Profile } from '@naczas/shared';
 import { ageAt } from './age';
 import { rules } from './load-rules';
 
-type Factor = NonNullable<ExamRule['modifiers']>[number]['when'];
+type Factor = NonNullable<NonNullable<ExamRule['modifiers']>[number]['when']>;
 type Modifier = NonNullable<ExamRule['modifiers']>[number];
 
 const SMOKER_PACK_YEARS = 20;
@@ -22,10 +22,13 @@ export function profileFactors(profile: Profile): Set<Factor> {
 
 const inRange = (age: number, [from, to]: readonly [number, number]) => age >= from && age <= to;
 
-/** Modifiers whose trigger matches the profile (ignoring the modifier's own age range). */
+/**
+ * Modifiers whose trigger matches the profile (ignoring the modifier's own age range).
+ * A modifier without `when` always matches — it is selected by age alone.
+ */
 export function matchingModifiers(rule: ExamRule, profile: Profile): Modifier[] {
   const factors = profileFactors(profile);
-  return (rule.modifiers ?? []).filter((m) => factors.has(m.when));
+  return (rule.modifiers ?? []).filter((m) => m.when === undefined || factors.has(m.when));
 }
 
 export function isEligible(rule: ExamRule, profile: Profile, today: ISODate): boolean {
@@ -40,8 +43,12 @@ export function isEligible(rule: ExamRule, profile: Profile, today: ISODate): bo
   if (!range) return true;
   const age = ageAt(profile.birthYear, today);
   if (inRange(age, range)) return true;
-  // A matching modifier with its own age range widens eligibility (e.g. colonoscopy from 40).
-  return matchingModifiers(rule, profile).some((m) => m.age !== undefined && inRange(age, m.age));
+  // A triggered modifier with its own age range widens eligibility (e.g. colonoscopy from 40).
+  // Age-only modifiers (no `when`) only change the interval; widening there would just be a
+  // wider base range, so they are not allowed to grant eligibility.
+  return matchingModifiers(rule, profile).some(
+    (m) => m.when !== undefined && m.age !== undefined && inRange(age, m.age),
+  );
 }
 
 export function eligibleExams(profile: Profile, today: ISODate): ExamRule[] {

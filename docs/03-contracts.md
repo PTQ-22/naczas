@@ -52,6 +52,8 @@ export interface ExamRecord {
 
 ## Reguły badań (format `packages/rules/data/exams.json`)
 
+> **Zmiana 2026-10-03 (WS1):** `modifiers[].when` opcjonalne — modifier bez `when` działa tylko po `age` (np. „Moje Zdrowie”: co 3 lata od 50 r.ż.; zmienia interwał, nie poszerza kwalifikacji). Nowe opcjonalne pole `referralNote`. Obie zmiany wstecznie zgodne.
+
 ```ts
 // packages/shared/src/rules.ts
 export type BookingType = 'walk_in' | 'program' | 'queue';
@@ -67,7 +69,7 @@ export interface ExamRule {
     requiresAny?: Array<Condition | FamilyHistory | 'smoker_20py'>;
   };
   modifiers?: Array<{
-    when: Condition | FamilyHistory | 'smoker_20py' | 'low_activity';
+    when?: Condition | FamilyHistory | 'smoker_20py' | 'low_activity'; // brak → modifier działa tylko po `age`
     age?: [number, number];
     intervalMonths?: number;
     note: string;                   // PL
@@ -75,6 +77,7 @@ export interface ExamRule {
   intervalMonths: number;
   booking: BookingType;
   referral: boolean;                // czy NFZ wymaga skierowania
+  referralNote?: string;            // PL, 1 zdanie: skierowanie / jak się zapisać
   nfzBenefits?: string[];           // dokładne nazwy z /benefits API NFZ (dla 'queue')
   programUrl?: string;              // dla 'program'
   prepTips?: string[];              // PL, jak się przygotować

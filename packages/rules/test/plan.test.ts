@@ -84,13 +84,61 @@ describe('persona mama (58, F, colorectal cancer in family, remembers nothing)',
   });
 
   it('includes mammography and the 50+ health check, not PSA, cervical or LDCT', () => {
-    expect(ids(plan.items)).toEqual(
-      expect.arrayContaining(['mammography', 'health_check_adult_50']),
-    );
+    expect(ids(plan.items)).toEqual(expect.arrayContaining(['mammography', 'health_check_adult']));
     expect(ids(plan.items)).not.toEqual(
       expect.arrayContaining([expect.stringMatching(/^(psa_discussion|lung_ldct)$/)]),
     );
-    expect(ids(plan.items)).not.toContain('health_check_adult');
+  });
+});
+
+describe('„Moje Zdrowie” interval follows age (age-only modifier)', () => {
+  const lastDone = '2025-01-10';
+  const healthCheck = (profile: Profile) =>
+    computePlan({
+      profile,
+      records: [
+        {
+          profileId: profile.id,
+          examId: 'health_check_adult',
+          lastDone,
+          status: 'none',
+          updatedAt: TODAY,
+        },
+      ],
+      waitTimes: {},
+      today: TODAY,
+    }).items.find((i) => i.examId === 'health_check_adult');
+
+  it('50+: every 36 months, with the 50+ note in reasons', () => {
+    const item = healthCheck(mama);
+    expect(item?.dueDate).toBe('2028-01-10');
+    expect(item?.reasons).toHaveLength(2);
+  });
+
+  it('20–49: every 60 months, base reason only', () => {
+    const item = healthCheck(kasia);
+    expect(item?.dueDate).toBe('2030-01-10');
+    expect(item?.reasons).toHaveLength(1);
+  });
+
+  it('the same record carries over when the person turns 50', () => {
+    const turning50 = { ...kasia, birthYear: 1977 }; // 49 in 2026, 50 in 2027
+    expect(healthCheck(turning50)?.dueDate).toBe('2030-01-10');
+    const next = computePlan({
+      profile: turning50,
+      records: [
+        {
+          profileId: turning50.id,
+          examId: 'health_check_adult',
+          lastDone,
+          status: 'none',
+          updatedAt: TODAY,
+        },
+      ],
+      waitTimes: {},
+      today: '2027-01-05',
+    }).items.find((i) => i.examId === 'health_check_adult');
+    expect(next?.dueDate).toBe('2028-01-10');
   });
 });
 
@@ -154,7 +202,7 @@ describe('§5 plan-level cases', () => {
       profile: mama,
       records: [
         rec('mammography', { status: 'booked', bookedFor: '2026-10-20' }),
-        rec('health_check_adult_50', { lastDone: '2026-08-01', status: 'done' }), // done
+        rec('health_check_adult', { lastDone: '2026-08-01', status: 'done' }), // done
         rec('dental_checkup', { lastDone: '2026-03-01' }), // due 2027-03-01 − 60 → this_year
         rec('eye_exam', { lastDone: '2026-01-10' }), // due 2028 → later
         // colonoscopy: no record → act_now

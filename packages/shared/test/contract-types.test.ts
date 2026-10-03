@@ -79,7 +79,7 @@ namespace Doc {
       requiresAny?: Array<Condition | FamilyHistory | 'smoker_20py'>;
     };
     modifiers?: Array<{
-      when: Condition | FamilyHistory | 'smoker_20py' | 'low_activity';
+      when?: Condition | FamilyHistory | 'smoker_20py' | 'low_activity';
       age?: [number, number];
       intervalMonths?: number;
       note: string;
@@ -87,6 +87,7 @@ namespace Doc {
     intervalMonths: number;
     booking: BookingType;
     referral: boolean;
+    referralNote?: string;
     nfzBenefits?: string[];
     programUrl?: string;
     prepTips?: string[];
