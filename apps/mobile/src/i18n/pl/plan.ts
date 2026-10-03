@@ -46,6 +46,11 @@ export const plan = {
     body: 'Odpowiedz na kilka pytań, a przygotujemy plan badań.',
     cta: 'Zacznij',
   },
+  visitPrep: {
+    title: 'Przygotuj się do wizyty u lekarza rodzinnego',
+    body: 'Zestawienie badań i skierowań do omówienia — do pokazania na wizycie albo jako PDF.',
+    cta: 'Otwórz zestawienie',
+  },
   notifications: {
     title: 'Przypomnimy Ci, kiedy zacząć szukać terminu',
     body: 'Dostaniesz powiadomienie, gdy przyjdzie czas umówić badanie, i dzień przed wizytą.',

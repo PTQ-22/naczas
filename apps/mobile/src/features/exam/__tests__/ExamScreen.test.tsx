@@ -53,6 +53,12 @@ describe('ExamScreen', () => {
     });
   });
 
+  it('links to visit prep even when no referral is needed (M3 H2)', () => {
+    renderExam('colonoscopy_screening');
+    fireEvent.press(screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza' }));
+    expect(router.push).toHaveBeenCalledWith('/visit-prep');
+  });
+
   it('marks "Wartość orientacyjna" for unverified rules', () => {
     renderExam('eye_exam');
     expect(screen.getByText('Wartość orientacyjna')).toBeOnTheScreen();

@@ -92,6 +92,14 @@ describe('PlanScreen (mockPlan)', () => {
     expect(data.selectProfile).toHaveBeenCalledWith('mock-mama');
   });
 
+  it('always offers the GP visit summary (M3 H2)', () => {
+    renderPlan();
+    fireEvent.press(
+      screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza rodzinnego' }),
+    );
+    expect(router.push).toHaveBeenCalledWith('/visit-prep');
+  });
+
   it('no button is nested inside another button (screen readers skip nested ones)', () => {
     renderPlan();
     // Host elements only: composite Pressable and its host View both carry the role.

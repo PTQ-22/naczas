@@ -25,6 +25,7 @@ import {
 import { PlanTimelineSection } from './PlanTimelineSection';
 import { ReminderBanner } from './ReminderBanner';
 import { usePlanData } from './use-plan-data';
+import { VisitPrepCard } from './VisitPrepCard';
 
 const openExam = (examId: string) =>
   router.push({ pathname: '/exam/[examId]', params: { examId } });
@@ -135,6 +136,7 @@ export default function PlanScreen() {
         </View>
       )}
 
+      {sections.length > 0 && <VisitPrepCard />}
       {sections.length > 0 && <NotificationPrompt />}
 
       {tip && <ActivityCard tip={tip} />}

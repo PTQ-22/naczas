@@ -191,14 +191,13 @@ export default function ExamScreen() {
 
       <Section title={t('exam.section.referral')}>
         <Text>{typeof referral === 'string' ? referral : msg(referral)}</Text>
-        {rule.referral && (
-          <Button
-            variant="ghost"
-            icon="chevronRight"
-            label={t('exam.referral.prepareRequest')}
-            onPress={() => router.push('/visit-prep')}
-          />
-        )}
+        {/* Always reachable (M3 H2): even without a referral the GP visit summary is useful. */}
+        <Button
+          variant="ghost"
+          icon="chevronRight"
+          label={t(rule.referral ? 'exam.referral.prepareRequest' : 'exam.referral.prepareVisit')}
+          onPress={() => router.push('/visit-prep')}
+        />
       </Section>
 
       {rule.prepTips && rule.prepTips.length > 0 && (

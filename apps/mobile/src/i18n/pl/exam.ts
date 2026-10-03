@@ -37,6 +37,7 @@ export const exam = {
     required: 'Potrzebne — od lekarza rodzinnego.',
     notRequired: 'Nie jest potrzebne.',
     prepareRequest: 'Przygotuj prośbę do lekarza',
+    prepareVisit: 'Przygotuj się do wizyty u lekarza',
   },
   source: 'Źródło: {{name}}',
   sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
