@@ -1,4 +1,3 @@
-import { MOCK_TODAY, mockProfileMama } from '@naczas/rules';
 import type { ISODate, Profile } from '@naczas/shared';
 
 import {
@@ -33,18 +32,6 @@ export function completeOnboarding(
   useProfilesStore.getState().setActiveProfile(profile.id);
   const { upsertRecord } = useRecordsStore.getState();
   draftToRecords(draft, profile, options.today).forEach(upsertRecord);
-  useOnboardingDraftStore.getState().clear();
-  return profile;
-}
-
-/**
- * Stage fallback: the demo persona from the rules package (58-year-old mother, colorectal
- * cancer in the family, Warsaw, doesn't remember past exams → no records).
- */
-export function loadDemoProfile(): Profile {
-  const profile: Profile = { ...mockProfileMama, createdAt: MOCK_TODAY };
-  useProfilesStore.getState().addProfile(profile);
-  useProfilesStore.getState().setActiveProfile(profile.id);
   useOnboardingDraftStore.getState().clear();
   return profile;
 }

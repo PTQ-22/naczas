@@ -134,6 +134,10 @@ export const onboarding = {
       empty: 'Na razie nie ma badań do uzupełnienia.',
     },
   },
+  demo: {
+    mamaName: 'Mama',
+    kasiaName: 'Kasia',
+  },
   done: {
     title: 'Gotowe!',
     subtitle: 'Przygotowaliśmy plan badań.',

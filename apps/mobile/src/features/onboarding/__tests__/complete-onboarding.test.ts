@@ -6,7 +6,7 @@ import { resetAllData, useOnboardingDraftStore, useProfilesStore, useRecordsStor
 import { makeProfile } from '@/store/__fixtures__/fixtures';
 import { STORAGE_PREFIX } from '@/store/persist';
 
-import { completeOnboarding, createProfileId, loadDemoProfile } from '../complete-onboarding';
+import { completeOnboarding, createProfileId } from '../complete-onboarding';
 import { examsToAsk } from '../survey';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
@@ -99,14 +99,6 @@ describe('draft persistence', () => {
     expect(JSON.parse(raw ?? 'null')).toMatchObject({
       state: { draft: { who: 'self', birthYear: 1990 } },
     });
-  });
-});
-
-describe('loadDemoProfile', () => {
-  it('adds the demo persona and activates it', () => {
-    const profile = loadDemoProfile();
-    expect(ProfileSchema.parse(profile).location?.province).toBe('07');
-    expect(useProfilesStore.getState().activeProfileId).toBe(profile.id);
   });
 });
 

@@ -3,9 +3,9 @@ import { useEffect } from 'react';
 
 import { Button, Disclaimer, Screen, Text } from '@/components';
 import { t } from '@/i18n';
-import { useOnboardingDraftStore } from '@/store';
+import { useOnboardingDraftStore, useToday } from '@/store';
 
-import { loadDemoProfile } from './complete-onboarding';
+import { loadDemoPreset } from './demo-preset';
 import { isForRelative } from './survey';
 
 const FIRST_STEP = { pathname: '/onboarding/[step]', params: { step: '1' } } as const;
@@ -19,6 +19,7 @@ export default function WelcomeScreen() {
   const forRelative = isForRelative(params.for);
   const hasDraft = useOnboardingDraftStore((s) => s.draft !== null);
   const start = useOnboardingDraftStore((s) => s.start);
+  const today = useToday();
 
   useEffect(() => {
     if (!forRelative) return;
@@ -34,7 +35,7 @@ export default function WelcomeScreen() {
   };
 
   const loadDemo = () => {
-    loadDemoProfile();
+    loadDemoPreset(today);
     router.replace('/plan');
   };
 
