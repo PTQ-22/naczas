@@ -16,6 +16,12 @@ export const settings = {
     current: 'Obecnie: {{label}}',
     none: 'Nie ustawiono',
     change: 'Zmień lokalizację',
+    forProfile: 'Dla: {{name}}. Służy do wyszukiwania najbliższych placówek NFZ.',
+    save: 'Zapisz',
+    saveA11y: 'Zapisz nową lokalizację',
+    cancel: 'Anuluj',
+    cancelA11y: 'Anuluj zmianę lokalizacji',
+    saved: 'Zapisano nową lokalizację.',
   },
   demo: {
     header: 'Tryb demo',

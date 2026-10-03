@@ -59,6 +59,50 @@ describe('SettingsScreen', () => {
     expect(useSettingsStore.getState().todayOverride).toBeNull();
   });
 
+  it('shows the active profile location as not set', () => {
+    useProfilesStore.getState().addProfile(makeProfile());
+    renderSettings();
+    expect(screen.getByRole('header', { name: 'Lokalizacja' })).toBeOnTheScreen();
+    expect(screen.getByText('Obecnie: Nie ustawiono')).toBeOnTheScreen();
+  });
+
+  it('changes the active profile location by postal code only after saving', () => {
+    useProfilesStore.getState().addProfile(
+      makeProfile({
+        location: { province: '06', lat: 50.06, lng: 19.94, label: 'Kraków, woj. małopolskie' },
+      }),
+    );
+    renderSettings();
+    expect(screen.getByText('Obecnie: Kraków, woj. małopolskie')).toBeOnTheScreen();
+
+    fireEvent.press(screen.getByRole('button', { name: 'Zmień lokalizację' }));
+    fireEvent.changeText(screen.getByLabelText('Kod pocztowy'), '00-001');
+
+    // A complete code only previews the choice — the profile keeps the old location.
+    expect(screen.getByText(/^Wybrano: /)).toBeOnTheScreen();
+    expect(useProfilesStore.getState().profiles[0]?.location?.province).toBe('06');
+
+    fireEvent.press(screen.getByRole('button', { name: 'Zapisz nową lokalizację' }));
+    const location = useProfilesStore.getState().profiles[0]?.location;
+    expect(location?.province).toBe('07');
+    expect(screen.getByTestId('settings-location-current')).toHaveTextContent(
+      `Obecnie: ${location?.label}`,
+    );
+    expect(screen.getByText('Zapisano nową lokalizację.')).toBeOnTheScreen();
+    expect(screen.queryByLabelText('Kod pocztowy')).toBeNull();
+  });
+
+  it('cancels a location change without touching the profile', () => {
+    useProfilesStore.getState().addProfile(makeProfile());
+    renderSettings();
+    fireEvent.press(screen.getByRole('button', { name: 'Zmień lokalizację' }));
+    expect(screen.getByRole('button', { name: 'Zapisz nową lokalizację' })).toBeDisabled();
+    fireEvent.changeText(screen.getByLabelText('Kod pocztowy'), '00-001');
+    fireEvent.press(screen.getByRole('button', { name: 'Anuluj zmianę lokalizacji' }));
+    expect(useProfilesStore.getState().profiles[0]?.location).toBeUndefined();
+    expect(screen.getByRole('button', { name: 'Zmień lokalizację' })).toBeOnTheScreen();
+  });
+
   it('deletes all data only after confirmation', async () => {
     useProfilesStore.getState().addProfile(makeProfile());
     renderSettings();

@@ -17,6 +17,7 @@ import { resetAllData, resolveToday, useProfilesStore, useSettingsStore, useToda
 import { useTheme, type DarkModePreference } from '@/theme';
 
 import { applyDemoPreset, DEMO_PRESETS } from './demo-presets';
+import { LocationSection } from './LocationSection';
 import { SettingsSection } from './SettingsSection';
 import { ToggleRow } from './ToggleRow';
 
@@ -108,6 +109,8 @@ export default function SettingsScreen() {
           ))}
         </View>
       </SettingsSection>
+
+      {activeProfile ? <LocationSection profile={activeProfile} /> : null}
 
       <SettingsSection title={t('settings.demo.header')}>
         <Text tone="textMuted">{t('settings.demo.todayOverrideHint')}</Text>
