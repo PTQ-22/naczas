@@ -158,6 +158,90 @@ describe('persona Kasia (34, F)', () => {
   });
 });
 
+describe('act_now ordering (M3 H4)', () => {
+  // Mama answered "Nie wiem" everywhere: every exam is due today, so all are act_now.
+  const unknownRecords = (examIds: string[]): ExamRecord[] =>
+    examIds.map((examId) => ({
+      profileId: 'mama',
+      examId,
+      lastDone: 'unknown',
+      status: 'none',
+      updatedAt: TODAY,
+    }));
+
+  it('several act_now items: longest lead time first, so colonoscopy leads', () => {
+    const plan = computePlan({
+      profile: mama,
+      records: unknownRecords(['colonoscopy_screening', 'mammography', 'dental_checkup']),
+      waitTimes: { colonoscopy_screening: colonoscopyWait },
+      today: TODAY,
+    });
+    const actNow = plan.items.filter((i) => i.urgency === 'act_now');
+    expect(actNow.length).toBeGreaterThan(2);
+    expect(actNow[0]?.examId).toBe('colonoscopy_screening');
+    const leads = actNow.map((i) => i.leadTimeDays);
+    expect(leads).toEqual([...leads].sort((a, b) => b - a));
+  });
+
+  it('act_now with different due dates: lead time wins over an earlier notifyDate', () => {
+    const base = {
+      profileId: 'p',
+      leadTimeSource: 'default' as const,
+      urgency: 'act_now' as const,
+      reasons: [],
+      overdue: false,
+    };
+    // Long-overdue walk-in vs. a long NFZ queue that is due later: the queue goes first.
+    const walkIn: PlanItem = {
+      ...base,
+      examId: 'walk_in',
+      dueDate: '2026-01-04',
+      leadTimeDays: 3,
+      notifyDate: '2026-01-01',
+    };
+    const queue: PlanItem = {
+      ...base,
+      examId: 'queue',
+      dueDate: '2027-03-01',
+      leadTimeDays: 200,
+      notifyDate: '2026-08-13',
+    };
+    expect([walkIn, queue].sort(comparePlanItems).map((i) => i.examId)).toEqual([
+      'queue',
+      'walk_in',
+    ]);
+  });
+
+  it('equal lead times fall back to notifyDate', () => {
+    const base = {
+      profileId: 'p',
+      dueDate: TODAY,
+      leadTimeDays: 60,
+      leadTimeSource: 'default' as const,
+      urgency: 'act_now' as const,
+      reasons: [],
+      overdue: false,
+    };
+    const a: PlanItem = { ...base, examId: 'a', notifyDate: '2026-08-01' };
+    const b: PlanItem = { ...base, examId: 'b', notifyDate: '2026-07-01' };
+    expect([a, b].sort(comparePlanItems).map((i) => i.examId)).toEqual(['b', 'a']);
+  });
+
+  it('other urgencies still sort by notifyDate, not lead time', () => {
+    const base = {
+      profileId: 'p',
+      dueDate: '2027-06-01',
+      leadTimeSource: 'default' as const,
+      urgency: 'later' as const,
+      reasons: [],
+      overdue: false,
+    };
+    const short: PlanItem = { ...base, examId: 'short', leadTimeDays: 3, notifyDate: '2027-05-01' };
+    const long: PlanItem = { ...base, examId: 'long', leadTimeDays: 200, notifyDate: '2027-06-01' };
+    expect([long, short].sort(comparePlanItems).map((i) => i.examId)).toEqual(['short', 'long']);
+  });
+});
+
 describe('§5 plan-level cases', () => {
   it('person outside the age range → exam not in plan', () => {
     const plan = computePlan({
