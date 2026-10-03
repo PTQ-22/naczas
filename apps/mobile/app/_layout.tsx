@@ -9,6 +9,7 @@ import { RestoreErrorBanner } from '@/features/settings/RestoreErrorBanner';
 import { SettingsThemeProvider } from '@/features/settings/SettingsThemeProvider';
 import { t } from '@/i18n';
 import { NotificationSync } from '@/notifications';
+import { AutoSync } from '@/services/AutoSync';
 import { useAppFonts, useTheme } from '@/theme';
 
 // Keep the native splash until fonts are in, so the first frame isn't in the system face.
@@ -29,6 +30,7 @@ export default function RootLayout() {
           <ThemedStack />
           <RestoreErrorBanner />
           <NotificationSync />
+          <AutoSync />
         </SettingsThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
