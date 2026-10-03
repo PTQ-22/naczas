@@ -34,7 +34,7 @@
   {
     "id": "dental_checkup",
     "name": "Przegląd u dentysty",
-    "shortReason": "Regularny przegląd pomaga dbać o zęby i dziąsła, zanim coś zacznie boleć.",
+    "shortReason": "Regularny przegląd pomaga dbać o zęby i dziąsła.",
     "description": "Dentysta ogląda Twoje zęby i jamę ustną oraz pokazuje, jak dobrze o nie dbać. Na NFZ takie badanie z instruktażem higieny przysługuje raz w roku. NFZ zaleca wizytę u dentysty co pół roku, bez względu na wiek.",
     "eligibility": {},
     "intervalMonths": 12,
@@ -52,7 +52,7 @@
   {
     "id": "cervical_screening",
     "name": "Test HPV (profilaktyka szyjki macicy)",
-    "shortReason": "Test pozwala wcześnie wykryć wirusa HPV, zanim pojawią się jakiekolwiek zmiany.",
+    "shortReason": "Test pozwala wcześnie wykryć wirusa HPV, zanim pojawią się zmiany w komórkach.",
     "description": "Lekarz lub położna pobiera wymaz z szyjki macicy specjalną szczoteczką — wygląda to tak samo jak dawna cytologia. Z jednej próbki laboratorium robi test HPV, a jeśli trzeba, także cytologię. Gdy wynik jest prawidłowy, kolejny test robi się zwykle za 5 lat.",
     "eligibility": {
       "sex": "female",
@@ -107,7 +107,7 @@
     "id": "colonoscopy_screening",
     "name": "Kolonoskopia",
     "shortReason": "Kolonoskopia pozwala obejrzeć jelito od środka i wcześnie zauważyć zmiany.",
-    "description": "To badanie endoskopowe jelita grubego — lekarz ogląda jelito od środka. Badanie trwa od 15 do 40 minut. Można je zrobić w znieczuleniu, wtedy nic nie czujesz. Kilka dni wcześniej trzeba zmienić dietę i oczyścić jelito specjalnym preparatem.",
+    "description": "To badanie endoskopowe jelita grubego — lekarz ogląda jelito od środka. Badanie trwa od 15 do 40 minut. Można je zrobić w znieczuleniu. Do badania trzeba się wcześniej przygotować.",
     "eligibility": {
       "age": [50, 65]
     },
