@@ -20,7 +20,7 @@ Ręcznie: otwórz `deck.html` w Chrome → Drukuj (⌘P / Ctrl+P) → *Zapisz ja
 |---|---|
 | Nazwa produktu (obecnie „NaCzas”) | tylko jeśli zespół wybierze inną: **jedno miejsce** — `--app-name` w `:root` na górze `deck.html` (wszystkie slajdy czytają ją przez klasę `.app-name`); poza deckiem także `README.md` (repo) i `pitch/script.md` |
 | Nazwa zespołu, imiona | slajd 1 — elementy `.todo` |
-| Screenshoty | **wstawione** (slajdy 4, 6, 7): `<img class="shot-img">` z `../screenshots/` (finalne WS4) i `../screenshots/m3/` (ankieta, placówki); strona 1 PDF dla lekarza → `screens/visit-prep-pdf.png` (`pdftoppm -r 150 -f 1 -l 1 -singlefile -png pitch/screenshots/m3/pdf-web-fixed.pdf pitch/deck/screens/visit-prep-pdf`). Podmiana = zmiana `src` |
+| Screenshoty | **wstawione** (slajdy 4, 6, 7): `<img class="shot-img">` z `../screenshots/` (finalne WS4, JPEG 780 px); strona 1 PDF dla lekarza → `screens/visit-prep-pdf.png` (`pdftoppm -r 150 -f 1 -l 1 -singlefile -png pitch/screenshots/m3/pdf-web-fixed.pdf pitch/deck/screens/visit-prep-pdf`). Podmiana = zmiana `src` |
 | Wartości z demo | **wpisane:** slajd 5 „ok. 30 tyg.” (z ekranu planu), slajd 8 testy (stan 2026-10-03: rules 154 / 100% linii, API 93, mobile 337, shared 25 — przy zmianie zaktualizować z `pnpm test`) |
 | Kody QR | slajd 10 — ramki `.qr` (web demo, Expo Go, repo) |
 
