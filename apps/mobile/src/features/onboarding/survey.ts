@@ -24,6 +24,11 @@ export function parseStepParam(param: unknown): number | null {
   return n >= 1 && n <= STEP_COUNT ? n : null;
 }
 
+/** `?for=other` on the welcome route — validated, since URL params are external input. */
+export function isForRelative(param: unknown): boolean {
+  return param === 'other';
+}
+
 export function stepName(n: number): SurveyStep {
   return SURVEY_STEPS[n - 1] ?? 'who';
 }
