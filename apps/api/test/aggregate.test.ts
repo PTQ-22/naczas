@@ -4,7 +4,13 @@ import type { Facility } from '@naczas/shared';
 
 import { loadFixture, type QueueFixture } from './helpers/nfz-fixtures';
 import { haversineKm, radiusSteps } from '../src/aggregate/geo';
-import { filterExactBenefits, monthToIsoDate, normalizeQueue } from '../src/aggregate/normalize';
+import {
+  filterExactBenefits,
+  isChildrenOnlyPlace,
+  monthToIsoDate,
+  normalizeQueue,
+  selectAdultQueues,
+} from '../src/aggregate/normalize';
 import { percentile, summarizeWaitTimes } from '../src/aggregate/wait-times';
 import { NfzQueueSchema, type NfzQueue } from '../src/nfz/schemas';
 
@@ -17,7 +23,7 @@ const queuesOf = (fixture: QueueFixture): NfzQueue[] =>
   fixture.pages.flatMap((p) => p.data).map((r) => NfzQueueSchema.parse(r));
 
 function facilitiesOf(fixture: QueueFixture, origin?: { lat: number; lng: number }): Facility[] {
-  return filterExactBenefits(queuesOf(fixture), [fixture.request.benefit])
+  return selectAdultQueues(queuesOf(fixture), [fixture.request.benefit])
     .map((q) => normalizeQueue(q, { origin, fallbackAsOf: '2026-10-01' }))
     .filter((f): f is Facility => f !== null);
 }
@@ -114,7 +120,42 @@ describe('normalize', () => {
   });
 });
 
+describe('children-only clinics', () => {
+  const withPlace = (place: string) =>
+    NfzQueueSchema.parse({ id: 'q', attributes: { benefit: 'X', place } });
+
+  it.each([
+    'PORADNIA OKULISTYCZNA DLA DZIECI',
+    'PORADNIA OKULISTYKI DZIECIĘCEJ',
+    'AOS-OKUL-KIE-DZIECI',
+    'PORADNIA STOMATOLOGICZNA - DZIECI DO UKOŃCZENIA 18 R.Ż.',
+  ])('excludes %s', (place) => {
+    expect(isChildrenOnlyPlace(withPlace(place))).toBe(true);
+  });
+
+  it.each(['PORADNIA OKULISTYCZNA', 'SZPITAL DZIECIĄTKA JEZUS'])('keeps %s', (place) => {
+    expect(isChildrenOnlyPlace(withPlace(place))).toBe(false);
+  });
+
+  it('removes them from fixtures regardless of NFZ child flags', () => {
+    const eye07 = loadFixture('07', 'swiadczenia-z-zakresu-okulistyki');
+    expect(selectAdultQueues(queuesOf(eye07), [eye07.request.benefit])).toHaveLength(247 - 24);
+  });
+});
+
 describe('percentile', () => {
+  it('matches the WS5 pitch reference (PERCENTILE.INC) on all 07 colonoscopy records', () => {
+    // pitch/scripts/wait-stats.mjs: every record with average-period > 0, incl. 8 without
+    // coordinates (the API excludes those) → p50 137.5 → 138, p75 212.75 → 213
+    const days = queuesOf(colonoscopy07)
+      .map((q) => q.attributes.statistics?.['provider-data']?.['average-period'] ?? 0)
+      .filter((d) => d > 0)
+      .sort((a, b) => a - b);
+    expect(days).toHaveLength(96);
+    expect(percentile(days, 0.5)).toBe(138);
+    expect(percentile(days, 0.75)).toBe(213);
+  });
+
   it('interpolates linearly and rounds to whole days', () => {
     expect(percentile([10, 20, 30, 40], 0.5)).toBe(25);
     expect(percentile([10, 20, 30, 40], 0.75)).toBe(33); // 32.5 → 33
@@ -185,9 +226,9 @@ describe('summarizeWaitTimes (fixtures)', () => {
     const eye06 = loadFixture('06', 'swiadczenia-z-zakresu-okulistyki');
     expect(summarize(eye06, KRAKOW, 15)).toMatchObject({
       radiusKm: 15,
-      facilitiesCount: 30,
-      p50Days: 218,
-      p75Days: 308,
+      facilitiesCount: 28, // children-only clinics excluded
+      p50Days: 217,
+      p75Days: 291,
       minDays: 42,
     });
   });

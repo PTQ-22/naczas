@@ -5,6 +5,7 @@ export const TEMP_NFZ_BENEFITS: Readonly<Record<string, readonly string[]>> = {
   colonoscopy_screening: ['KOLONOSKOPIA'],
   dental_checkup: ['PORADNIA STOMATOLOGICZNA'],
   eye_exam: ['ŚWIADCZENIA Z ZAKRESU OKULISTYKI'],
+  skin_check: ['PORADNIA DERMATOLOGICZNA'], // docs/research/nfz-benefits.md
 };
 
 export function benefitsForExam(examId: string): readonly string[] | undefined {

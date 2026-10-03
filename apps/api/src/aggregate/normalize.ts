@@ -22,6 +22,24 @@ export function filterExactBenefits(queues: NfzQueue[], benefits: readonly strin
   return queues.filter((q) => wanted.has(q.attributes.benefit));
 }
 
+// "DZIECI" as a whole word (not "DZIECIĄTKA" — e.g. Szpital Dzieciątka Jezus treats adults),
+// "DZIECIĘCEJ", "PEDIATRYCZNA".
+const CHILDREN_PLACE = /DZIECI(?!\p{L})|DZIECIĘC|PEDIATR/iu;
+
+/**
+ * Children-only clinic, judged by the place name. NFZ flags don't work for this: in the WS2-1
+ * fixtures `benefits-for-children: 'Y'` + `age-range` mark clinics that *also* treat children
+ * (31% of adult ophthalmology), while e.g. "PORADNIA OKULISTYCZNA DLA DZIECI" has no flag at all.
+ */
+export function isChildrenOnlyPlace(queue: NfzQueue): boolean {
+  return CHILDREN_PLACE.test(queue.attributes.place ?? '');
+}
+
+/** Records relevant for an adult user: exact benefit, no children-only clinics. */
+export function selectAdultQueues(queues: NfzQueue[], benefits: readonly string[]): NfzQueue[] {
+  return filterExactBenefits(queues, benefits).filter((q) => !isChildrenOnlyPlace(q));
+}
+
 /**
  * NFZ queue → Facility. Returns null for records without coordinates: the contract requires
  * lat/lng, and such a place can be neither mapped nor radius-filtered.

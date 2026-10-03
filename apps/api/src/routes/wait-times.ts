@@ -3,7 +3,7 @@ import { Hono } from 'hono';
 import type { WaitTimeSummary } from '@naczas/shared';
 
 import { errorResponse, LocationQuerySchema, originOf, validationMessage } from './common';
-import { filterExactBenefits, normalizeQueue } from '../aggregate/normalize';
+import { selectAdultQueues, normalizeQueue } from '../aggregate/normalize';
 import { summarizeWaitTimes } from '../aggregate/wait-times';
 import { benefitsForExam } from '../temp-benefits';
 
@@ -23,7 +23,7 @@ export function waitTimesRoutes(loader: QueueLoader) {
 
     const origin = originOf(q);
     const loaded = await loader.load(q.province, benefits);
-    const facilities = filterExactBenefits(loaded.queues, benefits)
+    const facilities = selectAdultQueues(loaded.queues, benefits)
       .map((queue) => normalizeQueue(queue, { origin, fallbackAsOf: `${loaded.fallbackMonth}-01` }))
       .filter((f) => f !== null);
 
