@@ -149,11 +149,17 @@ export const onboarding = {
       answers: {
         withinHalf: {
           oneYear: 'W ostatnim roku',
+          oneAndHalfYears: 'W ciągu ostatnich półtora roku',
           years: 'W ciągu ostatnich {{n}} lat',
+          fractionYears: 'W ciągu ostatnich {{n}} roku',
           months: 'W ciągu ostatnich {{n}} miesięcy',
         },
         withinInterval: {
-          years: { few: '{{from}}–{{to}} lata temu', many: '{{from}}–{{to}} lat temu' },
+          years: {
+            few: '{{from}}–{{to}} lata temu',
+            many: '{{from}}–{{to}} lat temu',
+            fraction: '{{from}}–{{to}} roku temu',
+          },
           months: { few: '{{from}}–{{to}} miesiące temu', many: '{{from}}–{{to}} miesięcy temu' },
         },
         overInterval: {
@@ -161,6 +167,7 @@ export const onboarding = {
             one: 'Ponad rok temu',
             few: 'Ponad {{n}} lata temu',
             many: 'Ponad {{n}} lat temu',
+            fraction: 'Ponad {{n}} roku temu',
           },
           months: { few: 'Ponad {{n}} miesiące temu', many: 'Ponad {{n}} miesięcy temu' },
         },
