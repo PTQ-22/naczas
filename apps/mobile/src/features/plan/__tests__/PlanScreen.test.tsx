@@ -92,6 +92,21 @@ describe('PlanScreen (mockPlan)', () => {
     expect(data.selectProfile).toHaveBeenCalledWith('mock-mama');
   });
 
+  it('no button is nested inside another button (screen readers skip nested ones)', () => {
+    renderPlan();
+    // Host elements only: composite Pressable and its host View both carry the role.
+    const buttons = screen.UNSAFE_root.findAll(
+      (n) => typeof n.type === 'string' && n.props.accessibilityRole === 'button',
+    );
+    const nested = buttons.filter(
+      (b) =>
+        b.findAll(
+          (n) => n !== b && typeof n.type === 'string' && n.props.accessibilityRole === 'button',
+        ).length > 0,
+    );
+    expect(nested.map((n) => n.props.accessibilityLabel as string)).toEqual([]);
+  });
+
   it('senior mode also collapses "Później"', () => {
     renderPlan(true);
     expect(screen.getByRole('button', { name: 'Później (1)' })).toBeCollapsed();
