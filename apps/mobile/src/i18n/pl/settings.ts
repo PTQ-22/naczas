@@ -33,6 +33,8 @@ export const settings = {
     resetConfirm: 'Usuń',
     cancel: 'Anuluj',
   },
+  restoreFailed: 'Nie udało się odczytać zapisanych danych, więc zaczynamy od nowa.',
+  dismiss: 'Zamknij',
   disclaimer:
     'NaCzas przypomina i edukuje — nie stawia diagnozy i nie zastępuje konsultacji z lekarzem.',
 } as const;

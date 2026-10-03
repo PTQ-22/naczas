@@ -1,10 +1,13 @@
 import { Redirect } from 'expo-router';
 
+import { useProfilesStore, useStoresHydrated } from '@/store';
+
 import { resolveEntryRoute } from './entry-route';
 
 export default function EntryScreen() {
-  // TODO(WS3-2): read `hydrated` and profile count from the profiles store.
-  const route = resolveEntryRoute({ hydrated: true, profileCount: 0 });
+  const hydrated = useStoresHydrated();
+  const profileCount = useProfilesStore((s) => s.profiles.length);
+  const route = resolveEntryRoute({ hydrated, profileCount });
   if (!route) return null;
   return <Redirect href={route} />;
 }
