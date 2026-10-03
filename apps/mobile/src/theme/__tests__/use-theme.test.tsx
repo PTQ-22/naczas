@@ -49,7 +49,7 @@ describe('useTheme', () => {
 
     expect(result.current.theme.scheme).toBe('dark');
     expect(result.current.theme.colors.textMuted).toBe(seniorColorOverrides.dark.textMuted);
-    expect(result.current.theme.type.body.fontSize).toBe(21);
+    expect(result.current.theme.type.body.fontSize).toBe(22);
   });
 
   it('useThemePreferences throws outside the provider', () => {

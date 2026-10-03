@@ -1,6 +1,6 @@
 import { Pressable, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { cardElevation, useTheme } from '@/theme';
+import { useTheme } from '@/theme';
 
 import type { ReactNode } from 'react';
 
@@ -25,18 +25,18 @@ export function Card({
   style,
   testID,
 }: CardProps) {
-  const { colors, radius, borderWidth, layout, scheme, space } = useTheme();
+  const { colors, radius, borderWidth, layout, space } = useTheme();
   const base: ViewStyle = {
     backgroundColor: colors.surface,
-    borderRadius: radius.lg,
+    borderRadius: radius.sheet,
+    borderCurve: 'continuous',
     borderWidth: borderWidth.hairline,
     borderColor: colors.border,
     padding: layout.cardPadding,
     gap: space.sm,
     overflow: 'hidden',
     ...(accent && { borderLeftWidth: borderWidth.accent, borderLeftColor: accent }),
-    // Dark mode: no shadow — surface vs bg + border separates cards (tokens.md §2.2).
-    ...(scheme === 'light' && { ...cardElevation, shadowColor: colors.text }),
+    // Flat by design: the queue ticket is the only element with a shadow (redesign §7).
   };
 
   if (!onPress) {

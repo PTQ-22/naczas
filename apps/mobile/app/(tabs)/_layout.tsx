@@ -34,7 +34,7 @@ export default function TabsLayout() {
         tabBarLabelStyle: {
           fontSize: type.caption.fontSize,
           lineHeight: type.caption.lineHeight,
-          fontWeight: type.label.fontWeight,
+          fontFamily: type.label.fontFamily,
         },
         headerStyle: { backgroundColor: colors.surface },
         // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
