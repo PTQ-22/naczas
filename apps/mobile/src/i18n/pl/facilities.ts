@@ -2,8 +2,12 @@ export const facilities = {
   title: 'Placówki NFZ',
   heading: '{{exam}} — gdzie na NFZ',
   headingFallback: 'Gdzie na NFZ',
-  // "placówek: N" avoids Polish numeral declension (2 placówki / 5 placówek).
-  summary: 'Promień do {{radius}} km · placówek: {{count}}',
+  // "pokazano: N" avoids Polish numeral declension (2 placówki / 5 placówek). N is the API limit,
+  // not the number of facilities that exist; the distance is the farthest one shown.
+  summary: {
+    soonest: 'Pokazano: {{count}}, od najkrótszego czekania · do {{km}} km od Ciebie',
+    nearest: 'Pokazano: {{count}}, od najbliższej · do {{km}} km od Ciebie',
+  },
   snapshotInfo: 'Dane z kopii NFZ, stan na {{date}}.',
   sort: {
     label: 'Sortowanie',
@@ -49,8 +53,7 @@ export const facilities = {
     errorTitle: 'Nie udało się pobrać placówek',
     errorBody: 'Sprawdź połączenie z internetem.',
     retry: 'Spróbuj ponownie',
-    emptyTitle: 'Brak placówek w promieniu {{radius}} km',
-    widen: 'Szukaj w promieniu {{radius}} km',
+    emptyTitle: 'Brak placówek z tym badaniem w Twoim województwie',
     noLocationTitle: 'Brak lokalizacji w profilu',
     noLocationBody: 'Dodaj miejscowość w profilu, żeby zobaczyć placówki w okolicy.',
     noQueueTitle: 'To badanie nie ma kolejki NFZ',

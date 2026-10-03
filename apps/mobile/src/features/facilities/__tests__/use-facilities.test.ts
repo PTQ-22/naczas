@@ -12,7 +12,6 @@ const query: FacilitiesQuery = {
   province: '07',
   lat: 52.2297,
   lng: 21.0122,
-  radiusKm: 25,
   sort: 'soonest',
 };
 

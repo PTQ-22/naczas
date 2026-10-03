@@ -84,19 +84,27 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     await waitFor(() => expect(mockGetFacilities).toHaveBeenCalledTimes(2));
   });
 
-  it('empty state offers a wider radius', async () => {
+  it('empty state: none in the province (the API already widened the radius)', async () => {
     mockGetFacilities
       .mockReset()
       .mockResolvedValue({ examId: 'colonoscopy_screening', items: [], source: 'nfz_live' });
     render(<FacilitiesScreen />);
-    expect(await screen.findByText('Brak placówek w promieniu 25 km')).toBeTruthy();
-    fireEvent.press(screen.getByRole('button', { name: 'Szukaj w promieniu 50 km' }));
-    await waitFor(() =>
-      expect(mockGetFacilities).toHaveBeenLastCalledWith(
-        expect.objectContaining({ radiusKm: 50 }),
-        expect.anything(),
-      ),
-    );
+    expect(
+      await screen.findByText('Brak placówek z tym badaniem w Twoim województwie'),
+    ).toBeTruthy();
+    expect(screen.queryByText(/^Pokazano/)).toBeNull();
+  });
+
+  it('asks without radiusKm and shows how many are shown and how far they reach (M3)', async () => {
+    render(<FacilitiesScreen />);
+    await screen.findAllByText(/^ok\. \d+ tyg\.$/);
+    const [params] = mockGetFacilities.mock.calls[0] as [Record<string, unknown>];
+    expect(params).not.toHaveProperty('radiusKm');
+    expect(
+      screen.getByText(/^Pokazano: \d+, od najkrótszego czekania · do \d+ km od Ciebie$/),
+    ).toBeTruthy();
+    fireEvent.press(screen.getByRole('radio', { name: 'Najbliżej' }));
+    expect(await screen.findByText(/^Pokazano: \d+, od najbliższej · do \d+ km/)).toBeTruthy();
   });
 
   it('exams without an NFZ queue show an explanation instead of a list', () => {
