@@ -102,7 +102,7 @@ describe('draftToProfile', () => {
       {
         ...emptyDraft(),
         who: 'self',
-        name: 'ignored',
+        name: '  ',
         birthYear: 1994,
         sex: 'female',
         smoking: 'never',
@@ -118,6 +118,14 @@ describe('draftToProfile', () => {
       activity: 'high',
     });
     expect(profile?.smoking).not.toHaveProperty('packYears');
+  });
+
+  it('uses the name given for "for me" when there is one', () => {
+    const profile = draftToProfile(
+      { ...emptyDraft(), who: 'self', name: ' Kasia ', birthYear: 1992, sex: 'female' },
+      { id: 'p3', today: TODAY, selfName: 'Ja' },
+    );
+    expect(profile).toMatchObject({ name: 'Kasia', relation: 'self' });
   });
 });
 

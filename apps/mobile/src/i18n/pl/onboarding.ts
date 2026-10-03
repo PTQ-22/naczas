@@ -26,6 +26,8 @@ export const onboarding = {
       self: 'Dla mnie',
       other: 'Dla bliskiej osoby',
       nameLabel: 'Imię',
+      selfNameLabel: 'Twoje imię (opcjonalnie)',
+      selfNamePlaceholder: 'Ja',
       namePlaceholder: 'np. Mama',
       relationLabel: 'Kim jest dla Ciebie?',
       relation: {

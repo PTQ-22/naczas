@@ -102,7 +102,8 @@ export function draftToProfile(
   const smokes = draft.smoking === 'current' || draft.smoking === 'former';
   const profile: Profile = {
     id,
-    name: draft.who === 'self' ? selfName : draft.name.trim(),
+    // "Dla mnie" asks for a name too; empty falls back to "Ja".
+    name: draft.who === 'self' ? draft.name.trim() || selfName : draft.name.trim(),
     relation: draft.who === 'self' ? 'self' : (draft.relation ?? 'other'),
     birthYear: draft.birthYear,
     sex: draft.sex,

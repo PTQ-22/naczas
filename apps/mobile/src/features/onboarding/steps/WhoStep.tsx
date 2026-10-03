@@ -24,6 +24,15 @@ export function WhoStep({ draft, update }: StepProps) {
           />
         </>
       )}
+      {draft.who === 'self' && (
+        <TextField
+          label={t('onboarding.steps.who.selfNameLabel')}
+          placeholder={t('onboarding.steps.who.selfNamePlaceholder')}
+          value={draft.name}
+          onChangeText={(name) => update({ name })}
+          maxLength={40}
+        />
+      )}
       {draft.who === 'other' && (
         <>
           <TextField
