@@ -37,6 +37,8 @@ export default function TabsLayout() {
           fontWeight: type.label.fontWeight,
         },
         headerStyle: { backgroundColor: colors.surface },
+        // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
+        headerShadowVisible: false,
         headerTintColor: colors.text,
         sceneStyle: { backgroundColor: colors.bg },
       }}
