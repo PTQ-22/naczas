@@ -10,14 +10,14 @@ import path from 'node:path';
 import { ProvinceCodeSchema } from '@naczas/shared';
 
 import { selectAdultQueues } from '../src/aggregate/normalize';
+import { allNfzBenefits } from '../src/exam-benefits';
 import { createNfzClient, NfzUnavailableError } from '../src/nfz/client';
 import { snapshotFile, writeSnapshot } from '../src/nfz/snapshot';
-import { TEMP_NFZ_BENEFITS } from '../src/temp-benefits';
 
 const DIR = path.resolve(import.meta.dirname, '../data/snapshot');
 const force = process.argv.includes('--force');
 
-const benefits = [...new Set(Object.values(TEMP_NFZ_BENEFITS).flat())];
+const benefits = allNfzBenefits;
 const provinces = ProvinceCodeSchema.options;
 const nfz = createNfzClient({ minIntervalMs: 1100, timeoutMs: 15_000 });
 

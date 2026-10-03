@@ -5,7 +5,7 @@ import type { WaitTimeSummary } from '@naczas/shared';
 import { errorResponse, LocationQuerySchema, originOf, validationMessage } from './common';
 import { selectAdultQueues } from '../aggregate/normalize';
 import { summarizeWaitTimes, toWaitSamples } from '../aggregate/wait-times';
-import { benefitsForExam } from '../temp-benefits';
+import { benefitsForExam } from '../exam-benefits';
 
 import type { QueueLoader } from '../queues';
 

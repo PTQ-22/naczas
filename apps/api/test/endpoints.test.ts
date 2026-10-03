@@ -115,6 +115,18 @@ describe('GET /v1/wait-times', () => {
     expect(ApiErrorSchema.parse(body).error.code).toBe('invalid_query');
   });
 
+  it.each(['mammography', 'psa_discussion', 'no_such_exam'])(
+    '400 unknown_exam for %s (not a queue exam in @naczas/rules)',
+    async (examId) => {
+      const { status, body } = await get(
+        makeApp('up'),
+        `/v1/wait-times?examId=${examId}&province=07`,
+      );
+      expect(status).toBe(400);
+      expect(ApiErrorSchema.parse(body).error.code).toBe('unknown_exam');
+    },
+  );
+
   it('400 on an exam without NFZ queues (e.g. program exams)', async () => {
     const { status, body } = await get(
       makeApp('up'),
