@@ -32,6 +32,8 @@ pnpm check            # lint + typecheck + test — OBOWIĄZKOWE przed commitem/
 > **pnpm:** jeśli `pnpm: command not found` — użyj `corepack pnpm ...` (albo raz `corepack enable pnpm`). Nowy worktree = najpierw `pnpm install`.
 > Repo używa `nodeLinker: hoisted` — po `pnpm --filter X add ...` zawsze uruchom `pnpm install`, inaczej znikają paczki innych workspace'ów.
 
+> **expo-env.d.ts:** `expo start` generuje gitignorowany `apps/mobile/expo-env.d.ts`, który zmienia typy (`process.env`, `*.css`). CI go nie ma. Przed commitem w mobile sprawdź też bez niego: `mv apps/mobile/expo-env.d.ts /tmp/ ; pnpm check ; mv /tmp/expo-env.d.ts apps/mobile/`.
+
 Agent: **po każdej zakończonej zmianie uruchom `pnpm check`** (lub zawężone `pnpm --filter <pakiet> check`) i nie raportuj zadania jako skończonego, dopóki nie przechodzi. Jeśli test był czerwony przed Twoją zmianą — napisz to wprost, nie wyłączaj go.
 
 ## 3. Jakość kodu
