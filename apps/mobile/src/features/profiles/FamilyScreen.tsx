@@ -14,7 +14,7 @@ import { useTheme } from '@/theme';
 import { confirmDestructive } from './confirm-destructive';
 import { FamilyMemberRow } from './FamilyMemberRow';
 
-// TODO(WS3): onboarding reads `for=other` to start the survey for a relative, not for "me".
+// Onboarding starts the survey for a relative when for=other (WS3).
 const addPerson = () => router.push({ pathname: '/onboarding/welcome', params: { for: 'other' } });
 
 export default function FamilyScreen() {

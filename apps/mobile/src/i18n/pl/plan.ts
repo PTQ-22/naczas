@@ -46,6 +46,18 @@ export const plan = {
     body: 'Odpowiedz na kilka pytań, a przygotujemy plan badań.',
     cta: 'Zacznij',
   },
+  notifications: {
+    title: 'Przypomnimy Ci, kiedy zacząć szukać terminu',
+    body: 'Dostaniesz powiadomienie, gdy przyjdzie czas umówić badanie, i dzień przed wizytą.',
+    enable: 'Włącz przypomnienia',
+    later: 'Nie teraz',
+  },
+  reminder: {
+    label: 'Przypomnienie',
+    close: 'Zamknij',
+    closeA11y: 'Zamknij przypomnienie: {{title}}',
+    more: 'Jeszcze {{count}} — zamknij to, by zobaczyć następne.',
+  },
   empty: {
     title: 'Wszystko na czas',
     body: 'Nie ma teraz badań do zorganizowania.',

@@ -8,6 +8,13 @@ import PlanScreen from '../PlanScreen';
 import { usePlanData } from '../use-plan-data';
 
 jest.mock('../use-plan-data', () => ({ usePlanData: jest.fn() }));
+jest.mock('@/notifications', () => ({
+  // Never resolves: permission state is covered in notifications-ui.test; here it would only
+  // trigger a late state update after the assertions.
+  getNotificationPermission: jest.fn(() => new Promise(() => undefined)),
+  requestNotificationPermission: jest.fn(),
+  useInAppReminders: jest.fn(() => ({ reminders: [], dismiss: jest.fn() })),
+}));
 jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 // Reanimated's native worklets runtime isn't available under Jest; its official mock renders
 // Animated.View as a plain View and ignores entering animations.

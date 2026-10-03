@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
 
 import { activityTip, getExamRule } from '@naczas/rules';
@@ -14,6 +14,7 @@ import { useTheme } from '@/theme';
 
 import { ActivityCard } from './ActivityCard';
 import { ExamCard } from './ExamCard';
+import { NotificationPrompt } from './NotificationPrompt';
 import {
   countActNow,
   groupSections,
@@ -22,6 +23,7 @@ import {
   type CtaAction,
 } from './plan-view-model';
 import { PlanTimelineSection } from './PlanTimelineSection';
+import { ReminderBanner } from './ReminderBanner';
 import { usePlanData } from './use-plan-data';
 
 const openExam = (examId: string) =>
@@ -91,6 +93,9 @@ export default function PlanScreen() {
         </Text>
       </View>
 
+      {/* Native gets OS notifications (NotificationSync in the root layout); web gets a banner. */}
+      {Platform.OS === 'web' && <ReminderBanner plan={plan} />}
+
       {sections.length === 0 ? (
         <EmptyState title={t('plan.empty.title')} body={t('plan.empty.body')} />
       ) : (
@@ -129,6 +134,8 @@ export default function PlanScreen() {
           ))}
         </View>
       )}
+
+      {sections.length > 0 && <NotificationPrompt />}
 
       {tip && <ActivityCard tip={tip} />}
 
