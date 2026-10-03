@@ -50,7 +50,7 @@ export default function ExamScreen() {
   const theme = useTheme();
   const { colors, space, layout, radius } = theme;
   const params = ParamsSchema.safeParse(useLocalSearchParams());
-  const { activeProfile, plan, today } = usePlanData();
+  const { activeProfile, plan, waitTimes, today } = usePlanData();
   const upsertRecord = useRecordsStore((s) => s.upsertRecord);
 
   const examId = params.success ? params.data.examId : undefined;
@@ -65,8 +65,7 @@ export default function ExamScreen() {
   }
 
   const item = plan?.items.find((i) => i.examId === rule.id);
-  // TODO(WS3): pass the WaitTimeSummary from usePlan once services/api.ts lands.
-  const queue = queueInfo(rule, item, undefined);
+  const queue = queueInfo(rule, item, waitTimes[rule.id]);
   const ctas = examCtas(rule, item);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;

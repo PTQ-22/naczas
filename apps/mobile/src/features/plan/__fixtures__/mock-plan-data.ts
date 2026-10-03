@@ -9,8 +9,8 @@ export function mockPlanData(overrides: Partial<PlanData> = {}): PlanData {
     activeProfile: mockProfileMama,
     plan: mockPlan({ today: MOCK_TODAY, profileId: mockProfileMama.id }),
     today: MOCK_TODAY,
-    loading: false,
-    offline: false,
+    waitTimes: {},
+    status: 'ready',
     selectProfile: jest.fn(),
     ...overrides,
   };

@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native';
 
-import type { ExamRule, PlanItem, Urgency } from '@naczas/shared';
+import type { ExamRule, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
@@ -32,19 +32,20 @@ interface ExamCardProps {
   item: PlanItem;
   rule: ExamRule;
   isFirstActNow: boolean;
+  waitTime?: WaitTimeSummary;
   onOpen: (examId: string) => void;
   onCta: (action: CtaAction, examId: string) => void;
 }
 
-export function ExamCard({ item, rule, isFirstActNow, onOpen, onCta }: ExamCardProps) {
+export function ExamCard({ item, rule, isFirstActNow, waitTime, onOpen, onCta }: ExamCardProps) {
   const { colors, seniorMode, space } = useTheme();
   const palette = colors.urgency[item.urgency];
   const compact = item.urgency === 'later' || item.urgency === 'done';
 
   const urgencyLabel = t(`plan.urgency.${item.urgency}`);
   const date = msg(dateMessage(item));
-  const whyNow = whyNowMessage(item, rule.booking);
-  const cta = planCta(item, rule.booking, isFirstActNow);
+  const whyNow = whyNowMessage(item, rule.booking, waitTime);
+  const cta = planCta(item, rule.booking, isFirstActNow, waitTime);
   const showEstimate = whyNow !== null && item.leadTimeSource === 'default';
   const reason = item.reasons[0];
 

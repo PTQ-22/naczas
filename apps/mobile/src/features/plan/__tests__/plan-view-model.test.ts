@@ -4,6 +4,7 @@ import type { PlanItem } from '@naczas/shared';
 import {
   countActNow,
   dateMessage,
+  displayWaitWeeks,
   groupSections,
   isCollapsedByDefault,
   planCta,
@@ -56,6 +57,26 @@ describe('summaryMessage (Polish plural)', () => {
     [22, 'plan.summary.few'],
   ] as const)('%i → %s', (n, key) => {
     expect(summaryMessage(n).key).toBe(key);
+  });
+});
+
+describe('displayWaitWeeks', () => {
+  it('prefers the NFZ median over the lead time', () => {
+    const item = byUrgency('act_now');
+    expect(displayWaitWeeks(item)).toBe(14);
+    expect(
+      displayWaitWeeks(item, {
+        examId: item.examId,
+        province: '07',
+        radiusKm: 25,
+        facilitiesCount: 5,
+        p50Days: 70,
+        p75Days: 84,
+        minDays: 10,
+        asOf: '2026-09',
+        source: 'nfz_snapshot',
+      }),
+    ).toBe(10);
   });
 });
 

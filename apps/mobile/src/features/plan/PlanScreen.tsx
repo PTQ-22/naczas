@@ -42,7 +42,7 @@ function handleCta(action: CtaAction, examId: string) {
 
 export default function PlanScreen() {
   const { motion, layout, space, seniorMode } = useTheme();
-  const { profiles, activeProfile, plan, today, selectProfile } = usePlanData();
+  const { profiles, activeProfile, plan, waitTimes, today, selectProfile } = usePlanData();
 
   if (!activeProfile || !plan) {
     return (
@@ -118,6 +118,7 @@ export default function PlanScreen() {
                       item={item}
                       rule={getExamRule(item.examId)}
                       isFirstActNow={item.examId === firstActNowId}
+                      waitTime={waitTimes[item.examId]}
                       onOpen={openExam}
                       onCta={handleCta}
                     />

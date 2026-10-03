@@ -1,18 +1,18 @@
-import type { ISODate, Plan, Profile } from '@naczas/shared';
+import type { ISODate, Plan, Profile, WaitTimeSummary } from '@naczas/shared';
 
-import { usePlan } from '@/services';
+import { usePlan, type PlanStatus } from '@/services';
 import { selectActiveProfile, useProfilesStore, useToday } from '@/store';
 
 export interface PlanData {
   profiles: Profile[];
   /** undefined when no profile exists yet (entry route sends the user to onboarding). */
   activeProfile: Profile | undefined;
+  /** null when there is no active profile. */
   plan: Plan | null;
+  /** NFZ summaries per examId — the same ones computePlan used. */
+  waitTimes: Record<string, WaitTimeSummary | undefined>;
+  status: PlanStatus;
   today: ISODate;
-  /** NFZ wait times are still loading — the plan already shows default lead times. */
-  loading: boolean;
-  /** Some lead times are cached/default because the API was unreachable. */
-  offline: boolean;
   selectProfile: (id: string) => void;
 }
 
@@ -22,6 +22,14 @@ export function usePlanData(): PlanData {
   const activeProfile = useProfilesStore(selectActiveProfile);
   const selectProfile = useProfilesStore((s) => s.setActiveProfile);
   const today = useToday();
-  const { plan, loading, offline } = usePlan(activeProfile?.id ?? '');
-  return { profiles, activeProfile, plan, today, loading, offline, selectProfile };
+  const { plan, waitTimes, status } = usePlan(activeProfile?.id ?? '');
+  return {
+    profiles,
+    activeProfile,
+    plan: activeProfile ? plan : null,
+    waitTimes,
+    status,
+    today,
+    selectProfile,
+  };
 }

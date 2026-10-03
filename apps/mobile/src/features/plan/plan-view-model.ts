@@ -1,7 +1,7 @@
 import { format, parseISO } from 'date-fns';
 
 import { URGENCY_ORDER } from '@naczas/rules';
-import type { BookingType, PlanItem, Urgency } from '@naczas/shared';
+import type { BookingType, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
 
 import type { MessageKey, TranslateParams } from '@/i18n';
 
@@ -25,10 +25,16 @@ export function isCollapsedByDefault(urgency: Urgency, seniorMode: boolean): boo
   return urgency === 'done' || (seniorMode && urgency === 'later');
 }
 
-// PlanItem has no raw NFZ wait; leadTimeDays is the engine's "start looking this early"
-// (p75 wait + buffers), which is what the user needs to act on — so we show it in weeks.
-export function waitWeeks(leadTimeDays: number): number {
-  return Math.max(1, Math.round(leadTimeDays / 7));
+export function waitWeeks(days: number): number {
+  return Math.max(1, Math.round(days / 7));
+}
+
+/**
+ * Weeks shown as "czeka się ~N tyg.": the NFZ median wait when we have it; otherwise the
+ * engine's lead time (p75 + buffers, or the default), which overstates the wait a little.
+ */
+export function displayWaitWeeks(item: PlanItem, summary?: WaitTimeSummary): number {
+  return waitWeeks(summary?.p50Days ?? item.leadTimeDays);
 }
 
 export interface Message {
@@ -64,10 +70,14 @@ export function dateMessage(item: PlanItem): Message {
 }
 
 /** "Why now" line — only for items the user should act on and that depend on a queue. */
-export function whyNowMessage(item: PlanItem, booking: BookingType): Message | null {
+export function whyNowMessage(
+  item: PlanItem,
+  booking: BookingType,
+  summary?: WaitTimeSummary,
+): Message | null {
   if (booking !== 'queue') return null;
   if (item.urgency === 'act_now') {
-    return { key: 'plan.card.whyNowQueue', params: { weeks: waitWeeks(item.leadTimeDays) } };
+    return { key: 'plan.card.whyNowQueue', params: { weeks: displayWaitWeeks(item, summary) } };
   }
   if (item.urgency === 'this_year') {
     return { key: 'plan.card.startFrom', params: { date: fullDate(item.notifyDate) } };
@@ -91,6 +101,7 @@ export function planCta(
   item: PlanItem,
   booking: BookingType,
   isFirstActNow: boolean,
+  summary?: WaitTimeSummary,
 ): PlanCta | null {
   const variant = isFirstActNow ? 'primary' : 'secondary';
   switch (item.urgency) {
@@ -107,7 +118,7 @@ export function planCta(
       return {
         action: 'facilities',
         variant,
-        label: { key: 'plan.cta.findSlot', params: { weeks: waitWeeks(item.leadTimeDays) } },
+        label: { key: 'plan.cta.findSlot', params: { weeks: displayWaitWeeks(item, summary) } },
       };
     case 'program':
       return { action: 'exam', variant, label: { key: 'plan.cta.program' } };
