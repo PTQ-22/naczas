@@ -7,6 +7,7 @@ import { useTheme, useThemePreferences } from '@/theme';
 import { Button } from './Button';
 import { Card } from './Card';
 import { Chip } from './Chip';
+import { ChipGroup } from './ChipGroup';
 import { Disclaimer } from './Disclaimer';
 import { EmptyState } from './EmptyState';
 import { OptionTile } from './OptionTile';
@@ -14,6 +15,7 @@ import { ProfileSwitcher } from './ProfileSwitcher';
 import { ProgressBar } from './ProgressBar';
 import { Screen } from './Screen';
 import { Text } from './Text';
+import { TextField } from './TextField';
 
 const noop = () => undefined;
 
@@ -23,6 +25,13 @@ export function ComponentGallery() {
   const { space } = useTheme();
   const [multi, setMulti] = useState<string[]>(['a']);
   const [active, setActive] = useState('me');
+  const [year, setYear] = useState('');
+  const [lastExam, setLastExam] = useState<'a' | 'b' | 'c' | undefined>('a');
+  const chipOptions = [
+    { value: 'a', label: t('common.dev.chipA') },
+    { value: 'b', label: t('common.dev.chipB') },
+    { value: 'c', label: t('common.dev.chipC') },
+  ] as const;
   const toggle = (id: string) =>
     setMulti((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
 
@@ -91,6 +100,22 @@ export function ComponentGallery() {
         label={t('common.dev.optionB')}
         selected={multi.includes('b')}
         onPress={() => toggle('b')}
+      />
+
+      <TextField
+        label={t('common.dev.fieldLabel')}
+        value={year}
+        onChangeText={setYear}
+        hint={t('common.dev.fieldHint')}
+        error={year && !/^\d{4}$/.test(year) ? t('common.dev.fieldError') : null}
+        keyboardType="number-pad"
+        maxLength={4}
+      />
+      <ChipGroup
+        groupLabel={t('common.dev.chipsLabel')}
+        options={chipOptions}
+        selected={lastExam}
+        onSelect={setLastExam}
       />
 
       <Card>
