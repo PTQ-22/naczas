@@ -1,5 +1,6 @@
-// Source of truth: docs/design/redesign.md §3 (redesign v2 „Numerek”). Contrast pairs are
-// verified in __tests__/tokens.test.ts — a hex change that breaks AA fails `pnpm check`.
+// Redesign v2: docs/design/redesign.md, palette switched to cobalt tiles + enamel plates by team
+// pick. Contrast pairs are verified in __tests__/tokens.test.ts — a hex change that breaks AA
+// fails `pnpm check`.
 import type { Urgency } from '@naczas/shared';
 
 export type ColorScheme = 'light' | 'dark';
@@ -14,84 +15,93 @@ export interface UrgencyColor {
 }
 
 export interface ColorTokens {
-  /** „Ściana” — screen background. */
+  /** Screen background where there is no tile wall — the enamel plate's cream. */
   bg: string;
-  /** „Papier” — ticket and sheets. */
+  /** Enamel plate / sheet. */
   surface: string;
-  /** Pressed rows, inset areas. */
+  /** Pressed rows, inactive folder tabs on a plate. */
   surfaceAlt: string;
   /** Hairline separators between list rows. */
   border: string;
   /** Radio rings, input outlines — >= 3:1. */
   borderStrong: string;
-  /** „Atrament” — primary text. */
+  /** Ink — primary text and the plate's 3 px frame. */
   text: string;
   textMuted: string;
   textSubtle: string;
-  /** „Pieczątka” — buttons, links, focus. */
+  /** Cobalt — buttons, links, focus, "booked". */
   primary: string;
   primaryPressed: string;
   onPrimary: string;
   primarySoft: string;
   focus: string;
   danger: string;
-  /**
-   * „Zakreślacz” — highlighter behind an urgent date/number, never text colour. Light: fill
-   * behind ink text; dark: 3 px underline only (a yellow block glares on navy).
-   */
+  /** Highlighter behind an urgent number — never text colour. */
   marker: string;
+  /** Tile wall behind the plates (plan, onboarding). */
+  wall: string;
+  /** Grout lines between tiles — decorative. */
+  wallGrout: string;
+  /** Text placed straight on the wall. */
+  onWall: string;
   urgency: Record<Urgency, UrgencyColor>;
 }
 
-// Redesign v2 „Numerek” (docs/design/redesign.md §3): clinic wall + stamp ink. Contrast pairs are
-// guarded in __tests__/tokens.test.ts.
+// Redesign v2 — cobalt hospital tiles + cream enamel plates (direction picked by the team over
+// docs/design/redesign.md §3). Contrast pairs are guarded in __tests__/tokens.test.ts.
 export const colors: Record<ColorScheme, ColorTokens> = {
   light: {
-    bg: '#E9EEF2',
-    surface: '#FFFFFF',
-    surfaceAlt: '#F2F5F8',
-    border: '#CDD5DE',
-    borderStrong: '#66768A',
+    bg: '#F6F3EA',
+    surface: '#FBF9F3',
+    surfaceAlt: '#ECE7DB',
+    border: '#DDD6C6',
+    borderStrong: '#6E6A60',
     text: '#0E1B2C',
-    textMuted: '#4A5A6E',
-    textSubtle: '#4A5A6E',
-    primary: '#1F3FD1',
-    primaryPressed: '#1832A8',
+    textMuted: '#4A5160',
+    textSubtle: '#4A5160',
+    primary: '#24477A',
+    primaryPressed: '#1C3964',
     onPrimary: '#FFFFFF',
-    primarySoft: '#DFE5FB',
-    focus: '#1F3FD1',
+    primarySoft: '#E1E6EF',
+    focus: '#24477A',
     danger: '#B4231A',
     marker: '#FFE24A',
+    wall: '#24477A',
+    wallGrout: '#1C3964',
+    onWall: '#FFFFFF',
     urgency: {
-      act_now: { fg: '#B4231A', bg: '#FBE3E0', accent: '#E0352B' },
-      this_year: { fg: '#0E1B2C', bg: '#FFF4BF', accent: '#66768A' },
-      later: { fg: '#4A5A6E', bg: '#E1E7ED', accent: '#66768A' },
-      done: { fg: '#17734A', bg: '#DCF1E5', accent: '#1F8A5A' },
-      booked: { fg: '#1F3FD1', bg: '#DFE5FB', accent: '#1F3FD1' },
+      act_now: { fg: '#B4231A', bg: '#F7E0DA', accent: '#C8322A' },
+      this_year: { fg: '#0E1B2C', bg: '#ECE7DB', accent: '#6E6A60' },
+      later: { fg: '#4A5160', bg: '#ECE7DB', accent: '#6E6A60' },
+      done: { fg: '#17693F', bg: '#DDEEE2', accent: '#1F7A4C' },
+      booked: { fg: '#24477A', bg: '#E1E6EF', accent: '#24477A' },
     },
   },
   dark: {
-    bg: '#0B1320',
-    surface: '#131D2C',
-    surfaceAlt: '#1B2739',
-    border: '#27354A',
-    borderStrong: '#71839C',
+    bg: '#0B1628',
+    surface: '#152440',
+    surfaceAlt: '#1C2D50',
+    border: '#2A3B5E',
+    borderStrong: '#7A8CAE',
     text: '#E8EEF5',
-    textMuted: '#AAB7C8',
-    textSubtle: '#AAB7C8',
-    primary: '#8EA2FF',
-    primaryPressed: '#A9B8FF',
-    onPrimary: '#0B1320',
-    primarySoft: '#1D2853',
-    focus: '#8EA2FF',
-    danger: '#FF8A80',
+    textMuted: '#AEBAD0',
+    textSubtle: '#AEBAD0',
+    primary: '#8EA9FF',
+    primaryPressed: '#A9BDFF',
+    onPrimary: '#0B1628',
+    primarySoft: '#22325C',
+    focus: '#8EA9FF',
+    danger: '#FF8F85',
     marker: '#FFE24A',
+    wall: '#0B1628',
+    wallGrout: '#08111F',
+    onWall: '#E8EEF5',
     urgency: {
-      act_now: { fg: '#FF8F85', bg: '#3A1A1C', accent: '#F0564B' },
-      this_year: { fg: '#E8EEF5', bg: '#2E2A14', accent: '#71839C' },
-      later: { fg: '#AAB7C8', bg: '#1B2739', accent: '#71839C' },
-      done: { fg: '#6FD39E', bg: '#12301F', accent: '#3DB27A' },
-      booked: { fg: '#A9B8FF', bg: '#1D2853', accent: '#8EA2FF' },
+      act_now: { fg: '#FF8F85', bg: '#3A1C24', accent: '#F0564B' },
+      this_year: { fg: '#E8EEF5', bg: '#1C2D50', accent: '#7A8CAE' },
+      later: { fg: '#AEBAD0', bg: '#1C2D50', accent: '#7A8CAE' },
+      done: { fg: '#7FD8A8', bg: '#123227', accent: '#3DB27A' },
+      booked: { fg: '#A9BDFF', bg: '#22325C', accent: '#8EA9FF' },
     },
   },
 };
@@ -101,8 +111,8 @@ export const seniorColorOverrides: Record<
   ColorScheme,
   Pick<ColorTokens, 'textMuted' | 'textSubtle' | 'borderStrong'>
 > = {
-  light: { textMuted: '#33435A', textSubtle: '#33435A', borderStrong: '#4A5A6E' },
-  dark: { textMuted: '#C9D4E2', textSubtle: '#C9D4E2', borderStrong: '#8C9DB4' },
+  light: { textMuted: '#323846', textSubtle: '#323846', borderStrong: '#4A5160' },
+  dark: { textMuted: '#CDD6E6', textSubtle: '#CDD6E6', borderStrong: '#95A5C4' },
 };
 
 export const space = {
@@ -116,22 +126,32 @@ export const space = {
   '3xl': 48,
 } as const;
 
-// sheet: 14 continuous (redesign §3); ticket: 6 + perforation notches.
-export const radius = { sm: 8, md: 12, sheet: 14, ticket: 6, lg: 16, xl: 24, full: 999 } as const;
+// plate: enamel sign corners; tab: folder-tab top corners.
+export const radius = {
+  sm: 8,
+  md: 12,
+  plate: 10,
+  tab: 8,
+  sheet: 14,
+  lg: 16,
+  xl: 24,
+  full: 999,
+} as const;
 
-export const borderWidth = { hairline: 1, strong: 2, marker: 3, focus: 3, accent: 4 } as const;
+export const borderWidth = {
+  hairline: 1,
+  strong: 2,
+  plate: 3,
+  marker: 3,
+  focus: 3,
+  accent: 4,
+} as const;
 
 // stagger kept for list entering; the only signature animation is the ticket slide-in.
-export const motion = { fast: 150, base: 300, reduced: 0, stagger: 40, ticket: 420 } as const;
+export const motion = { fast: 150, base: 300, reduced: 0, stagger: 40, plate: 420 } as const;
 
-/**
- * The single shadow on any screen — reserved for the queue ticket (redesign §3, §7).
- * Dark mode: no shadow, the ticket separates by surface vs bg.
- */
-export const ticketShadow: Record<ColorScheme, string | undefined> = {
-  light: '0 1px 0 rgba(14,27,44,0.06), 0 8px 24px -12px rgba(14,27,44,0.18)',
-  dark: undefined,
-};
+/** Tile size of the wall pattern (cobalt hospital tiles). */
+export const tile = { size: 24 } as const;
 
 /**
  * Font family names as registered by `useAppFonts` (keys of `fontAssets`). One family per weight:
