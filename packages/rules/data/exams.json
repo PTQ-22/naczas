@@ -1,17 +1,20 @@
 [
   {
     "id": "health_check_adult",
-    "name": "Bilans zdrowia dorosłego („Moje Zdrowie”)",
-    "shortReason": "Program „Moje Zdrowie” obejmuje dorosłych od 20. roku życia.",
-    "description": "Bezpłatny pakiet badań w Twojej przychodni POZ: m.in. morfologia, glukoza, lipidogram, pomiar ciśnienia. Najpierw wypełniasz ankietę w IKP lub w przychodni, potem dostajesz zlecenie na badania. Do 49. roku życia z programu można korzystać co 5 lat.",
-    "eligibility": { "age": [20, 49] },
+    "name": "Bilans zdrowia „Moje Zdrowie”",
+    "shortReason": "Bezpłatny przegląd zdrowia, dzięki któremu wiesz, jakie badania są dla Ciebie zalecane.",
+    "description": "Najpierw wypełniasz ankietę o swoim zdrowiu i stylu życia. Potem przychodnia zleca Ci badania, m.in. krwi i moczu. Na wizycie podsumowującej ktoś z personelu zmierzy Ci ciśnienie, tętno, wagę i wzrost, omówi wyniki i przygotuje Twój plan dbania o zdrowie.",
+    "eligibility": {
+      "age": [20, 49]
+    },
     "intervalMonths": 60,
     "booking": "program",
     "referral": false,
     "programUrl": "https://pacjent.gov.pl/program-moje-zdrowie",
     "prepTips": [
-      "Wypełnij ankietę w Internetowym Koncie Pacjenta albo w przychodni POZ.",
-      "Na pobranie krwi przyjdź na czczo."
+      "Wypełnij ankietę w Internetowym Koncie Pacjenta, w aplikacji mojeIKP albo w swojej przychodni.",
+      "Ankietę wypełnij za jednym razem — nie da się zapisać jej w połowie.",
+      "Na pobranie krwi przyjdź rano, na czczo."
     ],
     "source": {
       "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
@@ -22,17 +25,20 @@
   },
   {
     "id": "health_check_adult_50",
-    "name": "Bilans zdrowia dorosłego 50+ („Moje Zdrowie”)",
-    "shortReason": "Od 50. roku życia z programu „Moje Zdrowie” można korzystać co 3 lata.",
-    "description": "Bezpłatny pakiet badań w Twojej przychodni POZ: m.in. morfologia, glukoza, lipidogram, pomiar ciśnienia, a u mężczyzn także PSA. Najpierw wypełniasz ankietę w IKP lub w przychodni, potem dostajesz zlecenie na badania.",
-    "eligibility": { "age": [50, 120] },
+    "name": "Bilans zdrowia „Moje Zdrowie” (50+)",
+    "shortReason": "Bezpłatny przegląd zdrowia, dzięki któremu wiesz, jakie badania są dla Ciebie zalecane.",
+    "description": "Najpierw wypełniasz ankietę o swoim zdrowiu i stylu życia. Potem przychodnia zleca Ci badania, m.in. krwi i moczu. Na wizycie podsumowującej ktoś z personelu zmierzy Ci ciśnienie, tętno, wagę i wzrost, omówi wyniki i przygotuje Twój plan dbania o zdrowie.",
+    "eligibility": {
+      "age": [50, 120]
+    },
     "intervalMonths": 36,
     "booking": "program",
     "referral": false,
     "programUrl": "https://pacjent.gov.pl/program-moje-zdrowie",
     "prepTips": [
-      "Wypełnij ankietę w Internetowym Koncie Pacjenta albo w przychodni POZ.",
-      "Na pobranie krwi przyjdź na czczo."
+      "Wypełnij ankietę w Internetowym Koncie Pacjenta, w aplikacji mojeIKP albo w swojej przychodni.",
+      "Ankietę wypełnij za jednym razem — nie da się zapisać jej w połowie.",
+      "Na pobranie krwi przyjdź rano, na czczo."
     ],
     "source": {
       "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
@@ -43,15 +49,14 @@
   },
   {
     "id": "dental_checkup",
-    "name": "Przegląd stomatologiczny",
-    "shortReason": "NFZ zapewnia dorosłym badanie stomatologiczne raz w roku.",
-    "description": "Kontrola zębów i dziąseł z instruktażem higieny jamy ustnej. Do dentysty na NFZ nie potrzebujesz skierowania.",
+    "name": "Przegląd u dentysty",
+    "shortReason": "Regularny przegląd pomaga dbać o zęby i dziąsła, zanim coś zacznie boleć.",
+    "description": "Dentysta ogląda Twoje zęby i jamę ustną oraz pokazuje, jak dobrze o nie dbać. Na NFZ takie badanie z instruktażem higieny przysługuje raz w roku. NFZ zaleca wizytę u dentysty co pół roku, bez względu na wiek.",
     "eligibility": {},
     "intervalMonths": 12,
     "booking": "queue",
     "referral": false,
     "nfzBenefits": ["PORADNIA STOMATOLOGICZNA"],
-    "prepTips": ["Zapisz, jakie masz dolegliwości i jakie leki przyjmujesz."],
     "source": {
       "name": "Zasady leczenia u dentysty — pacjent.gov.pl",
       "url": "https://pacjent.gov.pl/zapobiegaj/zasady-leczenia-u-dentysty"
@@ -61,15 +66,23 @@
   },
   {
     "id": "cervical_screening",
-    "name": "Test HPV HR (profilaktyka raka szyjki macicy)",
-    "shortReason": "Program profilaktyczny obejmuje kobiety w wieku 25–64 lat.",
-    "description": "Badanie podstawowe w programie to test HPV HR. Wykonuje się go raz na 5 lat, chyba że lekarz zaleci inaczej. Nie potrzebujesz skierowania.",
-    "eligibility": { "sex": "female", "age": [25, 64] },
+    "name": "Test HPV (profilaktyka szyjki macicy)",
+    "shortReason": "Test pozwala wcześnie wykryć wirusa HPV, zanim pojawią się jakiekolwiek zmiany.",
+    "description": "Lekarz lub położna pobiera wymaz z szyjki macicy specjalną szczoteczką — wygląda to tak samo jak dawna cytologia. Z jednej próbki laboratorium robi test HPV, a jeśli trzeba, także cytologię. Gdy wynik jest prawidłowy, kolejny test robi się zwykle za 5 lat.",
+    "eligibility": {
+      "sex": "female",
+      "age": [25, 64]
+    },
     "intervalMonths": 60,
     "booking": "program",
     "referral": false,
     "programUrl": "https://pacjent.gov.pl/aktualnosc/umow-sie-na-test-hpv-hr-przez-mojeikp",
-    "prepTips": ["Najlepiej umów badanie poza okresem miesiączki."],
+    "prepTips": [
+      "Nie umawiaj się w czasie miesiączki ani 4 dni przed i po niej.",
+      "Kilka dni przed badaniem nie stosuj leków dopochwowych.",
+      "Przez 1–2 dni przed badaniem nie współżyj.",
+      "Przed pobraniem nie rób USG przezpochwowego."
+    ],
     "source": {
       "name": "Umów się na test HPV HR przez mojeIKP — pacjent.gov.pl",
       "url": "https://pacjent.gov.pl/aktualnosc/umow-sie-na-test-hpv-hr-przez-mojeikp"
@@ -80,14 +93,22 @@
   {
     "id": "mammography",
     "name": "Mammografia",
-    "shortReason": "Program profilaktyczny obejmuje kobiety w wieku 45–74 lat.",
-    "description": "Bezpłatne badanie piersi w ramach programu NFZ, co 2 lata. Nie potrzebujesz skierowania. Badanie można zrobić w pracowni stacjonarnej albo w mammobusie.",
-    "eligibility": { "sex": "female", "age": [45, 74] },
+    "shortReason": "Mammografia pozwala zauważyć bardzo małe zmiany w piersiach, często zanim da się je wyczuć.",
+    "description": "To zdjęcie rentgenowskie piersi z bardzo małą dawką promieniowania. Każdą pierś na kilka sekund ściskają dwie płytki aparatu — może to być chwilę nieprzyjemne, ale jest potrzebne do dobrego zdjęcia. Całe badanie trwa kilka minut.",
+    "eligibility": {
+      "sex": "female",
+      "age": [45, 74]
+    },
     "intervalMonths": 24,
     "booking": "program",
     "referral": false,
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
-    "prepTips": ["Weź ze sobą wyniki poprzednich badań piersi, jeśli je masz."],
+    "prepTips": [
+      "W dniu badania nie używaj dezodorantu, balsamu, pudru ani talku na piersi i pod pachami.",
+      "Jeśli miesiączkujesz, najlepiej umów się w pierwszej połowie cyklu (około 10. dnia).",
+      "Weź dowód osobisty i wyniki wcześniejszych badań piersi (USG, mammografia).",
+      "Ubierz się w luźne, dwuczęściowe ubranie."
+    ],
     "source": {
       "name": "Programy profilaktyczne — nfz.gov.pl",
       "url": "https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/"
@@ -97,10 +118,12 @@
   },
   {
     "id": "colonoscopy_screening",
-    "name": "Kolonoskopia przesiewowa",
-    "shortReason": "Program badań przesiewowych obejmuje osoby w wieku 50–65 lat.",
-    "description": "Badanie jelita grubego w programie przesiewowym NFZ dla osób, które nie miały kolonoskopii w ostatnich 10 latach. Nie potrzebujesz skierowania. Na termin często trzeba poczekać, więc warto zapisać się wcześniej.",
-    "eligibility": { "age": [50, 65] },
+    "name": "Kolonoskopia",
+    "shortReason": "Kolonoskopia pozwala obejrzeć jelito od środka i wcześnie zauważyć zmiany.",
+    "description": "To badanie endoskopowe jelita grubego — lekarz ogląda jelito od środka. Badanie trwa od 15 do 40 minut. Można je zrobić w znieczuleniu, wtedy nic nie czujesz. Kilka dni wcześniej trzeba zmienić dietę i oczyścić jelito specjalnym preparatem.",
+    "eligibility": {
+      "age": [50, 65]
+    },
     "modifiers": [
       {
         "when": "colorectal_cancer",
@@ -113,10 +136,7 @@
     "referral": false,
     "nfzBenefits": ["KOLONOSKOPIA"],
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
-    "prepTips": [
-      "Przygotowanie zaczyna się kilka dni wcześniej — dostaniesz instrukcję diety i środka przeczyszczającego.",
-      "Ustal z placówką, czy badanie będzie w znieczuleniu."
-    ],
+    "prepTips": ["Placówka da Ci dokładną instrukcję przygotowania — postępuj według niej."],
     "source": {
       "name": "Program badań przesiewowych raka jelita grubego — nfz.gov.pl",
       "url": "https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/program-badan-przesiewowych-raka-jelita-grubego/"
@@ -126,15 +146,17 @@
   },
   {
     "id": "lung_ldct",
-    "name": "Niskodawkowa tomografia płuc",
-    "shortReason": "Program obejmuje osoby w wieku 55–74 lat, które paliły co najmniej 20 paczkolat.",
-    "description": "Badanie płuc w programie profilaktyki raka płuca NFZ, co 12 miesięcy. Program dotyczy osób, które palą lub rzuciły palenie nie dawniej niż 15 lat temu. O zakwalifikowaniu decyduje lekarz na wizycie kwalifikującej; skierowanie nie jest potrzebne.",
-    "eligibility": { "age": [55, 74], "requiresAny": ["smoker_20py"] },
+    "name": "Tomografia płuc (niskodawkowa)",
+    "shortReason": "U osób, które dużo paliły, to badanie pomaga wcześnie zauważyć zmiany w płucach.",
+    "description": "To bezbolesne badanie obrazowe płuc w tomografie. Używa znacznie mniejszej dawki promieniowania niż zwykła tomografia klatki piersiowej. O tym, czy badanie jest dla Ciebie, decyduje lekarz na wizycie kwalifikującej.",
+    "eligibility": {
+      "age": [55, 74],
+      "requiresAny": ["smoker_20py"]
+    },
     "intervalMonths": 12,
     "booking": "program",
     "referral": false,
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
-    "prepTips": ["Przygotuj informację o historii palenia: od ilu lat i ile papierosów dziennie."],
     "source": {
       "name": "Rozporządzenie — program profilaktyki raka płuca (Dziennik Ustaw 2026 poz. 976)",
       "url": "https://www.dziennikustaw.gov.pl/D2026000097601.pdf"
@@ -144,15 +166,16 @@
   },
   {
     "id": "eye_exam",
-    "name": "Badanie okulistyczne",
+    "name": "Badanie u okulisty",
     "shortReason": "Z wiekiem warto regularnie kontrolować wzrok.",
-    "description": "Kontrola wzroku i ciśnienia w oku u okulisty. Do okulisty na NFZ potrzebujesz skierowania, np. od lekarza POZ.",
-    "eligibility": { "age": [40, 120] },
+    "description": "Okulista sprawdza, jak widzisz, i ogląda Twoje oczy.",
+    "eligibility": {
+      "age": [40, 120]
+    },
     "intervalMonths": 24,
     "booking": "queue",
     "referral": true,
     "nfzBenefits": ["ŚWIADCZENIA Z ZAKRESU OKULISTYKI"],
-    "prepTips": ["Weź ze sobą okulary i listę przyjmowanych leków."],
     "source": {
       "name": "Kto i kiedy nie potrzebuje skierowania — pacjent.gov.pl (wiek i interwał: wartość orientacyjna)",
       "url": "https://pacjent.gov.pl/artykul/kto-i-kiedy-nie-potrzebuje-skierowania"
@@ -162,15 +185,19 @@
   },
   {
     "id": "skin_check",
-    "name": "Kontrola znamion skóry",
-    "shortReason": "Regularne oglądanie znamion pomaga zauważyć zmiany.",
-    "description": "Obejrzenie znamion przez dermatologa. Do dermatologa na NFZ potrzebujesz skierowania, np. od lekarza POZ.",
-    "eligibility": { "age": [18, 120] },
+    "name": "Kontrola znamion (pieprzyków)",
+    "shortReason": "Regularne oglądanie pieprzyków pomaga szybko zauważyć te, które się zmieniają.",
+    "description": "Dermatolog ogląda znamiona przez dermatoskop — to rodzaj lupy z mocnym światłem. Badanie jest bezbolesne i trwa 10–15 minut. Między wizytami raz w miesiącu obejrzyj swoją skórę w dobrym świetle, z lustrem albo z pomocą bliskiej osoby.",
+    "eligibility": {
+      "age": [18, 120]
+    },
     "intervalMonths": 12,
     "booking": "queue",
     "referral": true,
     "nfzBenefits": ["PORADNIA DERMATOLOGICZNA"],
-    "prepTips": ["Zanotuj znamiona, które zmieniły kształt, kolor lub wielkość."],
+    "prepTips": [
+      "Raz w miesiącu obejrzyj swoje znamiona według zasady ABCDE (kształt, brzegi, kolor, wielkość, zmiany)."
+    ],
     "source": {
       "name": "Kto i kiedy nie potrzebuje skierowania — pacjent.gov.pl (wiek i interwał: wartość orientacyjna)",
       "url": "https://pacjent.gov.pl/artykul/kto-i-kiedy-nie-potrzebuje-skierowania"
@@ -180,14 +207,16 @@
   },
   {
     "id": "psa_discussion",
-    "name": "Rozmowa z lekarzem o badaniu PSA",
-    "shortReason": "Mężczyźni po 50. roku życia otrzymują PSA w pakiecie „Moje Zdrowie”.",
-    "description": "PSA to badanie krwi związane z prostatą. Decyzję o jego wykonaniu i interpretację wyniku warto omówić z lekarzem POZ.",
-    "eligibility": { "sex": "male", "age": [50, 120] },
+    "name": "Rozmowa o badaniu PSA",
+    "shortReason": "Badanie PSA ma zalety i ograniczenia, więc warto razem z lekarzem zdecydować, czy jest dla Ciebie.",
+    "description": "PSA to badanie z krwi. Sam wynik nie wystarcza, żeby cokolwiek stwierdzić — zawsze trzeba omówić go z lekarzem. Mężczyźni po 50. roku życia dostają to badanie w programie „Moje Zdrowie”.",
+    "eligibility": {
+      "sex": "male",
+      "age": [50, 120]
+    },
     "intervalMonths": 36,
     "booking": "walk_in",
     "referral": false,
-    "prepTips": ["Zapytaj lekarza, co oznacza wynik i czy potrzebne są dalsze kroki."],
     "source": {
       "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
       "url": "https://pacjent.gov.pl/program-moje-zdrowie"
