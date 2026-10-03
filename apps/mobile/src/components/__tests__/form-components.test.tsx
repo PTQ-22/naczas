@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/theme';
 
 import { ChipGroup } from '../ChipGroup';
 import { TextField } from '../TextField';
+import { TimelineScale } from '../TimelineScale';
 
 import type { ReactElement } from 'react';
 
@@ -64,5 +65,58 @@ describe('ChipGroup', () => {
     expect(onChange).toHaveBeenLastCalledWith(['a', 'b']);
     fireEvent.press(screen.getByRole('checkbox', { name: 'Choroby: Rok temu' }));
     expect(onChange).toHaveBeenLastCalledWith([]);
+  });
+});
+
+describe('TimelineScale', () => {
+  it('radio segments read the full label; selecting calls onSelect', () => {
+    const onSelect = jest.fn();
+    renderThemed(
+      <TimelineScale
+        groupLabel="Dentysta"
+        options={[
+          {
+            value: 'recent',
+            label: 'Do 6 mies.',
+            accessibilityLabel: 'W ciągu ostatnich 6 miesięcy',
+          },
+          { value: 'never', label: 'Nigdy' },
+        ]}
+        selected="recent"
+        onSelect={onSelect}
+        startLabel="← niedawno"
+        endLabel="dawniej →"
+      />,
+    );
+    expect(
+      screen.getByRole('radio', { name: 'Dentysta: W ciągu ostatnich 6 miesięcy' }),
+    ).toBeChecked();
+    fireEvent.press(screen.getByRole('radio', { name: 'Dentysta: Nigdy' }));
+    expect(onSelect).toHaveBeenCalledWith('never');
+  });
+
+  it('stacks into a list with full labels when segments are too narrow for the text', () => {
+    renderThemed(
+      <TimelineScale
+        testID="scale"
+        groupLabel="Dentysta"
+        options={[
+          {
+            value: 'recent',
+            label: 'Do 6 mies.',
+            accessibilityLabel: 'W ciągu ostatnich 6 miesięcy',
+          },
+          { value: 'never', label: 'Nigdy' },
+        ]}
+        selected={undefined}
+        onSelect={jest.fn()}
+        startLabel="← niedawno"
+        endLabel="dawniej →"
+      />,
+    );
+    expect(screen.getByText('Do 6 mies.')).toBeOnTheScreen();
+    fireEvent(screen.getByTestId('scale'), 'layout', { nativeEvent: { layout: { width: 80 } } });
+    expect(screen.getByText('W ciągu ostatnich 6 miesięcy')).toBeOnTheScreen();
+    expect(screen.queryByText('← niedawno')).toBeNull();
   });
 });

@@ -71,6 +71,8 @@ interface OnboardingDraftState extends PersistedDraft {
   start: (options?: { forRelative?: boolean }) => void;
   update: (patch: Partial<OnboardingDraft>) => void;
   setLastDone: (examId: string, answer: LastDoneAnswer) => void;
+  /** No answer = "nie pamiętam": the plan treats a missing lastDone like 'unknown'. */
+  clearLastDone: (examId: string) => void;
   clear: () => void;
 }
 
@@ -85,6 +87,12 @@ export const useOnboardingDraftStore = create<OnboardingDraftState>()(
         set((s) => {
           const draft = s.draft ?? emptyDraft();
           return { draft: { ...draft, lastDone: { ...draft.lastDone, [examId]: answer } } };
+        }),
+      clearLastDone: (examId) =>
+        set((s) => {
+          const draft = s.draft ?? emptyDraft();
+          const { [examId]: _cleared, ...lastDone } = draft.lastDone;
+          return { draft: { ...draft, lastDone } };
         }),
       clear: () => set({ draft: null }),
     }),

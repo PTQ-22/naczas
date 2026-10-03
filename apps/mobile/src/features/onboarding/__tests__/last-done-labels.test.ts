@@ -23,4 +23,16 @@ describe('lastDoneLabel — buckets follow the exam interval', () => {
     expect(lastDoneLabel('never', 120)).toBe('Nigdy');
     expect(lastDoneLabel('unknown', 12)).toBe('Nie pamiętam');
   });
+
+  it.each([
+    [12, ['Do 6 mies.', '6–12 mies.', 'Ponad rok']],
+    [36, ['Do 1,5 roku', '1,5–3 lata', 'Ponad 3 lata']],
+    [120, ['Do 5 lat', '5–10 lat', 'Ponad 10 lat']],
+  ])('short timeline labels, %i months', (interval, expected) => {
+    expect(
+      (['within_half_interval', 'within_interval', 'over_interval'] as const).map((a) =>
+        lastDoneLabel(a, interval, 'short'),
+      ),
+    ).toEqual(expected);
+  });
 });

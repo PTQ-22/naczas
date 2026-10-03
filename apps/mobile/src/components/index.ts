@@ -21,3 +21,4 @@ export { TextField, type TextFieldProps } from './TextField';
 export { Toast, TOAST_DURATION_MS } from './Toast';
 export { Text, type TextProps, type TextTone } from './Text';
 export { TileWall } from './TileWall';
+export { TimelineScale, type TimelineScaleOption, type TimelineScaleProps } from './TimelineScale';

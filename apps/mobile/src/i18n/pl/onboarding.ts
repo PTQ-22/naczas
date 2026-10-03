@@ -144,7 +144,7 @@ export const onboarding = {
     },
     lastExams: {
       title: 'Kiedy ostatnio?',
-      hint: 'Pytamy tylko o badania, które dotyczą tej osoby.',
+      hint: 'Pytamy tylko o badania, które dotyczą tej osoby. Jeśli nie pamiętasz, nic nie zaznaczaj.',
       // Buckets follow each exam's interval (last-done-labels.ts picks the unit and plural).
       answers: {
         withinHalf: {
@@ -174,6 +174,40 @@ export const onboarding = {
         never: 'Nigdy',
         unknown: 'Nie pamiętam',
       },
+      // Segment labels on the timeline: "temu" is implied by the axis, months abbreviated.
+      answersShort: {
+        withinHalf: {
+          oneYear: 'Do roku',
+          oneAndHalfYears: 'Do 1,5 roku',
+          years: 'Do {{n}} lat',
+          fractionYears: 'Do {{n}} roku',
+          months: 'Do {{n}} mies.',
+        },
+        withinInterval: {
+          years: {
+            few: '{{from}}–{{to}} lata',
+            many: '{{from}}–{{to}} lat',
+            fraction: '{{from}}–{{to}} roku',
+          },
+          months: { few: '{{from}}–{{to}} mies.', many: '{{from}}–{{to}} mies.' },
+        },
+        overInterval: {
+          years: {
+            one: 'Ponad rok',
+            few: 'Ponad {{n}} lata',
+            many: 'Ponad {{n}} lat',
+            fraction: 'Ponad {{n}} roku',
+          },
+          months: { few: 'Ponad {{n}} mies.', many: 'Ponad {{n}} mies.' },
+        },
+        never: 'Nigdy',
+        unknown: 'Nie pamiętam',
+      },
+      axisRecent: '← niedawno',
+      axisLongAgo: 'dawniej →',
+      unanswered: 'Nie pamiętasz? Zostaw puste — zaplanujemy to badanie od dziś.',
+      clear: 'Wyczyść — nie pamiętam',
+      clearA11y: '{{exam}}: wyczyść odpowiedź, nie pamiętam',
       empty: 'Na razie nie ma badań do uzupełnienia.',
     },
   },
