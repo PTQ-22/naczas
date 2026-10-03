@@ -182,13 +182,13 @@ Metoda i zastrzeżenia (do Q&A):
 - Uwzględnione tylko `average-period > 0` (0 = placówka nie zaraportowała, `docs/04` §Pułapki).
 - Percentyl: interpolacja liniowa (= `PERCENTILE.INC` w arkuszu). Wstępne liczby WS2 (07: 137 / p75 211) wynikają z innej metody — wartość o indeksie `floor((n−1)·p)` bez interpolacji. Różnica ≤ 8,5 dnia, wniosek ten sam.
 - To mediana **po placówkach** (każda placówka waży tyle samo), nie po pacjentach. Mówimy więc „w połowie placówek”, nie „połowa pacjentów czeka”.
-- `average-period` to średnia z przeszłości raportowana przez placówkę; aplikacja do „kiedy zacząć” używa pierwszego wolnego terminu (`dates.date − date-situation-as-at`, `docs/05` §3) — dlatego liczby z demo mogą się różnić od S10.
+- `average-period` to średnia z przeszłości raportowana przez placówkę, nie pierwszy wolny termin (`dates` jest `null` we wszystkich rekordach NFZ). Aplikacja liczy „kiedy zacząć” z tego samego pola i tą samą metodą (`docs/05` §3), więc liczby w demo są spójne z S10.
 - Okulistyka 06 vs 07 różni się prawie 3× — nie uogólniać na „Polskę”; na slajdzie zawsze z nazwą województwa.
 
 Uwagi do użycia:
 - S1–S3 mierzą objęcie w różnych oknach czasowych (różne interwały programów) — **nie zestawiać ich jako porównania** „który program gorszy”.
 - S5 dotyczy trybu **pilnego** i nie jest danymi NFZ — zastąpione przez S10 (oficjalne dane, kolejka stabilna). Zostaje w tabeli tylko jako kontekst do Q&A; na slajdzie pisać wtedy dokładnie „pilna kolonoskopia”.
-- Do demo („czeka się ok. N tyg.”) używamy wyłącznie wartości z naszego API dla lokalizacji demo, nie S10 — to inny agregat (patrz niżej).
+- Do demo („czeka się ok. N tyg.”) wpisujemy wartość z API dla lokalizacji demo. Może się różnić od S10 tylko zakresem: API liczy p75 placówek w promieniu od użytkownika (15→30→60 km→województwo), S10 — medianę dla całego województwa.
 - S7 jest z 2022 r.; jeśli potrzebna świeższa liczba o świadomości, użyć S8.
 - S9 przyda się na slajdzie 6 (opiekun), tylko z przypisem „za GUS”.
 
