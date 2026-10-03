@@ -24,8 +24,8 @@ const OSM_ATTRIBUTION =
 
 export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: FacilitiesMapProps) {
   const { colors, radius, type } = useTheme();
-  // Leaflet touches `window` on import and web output is "static" (server-rendered),
-  // so both modules are loaded only in the browser.
+  // Leaflet touches `window` on import, so both modules load only after mount. Web output is
+  // 'single' (SPA) today; this also keeps the map safe if it goes back to static rendering.
   const [mods, setMods] = useState<LeafletModules | null>(null);
   useEffect(() => {
     let alive = true;

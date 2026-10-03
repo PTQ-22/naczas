@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { Linking, Platform, View } from 'react-native';
 
 import type { Facility } from '@naczas/shared';
@@ -23,12 +24,13 @@ import type { FacilitiesSort } from './use-facilities';
 
 interface FacilityCardProps {
   facility: Facility;
+  examId: string;
   /** First card in the list gets the screen's one filled primary CTA (screens.md §4). */
   primary?: boolean;
   sort: FacilitiesSort;
 }
 
-export function FacilityCard({ facility: f, primary = false, sort }: FacilityCardProps) {
+export function FacilityCard({ facility: f, examId, primary = false, sort }: FacilityCardProps) {
   const { colors, seniorMode, space } = useTheme();
   const tel = telUrl(f.phone);
   const tone = waitTone(f.waitDays);
@@ -77,6 +79,20 @@ export function FacilityCard({ facility: f, primary = false, sort }: FacilityCar
           icon="external"
           fullWidth={seniorMode}
           onPress={() => void Linking.openURL(mapsUrl(f, Platform.OS))}
+        />
+        {/* After calling, the user records the visit; the facility name is shown as context. */}
+        <Button
+          label={t('facilities.actions.booked')}
+          accessibilityLabel={t('facilities.actions.bookedA11y', { name: f.providerName })}
+          variant="ghost"
+          icon="booked"
+          fullWidth={seniorMode}
+          onPress={() =>
+            router.push({
+              pathname: '/exam/[examId]/book',
+              params: { examId, facility: f.providerName },
+            })
+          }
         />
       </View>
     </Card>

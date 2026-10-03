@@ -49,4 +49,20 @@ export const exam = {
     changeDate: 'Zmień datę wizyty',
     doneEarlier: 'Zrobione wcześniej? Zmień datę',
   },
+  // "Umówiłem/am się" screen (exam/[examId]/book).
+  book: {
+    question: 'Kiedy masz wizytę?',
+    dateLabel: 'Data wizyty',
+    dateA11y: 'Data wizyty: {{date}}. Dotknij, aby zmienić.',
+    facility: 'Placówka: {{name}}',
+    reminder: 'Przypomnimy Ci o wizycie dzień wcześniej.',
+    save: 'Zapisz wizytę',
+    saveA11y: 'Zapisz wizytę na {{date}}',
+    errors: {
+      invalid: 'Wpisz poprawną datę.',
+      past: 'Data wizyty nie może być w przeszłości.',
+      tooFar: 'Wybierz datę w ciągu najbliższego roku.',
+    },
+    noProfile: 'Najpierw dodaj profil, żeby zapisać wizytę.',
+  },
 } as const;
