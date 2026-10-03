@@ -40,6 +40,11 @@ export const exam = {
   },
   source: 'Źródło: {{name}}',
   sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
+  toast: {
+    markedDone: 'Oznaczono jako zrobione',
+    undo: 'Cofnij',
+    undoA11y: 'Cofnij oznaczenie badania {{name}} jako zrobione',
+  },
   cta: {
     findSlot: 'Znajdź termin w okolicy',
     program: 'Gdzie zrobić bez skierowania',

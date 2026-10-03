@@ -1,4 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Linking, View } from 'react-native';
 import { z } from 'zod';
 
@@ -11,6 +12,7 @@ import { Disclaimer } from '@/components/Disclaimer';
 import { EmptyState } from '@/components/EmptyState';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { Toast } from '@/components/Toast';
 import { urgencyIcon } from '@/features/plan/ExamCard';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
@@ -51,7 +53,11 @@ export default function ExamScreen() {
   const { colors, space, layout, radius } = theme;
   const params = ParamsSchema.safeParse(useLocalSearchParams());
   const { activeProfile, plan, waitTimes, today } = usePlanData();
-  const upsertRecord = useRecordsStore((s) => s.upsertRecord);
+  const markDone = useRecordsStore((s) => s.markDone);
+  const undo = useRecordsStore((s) => s.undo);
+  // Profile the last "done" was recorded for — the toast's undo must target that one.
+  const [doneFor, setDoneFor] = useState<string | null>(null);
+  const hideToast = useCallback(() => setDoneFor(null), []);
 
   const examId = params.success ? params.data.examId : undefined;
   const rule = rules.find((r) => r.id === examId);
@@ -83,23 +89,32 @@ export default function ExamScreen() {
         router.push({ pathname: '/exam/[examId]/book', params: { examId: rule.id } });
         return;
       case 'markDone':
-        // TODO(WS3-5): switch to markDone() from the records store when it lands (adds undo).
         if (!activeProfile) return;
-        upsertRecord({
-          profileId: activeProfile.id,
-          examId: rule.id,
-          status: 'done',
-          lastDone: today,
-          updatedAt: today,
-        });
-        router.back();
+        // Stay on the screen: the card flips to "done / next around …" — the demo loop's payoff.
+        markDone(activeProfile.id, rule.id, today);
+        setDoneFor(activeProfile.id);
     }
   };
 
   const { primary, ghost } = ctas;
+  const toast = doneFor ? (
+    <Toast
+      message={t('exam.toast.markedDone')}
+      action={{
+        label: t('exam.toast.undo'),
+        accessibilityLabel: t('exam.toast.undoA11y', { name: rule.name }),
+        onPress: () => {
+          undo(doneFor, rule.id);
+          setDoneFor(null);
+        },
+      }}
+      onHide={hideToast}
+    />
+  ) : null;
   const footer =
-    primary || ghost ? (
+    toast || primary || ghost ? (
       <>
+        {toast}
         {primary && (
           <Button label={msg(primary.label)} onPress={() => run(primary.action)} fullWidth />
         )}

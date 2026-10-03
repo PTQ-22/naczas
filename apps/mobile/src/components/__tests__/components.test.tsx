@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/theme';
 import { Button } from '../Button';
 import { OptionTile } from '../OptionTile';
 import { ProgressBar } from '../ProgressBar';
+import { Toast, TOAST_DURATION_MS } from '../Toast';
 
 import type { ReactElement } from 'react';
 
@@ -50,5 +51,21 @@ describe('ProgressBar', () => {
   it('clamps value and exposes it to screen readers', () => {
     renderThemed(<ProgressBar value={1.4} accessibilityLabel="Krok 7 z 7" />);
     expect(screen.getByLabelText('Krok 7 z 7')).toHaveAccessibilityValue({ now: 100 });
+  });
+});
+
+describe('Toast', () => {
+  it('hides itself after the duration and exposes its action', () => {
+    jest.useFakeTimers();
+    const onHide = jest.fn();
+    const onPress = jest.fn();
+    renderThemed(
+      <Toast message="Zapisano" action={{ label: 'Cofnij', onPress }} onHide={onHide} />,
+    );
+    fireEvent.press(screen.getByRole('button', { name: 'Cofnij' }));
+    expect(onPress).toHaveBeenCalled();
+    jest.advanceTimersByTime(TOAST_DURATION_MS);
+    expect(onHide).toHaveBeenCalledTimes(1);
+    jest.useRealTimers();
   });
 });

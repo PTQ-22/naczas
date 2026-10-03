@@ -58,13 +58,18 @@ describe('ExamScreen', () => {
     expect(screen.getByText('Wartość orientacyjna')).toBeOnTheScreen();
   });
 
-  it('booked exam: "Oznacz jako zrobione" stores a done record', () => {
+  it('booked exam: "Oznacz jako zrobione" → markDone + toast with working "Cofnij"', () => {
     renderExam('mammography');
     fireEvent.press(screen.getByRole('button', { name: 'Oznacz jako zrobione' }));
     expect(useRecordsStore.getState().records).toEqual([
-      expect.objectContaining({ examId: 'mammography', status: 'done' }),
+      expect.objectContaining({ examId: 'mammography', status: 'done', lastDone: '2026-10-03' }),
     ]);
-    expect(router.back).toHaveBeenCalled();
+    expect(screen.getByText('Oznaczono jako zrobione')).toBeOnTheScreen();
+    expect(router.back).not.toHaveBeenCalled();
+
+    fireEvent.press(screen.getByRole('button', { name: /Cofnij oznaczenie badania Mammografia/ }));
+    expect(useRecordsStore.getState().records).toEqual([]);
+    expect(screen.queryByText('Oznaczono jako zrobione')).toBeNull();
   });
 
   it('unknown or invalid examId → not-found state', () => {
