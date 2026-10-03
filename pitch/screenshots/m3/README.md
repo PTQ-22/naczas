@@ -1,6 +1,6 @@
 # M3 — przejście scenariusza demo (2026-10-03)
 
-Branch `ws0/m3` z main `951b85b`. Web (Expo, 390×844, zrzuty @2x = 780×1688) + lokalne API (snapshot NFZ) oraz osobno z mockami (`EXPO_PUBLIC_USE_MOCKS=1`).
+Branch `ws0/m3`, przejście na main `951b85b`, potem rebase na `06f6b68` (WS3: `?for=other`, prawdziwy `computePlan` w trybie mocków) i ponowna weryfikacja punktów, których to dotyczy. Web (Expo, 390×844, zrzuty @2x = 780×1688) + lokalne API (snapshot NFZ) oraz osobno z mockami (`EXPO_PUBLIC_USE_MOCKS=1`).
 Scenariusz: `docs/01-user-journey.md` §Demo.
 
 **Demo-ready: NIE.** Kroki 1–4 działają end-to-end z prawdziwym API. Kroki 5–7 blokują B1–B3 (szczegóły niżej).
@@ -20,7 +20,7 @@ Scenariusz: `docs/01-user-journey.md` §Demo.
 | # | Waga | WS | Ekran | Kroki | Oczekiwane | Faktyczne |
 |---|---|---|---|---|---|---|
 | B1 | blocker | WS3 | `exam/[id]/book` | karta badania → „Umówiłem/am się” | date picker, zapis `booked`, potem „Zrobione” | placeholder „Umów termin”; brak `markBooked`/`markDone` → krok 6 demo niewykonalny |
-| B2 | blocker | WS3 | `/family` | plan → „+” (Dodaj osobę) | lista osób + dodanie Kasi | placeholder „Rodzina”; Kasię da się dodać tylko ręcznie przez URL `/onboarding/welcome` |
+| B2 | blocker | WS3 | `/family` | plan → „+” (Dodaj osobę) | lista osób + dodanie Kasi | placeholder „Rodzina” (stan na `06f6b68`: `PlanScreen` nadal robi `router.push('/family')`). Obejście: URL `/onboarding/welcome?for=other`. Wystarczy, że „+” albo Rodzina poprowadzą tam |
 | B3 | blocker | WS4 | `visit-prep` | dowolny profil → „Przygotuj prośbę do lekarza” | dane aktywnej osoby | zawsze `mockProfileMama` (TODO w `use-visit-prep.ts`): „Niska aktywność fizyczna” przy `activity: medium`, u Kasi pokazuje Mamę |
 | H1 | wysoka | WS3 | welcome | „Wczytaj profil demo” po onboardingu | preset Mama + Kasia, bez duplikatów | dodaje tylko mockową Mamę, drugą „Mamę” obok istniejącej; brak presetu Kasi |
 | H2 | wysoka | WS4 / WS1 | karta kolonoskopii | demo krok 5 | wejście do „Przygotowanie do wizyty” | link tylko gdy `rule.referral` (okulista, znamiona); z kolonoskopii i z planu brak wejścia |
@@ -38,7 +38,7 @@ Scenariusz: `docs/01-user-journey.md` §Demo.
 | L4 | niska | WS3 | onboarding „Dla mnie” | — | imię (Kasia) | profil „Ja”, plan „Plan badań — Ja” |
 | L5 | niska | WS1 | karta kolonoskopii | Skierowanie | spójnie | „bez skierowania (program)”, a „Znajdź termin” prowadzi do kolejek AOS (ITL), które skierowania wymagają |
 | L6 | niska | WS4 | karta badania spoza planu osoby | `/exam/colonoscopy_screening` przy profilu Kasi | „to badanie Cię nie dotyczy” | „Nie mamy aktualnych danych o kolejce” (myląca przyczyna) |
-| L7 | info | WS3 | tryb mocków | przewijanie czasu, zmiany rekordów | plan się przelicza | `usePlan` w mockach zwraca statyczny `mockPlan` — do demo bez sieci OK, ale nie pokaże przewijania czasu |
+| ~~L7~~ | — | WS3 | tryb mocków | przewijanie czasu | plan się przelicza | **naprawione w `08d41ab`** (tryb mocków liczy prawdziwy `computePlan`) |
 
 Naprawione w tym branchu (WS0):
 - `.env.example` miało `EXPO_PUBLIC_USE_MOCKS=true`, a `client.ts` włącza mocki tylko dla `'1'` (czyli „true” = prawdziwe API). `docs/deploy.md` kazało ustawić `false`. Jest teraz `1` / `0` z komentarzem.
@@ -58,5 +58,4 @@ Niesprawdzone: druk PDF na web (systemowe okno druku blokuje automatyzację), na
 | `06-facilities-map.png` | placówki — mapa |
 | `07-visit-prep.png` | przygotowanie do wizyty (uwaga: dane mockowe, B3) |
 | `08-plan-kasia.png` | plan drugiej osoby („Ja”) |
-| `09-plan-mocks-booked.png` | plan w trybie mocków (sekcje Działaj teraz / Umówione) |
 | `10-plan-dark-senior.png` | plan w dark + senior |
