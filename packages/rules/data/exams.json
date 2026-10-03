@@ -1,0 +1,198 @@
+[
+  {
+    "id": "health_check_adult",
+    "name": "Bilans zdrowia dorosłego („Moje Zdrowie”)",
+    "shortReason": "Program „Moje Zdrowie” obejmuje dorosłych od 20. roku życia.",
+    "description": "Bezpłatny pakiet badań w Twojej przychodni POZ: m.in. morfologia, glukoza, lipidogram, pomiar ciśnienia. Najpierw wypełniasz ankietę w IKP lub w przychodni, potem dostajesz zlecenie na badania. Do 49. roku życia z programu można korzystać co 5 lat.",
+    "eligibility": { "age": [20, 49] },
+    "intervalMonths": 60,
+    "booking": "program",
+    "referral": false,
+    "programUrl": "https://pacjent.gov.pl/program-moje-zdrowie",
+    "prepTips": [
+      "Wypełnij ankietę w Internetowym Koncie Pacjenta albo w przychodni POZ.",
+      "Na pobranie krwi przyjdź na czczo."
+    ],
+    "source": {
+      "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/program-moje-zdrowie"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "health_check_adult_50",
+    "name": "Bilans zdrowia dorosłego 50+ („Moje Zdrowie”)",
+    "shortReason": "Od 50. roku życia z programu „Moje Zdrowie” można korzystać co 3 lata.",
+    "description": "Bezpłatny pakiet badań w Twojej przychodni POZ: m.in. morfologia, glukoza, lipidogram, pomiar ciśnienia, a u mężczyzn także PSA. Najpierw wypełniasz ankietę w IKP lub w przychodni, potem dostajesz zlecenie na badania.",
+    "eligibility": { "age": [50, 120] },
+    "intervalMonths": 36,
+    "booking": "program",
+    "referral": false,
+    "programUrl": "https://pacjent.gov.pl/program-moje-zdrowie",
+    "prepTips": [
+      "Wypełnij ankietę w Internetowym Koncie Pacjenta albo w przychodni POZ.",
+      "Na pobranie krwi przyjdź na czczo."
+    ],
+    "source": {
+      "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/program-moje-zdrowie"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "dental_checkup",
+    "name": "Przegląd stomatologiczny",
+    "shortReason": "NFZ zapewnia dorosłym badanie stomatologiczne raz w roku.",
+    "description": "Kontrola zębów i dziąseł z instruktażem higieny jamy ustnej. Do dentysty na NFZ nie potrzebujesz skierowania.",
+    "eligibility": {},
+    "intervalMonths": 12,
+    "booking": "queue",
+    "referral": false,
+    "nfzBenefits": ["PORADNIA STOMATOLOGICZNA"],
+    "prepTips": ["Zapisz, jakie masz dolegliwości i jakie leki przyjmujesz."],
+    "source": {
+      "name": "Zasady leczenia u dentysty — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/zapobiegaj/zasady-leczenia-u-dentysty"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "cervical_screening",
+    "name": "Test HPV HR (profilaktyka raka szyjki macicy)",
+    "shortReason": "Program profilaktyczny obejmuje kobiety w wieku 25–64 lat.",
+    "description": "Badanie podstawowe w programie to test HPV HR. Wykonuje się go raz na 5 lat, chyba że lekarz zaleci inaczej. Nie potrzebujesz skierowania.",
+    "eligibility": { "sex": "female", "age": [25, 64] },
+    "intervalMonths": 60,
+    "booking": "program",
+    "referral": false,
+    "programUrl": "https://pacjent.gov.pl/aktualnosc/umow-sie-na-test-hpv-hr-przez-mojeikp",
+    "prepTips": ["Najlepiej umów badanie poza okresem miesiączki."],
+    "source": {
+      "name": "Umów się na test HPV HR przez mojeIKP — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/aktualnosc/umow-sie-na-test-hpv-hr-przez-mojeikp"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "mammography",
+    "name": "Mammografia",
+    "shortReason": "Program profilaktyczny obejmuje kobiety w wieku 45–74 lat.",
+    "description": "Bezpłatne badanie piersi w ramach programu NFZ, co 2 lata. Nie potrzebujesz skierowania. Badanie można zrobić w pracowni stacjonarnej albo w mammobusie.",
+    "eligibility": { "sex": "female", "age": [45, 74] },
+    "intervalMonths": 24,
+    "booking": "program",
+    "referral": false,
+    "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
+    "prepTips": ["Weź ze sobą wyniki poprzednich badań piersi, jeśli je masz."],
+    "source": {
+      "name": "Programy profilaktyczne — nfz.gov.pl",
+      "url": "https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "colonoscopy_screening",
+    "name": "Kolonoskopia przesiewowa",
+    "shortReason": "Program badań przesiewowych obejmuje osoby w wieku 50–65 lat.",
+    "description": "Badanie jelita grubego w programie przesiewowym NFZ dla osób, które nie miały kolonoskopii w ostatnich 10 latach. Nie potrzebujesz skierowania. Na termin często trzeba poczekać, więc warto zapisać się wcześniej.",
+    "eligibility": { "age": [50, 65] },
+    "modifiers": [
+      {
+        "when": "colorectal_cancer",
+        "age": [40, 65],
+        "note": "Ze względu na historię rodzinną program obejmuje także osoby w wieku 40–49 lat."
+      }
+    ],
+    "intervalMonths": 120,
+    "booking": "queue",
+    "referral": false,
+    "nfzBenefits": ["KOLONOSKOPIA"],
+    "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
+    "prepTips": [
+      "Przygotowanie zaczyna się kilka dni wcześniej — dostaniesz instrukcję diety i środka przeczyszczającego.",
+      "Ustal z placówką, czy badanie będzie w znieczuleniu."
+    ],
+    "source": {
+      "name": "Program badań przesiewowych raka jelita grubego — nfz.gov.pl",
+      "url": "https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/program-badan-przesiewowych-raka-jelita-grubego/"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "lung_ldct",
+    "name": "Niskodawkowa tomografia płuc",
+    "shortReason": "Program obejmuje osoby w wieku 55–74 lat, które paliły co najmniej 20 paczkolat.",
+    "description": "Badanie płuc w programie profilaktyki raka płuca NFZ, co 12 miesięcy. Program dotyczy osób, które palą lub rzuciły palenie nie dawniej niż 15 lat temu. O zakwalifikowaniu decyduje lekarz na wizycie kwalifikującej; skierowanie nie jest potrzebne.",
+    "eligibility": { "age": [55, 74], "requiresAny": ["smoker_20py"] },
+    "intervalMonths": 12,
+    "booking": "program",
+    "referral": false,
+    "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
+    "prepTips": ["Przygotuj informację o historii palenia: od ilu lat i ile papierosów dziennie."],
+    "source": {
+      "name": "Rozporządzenie — program profilaktyki raka płuca (Dziennik Ustaw 2026 poz. 976)",
+      "url": "https://www.dziennikustaw.gov.pl/D2026000097601.pdf"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "eye_exam",
+    "name": "Badanie okulistyczne",
+    "shortReason": "Z wiekiem warto regularnie kontrolować wzrok.",
+    "description": "Kontrola wzroku i ciśnienia w oku u okulisty. Do okulisty na NFZ potrzebujesz skierowania, np. od lekarza POZ.",
+    "eligibility": { "age": [40, 120] },
+    "intervalMonths": 24,
+    "booking": "queue",
+    "referral": true,
+    "nfzBenefits": ["ŚWIADCZENIA Z ZAKRESU OKULISTYKI"],
+    "prepTips": ["Weź ze sobą okulary i listę przyjmowanych leków."],
+    "source": {
+      "name": "Kto i kiedy nie potrzebuje skierowania — pacjent.gov.pl (wiek i interwał: wartość orientacyjna)",
+      "url": "https://pacjent.gov.pl/artykul/kto-i-kiedy-nie-potrzebuje-skierowania"
+    },
+    "verified": false,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "skin_check",
+    "name": "Kontrola znamion skóry",
+    "shortReason": "Regularne oglądanie znamion pomaga zauważyć zmiany.",
+    "description": "Obejrzenie znamion przez dermatologa. Do dermatologa na NFZ potrzebujesz skierowania, np. od lekarza POZ.",
+    "eligibility": { "age": [18, 120] },
+    "intervalMonths": 12,
+    "booking": "queue",
+    "referral": true,
+    "nfzBenefits": ["PORADNIA DERMATOLOGICZNA"],
+    "prepTips": ["Zanotuj znamiona, które zmieniły kształt, kolor lub wielkość."],
+    "source": {
+      "name": "Kto i kiedy nie potrzebuje skierowania — pacjent.gov.pl (wiek i interwał: wartość orientacyjna)",
+      "url": "https://pacjent.gov.pl/artykul/kto-i-kiedy-nie-potrzebuje-skierowania"
+    },
+    "verified": false,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "psa_discussion",
+    "name": "Rozmowa z lekarzem o badaniu PSA",
+    "shortReason": "Mężczyźni po 50. roku życia otrzymują PSA w pakiecie „Moje Zdrowie”.",
+    "description": "PSA to badanie krwi związane z prostatą. Decyzję o jego wykonaniu i interpretację wyniku warto omówić z lekarzem POZ.",
+    "eligibility": { "sex": "male", "age": [50, 120] },
+    "intervalMonths": 36,
+    "booking": "walk_in",
+    "referral": false,
+    "prepTips": ["Zapytaj lekarza, co oznacza wynik i czy potrzebne są dalsze kroki."],
+    "source": {
+      "name": "Program „Moje Zdrowie” — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/program-moje-zdrowie"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  }
+]
