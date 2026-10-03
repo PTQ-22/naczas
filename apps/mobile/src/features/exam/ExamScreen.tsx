@@ -156,7 +156,7 @@ export default function ExamScreen() {
     ) : undefined;
 
   return (
-    <Screen wall edges={['left', 'right']} footer={footer}>
+    <Screen wall edges={['left', 'right', 'bottom']} footer={footer}>
       <Plate>
         <View style={{ gap: space.sm }}>
           {item && (

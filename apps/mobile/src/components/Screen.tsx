@@ -4,6 +4,7 @@ import { SafeAreaInsetsContext, SafeAreaView, type Edge } from 'react-native-saf
 
 import { useTheme } from '@/theme';
 
+import { OnWallContext } from './on-wall';
 import { TileWall } from './TileWall';
 
 import type { ReactNode } from 'react';
@@ -25,7 +26,7 @@ export function Screen({
   children,
   footer,
   scroll = true,
-  edges = ['top', 'left', 'right'],
+  edges = ['top', 'left', 'right', 'bottom'],
   wall = false,
   testID,
 }: ScreenProps) {
@@ -36,7 +37,11 @@ export function Screen({
   // do) instead of being sliced by a flat safe-area edge; the inset becomes trailing padding so
   // the last plate still ends with its rounded corners above the indicator.
   const scrollUnderBottom = scroll && !footer && edges.includes('bottom');
-  const safeEdges = scrollUnderBottom ? edges.filter((e) => e !== 'bottom') : edges;
+  // With a footer, the footer itself carries the inset so its button sits above the indicator
+  // and its background (if any) reaches the screen edge — no flat band ending mid-air.
+  const footerOwnsBottom = !!footer && edges.includes('bottom');
+  const safeEdges =
+    scrollUnderBottom || footerOwnsBottom ? edges.filter((e) => e !== 'bottom') : edges;
   const column = {
     width: '100%' as const,
     maxWidth: layout.maxContentWidth,
@@ -71,13 +76,29 @@ export function Screen({
       )}
       {footer && (
         <View
-          style={{
-            backgroundColor: colors.surface,
-            borderTopWidth: borderWidth.hairline,
-            borderTopColor: colors.border,
-          }}
+          style={
+            // On the tile wall the CTA floats over the tiles (iOS-style) instead of a square band.
+            wall
+              ? undefined
+              : {
+                  backgroundColor: colors.surface,
+                  borderTopWidth: borderWidth.hairline,
+                  borderTopColor: colors.border,
+                }
+          }
         >
-          <View style={[column, { paddingVertical: space.md, gap: space.sm }]}>{footer}</View>
+          <View
+            style={[
+              column,
+              {
+                paddingTop: space.md,
+                paddingBottom: footerOwnsBottom ? Math.max(bottomInset, space.md) : space.md,
+                gap: space.sm,
+              },
+            ]}
+          >
+            <OnWallContext value={wall}>{footer}</OnWallContext>
+          </View>
         </View>
       )}
     </SafeAreaView>

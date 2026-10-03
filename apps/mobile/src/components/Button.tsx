@@ -1,9 +1,11 @@
+import { use } from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
 
 import { Icon, type IconName } from './Icon';
+import { OnWallContext } from './on-wall';
 import { Text } from './Text';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
@@ -40,8 +42,16 @@ export function Button({
 }: ButtonProps) {
   const theme = useTheme();
   const { colors, layout, radius, space, borderWidth } = theme;
+  const onWall = use(OnWallContext);
   const inactive = disabled || loading;
-  const fg = variant === 'primary' ? colors.onPrimary : colors.primary;
+  // On the wall the primary becomes a cream enamel plate with ink text; outlines go white.
+  const fg = onWall
+    ? variant === 'primary'
+      ? colors.text
+      : colors.onWall
+    : variant === 'primary'
+      ? colors.onPrimary
+      : colors.primary;
   // Inline ghost buttons read as links in running text: left-aligned when they wrap.
   const leftAligned = variant === 'ghost' && !fullWidth;
 
@@ -71,12 +81,17 @@ export function Button({
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
           opacity: disabled ? 0.5 : 1,
         },
-        variant === 'primary' && {
-          backgroundColor: pressed ? colors.primaryPressed : colors.primary,
-        },
+        variant === 'primary' &&
+          (onWall
+            ? {
+                backgroundColor: pressed ? colors.surfaceAlt : colors.surface,
+                borderWidth: borderWidth.plate,
+                borderColor: colors.text,
+              }
+            : { backgroundColor: pressed ? colors.primaryPressed : colors.primary }),
         variant === 'secondary' && {
           borderWidth: borderWidth.strong,
-          borderColor: colors.primary,
+          borderColor: onWall ? colors.onWall : colors.primary,
           backgroundColor: pressed ? colors.primarySoft : 'transparent',
         },
         variant === 'ghost' && { backgroundColor: pressed ? colors.primarySoft : 'transparent' },
