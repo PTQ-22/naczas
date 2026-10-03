@@ -1,10 +1,15 @@
 import { router } from 'expo-router';
+import { View } from 'react-native';
+import Animated, { FadeInDown, ReduceMotion, ZoomIn } from 'react-native-reanimated';
 
-import { Button, Screen, Text } from '@/components';
+import { Button, Icon, Screen, Text } from '@/components';
 import { t } from '@/i18n';
+import { useTheme } from '@/theme';
 
-// TODO(WS4): animated transition to the plan (docs/01-user-journey.md — onboarding/done).
 export default function DoneScreen() {
+  const { colors, layout, motion, radius } = useTheme();
+  const badge = layout.icon.lg * 2;
+
   return (
     <Screen
       footer={
@@ -15,10 +20,34 @@ export default function DoneScreen() {
         />
       }
     >
-      <Text variant="display" accessibilityRole="header">
-        {t('onboarding.done.title')}
-      </Text>
-      <Text variant="bodyLarge">{t('onboarding.done.subtitle')}</Text>
+      {/* Short, decorative entrance; ReduceMotion.System skips it when the OS asks for less. */}
+      <Animated.View
+        entering={ZoomIn.duration(motion.base).reduceMotion(ReduceMotion.System)}
+        style={{ alignSelf: 'flex-start' }}
+      >
+        <View
+          style={{
+            width: badge,
+            height: badge,
+            borderRadius: radius.full,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: colors.primarySoft,
+          }}
+        >
+          <Icon name="check" size="lg" color={colors.primary} />
+        </View>
+      </Animated.View>
+      <Animated.View
+        entering={FadeInDown.duration(motion.base)
+          .delay(motion.fast)
+          .reduceMotion(ReduceMotion.System)}
+      >
+        <Text variant="display" accessibilityRole="header">
+          {t('onboarding.done.title')}
+        </Text>
+        <Text variant="bodyLarge">{t('onboarding.done.subtitle')}</Text>
+      </Animated.View>
     </Screen>
   );
 }
