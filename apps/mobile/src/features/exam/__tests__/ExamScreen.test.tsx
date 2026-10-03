@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react-native';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
 import { getExamRule } from '@naczas/rules';
@@ -8,6 +8,7 @@ import { usePlanData } from '@/features/plan/use-plan-data';
 import { useRecordsStore } from '@/store';
 import { ThemeProvider } from '@/theme';
 
+import { addToCalendar } from '../add-to-calendar';
 import ExamScreen from '../ExamScreen';
 
 // QueueNumber uses Reanimated; its official mock renders Animated.View as a plain View.
@@ -25,6 +26,9 @@ jest.mock('expo-router', () => ({
   router: { push: jest.fn(), back: jest.fn() },
   useLocalSearchParams: jest.fn(),
 }));
+
+jest.mock('../add-to-calendar', () => ({ addToCalendar: jest.fn() }));
+jest.mock('expo-linking', () => ({ createURL: (path: string) => `naczas://${path}` }));
 
 const mockParams = useLocalSearchParams as jest.Mock;
 
@@ -100,6 +104,20 @@ describe('ExamScreen', () => {
     fireEvent.press(screen.getByRole('button', { name: /Cofnij oznaczenie badania Mammografia/ }));
     expect(useRecordsStore.getState().records).toEqual([]);
     expect(screen.queryByText('Oznaczono jako zrobione')).toBeNull();
+  });
+
+  it('"Dodaj do kalendarza" adds the visit for a booked exam and confirms with a toast', async () => {
+    (addToCalendar as jest.Mock).mockResolvedValue('saved');
+    renderExam('mammography');
+    fireEvent.press(screen.getByRole('button', { name: /Dodaj przypomnienie o badaniu Mammografia/ }));
+    await waitFor(() => expect(screen.getByText('Dodano do kalendarza')).toBeOnTheScreen());
+    expect(addToCalendar).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: 'visit',
+        allDay: true,
+        url: 'naczas://exam/mammography',
+      }),
+    );
   });
 
   it('exam outside the active person\'s plan says so instead of "no queue data" (M3 L6)', () => {

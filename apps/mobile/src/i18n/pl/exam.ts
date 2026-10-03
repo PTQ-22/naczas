@@ -46,6 +46,19 @@ export const exam = {
   },
   source: 'Źródło: {{name}}',
   sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
+  calendar: {
+    add: 'Dodaj do kalendarza',
+    addA11y: 'Dodaj przypomnienie o badaniu {{exam}} do kalendarza',
+    searchTitle: 'Zacznij szukać terminu: {{exam}} ({{name}})',
+    searchNotes:
+      'Badanie warto zrobić do {{due}}. Na NFZ czeka się tygodniami — dziś dobry dzień, żeby poszukać terminu.\n\nPlacówki i kolejki w NaCzas: {{link}}',
+    visitTitle: 'Wizyta: {{exam}} ({{name}})',
+    visitNotes: 'Zapisane w NaCzas: {{link}}',
+    saved: 'Dodano do kalendarza',
+    downloaded: 'Pobrano plik kalendarza — otwórz go, żeby dodać przypomnienie.',
+    denied: 'Brak dostępu do kalendarza — włącz go w Ustawieniach telefonu.',
+    unavailable: 'Kalendarz nie jest dostępny w tej wersji aplikacji.',
+  },
   toast: {
     markedDone: 'Oznaczono jako zrobione',
     undo: 'Cofnij',

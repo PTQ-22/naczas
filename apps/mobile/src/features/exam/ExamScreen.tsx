@@ -1,3 +1,4 @@
+import { createURL } from 'expo-linking';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Linking, View } from 'react-native';
@@ -23,6 +24,8 @@ import { t } from '@/i18n';
 import { useRecordsStore } from '@/store';
 import { useTheme } from '@/theme';
 
+import { addToCalendar } from './add-to-calendar';
+import { buildCalendarEvent } from './calendar-event';
 import {
   examCtas,
   frequencyMessage,
@@ -71,6 +74,8 @@ export default function ExamScreen() {
   // Profile the last "done" was recorded for — the toast's undo must target that one.
   const [doneFor, setDoneFor] = useState<string | null>(null);
   const hideToast = useCallback(() => setDoneFor(null), []);
+  const [notice, setNotice] = useState<string | null>(null);
+  const hideNotice = useCallback(() => setNotice(null), []);
 
   const examId = params.success ? params.data.examId : undefined;
   const rule = rules.find((r) => r.id === examId);
@@ -122,6 +127,22 @@ export default function ExamScreen() {
     }
   };
 
+  const addEvent = async () => {
+    if (!item || !activeProfile) return;
+    const draft = buildCalendarEvent({
+      item,
+      examName: rule.name,
+      profileName: activeProfile.name,
+      link: createURL(`exam/${rule.id}`),
+      today,
+    });
+    const result = await addToCalendar(draft);
+    if (result === 'canceled') return;
+    if (result === 'saved') successHaptic();
+    setDoneFor(null);
+    setNotice(t(`exam.calendar.${result}`));
+  };
+
   const { primary, ghost } = ctas;
   const toast = doneFor ? (
     <Toast
@@ -136,6 +157,8 @@ export default function ExamScreen() {
       }}
       onHide={hideToast}
     />
+  ) : notice ? (
+    <Toast message={notice} onHide={hideNotice} />
   ) : null;
   const footer =
     toast || primary || ghost ? (
@@ -173,6 +196,15 @@ export default function ExamScreen() {
                 {msg(m)}
               </Text>
             ))}
+          {item && !notRecommended && (
+            <Button
+              variant="ghost"
+              icon="calendar"
+              label={t('exam.calendar.add')}
+              accessibilityLabel={t('exam.calendar.addA11y', { exam: rule.name })}
+              onPress={() => void addEvent()}
+            />
+          )}
         </View>
 
         {notRecommended && activeProfile && (

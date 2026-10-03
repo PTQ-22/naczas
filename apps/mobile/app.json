@@ -40,6 +40,14 @@
         }
       ],
       "expo-sharing",
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "NaCzas dodaje do Twojego kalendarza przypomnienia o badaniach.",
+          "writeOnlyCalendarPermission": "NaCzas dodaje do Twojego kalendarza przypomnienia o badaniach. Nie odczytuje Twoich wydarzeń.",
+          "writeOnlyAccess": true
+        }
+      ],
       "@react-native-community/datetimepicker"
     ],
     "experiments": {
