@@ -24,7 +24,7 @@
   3. **Za późno** — na wiele świadczeń NFZ czeka się tygodniami.
 - Pasek z 1–2 liczbami (patrz §Liczby niżej):
   - **17,39%** — tyle uprawnionych osób objął program badań przesiewowych raka jelita grubego (NFZ, stan na 1.10.2026) → źródło S2
-  - **167 dni** — średnie czekanie na kolonoskopię w trybie *pilnym* bez znieczulenia (monitoring Alivia, styczeń 2026) → źródło S5
+  - **ponad 4,5 miesiąca** — w połowie placówek NFZ średni czas oczekiwania na kolonoskopię jest dłuższy (mediana: 137,5 dnia mazowieckie, 158 dni małopolskie) → źródło S10. Przypis na slajdzie: *„API NFZ Terminy Leczenia, stan na 2026-09, średni czas oczekiwania raportowany przez placówki”*
   - Alternatywa dla drugiej liczby (świadomość): **36%** nie wie, gdzie w okolicy zrobić badanie przesiewowe (Stowarzyszenie Sarcoma, 2022) → źródło S7
 
 **Kryterium:** Relation to Category (20%)
@@ -56,14 +56,45 @@
 - Mini-przykład z demo (dane z API NFZ, „stan na” z ekranu): kolonoskopia, czekanie ok. N tyg. → przypomnienie N+2 tyg. przed terminem. **Wartości wpisać z działającego demo**, nie z głowy.
 - Tabela porównawcza:
 
-| | Przypomnienia o badaniach (np. Doctor Robert) | IKP | **NaCzas** |
-|---|---|---|---|
-| Plan badań wg wieku/płci/rodziny | ✓ [ŹRÓDŁO?] | [ŹRÓDŁO?] | ✓ |
-| Realne kolejki NFZ w okolicy | ✗ [ŹRÓDŁO?] | ✗ [ŹRÓDŁO?] | ✓ |
-| „Kiedy zacząć szukać” (lead time) | ✗ | ✗ | ✓ |
-| Profile bliskich (opiekun) | ✗ [ŹRÓDŁO?] | [ŹRÓDŁO?] | ✓ |
+Na slajd (uproszczona; ✓/✗/? tylko tam, gdzie mamy URL — szczegóły i cytaty w tabeli pełnej niżej):
 
-> ⚠️ Kolumny konkurencji wypełnić dopiero po sprawdzeniu ich aktualnych funkcji (link do strony produktu / sklepu w przypisie). `docs/00-overview.md` tylko twierdzi, że Doctor Robert nie łączy planu z NFZ — trzeba to potwierdzić przed pokazaniem jury. Kolumna IKP do decyzji: zostawić tylko, jeśli zweryfikujemy.
+| | Doctor Robert | IKP / mojeIKP | **{NAZWA}** |
+|---|---|---|---|
+| Plan badań wg profilu | ✓ | ✓ jednorazowy bilans („Moje Zdrowie”) | ✓ ciągły plan |
+| Przypomnienia o badaniach | ✓ | ✗¹ (leki i wizyty z e-rejestracji) | ✓ |
+| Kolejki NFZ | ? | ✓ osobno, na portalu pacjent.gov.pl | ✓ w planie |
+| Wskazanie placówek | ✗ (w planach) | ✓ e-rejestracja (wybrane świadczenia) | ✓ |
+| Profile rodzinne / opiekun | ? | ✓ dzieci, upoważnienia | ✓ |
+| Przygotowanie do wizyty | ✓ do badań | ? | ✓ |
+| **„Kiedy zacząć szukać” = plan × kolejka** | ✗² | ✗² | ✓ |
+
+¹ Brak przypomnień o badaniach profilaktycznych w opisach IKP, które otworzyliśmy — formalnie „nie znaleziono”, nie „brak”. Na slajdzie można zostawić ✗ tylko z tym przypisem albo wpisać „?”.
+² Żaden z produktów nie łączy osobistego planu badań z danymi o kolejkach — to jest nasz wyróżnik. Wniosek z kombinacji wierszy wyżej, nie z deklaracji producentów.
+
+**Uczciwy przekaz na slajd/Q&A:** nie mówimy „nikt nie ma danych NFZ” — IKP ma kolejki i e-rejestrację, Doctor Robert ma plan i przypomnienia. Mówimy: *„Doctor Robert mówi co i kiedy, IKP pozwala znaleźć termin — my łączymy to w jedno i mówimy, kiedy zacząć szukać, żeby zdążyć.”*
+
+Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej funkcję, „?” = nie znaleziono potwierdzenia):
+
+| Kryterium | Doctor Robert | IKP / mojeIKP |
+|---|---|---|
+| 1. Plan badań wg profilu | ✓ „spersonalizowane rekomendacje, dopasowane do Twojego wieku, płci i stylu życia”, plan na 5 lat [AS], [DR], [SR] | ✓ Program Moje Zdrowie: badania wg „wieku, płci i czynniki ryzyka”, co 5 lat (20–49) / co 3 lata (50+) — jednorazowy bilans, nie ciągły plan [MZ] |
+| 2. Przypomnienia | ✓ „powiadomień e-mail, SMS i push, by nie zapomnieć o badaniach” [AS], [GP], [DR] | ✓ tylko leki i wizyty z e-rejestracji: przypomnienia „o zażywaniu leków” [IKP3]; „na 7 dni przed wizytą” [ER]. O badaniach profilaktycznych — nie znaleziono |
+| 3. Dane o kolejkach NFZ | ? — brak wzmianki na stronie i w sklepach | ✓ na portalu pacjent.gov.pl: „prognozowany czas oczekiwania do lekarza specjalisty” [TL] (nie jako część planu w IKP) |
+| 4. Wskazanie placówek | ✗ w planach: „W przyszłości… rezerwację badań w placówkach medycznych” [GP] | ✓ centralna e-rejestracja z wyborem odległości (m.in. mammografia, HPV) [ER]; Moje Zdrowie linkuje listę POZ [MZ] |
+| 5. Profile rodzinne / opiekun | ? — tylko persona na stronie („moi rodzice/dziadkowie”), brak opisanej funkcji [DR] | ✓ konto dziecka, upoważnienie drugiego rodzica [TM], [IKP3]. Upoważnienia dorosłych (np. rodzica-seniora) — tylko źródła wtórne, nie potwierdzone |
+| 6. Przygotowanie do wizyty | ✓ przygotowanie do badań: „jak się przygotować do badań” [GP]; plan do pobrania jako PDF [DR] | ? — poradniki PDF na pacjent.gov.pl [PW], ale nie jako funkcja IKP/mojeIKP |
+
+Źródła:
+- [DR] https://doctorrobert.com/ — producent: Centrum Medyczne Szpital Świętej Rodziny sp. z o.o. (Łódź) z Fundacją Łakomy na Zdrowie; start 4.10.2025
+- [AS] https://apps.apple.com/pl/app/doctor-robert/id6744054649 — wersja 2.5
+- [GP] https://play.google.com/store/apps/details?id=com.drrobert.app&hl=pl
+- [SR] https://swietarodzina.com.pl/profilaktyka/aplikacja-doctorrobert/
+- [IKP3] https://pacjent.gov.pl/aktualnosc/poznaj-mojeikp-30 (mojeIKP 3.0, 5.12.2025)
+- [MZ] https://pacjent.gov.pl/program-moje-zdrowie
+- [ER] https://pacjent.gov.pl/e-rejestracja
+- [TL] https://pacjent.gov.pl/terminy-leczenia
+- [TM] https://pacjent.gov.pl/aktualnosc/tata-mama-i-mojeikp
+- [PW] https://pacjent.gov.pl/przygotuj-sie-do-wizyty-poradniki
 
 **Kryterium:** Idea & Innovation (30%)
 
@@ -120,7 +151,7 @@
 
 ## Liczby na slajd 2 (źródła)
 
-Wszystkie poniżej otwarte i sprawdzone na stronie źródłowej 2026-10-03. Na slajd 2 wybrać **maks. 2** (propozycja: S2 + S5). Przypis na slajdzie: wydawca + rok, pełny URL w notatkach / na slajdzie 10.
+Wszystkie poniżej otwarte i sprawdzone na stronie źródłowej 2026-10-03. Na slajd 2 wybrać **maks. 2** (propozycja: S2 + S10). Przypis na slajdzie: wydawca + rok, pełny URL w notatkach / na slajdzie 10.
 
 | ID | Liczba | Co mierzy | Okres | Wydawca | URL |
 |---|---|---|---|---|---|
@@ -134,16 +165,37 @@ Wszystkie poniżej otwarte i sprawdzone na stronie źródłowej 2026-10-03. Na s
 | S8 | 21% robi regularne badania onkologiczne właściwe dla wieku i płci | sondaż (raport enel-med „Badanie, które daje czas”, liczebność próby nie podana) | artykuł z 23.09.2026 | Polityka Zdrowotna za enel-med | https://politykazdrowotna.com/artykul/profilaktyka-raka-w-polsce-n2502892 |
 | S9 | 9,47 mln osób w wieku 18–74 (35,9%) ma obowiązki opiekuńcze | GUS, moduł BAEL 2025 (źródło wtórne; liczb w oryginale GUS nie odczytano) | 2025 | alertmedyczny.pl za GUS | https://alertmedyczny.pl/gus-9-5-mln-polakow-opiekuje-sie-bliskimi-kobiety-czesciej-maja-obowiazki-opiekuncze/ |
 
+### S10 — czasy oczekiwania z API NFZ (obliczone przez nas)
+
+Źródło: API NFZ „Terminy Leczenia” (`https://api.nfz.gov.pl/app-itl-api/queues`, `case=1` — kolejka stabilna), pole `statistics.provider-data.average-period` = średni czas oczekiwania raportowany przez placówkę (dni). Surowe dane: `apps/api/test/fixtures/queues/{06,07}/*.json`, pobrane 2026-10-03, `update` = 2026-09 (stomatologia: część placówek 2026-08). Obliczenia: `node pitch/scripts/wait-stats.mjs`.
+
+| Woj. | Świadczenie NFZ | Placówki z danymi / wszystkie | Mediana (dni) | p75 (dni) | Min–max (dni) |
+|---|---|---|---|---|---|
+| 06 małopolskie | KOLONOSKOPIA | 43 / 44 | **158** | 219,5 | 32–399 |
+| 07 mazowieckie | KOLONOSKOPIA | 96 / 98 | **137,5** | 212,8 | 12–417 |
+| 06 małopolskie | ŚWIADCZENIA Z ZAKRESU OKULISTYKI | 114 / 121 | 201,5 | 290,5 | 20–731 |
+| 07 mazowieckie | ŚWIADCZENIA Z ZAKRESU OKULISTYKI | 230 / 247 | 73 | 138 | 3–827 |
+| 06 małopolskie | PORADNIA STOMATOLOGICZNA | 384 / 567 | 22 | 44 | 1–968 |
+| 07 mazowieckie | PORADNIA STOMATOLOGICZNA | 485 / 790 | 29 | 51 | 1–460 |
+
+Metoda i zastrzeżenia (do Q&A):
+- Uwzględnione tylko `average-period > 0` (0 = placówka nie zaraportowała, `docs/04` §Pułapki).
+- Percentyl: interpolacja liniowa (= `PERCENTILE.INC` w arkuszu). Wstępne liczby WS2 (07: 137 / p75 211) wynikają z innej metody — wartość o indeksie `floor((n−1)·p)` bez interpolacji. Różnica ≤ 8,5 dnia, wniosek ten sam.
+- To mediana **po placówkach** (każda placówka waży tyle samo), nie po pacjentach. Mówimy więc „w połowie placówek”, nie „połowa pacjentów czeka”.
+- `average-period` to średnia z przeszłości raportowana przez placówkę; aplikacja do „kiedy zacząć” używa pierwszego wolnego terminu (`dates.date − date-situation-as-at`, `docs/05` §3) — dlatego liczby z demo mogą się różnić od S10.
+- Okulistyka 06 vs 07 różni się prawie 3× — nie uogólniać na „Polskę”; na slajdzie zawsze z nazwą województwa.
+
 Uwagi do użycia:
 - S1–S3 mierzą objęcie w różnych oknach czasowych (różne interwały programów) — **nie zestawiać ich jako porównania** „który program gorszy”.
-- S5 dotyczy trybu **pilnego**, a nasza aplikacja liczy kolejki w trybie stabilnym (`case=1`). Na slajdzie pisać dokładnie „pilna kolonoskopia”. Do demo („czeka się ok. N tyg.”) używamy wyłącznie wartości z naszego API NFZ, nie S5.
+- S5 dotyczy trybu **pilnego** i nie jest danymi NFZ — zastąpione przez S10 (oficjalne dane, kolejka stabilna). Zostaje w tabeli tylko jako kontekst do Q&A; na slajdzie pisać wtedy dokładnie „pilna kolonoskopia”.
+- Do demo („czeka się ok. N tyg.”) używamy wyłącznie wartości z naszego API dla lokalizacji demo, nie S10 — to inny agregat (patrz niżej).
 - S7 jest z 2022 r.; jeśli potrzebna świeższa liczba o świadomości, użyć S8.
 - S9 przyda się na slajdzie 6 (opiekun), tylko z przypisem „za GUS”.
 
 [ŹRÓDŁO?] — **nie używać**, dopóki ktoś nie potwierdzi na stronie źródłowej:
 - kolonoskopia ~4,3 mies. w Barometrze WHC 2025 (wartość tylko na wykresie, etykiety nieczytelne)
 - „Moje Zdrowie” > 3 mln uczestników (tylko fragment w wynikach wyszukiwania)
-- „na kolonoskopię czeka się 3 miesiące” z hooka w `docs/01-user-journey.md` §Demo — brak źródła; w skrypcie zastąpione sformułowaniem bez liczby
+- ~~„na kolonoskopię czeka się 3 miesiące” z hooka w `docs/01-user-journey.md` §Demo~~ — zastąpione liczbą z S10
 
 ## Checklista przed eksportem PDF
 - [ ] Wszystkie `{…}` i `[ŹRÓDŁO?]` usunięte lub zastąpione wartościami ze źródłem
