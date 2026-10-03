@@ -1,6 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { useRecordsStore } from '@/store';
 import { ThemeProvider } from '@/theme';
 
 import { mockPlanData } from '../__fixtures__/mock-plan-data';
@@ -98,6 +99,19 @@ describe('PlanScreen (mockPlan)', () => {
       screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza rodzinnego' }),
     );
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
+  });
+
+  it('booked card: "Oznacz jako zrobione" marks done here, with undo (M3 M6)', () => {
+    useRecordsStore.getState().reset();
+    renderPlan();
+    fireEvent.press(screen.getByRole('button', { name: 'Oznacz jako zrobione: Mammografia' }));
+    expect(useRecordsStore.getState().records).toEqual([
+      expect.objectContaining({ examId: 'mammography', status: 'done' }),
+    ]);
+    expect(router.push).not.toHaveBeenCalled();
+
+    fireEvent.press(screen.getByRole('button', { name: /Cofnij oznaczenie badania Mammografia/ }));
+    expect(useRecordsStore.getState().records).toEqual([]);
   });
 
   it('no button is nested inside another button (screen readers skip nested ones)', () => {
