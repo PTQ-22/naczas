@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { View } from 'react-native';
 import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
 
-import { getExamRule } from '@naczas/rules';
+import { activityTip, getExamRule } from '@naczas/rules';
 
 import { Disclaimer } from '@/components/Disclaimer';
 import { EmptyState } from '@/components/EmptyState';
@@ -12,6 +12,7 @@ import { Text } from '@/components/Text';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
 
+import { ActivityCard } from './ActivityCard';
 import { ExamCard } from './ExamCard';
 import {
   countActNow,
@@ -41,7 +42,8 @@ function handleCta(action: CtaAction, examId: string) {
 
 export default function PlanScreen() {
   const { motion, layout, space, seniorMode } = useTheme();
-  const { profiles, activeProfile, plan } = usePlanData();
+  const { profiles, activeProfile, plan, today } = usePlanData();
+  const tip = activityTip(activeProfile, today);
   const sections = groupSections(plan.items);
   const actNow = countActNow(plan.items);
   const summary = summaryMessage(actNow);
@@ -110,6 +112,8 @@ export default function PlanScreen() {
           ))}
         </View>
       )}
+
+      {tip && <ActivityCard tip={tip} />}
 
       <Disclaimer text={t('plan.disclaimer')} />
     </Screen>

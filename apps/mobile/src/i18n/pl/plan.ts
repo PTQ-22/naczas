@@ -35,6 +35,11 @@ export const plan = {
     markDone: 'Oznacz jako zrobione',
     a11ySuffix: '{{label}}: {{name}}',
   },
+  activity: {
+    heading: 'Aktywność',
+    source: 'Źródło: {{name}}',
+    sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
+  },
   empty: {
     title: 'Wszystko na czas',
     body: 'Nie ma teraz badań do zorganizowania.',

@@ -1,0 +1,12 @@
+// Stable public surface of the shared UI kit — other workstreams import from '@/components'.
+export { Button, type ButtonProps, type ButtonVariant } from './Button';
+export { Card } from './Card';
+export { Chip, type ChipTone } from './Chip';
+export { Disclaimer } from './Disclaimer';
+export { EmptyState } from './EmptyState';
+export { Icon, type IconName } from './Icon';
+export { OptionTile } from './OptionTile';
+export { ProfileSwitcher, type ProfileSwitcherItem } from './ProfileSwitcher';
+export { ProgressBar } from './ProgressBar';
+export { Screen } from './Screen';
+export { Text, type TextProps, type TextTone } from './Text';
