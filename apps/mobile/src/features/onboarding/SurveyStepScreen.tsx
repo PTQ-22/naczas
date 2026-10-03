@@ -150,11 +150,16 @@ export default function SurveyStepScreen() {
         </Text>
       </View>
       <ProgressBar value={n / STEP_COUNT} accessibilityLabel={progress} />
-      {context && (
-        <Text variant="caption" tone="textMuted">
-          {context}
-        </Text>
-      )}
+      {/* Always rendered (blank until step 1 is answered) so choosing "for me / relative"
+          doesn't shift the options under the user's finger. */}
+      <Text
+        variant="caption"
+        tone="textMuted"
+        accessibilityElementsHidden={!context}
+        importantForAccessibility={context ? 'auto' : 'no-hide-descendants'}
+      >
+        {context ?? '\u00a0'}
+      </Text>
       <Text variant="title" accessibilityRole="header">
         {t(`onboarding.steps.${step}.title`)}
       </Text>
