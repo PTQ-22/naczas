@@ -24,7 +24,6 @@ export const visitPrep = {
   share: {
     button: 'Pobierz PDF / Udostępnij',
     hint: 'Tworzy plik PDF z tym zestawieniem, który możesz zapisać lub wysłać.',
-    busy: 'Przygotowuję PDF…',
     error: 'Nie udało się przygotować PDF. Spróbuj ponownie.',
   },
   pdf: {

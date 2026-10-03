@@ -1,18 +1,38 @@
 import { useState } from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { View } from 'react-native';
 
+import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { Screen } from '@/components/Screen';
+import { Text } from '@/components/Text';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
 
 import { buildVisitPrepHtml } from './build-visit-prep-html';
 import { formatDatePl } from './format-date';
-import { PrepSection } from './PrepSection';
-import { PrimaryButton } from './PrimaryButton';
 import { shareVisitPrepPdf } from './share-visit-prep';
 import { useVisitPrep } from './use-visit-prep';
 
+import type { ReactNode } from 'react';
+
+function Section({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <Card>
+      <Text variant="heading" accessibilityRole="header">
+        {title}
+      </Text>
+      {children}
+    </Card>
+  );
+}
+
+function Lines({ lines, empty }: { lines: string[]; empty: string }) {
+  if (!lines.length) return <Text tone="textMuted">{empty}</Text>;
+  return lines.map((line) => <Text key={line}>{`• ${line}`}</Text>);
+}
+
 export default function VisitPrepScreen() {
-  const { colors, layout, space, type } = useTheme();
+  const { space } = useTheme();
   const { summary, today } = useVisitPrep();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
@@ -29,92 +49,74 @@ export default function VisitPrepScreen() {
     }
   };
 
-  const body = [type.body, { color: colors.text }];
-  const muted = [type.body, { color: colors.textMuted }];
-  const items = (lines: string[], empty: string) =>
-    lines.length ? (
-      lines.map((line) => (
-        <Text key={line} style={body}>
-          {`• ${line}`}
-        </Text>
-      ))
-    ) : (
-      <Text style={muted}>{empty}</Text>
-    );
-
   return (
-    <ScrollView
-      style={{ flex: 1, backgroundColor: colors.bg }}
-      contentContainerStyle={{
-        paddingHorizontal: layout.screenPaddingX,
-        paddingVertical: layout.sectionGap,
-        gap: layout.cardGap,
-        width: '100%',
-        maxWidth: layout.maxContentWidth,
-        alignSelf: 'center',
-      }}
+    <Screen
+      // The stack header already covers the top inset.
+      edges={['left', 'right', 'bottom']}
+      footer={
+        <>
+          <Button
+            label={t('visitPrep.share.button')}
+            accessibilityHint={t('visitPrep.share.hint')}
+            loading={busy}
+            fullWidth
+            onPress={() => void onShare()}
+          />
+          {error && (
+            <Text tone="danger" accessibilityRole="alert">
+              {t('visitPrep.share.error')}
+            </Text>
+          )}
+        </>
+      }
     >
       <View style={{ gap: space.xs }}>
-        <Text accessibilityRole="header" style={[type.title, { color: colors.text }]}>
+        <Text variant="title" accessibilityRole="header">
           {summary.person.name}
         </Text>
-        <Text style={[type.bodyLarge, { color: colors.text }]}>
+        <Text variant="bodyLarge">
           {t('visitPrep.person.details', {
             age: summary.person.age,
             sex: summary.person.sexLabel,
           })}
         </Text>
-        <Text style={muted}>{t('visitPrep.intro')}</Text>
+        <Text tone="textMuted">{t('visitPrep.intro')}</Text>
       </View>
 
-      <PrepSection title={t('visitPrep.sections.riskFactors')}>
-        {items(summary.riskFactors, t('visitPrep.empty.riskFactors'))}
-      </PrepSection>
+      <Section title={t('visitPrep.sections.riskFactors')}>
+        <Lines lines={summary.riskFactors} empty={t('visitPrep.empty.riskFactors')} />
+      </Section>
 
-      <PrepSection title={t('visitPrep.sections.askForReferral')}>
-        {items(
-          summary.askForReferral.map((x) => `${x.name} — ${x.reason}`),
-          t('visitPrep.empty.askForReferral'),
-        )}
-      </PrepSection>
+      <Section title={t('visitPrep.sections.askForReferral')}>
+        <Lines
+          lines={summary.askForReferral.map((x) => `${x.name} — ${x.reason}`)}
+          empty={t('visitPrep.empty.askForReferral')}
+        />
+      </Section>
 
-      <PrepSection title={t('visitPrep.sections.noReferralNeeded')}>
-        {items(
-          summary.noReferralNeeded.map((x) =>
+      <Section title={t('visitPrep.sections.noReferralNeeded')}>
+        <Lines
+          lines={summary.noReferralNeeded.map((x) =>
             x.referralNote ? `${x.name} — ${x.referralNote}` : x.name,
-          ),
-          t('visitPrep.empty.noReferralNeeded'),
-        )}
-      </PrepSection>
+          )}
+          empty={t('visitPrep.empty.noReferralNeeded')}
+        />
+      </Section>
 
-      <PrepSection title={t('visitPrep.sections.recentlyDone')}>
-        {items(
-          summary.recentlyDone.map(
+      <Section title={t('visitPrep.sections.recentlyDone')}>
+        <Lines
+          lines={summary.recentlyDone.map(
             (x) => `${x.name} — ${t('visitPrep.doneOn', { date: formatDatePl(x.date) })}`,
-          ),
-          t('visitPrep.empty.recentlyDone'),
-        )}
-      </PrepSection>
+          )}
+          empty={t('visitPrep.empty.recentlyDone')}
+        />
+      </Section>
 
-      <PrepSection title={t('visitPrep.sections.questions')}>
+      <Section title={t('visitPrep.sections.questions')}>
         {summary.questions.map((q, i) => (
-          <Text key={q} style={body}>
-            {`${i + 1}. ${q}`}
-          </Text>
+          <Text key={q}>{`${i + 1}. ${q}`}</Text>
         ))}
-      </PrepSection>
-
-      <PrimaryButton
-        label={busy ? t('visitPrep.share.busy') : t('visitPrep.share.button')}
-        hint={t('visitPrep.share.hint')}
-        busy={busy}
-        onPress={() => void onShare()}
-      />
-      {error ? (
-        <Text accessibilityRole="alert" style={[type.body, { color: colors.danger }]}>
-          {t('visitPrep.share.error')}
-        </Text>
-      ) : null}
-    </ScrollView>
+      </Section>
+    </Screen>
   );
 }
