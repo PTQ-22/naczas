@@ -1,3 +1,22 @@
 export const profiles = {
   title: 'Rodzina',
+  subtitle: 'Plany badań dla Ciebie i bliskich.',
+  add: 'Dodaj osobę',
+  remove: 'Usuń',
+  removeConfirmTitle: 'Usunąć profil {{name}}?',
+  removeConfirmBody: 'Plan i historia badań tej osoby zostaną usunięte z tego urządzenia.',
+  removeConfirm: 'Usuń',
+  cancel: 'Anuluj',
+  active: 'Aktywny profil',
+  switchTo: 'Przełącz na profil {{name}}',
+  urgentBadge: 'Pilne: {{count}}',
+  age: '{{age}} lat',
+  relation: {
+    self: 'Ja',
+    parent: 'Rodzic',
+    partner: 'Partner / partnerka',
+    child: 'Dziecko',
+    other: 'Bliska osoba',
+  },
+  empty: 'Nie masz jeszcze żadnego profilu.',
 } as const;

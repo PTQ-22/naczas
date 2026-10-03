@@ -1,6 +1,10 @@
 import { Redirect } from 'expo-router';
 
-// WS3: redirect to /plan when at least one profile exists.
+import { resolveEntryRoute } from './entry-route';
+
 export default function EntryScreen() {
-  return <Redirect href="/onboarding/welcome" />;
+  // TODO(WS3-2): read `hydrated` and profile count from the profiles store.
+  const route = resolveEntryRoute({ hydrated: true, profileCount: 0 });
+  if (!route) return null;
+  return <Redirect href={route} />;
 }
