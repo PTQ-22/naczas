@@ -44,7 +44,16 @@ Naprawione w tym branchu (WS0):
 - `.env.example` miało `EXPO_PUBLIC_USE_MOCKS=true`, a `client.ts` włącza mocki tylko dla `'1'` (czyli „true” = prawdziwe API). `docs/deploy.md` kazało ustawić `false`. Jest teraz `1` / `0` z komentarzem.
 - Jest: globalny mock AsyncStorage (`apps/mobile/jest.setup.ts`). Lokalne mocki u innych zostały, usunąłem je tylko z własnych testów.
 
-Niesprawdzone: druk PDF na web (systemowe okno druku blokuje automatyzację), natywne powiadomienia i Expo Go na telefonie.
+## Druk PDF na web (sprawdzone osobno, main `e0764d6`)
+
+| # | Waga | WS | Problem |
+|---|---|---|---|
+| P1 | **blocker (web/jury)** | WS4 | `expo-print` na web ignoruje `html`: `printAsync({ html })` i `printToFileAsync()` wołają po prostu `window.print()` (`node_modules/expo-print/build/ExponentPrint.web.js`). Drukuje się więc **ekran aplikacji**, a nie dokument z `buildVisitPrepHtml`. Wynik: `pdf-web-actual.pdf`, 1 strona z nagłówkiem nawigacji i przyciskiem „Pobierz PDF / Udostępnij”, ucięta na „Ostatnio zrobione” (przewijany kontener 711/1544 px), bez „Pytań do lekarza” i disclaimera. Sprawdzone przez podmianę `window.print` (wywołane na stronie aplikacji, 0 iframe'ów, brak tytułu dokumentu w DOM) i druk strony headless Chrome. |
+| P2 | niska | WS4 | Sam HTML (`buildVisitPrepHtml`) jest dobry: A4, polskie znaki, sekcje (`pdf-expected.pdf`, headless Chrome). Disclaimer trafia sam na stronę 2 — dodać `break-before: avoid` / mniejsze odstępy. |
+
+Propozycja naprawy P1 (`share-visit-prep.ts`, gałąź web): wydrukować sam HTML w ukrytym iframie, np. `iframe.srcdoc = html; iframe.onload = () => iframe.contentWindow?.print()`, albo `window.open()` + `document.write(html)` + `print()`. Na natywnych platformach `printToFileAsync({ html })` zostaje bez zmian.
+
+Niesprawdzone: natywne powiadomienia i Expo Go na telefonie.
 
 ## Zrzuty (390×844 @2x)
 
