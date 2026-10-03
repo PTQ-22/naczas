@@ -1,23 +1,28 @@
 import { useMemo } from 'react';
 
-import { MOCK_TODAY, computePlan, mockProfileMama, visitPrepSummary } from '@naczas/rules';
+import { visitPrepSummary } from '@naczas/rules';
 import type { VisitPrepSummary } from '@naczas/rules';
 import type { ISODate } from '@naczas/shared';
+
+import { usePlanData } from '@/features/plan/use-plan-data';
+import { recordsForProfile, useRecordsStore } from '@/store';
 
 export interface VisitPrepData {
   summary: VisitPrepSummary;
   today: ISODate;
 }
 
-/**
- * TODO(WS3): replace the mock with the active profile, its records and wait times from the
- * store (useActiveProfile / usePlan) once they land in main.
- */
-export function useVisitPrep(): VisitPrepData {
+/** Visit prep for the active profile: its plan (via usePlan), records and the app's today. */
+export function useVisitPrep(): VisitPrepData | null {
+  const { activeProfile, plan, today } = usePlanData();
+  const allRecords = useRecordsStore((s) => s.records);
+
   return useMemo(() => {
-    const today = MOCK_TODAY;
-    const profile = mockProfileMama;
-    const plan = computePlan({ profile, records: [], waitTimes: {}, today });
-    return { summary: visitPrepSummary({ profile, plan, today, records: [] }), today };
-  }, []);
+    if (!activeProfile || !plan) return null;
+    const records = recordsForProfile(allRecords, activeProfile.id);
+    return {
+      summary: visitPrepSummary({ profile: activeProfile, plan, today, records }),
+      today,
+    };
+  }, [activeProfile, plan, today, allRecords]);
 }

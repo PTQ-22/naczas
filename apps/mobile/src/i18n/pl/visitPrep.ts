@@ -1,5 +1,10 @@
 export const visitPrep = {
   title: 'Przygotowanie do wizyty',
+  noProfile: {
+    title: 'Najpierw dodaj osobę',
+    body: 'Zestawienie dla lekarza powstaje z profilu i planu badań.',
+    cta: 'Dodaj osobę',
+  },
   intro:
     'Zestawienie do omówienia z lekarzem rodzinnym. Możesz je pobrać jako PDF i pokazać na wizycie.',
   person: {
