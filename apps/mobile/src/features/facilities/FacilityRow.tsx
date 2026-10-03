@@ -12,8 +12,10 @@ import { fonts, useTheme } from '@/theme';
 import {
   accessibilityLabels,
   distanceLabel,
+  distinctPlaceName,
   facilityA11yLabel,
   mapsUrl,
+  nfzTitleCase,
   telUrl,
   waitTone,
   waitWeeks,
@@ -35,6 +37,7 @@ interface FacilityRowProps {
  */
 export function FacilityRow({ facility: f, examId, primary = false, sort }: FacilityRowProps) {
   const { colors, seniorMode, space, type, layout } = useTheme();
+  const placeLine = distinctPlaceName(f.providerName, f.placeName);
   const tel = telUrl(f.phone);
   const weeks = waitWeeks(f.waitDays);
   const tone = colors.urgency[waitTone(f.waitDays)].fg;
@@ -66,13 +69,15 @@ export function FacilityRow({ facility: f, examId, primary = false, sort }: Faci
             </Text>
           </View>
           <View style={{ flex: 1, gap: space.xs / 2 }}>
-            <Text variant="label">{f.providerName}</Text>
-            {!seniorMode && (
+            <Text variant="label">{nfzTitleCase(f.providerName)}</Text>
+            {!seniorMode && placeLine && (
               <Text variant="caption" tone="textMuted">
-                {f.placeName}
+                {placeLine}
               </Text>
             )}
-            <Text variant="caption" tone="textMuted">{`${f.address}, ${f.locality}`}</Text>
+            <Text variant="caption" tone="textMuted">
+              {`${nfzTitleCase(f.address)}, ${nfzTitleCase(f.locality)}`}
+            </Text>
             <Text
               variant="caption"
               tone="textMuted"

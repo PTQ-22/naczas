@@ -48,6 +48,8 @@ function ThemedStack() {
           headerStyle: { backgroundColor: colors.surface },
           // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
           headerShadowVisible: false,
+          // Chevron only — otherwise iOS shows the previous route's name, e.g. "(tabs)".
+          headerBackButtonDisplayMode: 'minimal',
           headerTintColor: colors.primary,
           headerTitleStyle: { color: colors.text, fontFamily: type.heading.fontFamily },
         }}

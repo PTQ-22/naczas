@@ -73,3 +73,92 @@ export function facilityA11yLabel(f: Facility): string {
     distance: distanceLabel(f.distanceKm),
   });
 }
+
+// NFZ registry strings are ALL CAPS ("GABINET STOMATOLOGICZNY EWA ANDREAS", "POZNAŃ-NOWE MIASTO"),
+// which is hard to scan. Title-case them, keeping legal forms / acronyms upper and short Polish
+// connectives lower.
+const KEEP_UPPER = new Set([
+  'NFZ',
+  'SP.',
+  'Z',
+  'O.O.',
+  'S.A.',
+  'S.C.',
+  'NZOZ',
+  'SPZOZ',
+  'SP',
+  'ZOZ',
+  'POZ',
+  'AOS',
+  'II',
+  'III',
+  'IV',
+  'VI',
+  'VII',
+  'VIII',
+  'IX',
+  'XI',
+  'XII',
+  'MSWIA',
+  'CM',
+  'UM',
+  'WUM',
+  'UCK',
+  'USK',
+  'SPSK',
+]);
+const KEEP_LOWER = new Set([
+  'i',
+  'w',
+  'we',
+  'na',
+  'do',
+  'od',
+  'oraz',
+  'dla',
+  'im.',
+  'ul.',
+  'al.',
+  'pl.',
+  'os.',
+]);
+
+function titleWord(word: string): string {
+  // Capitalise after "-" and after a glued abbreviation dot ("os.orła" → "Os.Orła").
+  return word.replace(
+    /(^|[-.])(\p{L})/gu,
+    (_m, sep: string, ch: string) => sep + ch.toLocaleUpperCase('pl'),
+  );
+}
+
+export function nfzTitleCase(input: string): string {
+  const words = input.trim().split(/\s+/);
+  return words
+    .map((raw, i) => {
+      const upper = raw.toLocaleUpperCase('pl');
+      // "SP. Z O.O." — keep the legal form intact.
+      if (
+        KEEP_UPPER.has(upper) &&
+        (upper !== 'Z' || words[i + 1]?.toLocaleUpperCase('pl') === 'O.O.')
+      ) {
+        return upper === 'O.O.' ? 'o.o.' : upper === 'Z' ? 'z' : upper;
+      }
+      const lower = raw.toLocaleLowerCase('pl');
+      if (i > 0 && KEEP_LOWER.has(lower)) return lower;
+      return titleWord(lower);
+    })
+    .join(' ');
+}
+
+/** The place line only adds information when it differs from the provider name. */
+export function distinctPlaceName(providerName: string, placeName: string): string | null {
+  const norm = (s: string) =>
+    s
+      .toLocaleLowerCase('pl')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .trim();
+  const p = norm(providerName);
+  const q = norm(placeName);
+  if (!q || q === p || p.includes(q) || q.includes(p)) return null;
+  return nfzTitleCase(placeName);
+}
