@@ -220,9 +220,4 @@ export const onboarding = {
     mamaName: 'Mama',
     kasiaName: 'Kasia',
   },
-  done: {
-    title: 'Gotowe!',
-    subtitle: 'Przygotowaliśmy plan badań.',
-    cta: 'Zobacz plan',
-  },
 } as const;

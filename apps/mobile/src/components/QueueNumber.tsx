@@ -8,14 +8,14 @@ import { useTheme } from '@/theme';
 import { Text } from './Text';
 
 export interface QueueNumberProps {
-  /** Exam name — the eyebrow above the number. */
+  /** Exam name — a title above the number (an eyebrow at `compact`). */
   title: string;
-  /** Status word on the right of the eyebrow ("Pilne"); coloured by `tone`. */
+  /** Status word ("Pilne") as an eyebrow, coloured by `tone`. */
   status?: string;
   tone?: Urgency;
   /** The big number: weeks in the NFZ queue, or a due month when there is no queue data. */
   value: string;
-  /** Uppercase line under the number ("tygodni w kolejce · 25 km"). */
+  /** Line under the number, in mono ("tygodni w kolejce · 25 km"). */
   unit: string;
   /** Screen-reader reading of value + unit. */
   valueA11y: string;
@@ -52,18 +52,30 @@ export function QueueNumber({
   const scale = (compact ? 0.5 : 1) * Math.min(1, 3.2 / Math.max(value.length, 1));
   const label = [title, status, valueA11y].filter(Boolean).join(', ');
 
+  const statusLabel = status && (
+    <Text variant="eyebrow" color={colors.urgency[tone].fg}>
+      {status}
+    </Text>
+  );
+  // Full size leads the plan, so the exam name is a real title (screens.md: name → when → why);
+  // compact sits under the exam screen's own title and keeps it as an eyebrow.
+  const header = compact ? (
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: space.md }}>
+      <Text variant="eyebrow" style={{ flexShrink: 1 }}>
+        {title}
+      </Text>
+      {statusLabel}
+    </View>
+  ) : (
+    <View style={{ gap: space.xs }}>
+      {statusLabel}
+      <Text variant="title">{title}</Text>
+    </View>
+  );
+
   const content = (
     <View style={{ gap: space.xs }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: space.md }}>
-        <Text variant="eyebrow" style={{ flexShrink: 1 }}>
-          {title}
-        </Text>
-        {status && (
-          <Text variant="eyebrow" color={colors.urgency[tone].fg}>
-            {status}
-          </Text>
-        )}
-      </View>
+      {header}
       <Text
         variant="ticket"
         tabular
@@ -76,7 +88,9 @@ export function QueueNumber({
       >
         {value}
       </Text>
-      <Text variant="eyebrow">{unit}</Text>
+      <Text variant="data" tone="textMuted">
+        {unit}
+      </Text>
     </View>
   );
 

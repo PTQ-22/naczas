@@ -44,6 +44,8 @@ export interface ColorTokens {
   wallGrout: string;
   /** Text placed straight on the wall. */
   onWall: string;
+  /** Urgent count on the wall / inactive folder tabs — act_now.fg is too dark on light cobalt. */
+  urgentOnWall: string;
   urgency: Record<Urgency, UrgencyColor>;
 }
 
@@ -69,6 +71,7 @@ export const colors: Record<ColorScheme, ColorTokens> = {
     wall: '#24477A',
     wallGrout: '#1C3964',
     onWall: '#FFFFFF',
+    urgentOnWall: '#FFA39A',
     urgency: {
       act_now: { fg: '#B4231A', bg: '#F7E0DA', accent: '#C8322A' },
       this_year: { fg: '#0E1B2C', bg: '#ECE7DB', accent: '#6E6A60' },
@@ -96,6 +99,7 @@ export const colors: Record<ColorScheme, ColorTokens> = {
     wall: '#0B1628',
     wallGrout: '#08111F',
     onWall: '#E8EEF5',
+    urgentOnWall: '#FF8F85',
     urgency: {
       act_now: { fg: '#FF8F85', bg: '#3A1C24', accent: '#F0564B' },
       this_year: { fg: '#E8EEF5', bg: '#1C2D50', accent: '#7A8CAE' },
@@ -198,11 +202,12 @@ const baseType: Record<TypeVariant, TypeStyle> = {
   body: { fontFamily: fonts.body, fontSize: 17, lineHeight: 25 },
   label: { fontFamily: fonts.bodyBold, fontSize: 17, lineHeight: 22 },
   caption: { fontFamily: fonts.body, fontSize: 14, lineHeight: 20 },
-  // Uppercase mono section labels; 13 pt is legible because caps + tracking (redesign §3).
+  // Uppercase mono section labels and status words only — never names or sentences. 14 pt is the
+  // app-wide minimum (tokens.md §4).
   eyebrow: {
     fontFamily: fonts.monoBold,
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     letterSpacing: 0.8,
     textTransform: 'uppercase',
   },

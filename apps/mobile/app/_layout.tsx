@@ -59,8 +59,6 @@ function ThemedStack() {
         <Stack.Screen name="index" />
         <Stack.Screen name="onboarding/welcome" />
         <Stack.Screen name="onboarding/[step]" />
-        {/* No swipe back from "done" — the survey is already saved. */}
-        <Stack.Screen name="onboarding/done" options={{ gestureEnabled: false }} />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
           name="exam/[examId]/index"

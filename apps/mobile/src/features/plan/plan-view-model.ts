@@ -159,7 +159,7 @@ export function ticketItem(items: readonly PlanItem[]): PlanItem | undefined {
 }
 
 export interface TicketContent {
-  /** The big printed number: weeks in the queue, or the due month when there is no queue data. */
+  /** The big printed number: weeks in the queue, or the due month ("10.2026") without queue data. */
   value: string;
   /** Uppercase line under the number. */
   unit: Message;
@@ -167,13 +167,6 @@ export interface TicketContent {
   message: Message;
   /** Accessible reading of value + unit ("29 tygodni w kolejce"). */
   a11yValue: Message;
-}
-
-const ROMAN_MONTHS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
-
-/** Month as written on Polish forms and calendars: "X 2026" (roman month). */
-export function romanMonth(iso: string): string {
-  return ROMAN_MONTHS[parseISO(iso).getMonth()] ?? '';
 }
 
 // Genitive month name for sentences: "do października 2026" reads naturally and aloud.
@@ -214,7 +207,7 @@ export function ticketContent(
   }
   // No queue data (program / walk-in / missing NFZ): print the due month instead of a made-up wait.
   return {
-    value: `${romanMonth(item.dueDate)}.${item.dueDate.slice(2, 4)}`,
+    value: monthYear(item.dueDate),
     unit: { key: pastDue ? 'plan.ticket.overdueUnit' : 'plan.ticket.dueUnit' },
     message,
     a11yValue: {
@@ -225,8 +218,9 @@ export function ticketContent(
 }
 
 /**
- * Right-hand column of a list row, in mono: booked → "17.10", this year → "XII", later/done → year.
- * Year is added to month/day when it is not the current one.
+ * Right-hand column of a list row, in mono: booked → "17.10", act now / this year → "12.2026",
+ * later/done → year. Months always carry the year: a bare "12" (or a roman "XII") isn't read as a
+ * month.
  */
 export function rowDate(item: PlanItem, today: string): string {
   const sameYear = item.dueDate.slice(0, 4) === today.slice(0, 4);
@@ -235,9 +229,7 @@ export function rowDate(item: PlanItem, today: string): string {
       return format(parseISO(item.dueDate), sameYear ? 'dd.MM' : 'dd.MM.yy');
     case 'act_now':
     case 'this_year':
-      return sameYear
-        ? romanMonth(item.dueDate)
-        : `${romanMonth(item.dueDate)} ${item.dueDate.slice(0, 4)}`;
+      return monthYear(item.dueDate);
     default:
       return item.dueDate.slice(0, 4);
   }

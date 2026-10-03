@@ -9,7 +9,6 @@ import {
   isCollapsedByDefault,
   planCta,
   pluralForm,
-  romanMonth,
   rowDate,
   summaryMessage,
   ticketContent,
@@ -210,9 +209,9 @@ describe('ticketContent', () => {
 
   it('prints the due month instead of a made-up wait when there is no queue data', () => {
     const c = ticketContent(future, 'program', undefined, '2026-10-03');
-    expect(c.value).toBe('IV.27');
+    expect(c.value).toBe('04.2027');
     expect(c.unit).toEqual({ key: 'plan.ticket.dueUnit' });
-    expect(ticketContent(future, 'queue', summary(null), '2026-10-03').value).toBe('IV.27');
+    expect(ticketContent(future, 'queue', summary(null), '2026-10-03').value).toBe('04.2027');
   });
 });
 
@@ -228,17 +227,13 @@ describe('rowDate', () => {
     expect(rowDate(at('booked', '2027-01-05'), '2026-10-03')).toBe('05.01.27');
   });
 
-  it('this year: roman month as on Polish forms', () => {
-    expect(rowDate(at('this_year', '2026-12-01'), '2026-10-03')).toBe('XII');
-    expect(rowDate(at('this_year', '2027-04-01'), '2026-10-03')).toBe('IV 2027');
+  it('act now / this year: numeric month with the year', () => {
+    expect(rowDate(at('this_year', '2026-12-01'), '2026-10-03')).toBe('12.2026');
+    expect(rowDate(at('this_year', '2027-04-01'), '2026-10-03')).toBe('04.2027');
+    expect(rowDate(at('act_now', '2026-10-01'), '2026-10-03')).toBe('10.2026');
   });
 
   it('later / done: year only', () => {
     expect(rowDate(at('later', '2031-06-01'), '2026-10-03')).toBe('2031');
-  });
-
-  it('romanMonth covers January and December', () => {
-    expect(romanMonth('2026-01-10')).toBe('I');
-    expect(romanMonth('2026-12-10')).toBe('XII');
   });
 });
