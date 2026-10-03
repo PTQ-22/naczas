@@ -13,7 +13,9 @@ import {
   type LastDoneAnswer,
 } from '@naczas/shared';
 
+import { migrateDraftV2 } from './last-done-migration';
 import { validatedPersist } from './persist';
+import { migrateDraftV1 } from './survey-v2-migration';
 
 /** Survey answers so far. `null` = not answered (yet) or skipped. */
 export const OnboardingDraftSchema = z.object({
@@ -32,10 +34,10 @@ export const OnboardingDraftSchema = z.object({
   familyHistory: z.array(FamilyHistorySchema),
   smoking: SmokingStatusSchema.nullable(),
   packYears: z.number().nullable(),
+  quitOver15y: z.boolean().nullable(),
+  otherLungRisk: z.boolean().nullable(),
   activity: ActivityLevelSchema.nullable(),
-  heightCm: z.number().nullable(),
-  weightKg: z.number().nullable(),
-  /** examId → answer from step 7 */
+  /** examId → answer from the last step, relative to that exam's interval */
   lastDone: z.record(z.string(), LastDoneAnswerSchema),
 });
 export type OnboardingDraft = z.infer<typeof OnboardingDraftSchema>;
@@ -54,9 +56,9 @@ export function emptyDraft(forRelative = false): OnboardingDraft {
     familyHistory: [],
     smoking: null,
     packYears: null,
+    quitOver15y: null,
+    otherLungRisk: null,
     activity: null,
-    heightCm: null,
-    weightKg: null,
     lastDone: {},
   };
 }
@@ -88,7 +90,8 @@ export const useOnboardingDraftStore = create<OnboardingDraftState>()(
     }),
     validatedPersist<OnboardingDraftState, PersistedDraft>({
       name: 'onboarding-draft',
-      version: 1,
+      version: 3,
+      migrations: { 1: migrateDraftV1, 2: migrateDraftV2 },
       schema: PersistedDraftSchema,
       partialize: ({ draft }) => ({ draft }),
     }),

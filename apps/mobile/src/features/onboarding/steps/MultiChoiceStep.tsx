@@ -1,7 +1,7 @@
 import { OptionTile } from '@/components';
 
 interface MultiChoiceStepProps<T extends string> {
-  options: readonly { value: T; label: string }[];
+  options: readonly { value: T; label: string; description?: string }[];
   selected: readonly T[];
   onToggle: (value: T) => void;
 }
@@ -19,6 +19,7 @@ export function MultiChoiceStep<T extends string>({
           key={option.value}
           mode="checkbox"
           label={option.label}
+          description={option.description}
           selected={selected.includes(option.value)}
           onPress={() => onToggle(option.value)}
         />

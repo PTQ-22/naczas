@@ -5,6 +5,7 @@ import { persist } from 'zustand/middleware';
 import { ProfileSchema, type Profile } from '@naczas/shared';
 
 import { validatedPersist } from './persist';
+import { migrateProfilesV1 } from './survey-v2-migration';
 
 const PersistedProfilesSchema = z.object({
   profiles: z.array(ProfileSchema),
@@ -48,7 +49,8 @@ export const useProfilesStore = create<ProfilesState>()(
     }),
     validatedPersist<ProfilesState, PersistedProfiles>({
       name: 'profiles',
-      version: 1,
+      version: 2,
+      migrations: { 1: migrateProfilesV1 },
       schema: PersistedProfilesSchema,
       partialize: ({ profiles, activeProfileId }) => ({ profiles, activeProfileId }),
     }),

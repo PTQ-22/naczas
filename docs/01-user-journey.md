@@ -22,15 +22,24 @@ app/
 
 ## Ankieta (kroki)
 
-Jeden temat na ekran, duże przyciski, zawsze opcja „Nie wiem / pomiń”.
+Jeden temat na ekran, duże przyciski. **Każde pytanie zmienia plan, podsumowanie dla lekarza albo wyszukiwanie placówek** — pytamy tylko wtedy, gdy przy danym wieku i płci odpowiedź może coś zmienić (logika: `apps/mobile/src/features/onboarding/survey.ts`). Źródła: `docs/research/exams-verified.md`.
 
-1. **Dla kogo?** Ja / Bliska osoba (imię, relacja)
-2. **Rok urodzenia, płeć**
-3. **Lokalizacja:** zgoda na GPS *albo* kod pocztowy → województwo + współrzędne
-4. **Choroby przewlekłe:** cukrzyca, nadciśnienie, choroby serca, inne (multi-select)
-5. **Historia rodzinna:** rak piersi, jelita grubego, prostaty, jajnika; zawał/udar przed 60 r.ż. (multi-select)
-6. **Styl życia:** palenie (nigdy / kiedyś / obecnie + paczkolata w uproszczeniu), aktywność (0–1 / 2–3 / 4+ dni w tygodniu), wzrost/waga (opcjonalnie)
-7. **Ostatnie badania:** lista badań wynikająca z kroków 1–6, dla każdego: „rok temu / 2–3 lata / dawniej / nigdy / nie pamiętam”
+| Krok | Pytanie (kiedy je pokazujemy) | Odpowiedź → skutek |
+|---|---|---|
+| 1 | **Dla kogo?** Ja / Bliska osoba (imię, relacja) | Nazwa profilu i forma zwracania się; zaleceń nie zmienia |
+| 2 | **Rok urodzenia, płeć** (obowiązkowe) | Wszystkie badania zależne od wieku i płci |
+| 3 | **Lokalizacja:** GPS *albo* kod pocztowy. Przycisk „Pomiń” (bez „Nie wiem”), znika po wybraniu | Placówki i czasy oczekiwania; plan bez zmian |
+| 4 | **Rozpoznane choroby** — tylko pasujące opcje; brak opcji → krok znika | cukrzyca / przewlekła choroba nerek / rodzinna hipercholesterolemia / choroba serca lub naczyń (35–65 lat) → **wyłącza ChUK** · zakażenie HIV lub leki immunosupresyjne (K 25–64) → **test HPV co 12 mies.** |
+| 5 | **Nowotwory w rodzinie** (rodzice, rodzeństwo, dzieci) | rak jelita grubego → **kolonoskopia od 40 r.ż.** · każdy z: jelito grube, pierś, jajnik, trzon macicy → **pytanie o poradnię genetyczną** w przygotowaniu do wizyty |
+| 6 | **Palenie i ruch:** palenie nigdy / kiedyś / obecnie | obecnie → **+ program chorób odtytoniowych** (40–65 bez POChP: + spirometria) |
+| 6a | Kiedy rzucone: ≤ 15 / > 15 lat (byli palacze) | > 15 lat → brak tomografii płuc |
+| 6b | Paczkolata (50–74 lata, palący lub rzucone ≤ 15 lat) | ≥ 20 i 55–74 lata → **+ niskodawkowa TK płuc co 12 mies.** |
+| 6c | POChP (palący 40–65 lub ścieżka TK 50–54) | wyłącza spirometrię; liczy się jako czynnik ryzyka do TK w wieku 50–54 |
+| 6d | Inny czynnik ryzyka raka płuca (50–54 lata, ≥ 20 paczkolat, bez POChP) | tak → **+ TK płuc** |
+| 6e | Aktywność fizyczna | Wskazówka w karcie „Ruch” (nie zmienia badań) |
+| 7 | **Kiedy ostatnio?** — tylko badania z planu; przedziały z interwału badania (np. kolonoskopia: „W ciągu ostatnich 5 lat / 5–10 lat temu / Ponad 10 lat temu”) | Termin następnego badania (`docs/05-scheduling-algorithm.md` §1) |
+
+Usunięte w wersji 2 (nic nie zmieniały): nadciśnienie, „inne” choroby, rak prostaty i zawał/udar w rodzinie, wzrost i waga. Zapisane wcześniej odpowiedzi usuwa migracja store'ów (v1 → v2).
 
 > Krok 7 generowany dynamicznie przez silnik reguł — pytamy tylko o badania, które dotyczą danej osoby.
 

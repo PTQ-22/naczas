@@ -28,13 +28,15 @@ namespace Doc {
     | '14'
     | '15'
     | '16';
-  export type Condition = 'diabetes' | 'hypertension' | 'heart_disease' | 'other';
+  export type Condition =
+    | 'diabetes'
+    | 'chronic_kidney_disease'
+    | 'familial_hypercholesterolemia'
+    | 'heart_disease'
+    | 'copd'
+    | 'immunosuppression';
   export type FamilyHistory =
-    | 'breast_cancer'
-    | 'colorectal_cancer'
-    | 'prostate_cancer'
-    | 'ovarian_cancer'
-    | 'early_cardiovascular';
+    'colorectal_cancer' | 'breast_cancer' | 'ovarian_cancer' | 'endometrial_cancer';
   export type SmokingStatus = 'never' | 'former' | 'current';
   export type ActivityLevel = 'low' | 'medium' | 'high';
 
@@ -47,27 +49,34 @@ namespace Doc {
     location?: { province: ProvinceCode; lat: number; lng: number; label: string };
     conditions: Condition[];
     familyHistory: FamilyHistory[];
-    smoking: { status: SmokingStatus; packYears?: number };
+    smoking: {
+      status: SmokingStatus;
+      packYears?: number;
+      quitOver15y?: boolean;
+      otherLungRisk?: boolean;
+    };
     activity?: ActivityLevel;
-    heightCm?: number;
-    weightKg?: number;
     subscribedExams?: string[];
     createdAt: ISODate;
   }
 
-  export type LastDoneAnswer = 'within_1y' | '1_3y' | 'over_3y' | 'never' | 'unknown';
+  export type LastDoneAnswer =
+    'within_half_interval' | 'within_interval' | 'over_interval' | 'never' | 'unknown';
+  export type UndatedLastDone = 'over_interval' | 'never' | 'unknown';
 
   export interface ExamRecord {
     profileId: string;
     examId: string;
     // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- verbatim doc copy; ISODate is a string alias
-    lastDone?: ISODate | LastDoneAnswer;
+    lastDone?: ISODate | UndatedLastDone;
     status: 'none' | 'booked' | 'done';
     bookedFor?: ISODate;
     updatedAt: ISODate;
   }
 
   export type BookingType = 'walk_in' | 'program' | 'queue';
+  export type DerivedFactor =
+    'smoker_20py' | 'smoker_20py_lung_risk' | 'current_smoker' | 'current_smoker_no_copd';
 
   export interface ExamRule {
     id: string;
@@ -77,10 +86,11 @@ namespace Doc {
     eligibility: {
       sex?: Sex;
       age?: [number, number];
-      requiresAny?: Array<Condition | FamilyHistory | 'smoker_20py'>;
+      requiresAny?: Array<Condition | FamilyHistory | DerivedFactor>;
+      excludesAny?: Array<Condition | FamilyHistory | DerivedFactor>;
     };
     modifiers?: Array<{
-      when?: Condition | FamilyHistory | 'smoker_20py' | 'low_activity';
+      when?: Condition | FamilyHistory | DerivedFactor | 'low_activity';
       age?: [number, number];
       intervalMonths?: number;
       note: string;
@@ -176,6 +186,7 @@ describe('types match docs/03-contracts.md', () => {
     expectTypeOf<S.ActivityLevel>().toEqualTypeOf<Doc.ActivityLevel>();
     expectTypeOf<S.Profile>().toEqualTypeOf<Doc.Profile>();
     expectTypeOf<S.LastDoneAnswer>().toEqualTypeOf<Doc.LastDoneAnswer>();
+    expectTypeOf<S.UndatedLastDone>().toEqualTypeOf<Doc.UndatedLastDone>();
     expectTypeOf<S.ExamRecord>().toEqualTypeOf<Doc.ExamRecord>();
   });
 

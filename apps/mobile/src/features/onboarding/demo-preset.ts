@@ -67,10 +67,12 @@ export function buildDemoPreset(today: ISODate): { profiles: Profile[]; records:
     fields: Pick<ExamRecord, 'status'> & Partial<ExamRecord>,
   ): ExamRecord => ({ profileId, examId, updatedAt: today, ...fields });
 
+  // Half a year ago: recent enough to keep these yearly exams out of the red section.
+  const recent = toISO(subMonths(now, 6));
   const records: ExamRecord[] = [
     record(DEMO_MAMA_ID, 'colonoscopy_screening', { lastDone: 'never', status: 'none' }),
     record(DEMO_MAMA_ID, 'mammography', {
-      lastDone: 'over_3y',
+      lastDone: 'over_interval',
       status: 'booked',
       bookedFor: toISO(addDays(now, 14)),
     }),
@@ -78,17 +80,20 @@ export function buildDemoPreset(today: ISODate): { profiles: Profile[]; records:
       lastDone: toISO(subMonths(now, 12)),
       status: 'done',
     }),
-    // An exact date 14 months back is still "1–3 years ago" but, unlike the '1_3y' answer
-    // (assumed 24 months), doesn't make the eye exam due today and red next to colonoscopy.
+    record(DEMO_MAMA_ID, 'cardiovascular_check', {
+      lastDone: toISO(subMonths(now, 30)),
+      status: 'done',
+    }),
+    // 14 months back with a 24-month interval: due this year, not red next to colonoscopy.
     record(DEMO_MAMA_ID, 'eye_exam', { lastDone: toISO(subMonths(now, 14)), status: 'none' }),
     // Recent answers for the rest so colonoscopy stands out instead of 5 red cards.
-    record(DEMO_MAMA_ID, 'dental_checkup', { lastDone: 'within_1y', status: 'none' }),
-    record(DEMO_MAMA_ID, 'cervical_screening', { lastDone: 'within_1y', status: 'none' }),
-    record(DEMO_MAMA_ID, 'skin_check', { lastDone: 'within_1y', status: 'none' }),
-    record(DEMO_KASIA_ID, 'cervical_screening', { lastDone: 'over_3y', status: 'none' }),
-    record(DEMO_KASIA_ID, 'dental_checkup', { lastDone: 'within_1y', status: 'none' }),
+    record(DEMO_MAMA_ID, 'dental_checkup', { lastDone: recent, status: 'none' }),
+    record(DEMO_MAMA_ID, 'cervical_screening', { lastDone: recent, status: 'none' }),
+    record(DEMO_MAMA_ID, 'skin_check', { lastDone: recent, status: 'none' }),
+    record(DEMO_KASIA_ID, 'cervical_screening', { lastDone: 'over_interval', status: 'none' }),
+    record(DEMO_KASIA_ID, 'dental_checkup', { lastDone: recent, status: 'none' }),
     // Without these Kasia would get 3 red cards (unknown = due today); keep HPV as her only one.
-    record(DEMO_KASIA_ID, 'skin_check', { lastDone: 'within_1y', status: 'none' }),
+    record(DEMO_KASIA_ID, 'skin_check', { lastDone: recent, status: 'none' }),
     record(DEMO_KASIA_ID, 'health_check_adult', {
       lastDone: toISO(subMonths(now, 18)),
       status: 'done',

@@ -19,7 +19,7 @@ const profile: Profile = {
   birthYear: 1968,
   sex: 'female',
   location: { province: '07', lat: 52.23, lng: 21.01, label: 'Warszawa' },
-  conditions: ['hypertension'],
+  conditions: ['diabetes'],
   familyHistory: ['colorectal_cancer'],
   smoking: { status: 'never' },
   activity: 'medium',
@@ -78,9 +78,13 @@ describe('ProfileSchema', () => {
 describe('ExamRecordSchema', () => {
   const base = { profileId: 'p1', examId: 'mammography', status: 'none', updatedAt: '2026-10-04' };
 
-  it('accepts lastDone as ISO date or survey answer', () => {
+  it('accepts lastDone as ISO date or an undated answer, not a survey bucket', () => {
     expect(ExamRecordSchema.safeParse({ ...base, lastDone: '2024-05-01' }).success).toBe(true);
-    expect(ExamRecordSchema.safeParse({ ...base, lastDone: '1_3y' }).success).toBe(true);
+    expect(ExamRecordSchema.safeParse({ ...base, lastDone: 'over_interval' }).success).toBe(true);
+    // Buckets are relative to the answer day — saving the survey turns them into a date.
+    expect(ExamRecordSchema.safeParse({ ...base, lastDone: 'within_interval' }).success).toBe(
+      false,
+    );
   });
 
   it('rejects an unknown lastDone value', () => {

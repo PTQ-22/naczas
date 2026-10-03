@@ -13,10 +13,14 @@ export type Sex = 'female' | 'male';
 export type ProvinceCode = '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08'
   | '09' | '10' | '11' | '12' | '13' | '14' | '15' | '16'; // kody NFZ
 
-export type Condition = 'diabetes' | 'hypertension' | 'heart_disease' | 'other';
+// Tylko rozpoznania, które zmieniają program NFZ (docs/01-user-journey.md §Ankieta)
+export type Condition =
+  | 'diabetes' | 'chronic_kidney_disease' | 'familial_hypercholesterolemia' | 'heart_disease' // wyłączają ChUK
+  | 'copd'               // wyłącza spirometrię; czynnik ryzyka do LDCT 50–54
+  | 'immunosuppression'; // HIV lub leki immunosupresyjne → test HPV co 12 mies.
+// U rodziców, rodzeństwa lub dzieci
 export type FamilyHistory =
-  | 'breast_cancer' | 'colorectal_cancer' | 'prostate_cancer' | 'ovarian_cancer'
-  | 'early_cardiovascular'; // zawał/udar u krewnego 1. stopnia < 60 r.ż.
+  | 'colorectal_cancer' | 'breast_cancer' | 'ovarian_cancer' | 'endometrial_cancer';
 
 export type SmokingStatus = 'never' | 'former' | 'current';
 export type ActivityLevel = 'low' | 'medium' | 'high'; // 0–1 / 2–3 / 4+ dni/tydz.
@@ -30,20 +34,27 @@ export interface Profile {
   location?: { province: ProvinceCode; lat: number; lng: number; label: string };
   conditions: Condition[];
   familyHistory: FamilyHistory[];
-  smoking: { status: SmokingStatus; packYears?: number };
+  smoking: {
+    status: SmokingStatus;
+    packYears?: number;
+    quitOver15y?: boolean;    // tylko byli palacze; LDCT wymaga abstynencji ≤ 15 lat
+    otherLungRisk?: boolean;  // ekspozycja zawodowa, radon, rak płuca u krewnego I st., wybrane przebyte nowotwory
+  };
   activity?: ActivityLevel;
-  heightCm?: number;
-  weightKg?: number;
+  subscribedExams?: string[];   // badania dodane ręcznie (custom exams) — zawsze w planie
   createdAt: ISODate;
 }
 
-/** Odpowiedź z ankiety „kiedy ostatnio”, zanim użytkownik poda dokładną datę */
-export type LastDoneAnswer = 'within_1y' | '1_3y' | 'over_3y' | 'never' | 'unknown';
+/** Odpowiedź z ankiety „kiedy ostatnio” — przedziały względem interwału badania (tylko w szkicu ankiety) */
+export type LastDoneAnswer =
+  | 'within_half_interval' | 'within_interval' | 'over_interval' | 'never' | 'unknown';
+/** Co rekord trzyma bez daty; przedziały z ankiety zapisujemy jako przyjętą datę (05-scheduling-algorithm §1) */
+export type UndatedLastDone = 'over_interval' | 'never' | 'unknown';
 
 export interface ExamRecord {
   profileId: string;
   examId: string;
-  lastDone?: ISODate | LastDoneAnswer;
+  lastDone?: ISODate | UndatedLastDone;
   status: 'none' | 'booked' | 'done';
   bookedFor?: ISODate;
   updatedAt: ISODate;
@@ -52,11 +63,17 @@ export interface ExamRecord {
 
 ## Reguły badań (format `packages/rules/data/exams.json`)
 
+> **Zmiana 2026-10-04 (przedziały „kiedy ostatnio”):** `LastDoneAnswer` liczone od interwału badania; `ExamRecord.lastDone` to data albo `UndatedLastDone`. Rekordy migrowane v1 → v2.
+
+> **Zmiana 2026-10-04 (ankieta v2):** `excludesAny` w `eligibility` (np. ChUK nie dla osób z cukrzycą). Czynniki wyliczane z profilu (`DerivedFactor`, `profileFactors` w `packages/rules`): `smoker_20py` (palący lub rzucone ≤ 15 lat, ≥ 20 paczkolat), `smoker_20py_lung_risk` (+ POChP lub inny czynnik ryzyka), `current_smoker`, `current_smoker_no_copd`. Zmiana niezgodna wstecz dla `Condition` / `FamilyHistory` / `Profile` — zapisane dane migruje store (v1 → v2).
+
 > **Zmiana 2026-10-03 (WS1):** `modifiers[].when` opcjonalne — modifier bez `when` działa tylko po `age` (np. „Moje Zdrowie”: co 3 lata od 50 r.ż.; zmienia interwał, nie poszerza kwalifikacji). Nowe opcjonalne pole `referralNote`. Obie zmiany wstecznie zgodne.
 
 ```ts
 // packages/shared/src/rules.ts
 export type BookingType = 'walk_in' | 'program' | 'queue';
+export type DerivedFactor =
+  | 'smoker_20py' | 'smoker_20py_lung_risk' | 'current_smoker' | 'current_smoker_no_copd';
 
 export interface ExamRule {
   id: string;                       // 'colonoscopy_screening'
@@ -66,10 +83,11 @@ export interface ExamRule {
   eligibility: {
     sex?: Sex;
     age?: [number, number];         // włącznie
-    requiresAny?: Array<Condition | FamilyHistory | 'smoker_20py'>;
+    requiresAny?: Array<Condition | FamilyHistory | DerivedFactor>;
+    excludesAny?: Array<Condition | FamilyHistory | DerivedFactor>;
   };
   modifiers?: Array<{
-    when?: Condition | FamilyHistory | 'smoker_20py' | 'low_activity'; // brak → modifier działa tylko po `age`
+    when?: Condition | FamilyHistory | DerivedFactor | 'low_activity'; // brak → modifier działa tylko po `age`
     age?: [number, number];
     intervalMonths?: number;
     note: string;                   // PL

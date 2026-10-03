@@ -15,22 +15,21 @@ import { MultiChoiceStep } from './steps/MultiChoiceStep';
 import { toggle, type StepProps } from './steps/step-props';
 import { WhoStep } from './steps/WhoStep';
 import {
+  activeSteps,
   canContinue,
-  isSkippable,
+  conditionOptions,
   parseStepParam,
+  skipLabel,
   skipPatch,
-  STEP_COUNT,
-  stepName,
+  stepAt,
   type SurveyStep,
 } from './survey';
 
-const CONDITIONS = ['diabetes', 'hypertension', 'heart_disease', 'other'] as const;
 const FAMILY_HISTORY = [
-  'breast_cancer',
   'colorectal_cancer',
-  'prostate_cancer',
+  'breast_cancer',
   'ovarian_cancer',
-  'early_cardiovascular',
+  'endometrial_cancer',
 ] as const;
 
 const HINTS: Partial<Record<SurveyStep, MessageKey>> = {
@@ -41,7 +40,7 @@ const HINTS: Partial<Record<SurveyStep, MessageKey>> = {
 };
 
 function StepBody({ step, ...props }: StepProps & { step: SurveyStep }) {
-  const { draft, update } = props;
+  const { draft, update, today } = props;
   switch (step) {
     case 'who':
       return <WhoStep {...props} />;
@@ -49,23 +48,38 @@ function StepBody({ step, ...props }: StepProps & { step: SurveyStep }) {
       return <BasicsStep {...props} />;
     case 'location':
       return <LocationStep {...props} />;
-    case 'conditions':
+    case 'conditions': {
+      const options = conditionOptions(draft, today);
       return (
-        <MultiChoiceStep
-          options={CONDITIONS.map((value) => ({
-            value,
-            label: t(`onboarding.steps.conditions.options.${value}`),
-          }))}
-          selected={draft.conditions}
-          onToggle={(value) => update({ conditions: toggle(draft.conditions, value) })}
-        />
+        <>
+          <MultiChoiceStep
+            options={options.map((value) => ({
+              value,
+              label: t(`onboarding.steps.conditions.options.${value}`),
+              ...(value === 'immunosuppression' && {
+                description: t('onboarding.steps.conditions.why.immunosuppression'),
+              }),
+            }))}
+            selected={draft.conditions}
+            onToggle={(value) => update({ conditions: toggle(draft.conditions, value) })}
+          />
+          {options.includes('diabetes') && (
+            <Text variant="caption" tone="textMuted">
+              {t('onboarding.steps.conditions.chukNote')}
+            </Text>
+          )}
+        </>
       );
+    }
     case 'familyHistory':
       return (
         <MultiChoiceStep
           options={FAMILY_HISTORY.map((value) => ({
             value,
             label: t(`onboarding.steps.familyHistory.options.${value}`),
+            ...(value === 'colorectal_cancer' && {
+              description: t('onboarding.steps.familyHistory.why.colorectal_cancer'),
+            }),
           }))}
           selected={draft.familyHistory}
           onToggle={(value) => update({ familyHistory: toggle(draft.familyHistory, value) })}
@@ -93,17 +107,19 @@ export default function SurveyStepScreen() {
   const update = useOnboardingDraftStore((s) => s.update);
   const { space } = useTheme();
 
-  const n = parseStepParam(params.step);
   // Deep link / reload without a survey in progress → start from the welcome screen.
   if (!draft) return <Redirect href="/onboarding/welcome" />;
+  const steps = activeSteps(draft, today);
+  const n = parseStepParam(params.step, steps.length);
   if (n === null)
     return <Redirect href={{ pathname: '/onboarding/[step]', params: { step: '1' } }} />;
 
-  const step = stepName(n);
-  const isLast = n === STEP_COUNT;
-  const progress = t('onboarding.nav.progress', { current: n, total: STEP_COUNT });
+  const step = stepAt(n, steps);
+  const isLast = n === steps.length;
+  const progress = t('onboarding.nav.progress', { current: n, total: steps.length });
   const context = askingAbout(draft);
   const hint = HINTS[step];
+  const skipKey = skipLabel(step, draft);
 
   const goNext = () => {
     if (!isLast) {
@@ -128,7 +144,7 @@ export default function SurveyStepScreen() {
   };
 
   const skip = () => {
-    update(skipPatch(step));
+    update(skipPatch(step, draft));
     goNext();
   };
 
@@ -151,7 +167,7 @@ export default function SurveyStepScreen() {
             {progress}
           </Text>
         </View>
-        <ProgressBar value={n / STEP_COUNT} accessibilityLabel={progress} />
+        <ProgressBar value={n / steps.length} accessibilityLabel={progress} />
         {/* Always rendered (blank until step 1 is answered) so choosing "for me / relative"
             doesn't shift the options under the user's finger. */}
         <Text
@@ -167,9 +183,7 @@ export default function SurveyStepScreen() {
         </Text>
         {hint && <Text tone="textMuted">{t(hint)}</Text>}
         <StepBody step={step} draft={draft} update={update} today={today} />
-        {isSkippable(step) && (
-          <Button variant="ghost" label={t('onboarding.nav.dontKnow')} onPress={skip} />
-        )}
+        {skipKey && <Button variant="ghost" label={t(skipKey)} onPress={skip} />}
       </Plate>
     </Screen>
   );

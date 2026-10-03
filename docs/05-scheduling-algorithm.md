@@ -8,12 +8,21 @@ To jest nasz główny wyróżnik — musi być poprawny, przetestowany i łatwy 
 
 ```
 if record.status == 'booked'        → urgency = 'booked', dueDate = bookedFor
-lastDone = exact date               → dueDate = lastDone + intervalMonths
-lastDone = 'within_1y'              → przyjmij lastDone = today − 6 mies.
-lastDone = '1_3y'                   → przyjmij lastDone = today − 24 mies.
-lastDone = 'over_3y'|'never'|'unknown' → dueDate = today   (overdue = true jeśli 'over_3y')
+lastDone = exact date                 → dueDate = lastDone + intervalMonths
+lastDone = 'over_interval'            → dueDate = today, overdue = true
+lastDone = 'never'|'unknown'|brak     → dueDate = today
 ```
-Przyjęte przybliżenia są **konserwatywne** (raczej wcześniej niż później) i jawne w UI („przyjęliśmy, że ok. 2 lata temu — popraw datę”).
+
+Ankieta „Kiedy ostatnio?” pyta w przedziałach **liczonych od interwału danego badania** (I = interwał dla tej osoby, z modifierami):
+
+| Odpowiedź | Etykieta (np. kolonoskopia, I = 120) | Zapis w rekordzie (`assumedLastDone`) |
+|---|---|---|
+| `within_half_interval` | „W ciągu ostatnich 5 lat” (0–½ I) | data = dzień odpowiedzi − ¼ I (środek przedziału) |
+| `within_interval` | „5–10 lat temu” (½–1 I) | data = dzień odpowiedzi − ¾ I |
+| `over_interval` | „Ponad 10 lat temu” | `'over_interval'` → zaległe |
+| `never` / `unknown` | „Nigdy” / „Nie pamiętam” | bez zmian |
+
+Przedział zamieniamy na datę **w dniu odpowiedzi**, bo czytany względem coraz późniejszego `today` przesuwałby termin w nieskończoność. Stare odpowiedzi (`within_1y`, `1_3y`, `over_3y`) migruje store rekordów (v1 → v2) według daty `updatedAt`.
 
 Interwał: `intervalMonths` z reguły, nadpisany przez najbardziej restrykcyjny pasujący `modifier`.
 

@@ -4,6 +4,7 @@ import type {
   ExamRecord,
   ExamRule,
   ISODate,
+  LastDoneAnswer,
   PlanItem,
   Profile,
   Urgency,
@@ -21,10 +22,12 @@ export const WALK_IN_LEAD_DAYS = 3;
 export const REFERRAL_BUFFER_DAYS = 14;
 export const LEAD_TIME_MIN_DAYS = 3;
 export const LEAD_TIME_MAX_DAYS = 270;
-/** 'within_1y' → assume done this many months ago (conservative: earlier, not later). */
-export const WITHIN_1Y_ASSUMED_MONTHS = 6;
-/** '1_3y' → assume done this many months ago. */
-export const ONE_TO_3Y_ASSUMED_MONTHS = 24;
+/**
+ * Survey buckets → assumed date: the middle of the bucket, as a fraction of the interval.
+ * 'within_half_interval' = 0–½ interval ago → ¼; 'within_interval' = ½–1 interval ago → ¾.
+ */
+export const WITHIN_HALF_ASSUMED_FRACTION = 0.25;
+export const WITHIN_INTERVAL_ASSUMED_FRACTION = 0.75;
 /** status 'done' moves to the "Zrobione" section only if the next due date is further than this. */
 export const DONE_HORIZON_DAYS = 365;
 /** Booked exams: remind the day before the visit. */
@@ -69,31 +72,43 @@ export function leadTime(
   return { days: Math.min(LEAD_TIME_MAX_DAYS, Math.max(LEAD_TIME_MIN_DAYS, raw)), source };
 }
 
-/** §1: when the exam should be done, from the last-done answer or exact date. */
+/**
+ * §1: survey answer → what the record stores. Dated buckets become a date anchored to the
+ * answer day, so the due date stays put as time passes (a bucket re-read against a later
+ * `today` would keep sliding forward and never come due).
+ */
+export function assumedLastDone(
+  answer: LastDoneAnswer,
+  intervalMonths: number,
+  today: ISODate,
+): NonNullable<ExamRecord['lastDone']> {
+  const ago = (fraction: number) =>
+    toISO(subMonths(parseISO(today), Math.round(intervalMonths * fraction)));
+  switch (answer) {
+    case 'within_half_interval':
+      return ago(WITHIN_HALF_ASSUMED_FRACTION);
+    case 'within_interval':
+      return ago(WITHIN_INTERVAL_ASSUMED_FRACTION);
+    default:
+      return answer;
+  }
+}
+
+/** §1: when the exam should be done, from the record's last-done date or undated answer. */
 export function dueDate(
   lastDone: ExamRecord['lastDone'],
   intervalMonths: number,
   today: ISODate,
 ): { dueDate: ISODate; overdue: boolean } {
-  const now = parseISO(today);
-  let last: Date;
   switch (lastDone) {
     case undefined:
     case 'never':
     case 'unknown':
       return { dueDate: today, overdue: false };
-    case 'over_3y':
+    case 'over_interval':
       return { dueDate: today, overdue: true };
-    case 'within_1y':
-      last = subMonths(now, WITHIN_1Y_ASSUMED_MONTHS);
-      break;
-    case '1_3y':
-      last = subMonths(now, ONE_TO_3Y_ASSUMED_MONTHS);
-      break;
-    default:
-      last = parseISO(lastDone);
   }
-  const due = toISO(addMonths(last, intervalMonths));
+  const due = toISO(addMonths(parseISO(lastDone), intervalMonths));
   return { dueDate: due, overdue: due < today };
 }
 

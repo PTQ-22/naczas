@@ -69,7 +69,7 @@ describe('profiles store', () => {
 
     expect(JSON.parse(raw ?? '{}')).toEqual({
       state: { profiles: [mama], activeProfileId: mama.id },
-      version: 1,
+      version: 2,
     });
   });
 });

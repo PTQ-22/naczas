@@ -70,11 +70,18 @@
       "Przed pobraniem nie rób USG przezpochwowego."
     ],
     "source": {
-      "name": "Umów się na test HPV HR przez mojeIKP — pacjent.gov.pl",
-      "url": "https://pacjent.gov.pl/aktualnosc/umow-sie-na-test-hpv-hr-przez-mojeikp"
+      "name": "Rozporządzenie — program profilaktyki raka szyjki macicy (Dziennik Ustaw 2025 poz. 298)",
+      "url": "https://api.sejm.gov.pl/eli/acts/DU/2025/298/text.pdf"
     },
     "verified": true,
-    "verifiedAt": "2026-10-03"
+    "verifiedAt": "2026-10-03",
+    "modifiers": [
+      {
+        "when": "immunosuppression",
+        "intervalMonths": 12,
+        "note": "Przy zakażeniu HIV lub przyjmowaniu leków immunosupresyjnych program przewiduje badanie co 12 miesięcy."
+      }
+    ]
   },
   {
     "id": "mammography",
@@ -149,6 +156,67 @@
     "source": {
       "name": "Rozporządzenie — program profilaktyki raka płuca (Dziennik Ustaw 2026 poz. 976)",
       "url": "https://www.dziennikustaw.gov.pl/D2026000097601.pdf"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03",
+    "modifiers": [
+      {
+        "when": "smoker_20py_lung_risk",
+        "age": [50, 54],
+        "note": "Ze względu na dodatkowy czynnik ryzyka program obejmuje także osoby w wieku 50–54 lat."
+      }
+    ]
+  },
+  {
+    "id": "tobacco_program",
+    "name": "Program profilaktyki chorób odtytoniowych",
+    "shortReason": "Program NFZ pomaga rzucić palenie i sprawdzić, czy palenie nie zaszkodziło płucom.",
+    "description": "W przychodni porozmawiasz z lekarzem o paleniu i o tym, jak je rzucić. Osoby w wieku 40–65 lat, u których nie rozpoznano POChP, robią w programie także spirometrię — proste badanie, w którym mocno dmuchasz w ustnik aparatu.",
+    "eligibility": {
+      "age": [18, 120],
+      "requiresAny": ["current_smoker"]
+    },
+    "modifiers": [
+      {
+        "when": "current_smoker_no_copd",
+        "age": [40, 65],
+        "note": "W Twoim wieku program obejmuje też spirometrię — nie częściej niż co 3 lata."
+      }
+    ],
+    "intervalMonths": 36,
+    "booking": "program",
+    "referral": false,
+    "referralNote": "Nie potrzebujesz skierowania — program prowadzą wybrane przychodnie POZ; znajdziesz je w wyszukiwarce programów NFZ.",
+    "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
+    "source": {
+      "name": "Program profilaktyki chorób odtytoniowych — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/program-profilaktyczny/program-profilaktyki-chorob-odtytoniowych"
+    },
+    "verified": true,
+    "verifiedAt": "2026-10-03"
+  },
+  {
+    "id": "cardiovascular_check",
+    "name": "Profilaktyka chorób układu krążenia (ChUK)",
+    "shortReason": "Badania w przychodni pomagają ocenić ryzyko chorób serca i naczyń, zanim pojawią się objawy.",
+    "description": "Lekarz lub pielęgniarka w Twojej przychodni POZ przeprowadzi wywiad, zmierzy ciśnienie i zleci badania krwi. Na tej podstawie lekarz oceni ryzyko chorób układu krążenia i powie, co dalej. Z programu nie skorzystasz, jeśli w ostatnich 12 miesiącach były u Ciebie badania w programie „Moje Zdrowie”.",
+    "eligibility": {
+      "age": [35, 65],
+      "excludesAny": [
+        "diabetes",
+        "chronic_kidney_disease",
+        "familial_hypercholesterolemia",
+        "heart_disease"
+      ]
+    },
+    "intervalMonths": 60,
+    "booking": "program",
+    "referral": false,
+    "referralNote": "Nie potrzebujesz skierowania — zgłoś się do swojej przychodni POZ.",
+    "programUrl": "https://pacjent.gov.pl/program-profilaktyczny/profilaktyka-chorob-ukladu-krazenia-chuk",
+    "source": {
+      "name": "Profilaktyka chorób układu krążenia (ChUK) — pacjent.gov.pl",
+      "url": "https://pacjent.gov.pl/program-profilaktyczny/profilaktyka-chorob-ukladu-krazenia-chuk"
     },
     "verified": true,
     "verifiedAt": "2026-10-03"

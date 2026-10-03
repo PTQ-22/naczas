@@ -37,7 +37,7 @@ describe('BookScreen', () => {
       useSettingsStore.setState({ todayOverride: TODAY });
       useProfilesStore.setState({ profiles: [profile], activeProfileId: profile.id });
       useRecordsStore.setState({
-        records: [makeRecord({ examId: 'eye_exam', lastDone: '1_3y', status: 'none' })],
+        records: [makeRecord({ examId: 'eye_exam', lastDone: '2025-01-15', status: 'none' })],
       });
     });
   });
@@ -50,7 +50,7 @@ describe('BookScreen', () => {
       {
         profileId: profile.id,
         examId: 'eye_exam',
-        lastDone: '1_3y',
+        lastDone: '2025-01-15',
         status: 'booked',
         bookedFor: '2026-10-17',
         updatedAt: TODAY,
@@ -69,7 +69,7 @@ describe('BookScreen', () => {
     expect(undone).toBe(true);
     expect(useRecordsStore.getState().records[0]).toMatchObject({
       status: 'none',
-      lastDone: '1_3y',
+      lastDone: '2025-01-15',
     });
   });
 

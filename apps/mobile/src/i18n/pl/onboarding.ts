@@ -83,53 +83,94 @@ export const onboarding = {
       },
     },
     conditions: {
-      title: 'Choroby przewlekłe',
-      hint: 'Zaznacz wszystkie, które dotyczą tej osoby.',
+      title: 'Rozpoznane choroby',
+      hint: 'Zaznacz te, które rozpoznał lekarz. Pytamy tylko o choroby, które zmieniają zalecane badania.',
+      chukNote:
+        'Przy cukrzycy, chorobie nerek, hipercholesterolemii rodzinnej lub chorobie serca badania serca prowadzi lekarz rodzinny zamiast programu profilaktyki ChUK.',
       options: {
         diabetes: 'Cukrzyca',
-        hypertension: 'Nadciśnienie',
-        heart_disease: 'Choroby serca',
-        other: 'Inne',
+        chronic_kidney_disease: 'Przewlekła choroba nerek',
+        familial_hypercholesterolemia: 'Rodzinna hipercholesterolemia',
+        heart_disease: 'Choroba serca lub naczyń',
+        immunosuppression: 'Zakażenie HIV lub leki immunosupresyjne',
+      },
+      why: {
+        immunosuppression: 'Wtedy test HPV robi się co roku zamiast co 5 lat.',
       },
     },
     familyHistory: {
-      title: 'Choroby w rodzinie',
-      hint: 'U rodziców, rodzeństwa lub dzieci.',
+      title: 'Nowotwory w rodzinie',
+      hint: 'U rodziców, rodzeństwa lub dzieci. Przy każdej z tych chorób dodamy pytanie o poradnię genetyczną do rozmowy z lekarzem.',
       options: {
-        breast_cancer: 'Rak piersi',
         colorectal_cancer: 'Rak jelita grubego',
-        prostate_cancer: 'Rak prostaty',
+        breast_cancer: 'Rak piersi',
         ovarian_cancer: 'Rak jajnika',
-        early_cardiovascular: 'Zawał lub udar przed 60. rokiem życia',
+        endometrial_cancer: 'Rak trzonu macicy',
+      },
+      why: {
+        colorectal_cancer: 'Kolonoskopia w programie NFZ już od 40. roku życia.',
       },
     },
     lifestyle: {
-      title: 'Styl życia',
+      title: 'Palenie i ruch',
       smokingLabel: 'Palenie papierosów',
       smokingNote:
-        'Bez tej odpowiedzi nie zaproponujemy badania płuc (niskodawkowa tomografia, LDCT).',
+        'Od tej odpowiedzi zależy program antytytoniowy i badanie płuc (niskodawkowa tomografia).',
       smoking: {
         never: 'Nigdy',
         former: 'Kiedyś',
         current: 'Obecnie',
       },
-      packYearsLabel: 'Ile lat, licząc paczkę dziennie?',
+      quitLabel: 'Jak dawno temu palenie zostało rzucone?',
+      quit: {
+        within15y: 'W ciągu ostatnich 15 lat',
+        over15y: 'Ponad 15 lat temu',
+      },
+      packYearsLabel: 'Ile lat palenia, licząc paczkę dziennie?',
+      packYearsHint: 'Np. 20 lat po pół paczki to 10.',
+      copdLabel: 'Lekarz rozpoznał POChP (przewlekłą obturacyjną chorobę płuc)',
+      otherLungRiskLabel: 'Czy dotyczy tej osoby któraś z sytuacji?',
+      otherLungRiskHint:
+        'Praca z azbestem, krzemionką, sadzą lub spalinami diesla · narażenie na radon · rak płuca u rodzica, rodzeństwa lub dziecka · przebyty chłoniak albo nowotwór głowy i szyi, pęcherza, nerki lub przełyku.',
+      yes: 'Tak',
+      no: 'Nie',
       activityLabel: 'Aktywność fizyczna (min. 30 min)',
+      activityNote: 'Na tej podstawie dobierzemy wskazówkę w karcie „Ruch”.',
       activity: {
         low: '0–1 dni w tygodniu',
         medium: '2–3 dni w tygodniu',
         high: '4+ dni w tygodniu',
       },
-      heightLabel: 'Wzrost (cm) — opcjonalnie',
-      weightLabel: 'Waga (kg) — opcjonalnie',
     },
     lastExams: {
       title: 'Kiedy ostatnio?',
       hint: 'Pytamy tylko o badania, które dotyczą tej osoby.',
+      // Buckets follow each exam's interval (last-done-labels.ts picks the unit and plural).
       answers: {
-        within_1y: 'W ostatnim roku',
-        '1_3y': '1–3 lata temu',
-        over_3y: 'Dawniej',
+        withinHalf: {
+          oneYear: 'W ostatnim roku',
+          oneAndHalfYears: 'W ciągu ostatnich półtora roku',
+          years: 'W ciągu ostatnich {{n}} lat',
+          fractionYears: 'W ciągu ostatnich {{n}} roku',
+          months: 'W ciągu ostatnich {{n}} miesięcy',
+        },
+        withinInterval: {
+          years: {
+            few: '{{from}}–{{to}} lata temu',
+            many: '{{from}}–{{to}} lat temu',
+            fraction: '{{from}}–{{to}} roku temu',
+          },
+          months: { few: '{{from}}–{{to}} miesiące temu', many: '{{from}}–{{to}} miesięcy temu' },
+        },
+        overInterval: {
+          years: {
+            one: 'Ponad rok temu',
+            few: 'Ponad {{n}} lata temu',
+            many: 'Ponad {{n}} lat temu',
+            fraction: 'Ponad {{n}} roku temu',
+          },
+          months: { few: 'Ponad {{n}} miesiące temu', many: 'Ponad {{n}} miesięcy temu' },
+        },
         never: 'Nigdy',
         unknown: 'Nie pamiętam',
       },

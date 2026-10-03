@@ -27,17 +27,26 @@ const SEX_LABEL: Record<Sex, string> = { female: 'kobieta', male: 'mężczyzna' 
 
 const CONDITION_LABEL: Record<Condition, string> = {
   diabetes: 'Cukrzyca',
-  hypertension: 'Nadciśnienie tętnicze',
-  heart_disease: 'Choroba serca',
-  other: 'Inna choroba przewlekła',
+  chronic_kidney_disease: 'Przewlekła choroba nerek',
+  familial_hypercholesterolemia: 'Rodzinna hipercholesterolemia',
+  heart_disease: 'Choroba serca lub naczyń',
+  copd: 'POChP',
+  immunosuppression: 'Zakażenie HIV lub leki immunosupresyjne',
 };
 
 const FAMILY_LABEL: Record<FamilyHistory, string> = {
-  breast_cancer: 'Rak piersi w rodzinie',
   colorectal_cancer: 'Rak jelita grubego w rodzinie',
-  prostate_cancer: 'Rak prostaty w rodzinie',
+  breast_cancer: 'Rak piersi w rodzinie',
   ovarian_cancer: 'Rak jajnika w rodzinie',
-  early_cardiovascular: 'Zawał lub udar u bliskiego krewnego przed 60. rokiem życia',
+  endometrial_cancer: 'Rak trzonu macicy w rodzinie',
+};
+
+/** Genitive for "ze względu na … w rodzinie". */
+const FAMILY_GENITIVE: Record<FamilyHistory, string> = {
+  colorectal_cancer: 'raka jelita grubego',
+  breast_cancer: 'raka piersi',
+  ovarian_cancer: 'raka jajnika',
+  endometrial_cancer: 'raka trzonu macicy',
 };
 
 const MAX_QUESTIONS = 4;
@@ -48,11 +57,18 @@ function riskFactors(profile: Profile): string[] {
     ...profile.conditions.map((c) => CONDITION_LABEL[c]),
     ...profile.familyHistory.map((f) => FAMILY_LABEL[f]),
   ];
-  const { status, packYears } = profile.smoking;
+  const { status, packYears, quitOver15y, otherLungRisk } = profile.smoking;
   if (status !== 'never') {
     const base = status === 'current' ? 'Palenie tytoniu obecnie' : 'Palenie tytoniu w przeszłości';
-    // "paczkolata: N" avoids Polish numeral declension (1 paczkorok / 2 paczkolata / 5 paczkolat).
-    out.push(packYears === undefined ? base : `${base} (paczkolata: ${packYears})`);
+    const details = [
+      // "paczkolata: N" avoids Polish numeral declension (1 paczkorok / 2 paczkolata / 5 paczkolat).
+      ...(packYears === undefined ? [] : [`paczkolata: ${packYears}`]),
+      ...(quitOver15y === undefined
+        ? []
+        : [quitOver15y ? 'rzucone ponad 15 lat temu' : 'rzucone w ciągu ostatnich 15 lat']),
+    ];
+    out.push(details.length ? `${base} (${details.join(', ')})` : base);
+    if (otherLungRisk) out.push('Dodatkowy czynnik ryzyka raka płuca');
   }
   if (profile.activity === 'low') out.push('Niska aktywność fizyczna');
   return out;
@@ -73,6 +89,16 @@ function questions(input: {
   if (familyExam) {
     out.push(
       `Czy ze względu na historię rodzinną ${should} zrobić badanie „${familyExam.name}” wcześniej lub częściej?`,
+    );
+  }
+  // pacjent.gov.pl: these cancers in the family are what the NFZ "opieka nad rodzinami wysokiego,
+  // dziedzicznie uwarunkowanego ryzyka" covers; the GP decides on the referral.
+  const hereditary = profile.familyHistory.map((f) => FAMILY_GENITIVE[f]);
+  if (hereditary.length) {
+    const last = hereditary.pop();
+    const list = hereditary.length ? `${hereditary.join(', ')} i ${last}` : last;
+    out.push(
+      `Czy ze względu na ${list} w rodzinie ${should} skorzystać z porady w poradni genetycznej?`,
     );
   }
   if (askForReferral.length) {
@@ -105,7 +131,7 @@ export function visitPrepSummary(input: {
     .filter((r) => r.profileId === profile.id && r.status === 'done')
     .flatMap((r) => {
       const rule = byId.get(r.examId);
-      // Survey answers ('within_1y', …) have no date to show the doctor.
+      // Undated answers ('over_interval', …) have nothing to show the doctor.
       const date = ISODateSchema.safeParse(r.lastDone);
       return rule && date.success ? [{ examId: rule.id, name: rule.name, date: date.data }] : [];
     })

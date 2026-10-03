@@ -146,6 +146,49 @@ describe('visitPrepSummary — persona with eye_exam / skin_check (referral requ
   });
 });
 
+describe('visitPrepSummary — family history and smoking details', () => {
+  const empty: Plan = { profileId: 'mama', generatedAt: TODAY, items: [] };
+
+  it('asks about the genetic clinic, listing every cancer in the family', () => {
+    const s = visitPrepSummary({
+      profile: {
+        ...mama,
+        familyHistory: ['breast_cancer', 'ovarian_cancer', 'endometrial_cancer'],
+      },
+      plan: empty,
+      today: TODAY,
+    });
+    expect(s.questions).toContain(
+      'Czy ze względu na raka piersi, raka jajnika i raka trzonu macicy w rodzinie powinnam skorzystać z porady w poradni genetycznej?',
+    );
+  });
+
+  it('does not ask about the genetic clinic without family history', () => {
+    const s = visitPrepSummary({
+      profile: { ...mama, familyHistory: [] },
+      plan: empty,
+      today: TODAY,
+    });
+    expect(s.questions.join(' ')).not.toMatch(/genetycznej/);
+  });
+
+  it('shows when a former smoker quit and the extra lung risk factor', () => {
+    const s = visitPrepSummary({
+      profile: {
+        ...mama,
+        familyHistory: [],
+        smoking: { status: 'former', packYears: 30, quitOver15y: false, otherLungRisk: true },
+      },
+      plan: empty,
+      today: TODAY,
+    });
+    expect(s.riskFactors).toEqual([
+      'Palenie tytoniu w przeszłości (paczkolata: 30, rzucone w ciągu ostatnich 15 lat)',
+      'Dodatkowy czynnik ryzyka raka płuca',
+    ]);
+  });
+});
+
 describe('visitPrepSummary — edge cases', () => {
   it('former smoker without pack-years', () => {
     const s = visitPrepSummary({
@@ -199,7 +242,7 @@ describe('visitPrepSummary — edge cases', () => {
         {
           profileId: 'mama',
           examId: 'dental_checkup',
-          lastDone: 'within_1y',
+          lastDone: 'over_interval',
           status: 'done',
           updatedAt: TODAY,
         },

@@ -54,13 +54,13 @@ describe('exam status actions', () => {
   });
 
   it('markBooked keeps lastDone and stamps updatedAt with today', () => {
-    store().upsertRecord(makeRecord({ lastDone: 'over_3y' }));
+    store().upsertRecord(makeRecord({ lastDone: 'over_interval' }));
     store().markBooked(P, COLO, '2027-01-12');
 
     expect(record()).toEqual({
       profileId: P,
       examId: COLO,
-      lastDone: 'over_3y',
+      lastDone: 'over_interval',
       status: 'booked',
       bookedFor: '2027-01-12',
       updatedAt: '2026-10-04',
@@ -104,7 +104,7 @@ describe('exam status actions', () => {
 
   it('every action produces a contract-valid record', () => {
     store().markBooked(P, COLO, '2027-01-12');
-    store().setLastDone(P, COLO, 'within_1y');
+    store().setLastDone(P, COLO, '2026-04-01');
     store().markDone(P, 'mammography', '2026-10-01');
     store().records.forEach((r) => ExamRecordSchema.parse(r));
   });
