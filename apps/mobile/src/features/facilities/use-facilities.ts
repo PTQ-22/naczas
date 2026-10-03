@@ -11,7 +11,8 @@ export interface FacilitiesQuery {
   province: ProvinceCode;
   lat?: number;
   lng?: number;
-  radiusKm: number;
+  /** Omitted by default: the API starts at 15 km and widens (15 → 30 → 60 → province). */
+  radiusKm?: number;
   sort: FacilitiesSort;
 }
 
@@ -33,12 +34,20 @@ export function useFacilities(q: FacilitiesQuery | null): FacilitiesState & { re
   const { examId, province, lat, lng, radiusKm, sort } = q ?? {};
   const key = JSON.stringify([examId, province, lat, lng, radiusKm, sort, attempt]);
   useEffect(() => {
-    if (!examId || !province || radiusKm === undefined || !sort) return;
+    if (!examId || !province || !sort) return;
     const controller = new AbortController();
     // Coordinates are rounded to ~1 km inside the client (AGENTS.md §8).
     api
       .getFacilities(
-        { examId, province, lat, lng, radiusKm, sort, limit: LIMIT },
+        {
+          examId,
+          province,
+          lat,
+          lng,
+          ...(radiusKm !== undefined && { radiusKm }),
+          sort,
+          limit: LIMIT,
+        },
         { signal: controller.signal, timeoutMs: TIMEOUT_MS },
       )
       .then((data) => setResult({ key, state: { status: 'success', data } }))

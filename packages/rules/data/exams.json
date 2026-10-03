@@ -107,7 +107,7 @@
     "id": "colonoscopy_screening",
     "name": "Kolonoskopia",
     "shortReason": "Kolonoskopia pozwala obejrzeć jelito od środka i wcześnie zauważyć zmiany.",
-    "description": "To badanie endoskopowe jelita grubego — lekarz ogląda jelito od środka. Badanie trwa od 15 do 40 minut. Można je zrobić w znieczuleniu. Do badania trzeba się wcześniej przygotować.",
+    "description": "To badanie endoskopowe jelita grubego — lekarz ogląda jelito od środka. Badanie trwa od 15 do 40 minut i można je zrobić w znieczuleniu. Do badania trzeba się wcześniej przygotować. Czasy oczekiwania w aplikacji pochodzą z kolejek NFZ do kolonoskopii w poradniach, a nie z programu przesiewowego.",
     "eligibility": {
       "age": [50, 65]
     },
@@ -121,7 +121,7 @@
     "intervalMonths": 120,
     "booking": "queue",
     "referral": false,
-    "referralNote": "W programie badań przesiewowych nie potrzebujesz skierowania — placówkę znajdziesz w wyszukiwarce NFZ.",
+    "referralNote": "W programie przesiewowym zapisujesz się bez skierowania — placówkę znajdziesz w wyszukiwarce programów NFZ.",
     "nfzBenefits": ["KOLONOSKOPIA"],
     "programUrl": "https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne",
     "prepTips": ["Placówka da Ci dokładną instrukcję przygotowania — postępuj według niej."],

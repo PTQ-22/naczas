@@ -1,9 +1,10 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
-import { View } from 'react-native';
+import { Linking, View } from 'react-native';
 
 import { mockProfileMama, rules } from '@naczas/rules';
 
+import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
 import { EmptyState } from '@/components/EmptyState';
 import { Icon } from '@/components/Icon';
@@ -18,9 +19,6 @@ import { asOfLabel } from './facility-format';
 import { FacilityCard } from './FacilityCard';
 import { SegmentedControl } from './SegmentedControl';
 import { useFacilities, type FacilitiesSort } from './use-facilities';
-
-const RADIUS_KM = 25;
-const WIDE_RADIUS_KM = 50;
 
 type ViewMode = 'list' | 'map';
 
@@ -48,7 +46,6 @@ export default function FacilitiesScreen() {
   const rule = rules.find((r) => r.id === examId);
 
   const [sort, setSort] = useState<FacilitiesSort>('soonest');
-  const [radiusKm, setRadiusKm] = useState(RADIUS_KM);
   // Starts on the list (always in senior mode, screens.md §4); the list has everything the map has.
   // No side-by-side layout: Screen caps content at maxContentWidth (640).
   const [view, setView] = useState<ViewMode>('list');
@@ -62,11 +59,10 @@ export default function FacilitiesScreen() {
             province: location.province,
             lat: location.lat,
             lng: location.lng,
-            radiusKm,
             sort,
           }
         : null,
-    [examId, location, rule?.booking, radiusKm, sort],
+    [examId, location, rule?.booking, sort],
   );
   const state = useFacilities(query);
 
@@ -75,9 +71,12 @@ export default function FacilitiesScreen() {
       <Text variant="title" accessibilityRole="header">
         {rule ? t('facilities.heading', { exam: rule.name }) : t('facilities.headingFallback')}
       </Text>
-      {state.status === 'success' && (
+      {state.status === 'success' && state.data.items.length > 0 && (
         <Text variant="caption" tone="textMuted">
-          {t('facilities.summary', { radius: radiusKm, count: state.data.items.length })}
+          {t(`facilities.summary.${sort}`, {
+            count: state.data.items.length,
+            km: Math.ceil(Math.max(...state.data.items.map((f) => f.distanceKm))),
+          })}
         </Text>
       )}
     </View>
@@ -134,20 +133,7 @@ export default function FacilitiesScreen() {
       />
     );
   } else if (state.data.items.length === 0) {
-    body = (
-      <EmptyState
-        icon="info"
-        title={t('facilities.states.emptyTitle', { radius: radiusKm })}
-        action={
-          radiusKm < WIDE_RADIUS_KM
-            ? {
-                label: t('facilities.states.widen', { radius: WIDE_RADIUS_KM }),
-                onPress: () => setRadiusKm(WIDE_RADIUS_KM),
-              }
-            : undefined
-        }
-      />
-    );
+    body = <EmptyState icon="info" title={t('facilities.states.emptyTitle')} />;
   } else {
     const { items, source } = state.data;
     const selected = items.find((f) => f.id === selectedId);
@@ -182,9 +168,29 @@ export default function FacilitiesScreen() {
     );
   }
 
+  // L5: for colonoscopy the NFZ queues are clinics (usually with a referral), while the screening
+  // programme needs none — say so where people pick a place, and link the programme search.
+  const programUrl = rule.programUrl;
+  const programInfo = programUrl && (
+    <Card>
+      <Text variant="caption" tone="textMuted">
+        {t('facilities.programInfo')}
+      </Text>
+      <Button
+        variant="ghost"
+        icon="external"
+        accessibilityRole="link"
+        label={t('facilities.programLink')}
+        accessibilityLabel={t('facilities.programLinkA11y')}
+        onPress={() => void Linking.openURL(programUrl)}
+      />
+    </Card>
+  );
+
   return (
     <Screen edges={['left', 'right', 'bottom']}>
       {header}
+      {programInfo}
       {controls}
       {body}
     </Screen>

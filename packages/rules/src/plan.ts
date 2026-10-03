@@ -21,9 +21,15 @@ export const URGENCY_ORDER: Record<Urgency, number> = {
   done: 4,
 };
 
+/**
+ * Urgency first. Among act_now, the longest lead time (longest NFZ queue) comes first: it is the
+ * one that gets worse with every day of waiting. Then notifyDate.
+ */
 export function comparePlanItems(a: PlanItem, b: PlanItem): number {
   return (
-    URGENCY_ORDER[a.urgency] - URGENCY_ORDER[b.urgency] || a.notifyDate.localeCompare(b.notifyDate)
+    URGENCY_ORDER[a.urgency] - URGENCY_ORDER[b.urgency] ||
+    (a.urgency === 'act_now' ? b.leadTimeDays - a.leadTimeDays : 0) ||
+    a.notifyDate.localeCompare(b.notifyDate)
   );
 }
 

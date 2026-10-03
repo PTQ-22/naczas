@@ -1,6 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react-native';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+
+import { useProfilesStore, useRecordsStore, useSettingsStore } from '@/store';
+import { makeProfile, makeRecord } from '@/store/__fixtures__/fixtures';
 
 import VisitPrepScreen from '../VisitPrepScreen';
 
@@ -8,13 +11,47 @@ jest.mock('expo-print', () => ({
   printToFileAsync: jest.fn(() => Promise.resolve({ uri: 'file:///tmp/visit.pdf' })),
   printAsync: jest.fn(() => Promise.resolve()),
 }));
+jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
 jest.mock('expo-sharing', () => ({
   isAvailableAsync: jest.fn(() => Promise.resolve(true)),
   shareAsync: jest.fn(() => Promise.resolve()),
 }));
 
-describe('VisitPrepScreen (mock profile: mama)', () => {
-  beforeEach(() => jest.clearAllMocks());
+// No location on these profiles → usePlan plans with default lead times, no network.
+const mama = makeProfile({ id: 'mama', name: 'Mama', activity: 'medium' });
+const kasia = makeProfile({
+  id: 'kasia',
+  name: 'Kasia',
+  relation: 'self',
+  birthYear: 1992,
+  familyHistory: [],
+});
+
+const setActive = (id: string | null, profiles = [mama, kasia]) => {
+  // Braces matter: persisted setState returns a Promise, which would make act() async.
+  act(() => {
+    useProfilesStore.setState({ profiles: id ? profiles : [], activeProfileId: id });
+  });
+};
+
+describe('VisitPrepScreen (active profile from the store)', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    act(() => {
+      useSettingsStore.setState({ todayOverride: '2026-10-03' });
+      useRecordsStore.setState({
+        records: [
+          makeRecord({
+            profileId: 'mama',
+            examId: 'mammography',
+            lastDone: '2026-06-15',
+            status: 'done',
+          }),
+        ],
+      });
+    });
+    setActive('mama');
+  });
 
   it('renders the person and all sections as headers', () => {
     render(<VisitPrepScreen />);
@@ -35,7 +72,30 @@ describe('VisitPrepScreen (mock profile: mama)', () => {
     expect(screen.getByText('• Rak jelita grubego w rodzinie')).toBeTruthy();
     expect(screen.getByText(/^• Badanie u okulisty — /)).toBeTruthy();
     expect(screen.getByText(/^• Kolonoskopia — /)).toBeTruthy();
+    expect(screen.getByText(/^• Mammografia — zrobione 15\.06\.2026$/)).toBeTruthy();
+  });
+
+  it('uses the real profile: no "low activity" for activity medium (bug B3)', () => {
+    render(<VisitPrepScreen />);
+    expect(screen.queryByText('• Niska aktywność fizyczna')).toBeNull();
+  });
+
+  it('switching the active profile shows that person', () => {
+    setActive('kasia');
+    render(<VisitPrepScreen />);
+    expect(screen.getByRole('header', { name: 'Kasia' })).toBeTruthy();
+    expect(screen.getByText('wiek: 34 · kobieta')).toBeTruthy();
     expect(screen.getByText('Brak zapisanych badań z datą.')).toBeTruthy();
+  });
+
+  it('no profile → empty state linking to onboarding', () => {
+    setActive(null);
+    render(<VisitPrepScreen />);
+    expect(screen.getByText('Najpierw dodaj osobę')).toBeTruthy();
+    fireEvent.press(screen.getByRole('button', { name: 'Dodaj osobę' }));
+    expect(
+      jest.requireMock<{ router: { push: jest.Mock } }>('expo-router').router.push,
+    ).toHaveBeenCalledWith('/onboarding/welcome');
   });
 
   it('share button creates a PDF and opens the share sheet', async () => {

@@ -1,8 +1,10 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';
+import { EmptyState } from '@/components/EmptyState';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
@@ -33,9 +35,26 @@ function Lines({ lines, empty }: { lines: string[]; empty: string }) {
 
 export default function VisitPrepScreen() {
   const { space } = useTheme();
-  const { summary, today } = useVisitPrep();
+  const data = useVisitPrep();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
+
+  if (!data) {
+    return (
+      <Screen edges={['left', 'right', 'bottom']}>
+        <EmptyState
+          icon="people"
+          title={t('visitPrep.noProfile.title')}
+          body={t('visitPrep.noProfile.body')}
+          action={{
+            label: t('visitPrep.noProfile.cta'),
+            onPress: () => router.push('/onboarding/welcome'),
+          }}
+        />
+      </Screen>
+    );
+  }
+  const { summary, today } = data;
 
   const onShare = async () => {
     setBusy(true);
