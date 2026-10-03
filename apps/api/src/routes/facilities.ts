@@ -5,7 +5,7 @@ import type { FacilitiesResponse, Facility } from '@naczas/shared';
 
 import { errorResponse, LocationQuerySchema, originOf, validationMessage } from './common';
 import { MIN_FACILITIES, radiusSteps } from '../aggregate/geo';
-import { filterExactBenefits, normalizeQueue } from '../aggregate/normalize';
+import { selectAdultQueues, normalizeQueue } from '../aggregate/normalize';
 import { benefitsForExam } from '../temp-benefits';
 
 import type { QueueLoader } from '../queues';
@@ -48,7 +48,7 @@ export function facilitiesRoutes(loader: QueueLoader) {
     }
 
     const loaded = await loader.load(q.province, benefits);
-    const all = filterExactBenefits(loaded.queues, benefits)
+    const all = selectAdultQueues(loaded.queues, benefits)
       .map((queue) => normalizeQueue(queue, { origin, fallbackAsOf: `${loaded.fallbackMonth}-01` }))
       .filter((f) => f !== null);
     const candidates = origin ? withinRadius(all, q.radiusKm) : all;

@@ -25,12 +25,14 @@ const fixtures = readdirSync(ROOT).flatMap((province) =>
 );
 
 describe('NFZ queue fixtures', () => {
-  it('covers 3 benefits × provinces 06 and 07', () => {
+  it('covers 4 benefits × provinces 06 and 07', () => {
     expect(fixtures.map((f) => f.name).sort()).toEqual([
       '06/kolonoskopia.json',
+      '06/poradnia-dermatologiczna.json',
       '06/poradnia-stomatologiczna.json',
       '06/swiadczenia-z-zakresu-okulistyki.json',
       '07/kolonoskopia.json',
+      '07/poradnia-dermatologiczna.json',
       '07/poradnia-stomatologiczna.json',
       '07/swiadczenia-z-zakresu-okulistyki.json',
     ]);

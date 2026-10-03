@@ -118,6 +118,15 @@ describe('GET /v1/wait-times', () => {
   });
 });
 
+it('serves skin_check from PORADNIA DERMATOLOGICZNA', async () => {
+  const { status, body } = await get(
+    makeApp('up'),
+    `/v1/wait-times?examId=skin_check&province=07&${WARSAW}`,
+  );
+  expect(status).toBe(200);
+  expect(body).toMatchObject({ facilitiesCount: 48, p50Days: 92, p75Days: 142, minDays: 10 });
+});
+
 describe('GET /v1/facilities', () => {
   const base = `/v1/facilities?examId=colonoscopy_screening&province=07&${WARSAW}&radiusKm=15`;
 

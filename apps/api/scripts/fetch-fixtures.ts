@@ -15,7 +15,15 @@ const BASE = `${ORIGIN}/app-itl-api`;
 const GAP_MS = 1100;
 const RETRY_BACKOFF_MS = [5_000, 15_000, 30_000];
 
-const BENEFITS = ['KOLONOSKOPIA', 'PORADNIA STOMATOLOGICZNA', 'ŚWIADCZENIA Z ZAKRESU OKULISTYKI'];
+const DEFAULT_BENEFITS = [
+  'KOLONOSKOPIA',
+  'PORADNIA STOMATOLOGICZNA',
+  'ŚWIADCZENIA Z ZAKRESU OKULISTYKI',
+  'PORADNIA DERMATOLOGICZNA',
+];
+// Optional CLI override, e.g. `pnpm fixtures 'PORADNIA DERMATOLOGICZNA'` — re-recording everything
+// would change the fixtures that tests' expected numbers are computed from.
+const BENEFITS = process.argv.length > 2 ? process.argv.slice(2) : DEFAULT_BENEFITS;
 const PROVINCES = ['06', '07'];
 const CASE = 1;
 
