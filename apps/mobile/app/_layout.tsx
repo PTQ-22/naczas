@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RestoreErrorBanner } from '@/features/settings/RestoreErrorBanner';
 import { SettingsThemeProvider } from '@/features/settings/SettingsThemeProvider';
 import { t } from '@/i18n';
+import { NotificationSync } from '@/notifications';
 import { useTheme } from '@/theme';
 
 export default function RootLayout() {
@@ -16,6 +17,7 @@ export default function RootLayout() {
         <SettingsThemeProvider>
           <ThemedStack />
           <RestoreErrorBanner />
+          <NotificationSync />
         </SettingsThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

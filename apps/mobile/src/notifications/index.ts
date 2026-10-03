@@ -15,4 +15,5 @@ export {
 } from './permissions';
 export { cancelAllOurNotifications, syncNotifications, type SyncResult } from './sync';
 export { sendTestNotification, type TestNotificationResult } from './test-notification';
+export { NotificationSync } from './NotificationSync';
 export { useSyncNotifications } from './use-sync-notifications';
