@@ -73,5 +73,5 @@ Powiadomienia (WS3): planowane lokalnie na `notifyDate 09:00` (i dodatkowo `book
 - [ ] płeć wyklucza badanie (mammografia u M)
 - [ ] status booked → urgency booked, notifyDate = bookedFor − 1
 - [ ] clamp: p75 = 400 dni → leadTime = 270
-- [ ] sortowanie planu: act_now → booked → this_year → later → done
+- [ ] sortowanie planu: act_now → booked → this_year → later → done; w obrębie act_now malejąco po leadTimeDays (najdłuższa kolejka pierwsza), potem notifyDate
 - [ ] stała `today` — test nie zależy od daty systemowej
