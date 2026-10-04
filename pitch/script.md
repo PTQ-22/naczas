@@ -49,7 +49,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 > ✂️ **Jeśli brakuje czasu:** skróć onboarding do presetu profili i pomiń kalendarz dostępności (agent przyjmie najbliższy termin).
 > 🔁 **Jeśli demo padnie:** „Pokażę to na nagraniu” → wideo od 0:20 (na nagraniu prawdziwa rozmowa na nasz numer testowy). Nie debuguj na scenie.
 
-## 2:15–2:45 · Wyróżnik + technologia  [SLAJD 5 → 8]
+## 2:15–2:45 · Wyróżnik + technologia  [SLAJD 7]
 
 **P:**
 > Co jest nowe? Są aplikacje, które przypominają o badaniach, i jest IKP, w którym znajdziesz termin. My liczymy, **kiedy zacząć**: termin badania minus szacowany czas czekania w Twojej okolicy z kolejek NFZ, plus zapas na skierowanie.
@@ -57,7 +57,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 
 (~60 słów)
 
-## 2:45–3:00 · Wdrożenie i zamknięcie  [SLAJD 9 → 10]
+## 2:45–3:00 · Wdrożenie i zamknięcie  [SLAJD 8 → 9]
 
 **P:**
 > Następne kroki: szyfrowany wspólny plan opiekuna i rodzica, agent umawiający przez e-rejestrację zamiast telefonu i współpraca z NFZ i samorządami — to może być publiczne, otwarte narzędzie.
