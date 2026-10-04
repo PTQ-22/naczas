@@ -72,10 +72,10 @@ describe('PlanScreen (mockPlan)', () => {
   it('leads with the queue number of the most urgent exam and its one CTA', () => {
     renderPlan();
     expect(screen.getByRole('header', { name: 'Plan badań — Mama' })).toBeOnTheScreen();
-    // p75 213 days ≈ 30 weeks, printed big and read out in full.
-    expect(screen.getByText('30')).toBeOnTheScreen();
+    // fastest 21 days ≈ 3 weeks to p75 213 days ≈ 30 weeks, printed big and read out in full.
+    expect(screen.getByText('3–30')).toBeOnTheScreen();
     expect(
-      screen.getByRole('button', { name: /^Kolonoskopia, Teraz, Czeka się około 30 tygodni/ }),
+      screen.getByRole('button', { name: /^Kolonoskopia, Teraz, Czeka się od 3 do 30 tygodni/ }),
     ).toBeOnTheScreen();
     expect(screen.getByText(/^Zacznij szukać terminu dziś/)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: /Znajdź placówkę: Kolonoskopia/ })).toBeOnTheScreen();
@@ -179,7 +179,7 @@ describe('PlanScreen (mockPlan)', () => {
   it('unknown history: no red ticket, a "Kiedy ostatnio?" row that saves the answer, with undo', () => {
     useRecordsStore.getState().reset();
     renderPlan();
-    expect(screen.queryByText('30')).toBeNull();
+    expect(screen.queryByText('3–30')).toBeNull();
     expect(screen.queryByText('Termin minął')).toBeNull();
     expect(screen.getByText('Kiedy ostatnio?')).toBeOnTheScreen();
 

@@ -17,7 +17,7 @@ import { QueueNumber } from '@/components/QueueNumber';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
-import { pluralForm } from '@/features/plan/plan-view-model';
+import { pluralForm, queueRangeA11y } from '@/features/plan/plan-view-model';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
 import { useRecordsStore } from '@/store';
@@ -256,16 +256,14 @@ export default function ExamScreen() {
           </View>
         )}
 
-        {showQueue && queue?.weeks !== undefined && queue.lines.label && (
+        {showQueue && queue?.range && queue.lines.label && (
           <QueueNumber
             size="compact"
             title={msg(queue.lines.label)}
             tone={item?.urgency ?? 'later'}
-            value={String(queue.weeks)}
-            unit={t(`plan.ticket.weeks.${pluralForm(queue.weeks)}`)}
-            valueA11y={t(`plan.ticket.weeksA11y.${pluralForm(queue.weeks)}`, {
-              weeks: queue.weeks,
-            })}
+            value={queue.range.text}
+            unit={t(`plan.ticket.weeks.${pluralForm(queue.range.max)}`)}
+            valueA11y={msg(queueRangeA11y(queue.range))}
           />
         )}
         {showQueue && queue && !queue.hasData && queue.lines.label && (

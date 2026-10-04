@@ -94,13 +94,12 @@ describe('queueInfo', () => {
     source: 'nfz_snapshot',
   };
 
-  it('shows the NFZ p75 wait in weeks', () => {
+  it('shows the NFZ wait as fastest–p75 weeks', () => {
     expect(queueInfo(colonoscopy, summary)).toEqual({
       hasData: true,
-      weeks: 30,
+      range: { min: 3, max: 30, text: '3–30' },
       lines: {
         label: { key: 'exam.queue.radius', params: { km: 25 } },
-        value: { key: 'exam.queue.weeks', params: { weeks: 30 } },
         meta: { key: 'exam.queue.asOf', params: { date: '2026-09' } },
       },
     });

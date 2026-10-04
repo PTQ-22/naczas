@@ -74,7 +74,9 @@ są pobierane". "2 pilnych badań" is ungrammatical. A whole tab signals a core 
 the button.
 
 ### 9. Onboarding
-Seven steps is fine. Step 7 repeats "← niedawno / dawniej →" and "Nie pamiętasz? Zostaw
+Seven steps is fine. Skipping the location step (step 3) silently turns off all queue data
+(`usePlan` only fetches with a location), yet the exam screen then says "Nie mamy aktualnych
+danych o kolejce" — the real reason is the missing location. Step 7 repeats "← niedawno / dawniej →" and "Nie pamiętasz? Zostaw
 puste…" under every one of 8 exams — say it once. Location is asked at step 3, before any value
 is shown; ask on the first "Znajdź placówkę" instead.
 
@@ -83,7 +85,7 @@ is shown; ask on the first "Znajdź placówkę" instead.
 1. ☑ Unknown ≠ overdue; ≤ 3 in "Teraz"; hero by queue length (#1)
 2. ☑ One status vocabulary; Szukam/Umówione/Zrobione indicator with one primary per state (#2, #6)
 3. ☑ Exam screen: what-to-do-now on top, rest collapsed (#4)
-4. ☐ Queue number consistent with the facility list (#3)
+4. ☑ Queue number consistent with the facility list (#3)
 5. ☐ Remove ±1m; Zakład from tab to plan card (#5, #8)
 
 Later: #7, #9.

@@ -56,7 +56,7 @@ describe('ExamScreen', () => {
     expect(screen.getByText(rule.referralNote ?? '')).toBeOnTheScreen();
     expect(screen.getByText(/To informacja edukacyjna/)).toBeOnTheScreen();
     expect(screen.getByText('W promieniu 25 km czeka się')).toBeOnTheScreen();
-    expect(screen.getByText('30')).toBeOnTheScreen();
+    expect(screen.getByText('3–30')).toBeOnTheScreen();
     expect(screen.getByText('tygodni w kolejce')).toBeOnTheScreen();
 
     fireEvent.press(screen.getByRole('button', { name: 'Znajdź placówkę' }));

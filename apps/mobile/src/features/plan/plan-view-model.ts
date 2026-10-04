@@ -38,6 +38,34 @@ export function queueWaitWeeks(summary?: WaitTimeSummary): number | null {
   return summary?.p75Days != null ? waitWeeks(summary.p75Days) : null;
 }
 
+export interface QueueRange {
+  /** Fastest nearby facility in weeks; null when unknown or rounding to the same as `max`. */
+  min: number | null;
+  /** p75 wait in weeks. */
+  max: number;
+  /** "3–29" or "29" — the printed number. */
+  text: string;
+}
+
+/**
+ * The wait as "fastest nearby – p75". p75 alone ("29 tyg.") contradicted the facility list, which
+ * opens sorted by the shortest wait ("3 tyg.") — the range is true on both screens.
+ */
+export function queueRange(summary?: WaitTimeSummary): QueueRange | null {
+  const max = queueWaitWeeks(summary);
+  if (max === null) return null;
+  const fastest = summary?.minDays != null ? waitWeeks(summary.minDays) : null;
+  const min = fastest !== null && fastest < max ? fastest : null;
+  return { min, max, text: min === null ? String(max) : `${min}–${max}` };
+}
+
+/** Accessible reading of a range: "Czeka się od 3 do 29 tygodni" / "…około 29 tygodni". */
+export function queueRangeA11y(range: QueueRange): Message {
+  return range.min === null
+    ? { key: `plan.ticket.weeksA11y.${pluralForm(range.max)}`, params: { weeks: range.max } }
+    : { key: 'plan.ticket.rangeA11y', params: { min: range.min, max: range.max } };
+}
+
 export interface Message {
   key: MessageKey;
   params?: TranslateParams;
@@ -86,10 +114,10 @@ export function whyNowMessage(
 ): Message | null {
   if (booking !== 'queue') return null;
   if (item.urgency === 'act_now') {
-    const weeks = queueWaitWeeks(summary);
-    return weeks === null
+    const range = queueRange(summary);
+    return range === null
       ? { key: 'plan.card.startEarly' }
-      : { key: 'plan.card.whyNowQueue', params: { weeks } };
+      : { key: 'plan.card.whyNowQueue', params: { weeks: range.text } };
   }
   if (item.urgency === 'this_year') {
     return { key: 'plan.card.startFrom', params: { date: fullDate(item.notifyDate) } };
@@ -229,7 +257,7 @@ export function ticketContent(
   summary: WaitTimeSummary | undefined,
   today: string,
 ): TicketContent {
-  const weeks = booking === 'queue' ? queueWaitWeeks(summary) : null;
+  const range = booking === 'queue' ? queueRange(summary) : null;
   // "Termin minął" only for a deadline we know was missed; due-from-today (never done, unknown
   // history) is "do it now", not "too late".
   const pastDue = item.overdue;
@@ -249,14 +277,10 @@ export function ticketContent(
       : { key: 'plan.ticket.dueBy', params: { date } };
   }
 
-  if (weeks !== null) {
-    const unit: Message = { key: `plan.ticket.weeks.${pluralForm(weeks)}` };
-    return {
-      value: String(weeks),
-      unit,
-      message,
-      a11yValue: { key: `plan.ticket.weeksA11y.${pluralForm(weeks)}`, params: { weeks } },
-    };
+  if (range !== null) {
+    // "3–29 tygodni": a Polish range takes the form of its last number.
+    const unit: Message = { key: `plan.ticket.weeks.${pluralForm(range.max)}` };
+    return { value: range.text, unit, message, a11yValue: queueRangeA11y(range) };
   }
   // No queue data (program / walk-in / missing NFZ): print the due month instead of a made-up wait.
   return {

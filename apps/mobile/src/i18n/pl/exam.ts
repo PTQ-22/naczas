@@ -21,7 +21,6 @@ export const exam = {
   },
   queue: {
     radius: 'W promieniu {{km}} km czeka się',
-    weeks: 'ok. {{weeks}} tyg.',
     asOf: 'Dane NFZ, stan na {{date}}',
     clinicNote:
       'To kolejki NFZ do poradni — w programie przesiewowym zapiszesz się bez skierowania.',

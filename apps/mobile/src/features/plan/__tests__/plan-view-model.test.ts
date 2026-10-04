@@ -11,6 +11,7 @@ import {
   planCta,
   planLayout,
   pluralForm,
+  queueRange,
   rowDate,
   summaryMessage,
   ticketContent,
@@ -86,6 +87,19 @@ describe('queueWaitWeeks', () => {
   });
 });
 
+describe('queueRange', () => {
+  it('spans the fastest nearby facility to the p75 wait — the facility list opens on the fastest', () => {
+    expect(queueRange(nfz(213))).toEqual({ min: 1, max: 30, text: '1–30' });
+    expect(queueRange({ ...nfz(213), minDays: 21 })).toEqual({ min: 3, max: 30, text: '3–30' });
+  });
+
+  it('collapses to one number without a minimum or when both ends round the same', () => {
+    expect(queueRange({ ...nfz(213), minDays: null })).toEqual({ min: null, max: 30, text: '30' });
+    expect(queueRange({ ...nfz(210), minDays: 208 })?.text).toBe('30');
+    expect(queueRange(nfz(null))).toBeNull();
+  });
+});
+
 describe('waitWeeks', () => {
   it('rounds days to weeks, never below 1', () => {
     expect(waitWeeks(98)).toBe(14);
@@ -111,7 +125,7 @@ describe('whyNowMessage', () => {
   it('explains the queue for act_now / this_year queue exams only', () => {
     expect(whyNowMessage(byUrgency('act_now'), 'queue', nfz(213))).toEqual({
       key: 'plan.card.whyNowQueue',
-      params: { weeks: 30 },
+      params: { weeks: '1–30' },
     });
     expect(whyNowMessage(byUrgency('act_now'), 'queue')?.key).toBe('plan.card.startEarly');
     expect(whyNowMessage(byUrgency('this_year'), 'queue')?.key).toBe('plan.card.startFrom');
@@ -245,15 +259,21 @@ describe('ticketContent', () => {
   });
   const future: PlanItem = { ...byUrgency('act_now'), dueDate: '2027-04-15', overdue: false };
 
-  it('prints NFZ queue weeks with the Polish plural and a deadline sentence', () => {
+  it('prints the NFZ queue range with the Polish plural and a deadline sentence', () => {
     const c = ticketContent(future, 'queue', summary(203), '2026-10-03');
-    expect(c.value).toBe('29');
+    expect(c.value).toBe('1–29');
     expect(c.unit).toEqual({ key: 'plan.ticket.weeks.many' });
     expect(c.message).toEqual({
       key: 'plan.ticket.startTodayToMake',
       params: { date: 'kwietnia 2027' },
     });
-    expect(c.a11yValue).toEqual({ key: 'plan.ticket.weeksA11y.many', params: { weeks: 29 } });
+    expect(c.a11yValue).toEqual({ key: 'plan.ticket.rangeA11y', params: { min: 1, max: 29 } });
+    const single = ticketContent(future, 'queue', { ...summary(203), minDays: null }, '2026-10-03');
+    expect(single.value).toBe('29');
+    expect(single.a11yValue).toEqual({
+      key: 'plan.ticket.weeksA11y.many',
+      params: { weeks: 29 },
+    });
   });
 
   it('drops the deadline once it has passed', () => {
