@@ -37,28 +37,27 @@ const REFRESH_ORDER = [
 
 const env = loadEnv();
 
-const toAgent = env.CALL_TARGET === 'agent';
 const assistantOptions = {
   voiceId: env.VAPI_VOICE_ID,
   publicUrl: env.PUBLIC_URL,
   webhookSecret: env.VAPI_WEBHOOK_SECRET,
-  // Agent-to-agent: a short leash, so two polite bots can't loop on the meter.
-  ...(toAgent && { maxDurationSeconds: 90 }),
 };
-/** The single number this server ever dials — chosen by the explicit CALL_TARGET flag. */
-const callTo = toAgent ? env.DEMO_RECEPTIONIST_TO : env.DEMO_CALL_TO;
-const vapi = env.VAPI_API_KEY ? createVapiClient({ apiKey: env.VAPI_API_KEY }) : null;
+// Keys alone never make calls: only an explicit CALL_ASSIST_MODE=live builds a Vapi client.
+const vapi =
+  env.CALL_ASSIST_MODE === 'live' && env.VAPI_API_KEY
+    ? createVapiClient({ apiKey: env.VAPI_API_KEY })
+    : null;
 const callAssist: CallAssistConfig | null =
-  vapi && callTo && env.VAPI_PHONE_NUMBER_ID
+  vapi && env.DEMO_CALL_TO && env.VAPI_PHONE_NUMBER_ID
     ? {
         via: 'vapi-number',
         vapi,
         phoneNumberId: env.VAPI_PHONE_NUMBER_ID,
-        callTo,
+        callTo: env.DEMO_CALL_TO,
         assistant: assistantOptions,
       }
     : vapi &&
-        callTo &&
+        env.DEMO_CALL_TO &&
         env.TWILIO_ACCOUNT_SID &&
         env.TWILIO_AUTH_TOKEN &&
         env.TWILIO_FROM &&
@@ -72,16 +71,17 @@ const callAssist: CallAssistConfig | null =
           }),
           from: env.TWILIO_FROM,
           sipUri: env.VAPI_SIP_URI,
-          callTo,
+          callTo: env.DEMO_CALL_TO,
           assistant: assistantOptions,
         }
       : null;
 console.log(
   `Call assist: ${
     callAssist
-      ? `live (${callAssist.via} → ${toAgent ? 'receptionist agent' : 'team phone'}, ` +
-        `${env.CALL_ASSIST_DAILY_LIMIT}/day)`
-      : 'simulated'
+      ? `live (${callAssist.via}, ${env.CALL_ASSIST_DAILY_LIMIT}/day)`
+      : env.CALL_ASSIST_MODE === 'live'
+        ? 'simulated (CALL_ASSIST_MODE=live, but Vapi keys or DEMO_CALL_TO are missing)'
+        : 'simulated (CALL_ASSIST_MODE=simulated)'
   }`,
 );
 

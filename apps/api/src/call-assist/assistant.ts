@@ -15,8 +15,6 @@ export interface AssistantOptions {
   /** Public base URL of this API — Vapi then streams transcripts to our webhook */
   publicUrl?: string | undefined;
   webhookSecret?: string | undefined;
-  /** Hard stop for the call; shorter when two agents talk (they never hang up first) */
-  maxDurationSeconds?: number | undefined;
 }
 
 /** The user's calendar, or nothing — then any slot is fine. */
@@ -96,7 +94,7 @@ const RESULT_SCHEMA = {
 export function buildAssistant(
   req: CallAssistRequest,
   today: ISODate,
-  { voiceId, publicUrl, webhookSecret, maxDurationSeconds = 180 }: AssistantOptions = {},
+  { voiceId, publicUrl, webhookSecret }: AssistantOptions = {},
 ): Record<string, unknown> {
   return {
     name: 'NaCzas — zapis na badanie',
@@ -112,7 +110,7 @@ export function buildAssistant(
       : { provider: 'azure', voiceId: 'pl-PL-ZofiaNeural' },
     transcriber: { provider: 'deepgram', model: 'nova-2', language: 'pl' },
     endCallFunctionEnabled: true,
-    maxDurationSeconds,
+    maxDurationSeconds: 180,
     analysisPlan: {
       structuredDataPrompt: [
         `Dzisiaj jest ${today}. Na podstawie rozmowy ustal, czy umówiono wizytę.`,

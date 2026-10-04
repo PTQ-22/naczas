@@ -9,7 +9,6 @@ import {
 
 import { createApp } from '../src/app';
 import { buildAssistant } from '../src/call-assist/assistant';
-import { buildReceptionist, RECEPTIONIST_PROMPT } from '../src/call-assist/receptionist';
 import { createTwilioClient } from '../src/call-assist/twilio-client';
 import { createVapiClient, type VapiCall } from '../src/call-assist/vapi-client';
 import { loadEnv } from '../src/env';
@@ -325,28 +324,9 @@ describe('buildAssistant', () => {
     expect(content).toContain('odmów i poproś o inny');
   });
 
-  it('caps the call length (shorter for agent-to-agent demos)', () => {
-    expect(buildAssistant(body, '2026-10-04')).toMatchObject({ maxDurationSeconds: 180 });
-    expect(buildAssistant(body, '2026-10-04', { maxDurationSeconds: 90 })).toMatchObject({
-      maxDurationSeconds: 90,
-    });
-  });
-
   it('wires the webhook only with a public URL', () => {
     const a = buildAssistant(body, '2026-10-04', { publicUrl: 'https://x.ngrok.app/' });
     expect(a).toMatchObject({ server: { url: 'https://x.ngrok.app/v1/call-assist/webhook' } });
-  });
-});
-
-describe('buildReceptionist', () => {
-  it('is a short, separate demo agent that never asks for PESEL', () => {
-    expect(buildReceptionist()).toMatchObject({
-      maxDurationSeconds: 90,
-      endCallFunctionEnabled: true,
-      voice: { voiceId: 'pl-PL-MarekNeural' },
-    });
-    expect(RECEPTIONIST_PROMPT).toContain('Nie proś o PESEL');
-    expect(RECEPTIONIST_PROMPT).toContain('Europe/Warsaw');
   });
 });
 
@@ -357,18 +337,15 @@ describe('env', () => {
     expect(loadEnv({ DEMO_CALL_TO: CALL_TO }).DEMO_CALL_TO).toBe(CALL_TO);
   });
 
-  it('dials a person by default; the receptionist agent only behind an explicit flag', () => {
-    expect(loadEnv({}).CALL_TARGET).toBe('phone');
-    expect(() => loadEnv({ CALL_TARGET: 'agent', VAPI_API_KEY: 'k' })).toThrow(
-      /DEMO_RECEPTIONIST_TO/,
+  it('never dials unless CALL_ASSIST_MODE=live is set explicitly', () => {
+    expect(loadEnv({}).CALL_ASSIST_MODE).toBe('simulated');
+    expect(loadEnv({ VAPI_API_KEY: 'k', DEMO_CALL_TO: CALL_TO }).CALL_ASSIST_MODE).toBe(
+      'simulated',
     );
-    // No keys → simulation, nothing to dial: a blueprint with CALL_TARGET=agent still boots.
-    expect(loadEnv({ CALL_TARGET: 'agent' }).CALL_TARGET).toBe('agent');
-    expect(() => loadEnv({ CALL_TARGET: 'agent', DEMO_RECEPTIONIST_TO: '555' })).toThrow(/E\.164/);
-    expect(() => loadEnv({ CALL_TARGET: 'robot' })).toThrow(/CALL_TARGET/);
-    const env = loadEnv({ CALL_TARGET: 'agent', DEMO_RECEPTIONIST_TO: '+14155550123' });
-    expect(env.DEMO_RECEPTIONIST_TO).toBe('+14155550123');
-    expect(env.CALL_ASSIST_DAILY_LIMIT).toBe(20);
+    expect(loadEnv({ CALL_ASSIST_MODE: '' }).CALL_ASSIST_MODE).toBe('simulated');
+    expect(loadEnv({ CALL_ASSIST_MODE: 'live' }).CALL_ASSIST_MODE).toBe('live');
+    expect(() => loadEnv({ CALL_ASSIST_MODE: 'on' })).toThrow(/CALL_ASSIST_MODE/);
+    expect(loadEnv({}).CALL_ASSIST_DAILY_LIMIT).toBe(20);
   });
 });
 
