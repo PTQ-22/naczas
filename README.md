@@ -3,7 +3,7 @@
 > HackYeah 2026 · Open Task **SPORT & HEALTHCARE** · zespół **{NAZWA ZESPOŁU}**
 > Nazwa „NaCzas” może się jeszcze zmienić — alternatywy: [pitch/naming.md](pitch/naming.md).
 
-**Demo (web):** {LINK DO DEMO} · **Expo Go:** {QR / LINK} · **Wideo:** {LINK DO WIDEO}
+**Demo (web):** https://naczas-web.onrender.com
 
 *Wiesz co, kiedy i gdzie — i zdążysz na czas.*
 

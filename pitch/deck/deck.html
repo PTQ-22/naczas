@@ -400,6 +400,15 @@
         color: var(--primary);
       }
 
+      .qr-img {
+        width: 280px;
+        height: 280px;
+        display: block;
+        border: var(--frame) solid var(--ink);
+        border-radius: var(--radius);
+        background: #ffffff;
+        padding: 12px;
+      }
       .qr {
         width: 280px;
         height: 280px;
@@ -769,18 +778,14 @@
     <section class="slide">
       <p class="eyebrow">Sprawdź sam</p>
       <h2 style="margin-bottom: 40px">Demo, kod i ujawnienie źródeł</h2>
-      <div class="grid" style="grid-template-columns: auto auto auto 1fr; gap: 48px; align-items: start">
+      <div class="grid" style="grid-template-columns: auto auto 1fr; gap: 48px; align-items: start">
         <div>
-          <div class="qr">QR<br />web demo</div>
-          <p class="shot-caption">Demo w przeglądarce</p>
+          <img class="qr-img" src="qr/qr-demo.svg" alt="Kod QR: naczas-web.onrender.com" />
+          <p class="shot-caption">Demo w przeglądarce<br /><span class="small">naczas-web.onrender.com</span></p>
         </div>
         <div>
-          <div class="qr">QR<br />Expo Go</div>
-          <p class="shot-caption">Na telefonie</p>
-        </div>
-        <div>
-          <div class="qr">QR<br />repozytorium</div>
-          <p class="shot-caption">Kod</p>
+          <img class="qr-img" src="qr/qr-repo.svg" alt="Kod QR: github.com/PTQ-22/naczas" />
+          <p class="shot-caption">Kod<br /><span class="small">github.com/PTQ-22/naczas</span></p>
         </div>
         <div class="card" style="padding: 32px 40px">
           <h3 style="font-size: var(--fs-body); margin-bottom: 16px">Ujawnienie AI i zasobów</h3>
