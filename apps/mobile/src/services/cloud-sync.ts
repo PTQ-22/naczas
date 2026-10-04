@@ -62,11 +62,12 @@ export function useCloudSync() {
       };
 
       if (data.profiles && data.profiles.length > 0) {
+        const syncedProfiles = data.profiles;
         useProfilesStore.setState((state) => {
-          const stillExists = data.profiles!.some((p) => p.id === state.activeProfileId);
+          const stillExists = syncedProfiles.some((p) => p.id === state.activeProfileId);
           return {
-            profiles: data.profiles,
-            activeProfileId: stillExists ? state.activeProfileId : data.profiles![0].id,
+            profiles: syncedProfiles,
+            activeProfileId: stillExists ? state.activeProfileId : (syncedProfiles[0]?.id ?? null),
           };
         });
         if (data.records) useRecordsStore.setState({ records: data.records });
