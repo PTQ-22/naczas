@@ -19,7 +19,10 @@ jest.mock('@/notifications', () => ({
   requestNotificationPermission: jest.fn(),
   useInAppReminders: jest.fn(() => ({ reminders: [], dismiss: jest.fn() })),
 }));
-jest.mock('expo-router', () => ({ router: { push: jest.fn() } }));
+jest.mock('expo-router', () => ({
+  router: { push: jest.fn() },
+  Redirect: () => null,
+}));
 // Non-active profiles' badges come from usePlan (UrgentCountProbe): Kasia has two act_now items.
 jest.mock('@/services', () => ({
   usePlan: (profileId: string) => {
@@ -109,13 +112,6 @@ describe('PlanScreen (mockPlan)', () => {
     expect(
       screen.getByRole('link', { name: /^Źródło: .+, otwiera przeglądarkę$/ }),
     ).toBeOnTheScreen();
-  });
-
-  it('no profile yet → onboarding prompt instead of a plan', () => {
-    mockUsePlanData.mockReturnValue(mockPlanData({ activeProfile: undefined, plan: null }));
-    renderPlan();
-    fireEvent.press(screen.getByRole('button', { name: 'Zacznij' }));
-    expect(router.push).toHaveBeenCalledWith('/onboarding/welcome');
   });
 
   it('switching profile calls the store action', () => {

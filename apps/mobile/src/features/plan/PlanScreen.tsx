@@ -1,4 +1,4 @@
-import { router } from 'expo-router';
+import { Redirect, router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, View } from 'react-native';
 
@@ -79,19 +79,7 @@ export default function PlanScreen() {
   const unknownIds = useUnknownExamIds(activeProfile?.id ?? '', plan?.items ?? NO_ITEMS);
 
   if (!activeProfile || !plan) {
-    return (
-      <Screen edges={['top', 'left', 'right']}>
-        <EmptyState
-          icon="people"
-          title={t('plan.noProfile.title')}
-          body={t('plan.noProfile.body')}
-          action={{
-            label: t('plan.noProfile.cta'),
-            onPress: () => router.push('/onboarding/welcome'),
-          }}
-        />
-      </Screen>
-    );
+    return <Redirect href="/onboarding/welcome" />;
   }
 
   const tip = activityTip(activeProfile, today);
