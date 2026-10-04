@@ -40,17 +40,25 @@ interface ScriptLine {
   text: string;
 }
 
+/**
+ * The simulation is labelled as such and the jury has little time, so the whole story runs this
+ * many times faster than a natural call (~15 s instead of ~45 s). The script below keeps natural
+ * timings; `fast` compresses them in one place.
+ */
+export const SIMULATION_SPEEDUP = 3;
+const fast = (ms: number) => Math.round(ms / SIMULATION_SPEEDUP);
+
 /** Simulated timeline (ms from the start of an attempt). */
-const RINGING_UNTIL_MS = 2500;
+const RINGING_UNTIL_MS = fast(2500);
 /** Answered, then IVR / hold music until a person speaks */
-const ANSWERED_AT_MS = 7500;
+const ANSWERED_AT_MS = fast(7500);
 /** The first attempt of a demo is never answered — it shows the re-dial */
-const UNANSWERED_RING_MS = 6000;
+export const UNANSWERED_RING_MS = fast(6000);
 /** Real retries wait `intervalMin` (10 min); the demo compresses that to a few seconds. */
-export const SIMULATED_RETRY_INTERVAL_MS = 8000;
+export const SIMULATED_RETRY_INTERVAL_MS = fast(8000);
 /** Talk time after pick-up: plain booking / with a counter-proposal */
-const TALK_MS = 21_500;
-const NEGOTIATED_TALK_MS = 28_500;
+const TALK_MS = fast(21_500);
+const NEGOTIATED_TALK_MS = fast(28_500);
 
 interface Slot {
   date: ISODate;
@@ -91,6 +99,16 @@ function nextDay(date: ISODate): ISODate {
 const spokenSlot = (slot: Slot) => `${spokenDate(slot.date)} o ${slot.time}`;
 
 function script(req: CallAssistRequest, today: ISODate, offer: Slot, booked: Slot): ScriptLine[] {
+  return naturalScript(req, today, offer, booked).map((l) => ({ ...l, atMs: fast(l.atMs) }));
+}
+
+/** The conversation at natural speaking pace (compressed by `script`). */
+function naturalScript(
+  req: CallAssistRequest,
+  today: ISODate,
+  offer: Slot,
+  booked: Slot,
+): ScriptLine[] {
   const when = spokenSlot(booked);
   const opening: ScriptLine[] = [
     { atMs: 0, role: 'clinic', text: 'Rejestracja, słucham.' },

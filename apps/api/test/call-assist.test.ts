@@ -97,7 +97,8 @@ describe('POST /v1/call-assist', () => {
 
     // Not waiting yet → 409.
     expect((await postTo('retry-now')).status).toBe(409);
-    advance(7000);
+    // Simulation is 3× faster: rings out at 2 s, automatic retry at ~4.7 s.
+    advance(3000);
     const waiting = await get();
     expect(waiting).toMatchObject({ status: 'retry_scheduled', attempt: { number: 1, max: 3 } });
     expect(waiting.attempt?.nextAt).not.toBeNull();
@@ -111,8 +112,8 @@ describe('POST /v1/call-assist', () => {
       result: { booked: true },
       stats: { attempts: 2 },
     });
-    expect(done.stats!.waitedSec).toBeGreaterThan(6);
-    expect(done.stats!.talkedSec).toBeGreaterThan(15);
+    expect(done.stats!.waitedSec).toBeGreaterThan(2);
+    expect(done.stats!.talkedSec).toBeGreaterThan(5);
   });
 
   it('simulated: cancel stops the task', async () => {

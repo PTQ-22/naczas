@@ -20,11 +20,15 @@ import {
   upcomingWindows,
   firstAvailableSlot,
   simulateCallAssist,
+  SIMULATION_SPEEDUP,
   simulatedSlotDate,
   WaitTimeSummarySchema,
   type CallAvailability,
   type Profile,
 } from '../src';
+
+/** Natural-pace ms → simulated ms (the demo runs SIMULATION_SPEEDUP× faster). */
+const f = (ms: number) => Math.round(ms / SIMULATION_SPEEDUP);
 
 const profile: Profile = {
   id: 'p1',
@@ -287,12 +291,12 @@ describe('simulateCallAssist', () => {
 
   it('rings, talks, then ends with a booked weekday slot two weeks out', () => {
     expect(simulateCallAssist('s', req, '2026-10-04', 0).status).toBe('ringing');
-    expect(simulateCallAssist('s', req, '2026-10-04', 4000).status).toBe('on_hold');
-    const mid = simulateCallAssist('s', req, '2026-10-04', 10_000);
+    expect(simulateCallAssist('s', req, '2026-10-04', f(4000)).status).toBe('on_hold');
+    const mid = simulateCallAssist('s', req, '2026-10-04', f(10_000));
     expect(mid.status).toBe('in_progress');
     expect(mid.transcript[0]?.text).toBe('Rejestracja, słucham.');
     expect(mid.transcript[1]?.text).toMatch(/asystentem AI.*w imieniu Kasi/);
-    const end = simulateCallAssist('s', req, '2026-10-04', 60_000);
+    const end = simulateCallAssist('s', req, '2026-10-04', f(60_000));
     expect(end).toMatchObject({ status: 'ended', result: { booked: true, date: '2026-10-19' } });
     expect(end.transcript.at(-2)?.text).toContain('19 października o 10:30');
   });
@@ -348,7 +352,7 @@ describe('availability', () => {
       forWhom: 'mamę',
       callerName: 'Kasi',
     };
-    const end = simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', 60_000);
+    const end = simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', f(60_000));
     // The clinic offers Mon 19.10 at 10:30 (14 days out, off the weekend) — outside 17–20, so the
     // agent declines and counter-proposes the first fitting time from the calendar.
     expect(end.result).toMatchObject({ booked: true, date: '2026-10-19', time: '17:00' });
@@ -368,14 +372,14 @@ describe('availability', () => {
       forWhom: 'mamę',
       callerName: 'Kasi',
     };
-    expect(simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', 25_000).status).toBe(
-      'in_progress',
-    );
+    expect(
+      simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', f(25_000)).status,
+    ).toBe('in_progress');
     const morning: CallAvailability = {
       weekly: [{ days: [1], from: '09:00', to: '12:00' }],
       dates: [],
     };
-    const end = simulateCallAssist('s', { ...req, availability: morning }, '2026-10-04', 60_000);
+    const end = simulateCallAssist('s', { ...req, availability: morning }, '2026-10-04', f(60_000));
     expect(end.result).toMatchObject({ date: '2026-10-19', time: '10:30' });
     expect(end.transcript.map((l) => l.text).join(' ')).not.toContain('Niestety');
   });

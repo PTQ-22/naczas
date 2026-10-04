@@ -94,7 +94,7 @@ describe('CallAssistScreen', () => {
     });
     expect(mockRequest).toMatchObject({ forWhom: 'mamę', callerName: 'Kasi' });
 
-    mockElapsed = 10_000;
+    mockElapsed = 5000; // mid-call (the simulation runs 3× faster than a real call)
     await tick();
     expect(screen.getByText(/asystentem AI dzwoniącym w imieniu Kasi/)).toBeTruthy();
     expect(useRecordsStore.getState().records).toEqual([]);
@@ -160,7 +160,7 @@ describe('CallAssistScreen', () => {
     const task = createSimulatedCallTask(
       { examName: 'x', facilityName: 'y', forWhom: 'mamę', callerName: 'Kasi' },
       '2026-10-04',
-      t0 - 7000, // first attempt already rang out
+      t0 - 3000, // first attempt already rang out (at 2 s; retry at ~4.7 s)
     );
     mockGetCallAssist.mockImplementation(() =>
       Promise.resolve(simulatedCallStatus('sim-1', task, Date.now())),
@@ -180,7 +180,7 @@ describe('CallAssistScreen', () => {
       /NIKT NIE ODEBRAŁ · PONOWIĘ ZA/,
     );
     expect(screen.getByTestId('call-stats').props.children).toBe(
-      'Próby: 1 · na linii 0:06 · rozmowa 0:00',
+      'Próby: 1 · na linii 0:02 · rozmowa 0:00',
     );
     await act(async () => {
       fireEvent.press(screen.getByTestId('call-retry-now'));

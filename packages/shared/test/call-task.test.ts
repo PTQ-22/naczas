@@ -8,6 +8,7 @@ import {
   nextClinicOpening,
   retrySimulatedCallNow,
   SIMULATED_RETRY_INTERVAL_MS,
+  SIMULATION_SPEEDUP,
   simulatedCallStatus,
   type CallAssistRequest,
 } from '../src';
@@ -19,52 +20,54 @@ const req: CallAssistRequest = {
   callerName: 'Kasi',
 };
 const T0 = 1_000_000;
+/** Natural-pace ms → simulated ms (the demo runs SIMULATION_SPEEDUP× faster). */
+const f = (ms: number) => Math.round(ms / SIMULATION_SPEEDUP);
 
 describe('simulated call task (demo)', () => {
   const task = createSimulatedCallTask(req, '2026-10-04', T0);
   const at = (ms: number) => simulatedCallStatus('c', task, T0 + ms);
 
   it('first attempt rings out, then a retry is scheduled with a countdown', () => {
-    expect(at(1000)).toMatchObject({ status: 'ringing', attempt: { number: 1, max: 3 } });
-    const waiting = at(7000);
+    expect(at(f(1000))).toMatchObject({ status: 'ringing', attempt: { number: 1, max: 3 } });
+    const waiting = at(f(7000));
     expect(waiting.status).toBe('retry_scheduled');
     expect(waiting.attempt?.nextAt).toBe(
-      new Date(T0 + 6000 + SIMULATED_RETRY_INTERVAL_MS).toISOString(),
+      new Date(T0 + f(6000) + SIMULATED_RETRY_INTERVAL_MS).toISOString(),
     );
-    expect(waiting.stats).toEqual({ attempts: 1, waitedSec: 6, talkedSec: 0 });
+    expect(waiting.stats).toEqual({ attempts: 1, waitedSec: 2, talkedSec: 0 });
   });
 
   it('second attempt is answered: on hold, then the talk, then booked', () => {
-    const second = T0 + 6000 + SIMULATED_RETRY_INTERVAL_MS;
+    const second = T0 + f(6000) + SIMULATED_RETRY_INTERVAL_MS;
     const s = (ms: number) => simulatedCallStatus('c', task, second + ms);
-    expect(s(1000)).toMatchObject({ status: 'ringing', attempt: { number: 2 } });
-    expect(s(5000).status).toBe('on_hold');
-    expect(s(9000).status).toBe('in_progress');
-    const end = s(60_000);
+    expect(s(f(1000))).toMatchObject({ status: 'ringing', attempt: { number: 2 } });
+    expect(s(f(5000)).status).toBe('on_hold');
+    expect(s(f(9000)).status).toBe('in_progress');
+    const end = s(f(60_000));
     expect(end).toMatchObject({ status: 'ended', result: { booked: true } });
-    // 6 s ringing out + 7.5 s ringing/hold on attempt 2; talk is the whole script.
-    expect(end.stats).toMatchObject({ attempts: 2, waitedSec: 14 });
-    expect(end.stats?.talkedSec).toBeGreaterThan(15);
+    // (6 s ringing out + 7.5 s ringing/hold on attempt 2) / 3; talk is the whole script.
+    expect(end.stats).toMatchObject({ attempts: 2, waitedSec: 5 });
+    expect(end.stats?.talkedSec).toBeGreaterThan(5);
   });
 
   it('"Zadzwoń teraz" skips the wait', () => {
-    const now = T0 + 7000;
+    const now = T0 + f(7000);
     const sooner = retrySimulatedCallNow(task, now);
-    expect(simulatedCallStatus('c', sooner, now + 1000)).toMatchObject({
+    expect(simulatedCallStatus('c', sooner, now + f(1000))).toMatchObject({
       status: 'ringing',
       attempt: { number: 2 },
     });
     // Not waiting → no-op.
-    expect(retrySimulatedCallNow(task, T0 + 1000)).toEqual(task);
+    expect(retrySimulatedCallNow(task, T0 + f(1000))).toEqual(task);
   });
 
   it('cancel freezes the task; a finished task cannot be cancelled', () => {
-    const cancelled = cancelSimulatedCall(task, T0 + 7000);
-    const later = simulatedCallStatus('c', cancelled, T0 + 120_000);
+    const cancelled = cancelSimulatedCall(task, T0 + f(7000));
+    const later = simulatedCallStatus('c', cancelled, T0 + f(120_000));
     expect(later.status).toBe('cancelled');
     expect(later.stats?.attempts).toBe(1);
-    const done = cancelSimulatedCall(task, T0 + 120_000);
-    expect(simulatedCallStatus('c', done, T0 + 130_000).status).toBe('ended');
+    const done = cancelSimulatedCall(task, T0 + f(120_000));
+    expect(simulatedCallStatus('c', done, T0 + f(130_000)).status).toBe('ended');
   });
 
   it('with one attempt only it is answered straight away', () => {
@@ -73,7 +76,7 @@ describe('simulated call task (demo)', () => {
       '2026-10-04',
       T0,
     );
-    expect(simulatedCallStatus('c', single, T0 + 5000).status).toBe('on_hold');
+    expect(simulatedCallStatus('c', single, T0 + f(5000)).status).toBe('on_hold');
   });
 });
 
