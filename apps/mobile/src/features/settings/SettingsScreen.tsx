@@ -15,6 +15,7 @@ import {
   type TestNotificationResult,
 } from '@/notifications';
 import { usePlan } from '@/services';
+import { isSyncEnabled } from '@/services/feature-flags';
 import { resetAllData, resolveToday, useProfilesStore, useSettingsStore, useToday } from '@/store';
 import { PALETTE_IDS, usePaletteStore, useTheme, type DarkModePreference } from '@/theme';
 
@@ -179,9 +180,11 @@ export default function SettingsScreen() {
           <Text>{t('settings.privacy.body')}</Text>
         </SettingsSection>
 
-        <SettingsSection title={t('auth.title')}>
-          <AccountSection />
-        </SettingsSection>
+        {isSyncEnabled() && (
+          <SettingsSection title={t('auth.title')}>
+            <AccountSection />
+          </SettingsSection>
+        )}
 
         <SettingsSection title={t('settings.data.header')}>
           {confirmReset ? (

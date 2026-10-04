@@ -1,5 +1,6 @@
 import { Redirect } from 'expo-router';
 
+import { isSyncEnabled } from '@/services/feature-flags';
 import { useProfilesStore, useStoresHydrated } from '@/store';
 import { useSettingsStore } from '@/store/settings-store';
 
@@ -9,7 +10,12 @@ export default function EntryScreen() {
   const hydrated = useStoresHydrated();
   const profileCount = useProfilesStore((s) => s.profiles.length);
   const familyCode = useSettingsStore((s) => s.familyCode);
-  const route = resolveEntryRoute({ hydrated, profileCount, familyCode });
+  const route = resolveEntryRoute({
+    hydrated,
+    profileCount,
+    familyCode,
+    syncEnabled: isSyncEnabled(),
+  });
   if (!route) return null;
   return <Redirect href={route} />;
 }
