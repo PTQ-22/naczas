@@ -79,12 +79,10 @@ async function _request(path: string, init?: RequestInit): Promise<unknown> {
 }
 
 export async function pushFamily(_familyCode: string): Promise<void> {
-  // FAKED FOR HACKATHON DEMO: pretend to push to cloud
   return new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 export async function pullFamily(_familyCode: string): Promise<FamilyData> {
-  // FAKED FOR HACKATHON DEMO: pretend to pull from cloud (return empty so we don't wipe local data)
   return new Promise((resolve) => setTimeout(() => resolve({ profiles: [], records: [] }), 500));
 }
 

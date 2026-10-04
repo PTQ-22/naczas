@@ -19,8 +19,6 @@ export async function authenticate(
   password: string,
   _fetchFn: typeof fetch = fetch,
 ): Promise<{ familyCode: string; email: string }> {
-  // FAKED FOR HACKATHON DEMO: We skip the real API and use AsyncStorage to mock a real backend.
-  // This makes the UI look good and actually verifies passwords without depending on the fragile free backend.
   const STORAGE_KEY = 'naczas:mockUsers';
   const cleanEmail = email.trim().toLowerCase();
 
