@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useMemo, useState, type ReactNode } from 'react';
 import { View } from 'react-native';
 
@@ -21,8 +22,10 @@ import {
   useDefaultFacilityStore,
   useProfilesStore,
 } from '@/store';
+import { selectSlots, useAvailabilityStore } from '@/store/availability-store';
 import { useTheme } from '@/theme';
 
+import { CalendarButton } from './CalendarButton';
 import {
   defaultFacilityFilters,
   filterFacilities,
@@ -45,6 +48,8 @@ export default function DoctorsScreen() {
   const { colors, space, radius } = useTheme();
   // Same fallback as FacilitiesScreen until onboarding always creates an active profile.
   const profile = useProfilesStore(selectActiveProfile) ?? mockProfileMama;
+  // Availability is per person, not per clinic: the agent applies it to every call it makes.
+  const slots = useAvailabilityStore(selectSlots(profile.id));
   const location = profile.location;
 
   const [examId, setExamId] = useState<SpecialtyExamId>(SPECIALTY_EXAM_IDS[0]);
@@ -170,6 +175,7 @@ export default function DoctorsScreen() {
           style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm }}
         >
           <FiltersButton activeCount={activeCount} onPress={() => setFiltersOpen(true)} />
+          <CalendarButton markedCount={slots.length} onPress={() => router.push('/availability')} />
           {state.status === 'success' && (
             <Text
               variant="caption"

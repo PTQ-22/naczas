@@ -94,6 +94,14 @@ function ThemedStack() {
           }}
         />
         <Stack.Screen
+          name="availability"
+          options={{
+            headerShown: true,
+            title: t('callAssist.availability.title'),
+            presentation: 'modal',
+          }}
+        />
+        <Stack.Screen
           name="call/[taskId]"
           options={{ headerShown: true, title: t('agent.detail.title') }}
         />

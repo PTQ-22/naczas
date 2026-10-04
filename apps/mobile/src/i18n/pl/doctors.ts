@@ -11,6 +11,11 @@ export const doctors = {
       colonoscopy_screening: 'Kolonoskopia',
     },
   },
+  calendar: {
+    button: 'Kalendarz',
+    buttonActive: 'Kalendarz ({{count}})',
+    buttonA11y: 'Kiedy możesz, a kiedy nie — asystent stosuje to przy każdym telefonie',
+  },
   filters: {
     button: 'Filtry',
     buttonActive: 'Filtry ({{count}})',

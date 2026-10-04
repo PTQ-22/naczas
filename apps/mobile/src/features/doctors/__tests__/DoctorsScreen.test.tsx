@@ -87,4 +87,12 @@ describe('DoctorsScreen (no active profile → mock mama, Warszawa)', () => {
       expect(screen.getByText(/pasuje: (\d+) z \1$/)).toBeTruthy();
     }
   });
+
+  it('"Kalendarz" next to "Filtry" opens the availability calendar used for every call', async () => {
+    const { router } = jest.requireMock<{ router: { push: jest.Mock } }>('expo-router');
+    render(<DoctorsScreen />);
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
+    fireEvent.press(screen.getByTestId('doctors-calendar-button'));
+    expect(router.push).toHaveBeenCalledWith('/availability');
+  });
 });

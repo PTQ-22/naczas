@@ -2,7 +2,7 @@ import { addDays, format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 
 import { ISODateSchema, type ISODate } from '@naczas/shared';
 
@@ -22,7 +22,7 @@ import {
 } from '@/store/availability-store';
 import { useTheme } from '@/theme';
 
-import { weekDays, weekStart } from './availability';
+import { DAY_END, DAY_START, toMinutes, weekDays, weekStart } from './availability';
 import { SlotEditor } from './SlotEditor';
 import { WeekGrid } from './WeekGrid';
 
@@ -41,7 +41,7 @@ function weekTitle(days: readonly ISODate[]): string {
 /** "Kiedy możesz?" — a week view of the patient's free time, read by the voice agent. */
 export default function AvailabilityScreen() {
   const { firstDate } = useLocalSearchParams<{ firstDate?: string }>();
-  const { space, layout } = useTheme();
+  const { space, layout, colors, radius, borderWidth } = useTheme();
   const today = useToday();
   const patient = useProfilesStore(selectActiveProfile);
   const slots = useAvailabilityStore(selectSlots(patient?.id));
@@ -68,7 +68,10 @@ export default function AvailabilityScreen() {
   const days = weekDays(start);
   const selected = editing && slots.find((s) => s.id === editing.id);
 
-  const footer =
+  // The editor floats over the grid instead of taking its height: the week keeps its full size.
+  // It sits on the half of the day away from the edited block, so the block stays visible.
+  const editorOnTop = !!selected && toMinutes(selected.from) >= (DAY_START + DAY_END) / 2;
+  const editor =
     selected && editing ? (
       <SlotEditor
         slot={selected}
@@ -80,9 +83,10 @@ export default function AvailabilityScreen() {
         }}
         onDone={() => setEditing(null)}
       />
-    ) : (
-      <Button label={t('callAssist.availability.done')} fullWidth onPress={() => router.back()} />
-    );
+    ) : null;
+  const footer = (
+    <Button label={t('callAssist.availability.done')} fullWidth onPress={() => router.back()} />
+  );
 
   return (
     <Screen edges={['left', 'right', 'bottom']} scroll={false} footer={footer}>
@@ -121,20 +125,42 @@ export default function AvailabilityScreen() {
           { value: 'busy', label: t('callAssist.availability.modeBusy') },
         ]}
       />
-      <WeekGrid
-        days={days}
-        today={today}
-        nearest={nearest}
-        slots={slots}
-        mode={mode}
-        selectedId={selected?.id ?? null}
-        onCreate={(date, from, to) => {
-          const id = newSlotId();
-          addSlot(patient.id, { id, from, to, kind: mode, repeat: 'once', date });
-          setEditing({ id, date });
-        }}
-        onSelect={(slot, date) => setEditing({ id: slot.id, date })}
-      />
+      <View style={{ flex: 1 }}>
+        <WeekGrid
+          days={days}
+          today={today}
+          nearest={nearest}
+          slots={slots}
+          mode={mode}
+          selectedId={selected?.id ?? null}
+          onCreate={(date, from, to) => {
+            const id = newSlotId();
+            addSlot(patient.id, { id, from, to, kind: mode, repeat: 'once', date });
+            setEditing({ id, date });
+          }}
+          onSelect={(slot, date) => setEditing({ id: slot.id, date })}
+        />
+        {editor && (
+          <View
+            testID="slot-editor-overlay"
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              ...(editorOnTop ? { top: 0 } : { bottom: 0 }),
+              maxHeight: '80%',
+              backgroundColor: colors.surface,
+              borderWidth: borderWidth.plate,
+              borderColor: colors.text,
+              borderRadius: radius.plate,
+              borderCurve: 'continuous',
+              overflow: 'hidden',
+            }}
+          >
+            <ScrollView contentContainerStyle={{ padding: space.md }}>{editor}</ScrollView>
+          </View>
+        )}
+      </View>
     </Screen>
   );
 }
