@@ -83,13 +83,18 @@ export function useCloudSync() {
     }
   }, [familyCode]);
 
-  // Initial pull when familyCode changes
+  // Initial sync when familyCode changes
   useEffect(() => {
     if (familyCode) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      void pull();
+      void (async () => {
+        // If we have local data, push it to the cloud first so it's not lost
+        if (useProfilesStore.getState().profiles.length > 0) {
+          await push();
+        }
+        await pull();
+      })();
     }
-  }, [familyCode, pull]);
+  }, [familyCode, push, pull]);
 
   return { push, pull, syncing, lastSync, error };
 }
