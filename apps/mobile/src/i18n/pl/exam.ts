@@ -100,10 +100,12 @@ export const exam = {
     question: 'Kiedy masz wizytę?',
     dateLabel: 'Data wizyty',
     dateA11y: 'Data wizyty: {{date}}. Dotknij, aby zmienić.',
+    timeLabel: 'Godzina',
+    timeA11y: 'Godzina wizyty: {{time}}. Dotknij, aby zmienić.',
     facility: 'Placówka: {{name}}',
     reminder: 'Przypomnimy Ci o wizycie dzień wcześniej.',
     save: 'Zapisz wizytę',
-    saveA11y: 'Zapisz wizytę na {{date}}',
+    saveA11y: 'Zapisz wizytę na {{date}}, godz. {{time}}',
     errors: {
       invalid: 'Wpisz poprawną datę.',
       past: 'Data wizyty nie może być w przeszłości.',

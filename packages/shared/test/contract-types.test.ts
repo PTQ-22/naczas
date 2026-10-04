@@ -71,6 +71,7 @@ namespace Doc {
     lastDone?: ISODate | UndatedLastDone;
     status: 'none' | 'booked' | 'done';
     bookedFor?: ISODate;
+    bookedTime?: string; // 'HH:mm' — godzina wizyty, jeśli znana
     updatedAt: ISODate;
   }
 

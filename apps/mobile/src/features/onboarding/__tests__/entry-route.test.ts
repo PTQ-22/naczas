@@ -5,10 +5,9 @@ describe('resolveEntryRoute', () => {
     expect(resolveEntryRoute({ hydrated: false, profileCount: 3, familyCode: null })).toBeNull();
   });
 
-  it('sends first-time users to onboarding', () => {
-    expect(resolveEntryRoute({ hydrated: true, profileCount: 0, familyCode: 'XYZ' })).toBe(
-      '/onboarding/welcome',
-    );
+  // 880e4de: a signed-in family account skips onboarding — its profiles arrive via cloud sync.
+  it('sends signed-in family accounts to the plan before profiles sync', () => {
+    expect(resolveEntryRoute({ hydrated: true, profileCount: 0, familyCode: 'XYZ' })).toBe('/plan');
   });
 
   it('sends users without family code to onboarding if no profiles', () => {

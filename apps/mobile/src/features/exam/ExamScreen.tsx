@@ -21,7 +21,7 @@ import { pluralForm, queueRangeA11y } from '@/features/plan/plan-view-model';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
 import { useCoverage } from '@/services';
-import { useRecordsStore } from '@/store';
+import { findRecord, useRecordsStore } from '@/store';
 import { useTheme } from '@/theme';
 
 import { addToCalendar } from './add-to-calendar';
@@ -114,6 +114,11 @@ export default function ExamScreen() {
 
   const examId = params.success ? params.data.examId : undefined;
   const rule = rules.find((r) => r.id === examId);
+  const bookedTime = useRecordsStore((s) =>
+    activeProfile && examId
+      ? findRecord(s.records, activeProfile.id, examId)?.bookedTime
+      : undefined,
+  );
   // Before the early return: hooks must run on every render. No-op for non-programme exams.
   const coverage = useCoverage(rule?.id ?? '', activeProfile?.location);
 
@@ -175,6 +180,7 @@ export default function ExamScreen() {
       profileName: activeProfile.name,
       link: createURL(`exam/${rule.id}`),
       today,
+      visitTime: bookedTime,
     });
     const result = await addToCalendar(draft);
     if (result === 'canceled') return;

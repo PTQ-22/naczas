@@ -106,15 +106,16 @@ export default function CallAssistScreen() {
 
   const result = state.phase === 'finished' ? state.status?.result : null;
   const bookedDate = result?.booked ? result.date : null;
+  const bookedTime = result?.booked ? (result.time ?? undefined) : undefined;
 
   // The whole point of the demo: the phone call ends and the plan updates itself.
   const saved = useRef(false);
   useEffect(() => {
     if (!bookedDate || !patient || !rule || saved.current) return;
     saved.current = true;
-    markBooked(patient.id, rule.id, bookedDate);
+    markBooked(patient.id, rule.id, bookedDate, bookedTime);
     successHaptic();
-  }, [bookedDate, patient, rule, markBooked]);
+  }, [bookedDate, bookedTime, patient, rule, markBooked]);
 
   if (!rule || !patient) {
     return (

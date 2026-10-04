@@ -57,11 +57,14 @@ export interface ExamRecord {
   lastDone?: ISODate | UndatedLastDone;
   status: 'none' | 'booked' | 'done';
   bookedFor?: ISODate;
+  bookedTime?: string; // 'HH:mm' — godzina wizyty, jeśli znana
   updatedAt: ISODate;
 }
 ```
 
 ## Reguły badań (format `packages/rules/data/exams.json`)
+
+> **Zmiana 2026-10-04 (godzina wizyty):** opcjonalne `ExamRecord.bookedTime` (`HH:mm`); brak = wizyta całodniowa. Bez migracji (pole opcjonalne).
 
 > **Zmiana 2026-10-04 (przedziały „kiedy ostatnio”):** `LastDoneAnswer` liczone od interwału badania; `ExamRecord.lastDone` to data albo `UndatedLastDone`. Rekordy migrowane v1 → v2.
 

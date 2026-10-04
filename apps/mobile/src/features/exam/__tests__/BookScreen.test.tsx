@@ -7,6 +7,7 @@ import { makeProfile, makeRecord } from '@/store/__fixtures__/fixtures';
 import BookScreen from '../BookScreen';
 
 import type { BookDatePickerProps } from '../book-date-picker-props';
+import type { BookTimePickerProps } from '../book-time-picker-props';
 
 let mockParams: Record<string, string> = {};
 jest.mock('expo-router', () => ({
@@ -22,6 +23,15 @@ jest.mock('../BookDatePicker', () => {
   return {
     BookDatePicker: ({ value, onChange }: BookDatePickerProps) => (
       <TextInput testID="date" value={value} onChangeText={onChange} />
+    ),
+  };
+});
+
+jest.mock('../BookTimePicker', () => {
+  const { TextInput } = jest.requireActual<typeof import('react-native')>('react-native');
+  return {
+    BookTimePicker: ({ value, onChange }: BookTimePickerProps) => (
+      <TextInput testID="time" value={value} onChangeText={onChange} />
     ),
   };
 });
@@ -45,7 +55,9 @@ describe('BookScreen', () => {
   it('defaults to today + 14 days and saves a booked record, keeping lastDone', () => {
     render(<BookScreen />);
     expect(screen.getByTestId('date').props.value).toBe('2026-10-17');
-    fireEvent.press(screen.getByRole('button', { name: 'Zapisz wizytę na 17.10.2026' }));
+    fireEvent.press(
+      screen.getByRole('button', { name: 'Zapisz wizytę na 17.10.2026, godz. 09:00' }),
+    );
     expect(useRecordsStore.getState().records).toEqual([
       {
         profileId: profile.id,
@@ -53,6 +65,7 @@ describe('BookScreen', () => {
         lastDone: '2025-01-15',
         status: 'booked',
         bookedFor: '2026-10-17',
+        bookedTime: '09:00',
         updatedAt: TODAY,
       },
     ]);
@@ -61,7 +74,9 @@ describe('BookScreen', () => {
 
   it('saves through markBooked, so the booking can be undone', () => {
     render(<BookScreen />);
-    fireEvent.press(screen.getByRole('button', { name: 'Zapisz wizytę na 17.10.2026' }));
+    fireEvent.press(
+      screen.getByRole('button', { name: 'Zapisz wizytę na 17.10.2026, godz. 09:00' }),
+    );
     let undone = false;
     act(() => {
       undone = useRecordsStore.getState().undo(profile.id, 'eye_exam');
@@ -76,7 +91,9 @@ describe('BookScreen', () => {
   it('saves the date the user picked', () => {
     render(<BookScreen />);
     fireEvent.changeText(screen.getByTestId('date'), '2026-11-20');
-    fireEvent.press(screen.getByRole('button', { name: 'Zapisz wizytę na 20.11.2026' }));
+    fireEvent.press(
+      screen.getByRole('button', { name: 'Zapisz wizytę na 20.11.2026, godz. 09:00' }),
+    );
     expect(useRecordsStore.getState().records[0]?.bookedFor).toBe('2026-11-20');
   });
 
@@ -95,6 +112,18 @@ describe('BookScreen', () => {
     expect(router.back).not.toHaveBeenCalled();
   });
 
+  it('saves the visit hour the user picked', () => {
+    render(<BookScreen />);
+    fireEvent.changeText(screen.getByTestId('time'), '10:30');
+    fireEvent.press(
+      screen.getByRole('button', { name: 'Zapisz wizytę na 17.10.2026, godz. 10:30' }),
+    );
+    expect(useRecordsStore.getState().records[0]).toMatchObject({
+      bookedFor: '2026-10-17',
+      bookedTime: '10:30',
+    });
+  });
+
   it('shows the facility passed from the facilities screen', () => {
     mockParams = { examId: 'eye_exam', facility: 'Przychodnia WAT' };
     render(<BookScreen />);
@@ -105,11 +134,19 @@ describe('BookScreen', () => {
     // Braces matter: persisted setState returns a Promise, which would make act() async.
     act(() => {
       useRecordsStore.setState({
-        records: [makeRecord({ examId: 'eye_exam', status: 'booked', bookedFor: '2026-12-05' })],
+        records: [
+          makeRecord({
+            examId: 'eye_exam',
+            status: 'booked',
+            bookedFor: '2026-12-05',
+            bookedTime: '14:15',
+          }),
+        ],
       });
     });
     render(<BookScreen />);
     expect(screen.getByTestId('date').props.value).toBe('2026-12-05');
+    expect(screen.getByTestId('time').props.value).toBe('14:15');
   });
 
   it('unknown exam → not-found state', () => {

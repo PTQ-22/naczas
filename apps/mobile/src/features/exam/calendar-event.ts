@@ -1,6 +1,6 @@
 import { addDays, format, parseISO } from 'date-fns';
 
-import type { ISODate, PlanItem } from '@naczas/shared';
+import type { ISODate, PlanItem, TimeOfDay } from '@naczas/shared';
 
 import { t } from '@/i18n';
 
@@ -16,18 +16,25 @@ export interface CalendarEventDraft {
   notes: string;
   url: string;
   date: ISODate;
-  /** Visit: all-day (we don't know the hour). Search: 09:00–09:15 local. */
+  /** Visit without a known hour: all-day. Search: 09:00–09:15. Visit with hour: 1 h from it. */
   allDay: boolean;
+  /** Local start 'HH:mm' — ignored when allDay. */
+  startTime: TimeOfDay;
+  durationMinutes: number;
   /** Alarm offset in minutes relative to the event start (negative = before). */
   alarmOffsetMinutes: number;
   /** = today; the .ics DTSTAMP (no clock reads outside useToday). */
   createdOn: ISODate;
 }
 
-export const SEARCH_HOUR = 9;
+export const SEARCH_TIME: TimeOfDay = '09:00';
 export const SEARCH_DURATION_MIN = 15;
+/** We don't know how long a visit takes; an hour blocks the slot without overclaiming. */
+export const VISIT_DURATION_MIN = 60;
 /** All-day visit starts at 00:00 → −15 h = 09:00 the day before (matches the visit notification). */
 const VISIT_ALARM_OFFSET = -15 * 60;
+/** Timed visit: same hour the day before — time to arrange a ride or a day off. */
+const TIMED_VISIT_ALARM_OFFSET = -24 * 60;
 
 const monthYear = (iso: ISODate) => format(parseISO(iso), 'MM.yyyy');
 const nextDay = (iso: ISODate) => format(addDays(parseISO(iso), 1), 'yyyy-MM-dd');
@@ -39,6 +46,8 @@ interface BuildInput {
   /** Deep link back into the app (Linking.createURL) — shown in the calendar event. */
   link: string;
   today: ISODate;
+  /** ExamRecord.bookedTime — makes the visit a timed event. */
+  visitTime?: TimeOfDay | undefined;
 }
 
 /**
@@ -52,6 +61,7 @@ export function buildCalendarEvent({
   profileName,
   link,
   today,
+  visitTime,
 }: BuildInput): CalendarEventDraft {
   const base = { exam: examName, name: profileName };
   if (item.urgency === 'booked') {
@@ -62,8 +72,10 @@ export function buildCalendarEvent({
       notes: t('exam.calendar.visitNotes', { link }),
       url: link,
       date: item.dueDate,
-      allDay: true,
-      alarmOffsetMinutes: VISIT_ALARM_OFFSET,
+      allDay: !visitTime,
+      startTime: visitTime ?? SEARCH_TIME,
+      durationMinutes: VISIT_DURATION_MIN,
+      alarmOffsetMinutes: visitTime ? TIMED_VISIT_ALARM_OFFSET : VISIT_ALARM_OFFSET,
       createdOn: today,
     };
   }
@@ -75,6 +87,8 @@ export function buildCalendarEvent({
     url: link,
     date: item.notifyDate > today ? item.notifyDate : nextDay(today),
     allDay: false,
+    startTime: SEARCH_TIME,
+    durationMinutes: SEARCH_DURATION_MIN,
     alarmOffsetMinutes: 0,
     createdOn: today,
   };
@@ -84,8 +98,9 @@ export function buildCalendarEvent({
 export function eventTimes(draft: CalendarEventDraft): { start: Date; end: Date } {
   const start = parseISO(draft.date);
   if (draft.allDay) return { start, end: start };
-  start.setHours(SEARCH_HOUR, 0, 0, 0);
-  const end = new Date(start.getTime() + SEARCH_DURATION_MIN * 60_000);
+  const [h = 0, m = 0] = draft.startTime.split(':').map(Number);
+  start.setHours(h, m, 0, 0);
+  const end = new Date(start.getTime() + draft.durationMinutes * 60_000);
   return { start, end };
 }
 
@@ -95,6 +110,12 @@ const escapeText = (s: string) =>
   s.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
 const compact = (iso: ISODate) => iso.replace(/-/g, '');
 const pad = (n: number) => String(n).padStart(2, '0');
+/** Floating local 'YYYYMMDDTHHMMSS'; minutes past midnight may roll into the next day. */
+function localStamp(date: ISODate, minutesFromMidnight: number): string {
+  const day = addDays(parseISO(date), Math.floor(minutesFromMidnight / (24 * 60)));
+  const mins = minutesFromMidnight % (24 * 60);
+  return `${format(day, 'yyyyMMdd')}T${pad(Math.floor(mins / 60))}${pad(mins % 60)}00`;
+}
 
 function duration(minutes: number): string {
   const sign = minutes < 0 ? '-' : '';
@@ -106,12 +127,14 @@ function duration(minutes: number): string {
 
 /** Floating local times (no TZ) on purpose: "09:00 wherever the user is", like the app's alerts. */
 export function toIcs(draft: CalendarEventDraft): string {
+  const [h = 0, m = 0] = draft.startTime.split(':').map(Number);
+  const startMin = h * 60 + m;
   const start = draft.allDay
     ? `DTSTART;VALUE=DATE:${compact(draft.date)}`
-    : `DTSTART:${compact(draft.date)}T${pad(SEARCH_HOUR)}0000`;
+    : `DTSTART:${localStamp(draft.date, startMin)}`;
   const end = draft.allDay
     ? `DTEND;VALUE=DATE:${compact(nextDay(draft.date))}`
-    : `DTEND:${compact(draft.date)}T${pad(SEARCH_HOUR)}${pad(SEARCH_DURATION_MIN)}00`;
+    : `DTEND:${localStamp(draft.date, startMin + draft.durationMinutes)}`;
   return [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',

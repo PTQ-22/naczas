@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { ExamRecordSchema, type ExamRecord, type ISODate } from '@naczas/shared';
+import { ExamRecordSchema, type ExamRecord, type ISODate, type TimeOfDay } from '@naczas/shared';
 
 import { migrateRecordsV1 } from './last-done-migration';
 import { validatedPersist } from './persist';
@@ -23,7 +23,13 @@ interface RecordsState extends PersistedRecords {
   /** Inserts or replaces the record for (profileId, examId) — at most one per pair. */
   upsertRecord: (record: ExamRecord) => void;
   /** "Umówiłem/am się na …" — keeps lastDone, the plan reminds the day before. */
-  markBooked: (profileId: string, examId: string, bookedFor: ISODate) => void;
+  /** `bookedTime` 'HH:mm' when the visit hour is known; omitted = whole-day visit. */
+  markBooked: (
+    profileId: string,
+    examId: string,
+    bookedFor: ISODate,
+    bookedTime?: TimeOfDay,
+  ) => void;
   /** "Zrobione" on `date` — becomes lastDone, clears a booking. */
   markDone: (profileId: string, examId: string, date: ISODate) => void;
   /** Corrects when the exam was last done; status stays as it is. */
@@ -65,13 +71,14 @@ export const useRecordsStore = create<RecordsState>()(
         undoStack: {},
         upsertRecord: (record) =>
           set((s) => ({ records: [...s.records.filter((r) => !sameKey(r, record)), record] })),
-        markBooked: (profileId, examId, bookedFor) =>
+        markBooked: (profileId, examId, bookedFor, bookedTime) =>
           change(profileId, examId, (previous) => ({
             profileId,
             examId,
             ...(previous?.lastDone !== undefined && { lastDone: previous.lastDone }),
             status: 'booked',
             bookedFor,
+            ...(bookedTime !== undefined && { bookedTime }),
             updatedAt: currentToday(),
           })),
         markDone: (profileId, examId, date) =>

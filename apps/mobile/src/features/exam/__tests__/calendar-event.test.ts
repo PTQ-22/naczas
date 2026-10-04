@@ -18,13 +18,14 @@ const item = (over: Partial<PlanItem>): PlanItem => ({
   ...over,
 });
 
-const build = (over: Partial<PlanItem>) =>
+const build = (over: Partial<PlanItem>, visitTime?: string) =>
   buildCalendarEvent({
     item: item(over),
     examName: 'Kolonoskopia',
     profileName: 'Mama',
     link: LINK,
     today: TODAY,
+    visitTime,
   });
 
 describe('buildCalendarEvent', () => {
@@ -55,6 +56,16 @@ describe('buildCalendarEvent', () => {
     expect(e.alarmOffsetMinutes).toBe(-15 * 60);
     expect(e.title).toBe('Wizyta: Kolonoskopia (Mama)');
   });
+
+  it('booked with a known hour → 1 h timed visit, alarm a day before', () => {
+    const e = build({ urgency: 'booked', dueDate: '2026-10-20' }, '10:30');
+    expect(e.allDay).toBe(false);
+    expect(e.startTime).toBe('10:30');
+    expect(e.alarmOffsetMinutes).toBe(-24 * 60);
+    const { start, end } = eventTimes(e);
+    expect([start.getHours(), start.getMinutes()]).toEqual([10, 30]);
+    expect(end.getTime() - start.getTime()).toBe(60 * 60_000);
+  });
 });
 
 describe('toIcs', () => {
@@ -72,6 +83,18 @@ describe('toIcs', () => {
     expect(ics).toContain('DTSTART;VALUE=DATE:20261020');
     expect(ics).toContain('DTEND;VALUE=DATE:20261021');
     expect(ics).toContain('TRIGGER:-PT15H');
+  });
+
+  it('timed visit: start at the visit hour, 1 h long, alarm 24 h before', () => {
+    const ics = toIcs(build({ urgency: 'booked', dueDate: '2026-10-20' }, '10:30'));
+    expect(ics).toContain('\r\nDTSTART:20261020T103000\r\n');
+    expect(ics).toContain('\r\nDTEND:20261020T113000\r\n');
+    expect(ics).toContain('TRIGGER:-PT24H');
+  });
+
+  it('timed visit late in the evening ends on the next day', () => {
+    const ics = toIcs(build({ urgency: 'booked', dueDate: '2026-10-20' }, '23:30'));
+    expect(ics).toContain('\r\nDTEND:20261021T003000\r\n');
   });
 
   it('escapes commas, semicolons and newlines in text', () => {

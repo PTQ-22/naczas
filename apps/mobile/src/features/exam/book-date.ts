@@ -1,6 +1,6 @@
 import { addDays, addYears, format, isValid, parseISO } from 'date-fns';
 
-import type { ExamRecord, ISODate } from '@naczas/shared';
+import type { ExamRecord, ISODate, TimeOfDay } from '@naczas/shared';
 
 /** Default suggestion when nothing is booked yet: two weeks from today. */
 export const DEFAULT_OFFSET_DAYS = 14;
@@ -17,6 +17,14 @@ export function initialBookedFor(today: ISODate, record?: ExamRecord): ISODate {
     return record.bookedFor;
   }
   return toISO(addDays(parseISO(today), DEFAULT_OFFSET_DAYS));
+}
+
+/** Typical first-shift hour; a guess the user adjusts, not a claim about the visit. */
+export const DEFAULT_VISIT_TIME: TimeOfDay = '09:00';
+
+/** Existing visit hour when changing a booking, otherwise 09:00. */
+export function initialBookedTime(record?: ExamRecord): TimeOfDay {
+  return record?.status === 'booked' && record.bookedTime ? record.bookedTime : DEFAULT_VISIT_TIME;
 }
 
 export type BookDateError = 'invalid' | 'past' | 'tooFar';

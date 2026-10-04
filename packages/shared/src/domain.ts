@@ -4,6 +4,10 @@ import { z } from 'zod';
 export const ISODateSchema = z.iso.date();
 export type ISODate = z.infer<typeof ISODateSchema>;
 
+/** Local wall-clock time 'HH:mm' (24 h), e.g. a visit hour. */
+export const TimeOfDaySchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+export type TimeOfDay = z.infer<typeof TimeOfDaySchema>;
+
 export const SexSchema = z.enum(['female', 'male']);
 export type Sex = z.infer<typeof SexSchema>;
 
@@ -113,6 +117,8 @@ export const ExamRecordSchema = z.object({
   lastDone: z.union([ISODateSchema, UndatedLastDoneSchema]).optional(),
   status: z.enum(['none', 'booked', 'done']),
   bookedFor: ISODateSchema.optional(),
+  /** Visit hour, when known (booking screen, AI call). Absent = whole-day visit. */
+  bookedTime: TimeOfDaySchema.optional(),
   updatedAt: ISODateSchema,
 });
 export type ExamRecord = z.infer<typeof ExamRecordSchema>;

@@ -20,8 +20,9 @@ import {
 } from '@/store';
 import { useTheme } from '@/theme';
 
-import { bookingRange, initialBookedFor, validateBookedFor } from './book-date';
+import { bookingRange, initialBookedFor, initialBookedTime, validateBookedFor } from './book-date';
 import { BookDatePicker } from './BookDatePicker';
+import { BookTimePicker } from './BookTimePicker';
 
 const fullDate = (iso: string) => format(parseISO(iso), 'dd.MM.yyyy');
 
@@ -36,6 +37,7 @@ export default function BookScreen() {
   const existing = profile && rule ? findRecord(records, profile.id, rule.id) : undefined;
 
   const [value, setValue] = useState(() => initialBookedFor(today, existing));
+  const [time, setTime] = useState(() => initialBookedTime(existing));
   const error = validateBookedFor(value, today);
   const { min, max } = bookingRange(today);
 
@@ -54,7 +56,7 @@ export default function BookScreen() {
   const save = () => {
     if (error) return;
     // markBooked keeps lastDone and remembers the previous record for undo.
-    markBooked(profile.id, rule.id, value);
+    markBooked(profile.id, rule.id, value, time);
     successHaptic();
     router.back();
   };
@@ -66,7 +68,7 @@ export default function BookScreen() {
         <Button
           label={t('exam.book.save')}
           accessibilityLabel={
-            error ? undefined : t('exam.book.saveA11y', { date: fullDate(value) })
+            error ? undefined : t('exam.book.saveA11y', { date: fullDate(value), time })
           }
           disabled={error !== null}
           fullWidth
@@ -86,6 +88,7 @@ export default function BookScreen() {
 
       <Text variant="heading">{t('exam.book.question')}</Text>
       <BookDatePicker value={value} min={min} max={max} onChange={setValue} />
+      <BookTimePicker value={time} onChange={setTime} />
       {error ? (
         <Text tone="danger" accessibilityRole="alert">
           {t(`exam.book.errors.${error}`)}
