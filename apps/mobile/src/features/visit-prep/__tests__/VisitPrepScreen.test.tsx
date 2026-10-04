@@ -53,15 +53,14 @@ describe('VisitPrepScreen (active profile from the store)', () => {
     setActive('mama');
   });
 
-  it('renders the person and all sections as headers', () => {
+  it('renders the person and the non-empty sections as headers', () => {
     render(<VisitPrepScreen />);
     expect(screen.getByText('wiek: 58 · kobieta')).toBeTruthy();
     for (const heading of [
       'Czynniki ryzyka',
-      'Poproś lekarza o skierowanie na',
-      'Możesz zapisać się bez skierowania',
-      'Ostatnio zrobione',
       'Pytania do lekarza',
+      'Poproś lekarza o skierowanie na',
+      'Ostatnio zrobione',
     ]) {
       expect(screen.getByRole('header', { name: heading })).toBeTruthy();
     }
@@ -70,9 +69,12 @@ describe('VisitPrepScreen (active profile from the store)', () => {
   it('shows data from visitPrepSummary', () => {
     render(<VisitPrepScreen />);
     expect(screen.getByText('Rak jelita grubego w rodzinie')).toBeTruthy();
-    expect(screen.getByText(/^Badanie u okulisty — /)).toBeTruthy();
-    expect(screen.getByText(/^Kolonoskopia — /)).toBeTruthy();
-    expect(screen.getByText(/^Mammografia — zrobione 15\.06\.2026$/)).toBeTruthy();
+    // Names only on screen; the reasons are in the PDF.
+    expect(screen.getByText('Badanie u okulisty')).toBeTruthy();
+    // "Bez skierowania" is one comma-separated line.
+    expect(screen.getByText(/^Przegląd u dentysty, Kolonoskopia, /)).toBeTruthy();
+    expect(screen.queryByText(/ — /)).toBeNull();
+    expect(screen.getByText('Mammografia · 15.06.2026')).toBeTruthy();
   });
 
   it('uses the real profile: no "low activity" for activity medium (bug B3)', () => {
@@ -84,8 +86,9 @@ describe('VisitPrepScreen (active profile from the store)', () => {
     setActive('kasia');
     render(<VisitPrepScreen />);
     expect(screen.getByRole('header', { name: 'Kasia' })).toBeTruthy();
-    expect(screen.getByText('wiek: 34 · kobieta')).toBeTruthy();
-    expect(screen.getByText('Brak zapisanych badań z datą.')).toBeTruthy();
+    // Empty sections are folded away: no risk factors goes into the person line.
+    expect(screen.getByText('wiek: 34 · kobieta · bez czynników ryzyka')).toBeTruthy();
+    expect(screen.queryByRole('header', { name: 'Ostatnio zrobione' })).toBeNull();
   });
 
   it('no profile → empty state linking to onboarding', () => {

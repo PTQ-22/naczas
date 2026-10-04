@@ -38,9 +38,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 /** Items as list rows with hairline separators instead of bullets. */
-function Lines({ lines, empty }: { lines: string[]; empty: string }) {
+function Lines({ lines }: { lines: string[] }) {
   const { colors, space, borderWidth } = useTheme();
-  if (!lines.length) return <Text tone="textMuted">{empty}</Text>;
   return lines.map((line, i) => (
     <Text
       key={line}
@@ -119,42 +118,22 @@ export default function VisitPrepScreen() {
             {summary.person.name}
           </Text>
           <Text variant="bodyLarge">
-            {t('visitPrep.person.details', {
-              age: summary.person.age,
-              sex: summary.person.sexLabel,
-            })}
+            {t(
+              summary.riskFactors.length
+                ? 'visitPrep.person.details'
+                : 'visitPrep.person.detailsNoRiskFactors',
+              { age: summary.person.age, sex: summary.person.sexLabel },
+            )}
           </Text>
-          <Text tone="textMuted">{t('visitPrep.intro')}</Text>
         </View>
 
-        <Section title={t('visitPrep.sections.riskFactors')}>
-          <Lines lines={summary.riskFactors} empty={t('visitPrep.empty.riskFactors')} />
-        </Section>
-
-        <Section title={t('visitPrep.sections.askForReferral')}>
-          <Lines
-            lines={summary.askForReferral.map((x) => `${x.name} — ${x.reason}`)}
-            empty={t('visitPrep.empty.askForReferral')}
-          />
-        </Section>
-
-        <Section title={t('visitPrep.sections.noReferralNeeded')}>
-          <Lines
-            lines={summary.noReferralNeeded.map((x) =>
-              x.referralNote ? `${x.name} — ${x.referralNote}` : x.name,
-            )}
-            empty={t('visitPrep.empty.noReferralNeeded')}
-          />
-        </Section>
-
-        <Section title={t('visitPrep.sections.recentlyDone')}>
-          <Lines
-            lines={summary.recentlyDone.map(
-              (x) => `${x.name} — ${t('visitPrep.doneOn', { date: formatDatePl(x.date) })}`,
-            )}
-            empty={t('visitPrep.empty.recentlyDone')}
-          />
-        </Section>
+        {/* Short scannable lists; the reasons per exam stay in the PDF and on the exam screens.
+            Empty sections are left out instead of saying "nothing here". */}
+        {summary.riskFactors.length > 0 && (
+          <Section title={t('visitPrep.sections.riskFactors')}>
+            <Lines lines={summary.riskFactors} />
+          </Section>
+        )}
 
         <Section title={t('visitPrep.sections.questions')}>
           {summary.questions.map((q, i) => (
@@ -169,6 +148,24 @@ export default function VisitPrepScreen() {
             </View>
           ))}
         </Section>
+
+        {summary.askForReferral.length > 0 && (
+          <Section title={t('visitPrep.sections.askForReferral')}>
+            <Lines lines={summary.askForReferral.map((x) => x.name)} />
+          </Section>
+        )}
+
+        {summary.noReferralNeeded.length > 0 && (
+          <Section title={t('visitPrep.sections.noReferralShort')}>
+            <Text>{summary.noReferralNeeded.map((x) => x.name).join(', ')}</Text>
+          </Section>
+        )}
+
+        {summary.recentlyDone.length > 0 && (
+          <Section title={t('visitPrep.sections.recentlyDone')}>
+            <Lines lines={summary.recentlyDone.map((x) => `${x.name} · ${formatDatePl(x.date)}`)} />
+          </Section>
+        )}
       </Plate>
     </Screen>
   );

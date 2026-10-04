@@ -5,17 +5,17 @@ export const visitPrep = {
     body: 'Zestawienie dla lekarza powstaje z profilu i planu badań.',
     cta: 'Dodaj osobę',
   },
-  intro:
-    'Zestawienie do omówienia z lekarzem rodzinnym. Możesz je pobrać jako PDF i pokazać na wizycie.',
   person: {
     // "wiek: N" instead of "N lat" — avoids Polish numeral declension (22 lata / 25 lat).
     summary: '{{name}} · wiek: {{age}} · {{sex}}',
     details: 'wiek: {{age}} · {{sex}}',
+    detailsNoRiskFactors: 'wiek: {{age}} · {{sex}} · bez czynników ryzyka',
   },
   sections: {
     riskFactors: 'Czynniki ryzyka',
     askForReferral: 'Poproś lekarza o skierowanie na',
     noReferralNeeded: 'Możesz zapisać się bez skierowania',
+    noReferralShort: 'Bez skierowania',
     recentlyDone: 'Ostatnio zrobione',
     questions: 'Pytania do lekarza',
   },
