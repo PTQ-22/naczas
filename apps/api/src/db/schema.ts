@@ -10,14 +10,15 @@ export const profiles = pgTable('profiles', {
 });
 
 export const records = pgTable('records', {
-  // Composite of profile_id and exam_id in practice, but we use a distinct ID or just composite PK.
-  // For simplicity, we just use a generated string ID or UUID on client.
   id: text('id').primaryKey(),
   profileId: text('profile_id')
     .notNull()
     .references(() => profiles.id, { onDelete: 'cascade' }),
   examId: text('exam_id').notNull(),
   status: text('status').notNull(),
+  lastDone: text('last_done'),
+  bookedFor: text('booked_for'),
+  bookedTime: text('booked_time'),
   updatedAt: text('updated_at').notNull(),
 });
 

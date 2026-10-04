@@ -26,10 +26,12 @@ export function syncRoutes() {
           ),
           records: z.array(
             z.object({
-              id: z.string(),
               profileId: z.string(),
               examId: z.string(),
               status: z.string(),
+              lastDone: z.string().optional(),
+              bookedFor: z.string().optional(),
+              bookedTime: z.string().optional(),
               updatedAt: z.string(),
             }),
           ),
@@ -78,11 +80,19 @@ export function syncRoutes() {
         if (data.records.length > 0) {
           await db
             .insert(records)
-            .values(data.records)
+            .values(
+              data.records.map((r) => ({
+                ...r,
+                id: `${r.profileId}|${r.examId}`,
+              })),
+            )
             .onConflictDoUpdate({
               target: records.id,
               set: {
                 status: sql`EXCLUDED.status`,
+                lastDone: sql`EXCLUDED.last_done`,
+                bookedFor: sql`EXCLUDED.booked_for`,
+                bookedTime: sql`EXCLUDED.booked_time`,
                 updatedAt: sql`EXCLUDED.updated_at`,
               },
             });
@@ -132,7 +142,10 @@ export function syncRoutes() {
 
       return c.json({
         profiles: familyProfiles,
-        records: familyRecords,
+        records: familyRecords.map((r) => {
+          const { id: _, ...rest } = r;
+          return rest;
+        }),
         bets: familyBets.map((b) => ({
           ...b,
           examIds: JSON.parse(b.examIds) as string[],
