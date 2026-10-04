@@ -3,10 +3,7 @@ import { pgTable, text, integer } from 'drizzle-orm/pg-core';
 export const profiles = pgTable('profiles', {
   id: text('id').primaryKey(),
   familyCode: text('family_code').notNull(),
-  encryptedName: text('encrypted_name').notNull(),
-  gender: text('gender').notNull(),
-  birthYear: integer('birth_year').notNull(),
-  updatedAt: text('updated_at').notNull(),
+  payload: text('payload').notNull(), // Stores the full Profile JSON
 });
 
 export const records = pgTable('records', {

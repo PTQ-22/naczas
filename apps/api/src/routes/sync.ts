@@ -3,6 +3,8 @@ import { eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
+import { ProfileSchema, ExamRecordSchema } from '@naczas/shared';
+
 import { db } from '../db';
 import { errorResponse } from './common';
 import { bets, profiles, records } from '../db/schema';
@@ -15,26 +17,8 @@ export function syncRoutes() {
         'json',
         z.object({
           familyCode: z.string().min(1),
-          profiles: z.array(
-            z.object({
-              id: z.string(),
-              encryptedName: z.string(),
-              gender: z.enum(['M', 'F']),
-              birthYear: z.number(),
-              updatedAt: z.string(),
-            }),
-          ),
-          records: z.array(
-            z.object({
-              profileId: z.string(),
-              examId: z.string(),
-              status: z.string(),
-              lastDone: z.string().optional(),
-              bookedFor: z.string().optional(),
-              bookedTime: z.string().optional(),
-              updatedAt: z.string(),
-            }),
-          ),
+          profiles: z.array(ProfileSchema),
+          records: z.array(ExamRecordSchema),
           bets: z.array(
             z.object({
               id: z.string(),
@@ -61,17 +45,15 @@ export function syncRoutes() {
             .insert(profiles)
             .values(
               data.profiles.map((p) => ({
-                ...p,
+                id: p.id,
                 familyCode: data.familyCode,
+                payload: JSON.stringify(p),
               })),
             )
             .onConflictDoUpdate({
               target: profiles.id,
               set: {
-                encryptedName: sql`EXCLUDED.encrypted_name`,
-                gender: sql`EXCLUDED.gender`,
-                birthYear: sql`EXCLUDED.birth_year`,
-                updatedAt: sql`EXCLUDED.updated_at`,
+                payload: sql`EXCLUDED.payload`,
               },
             });
         }
@@ -141,7 +123,9 @@ export function syncRoutes() {
       const familyBets = await db.select().from(bets).where(inArray(bets.profileId, profileIds));
 
       return c.json({
-        profiles: familyProfiles,
+        profiles: familyProfiles.map(
+          (p) => JSON.parse(p.payload) as import('@naczas/shared').Profile,
+        ),
         records: familyRecords.map((r) => {
           const { id: _, ...rest } = r;
           return rest;
