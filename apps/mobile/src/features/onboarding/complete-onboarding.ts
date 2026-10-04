@@ -4,6 +4,7 @@ import {
   useOnboardingDraftStore,
   useProfilesStore,
   useRecordsStore,
+  useDefaultFacilityStore,
   type OnboardingDraft,
 } from '@/store';
 
@@ -33,5 +34,27 @@ export function completeOnboarding(
   const { upsertRecord } = useRecordsStore.getState();
   draftToRecords(draft, profile, options.today).forEach(upsertRecord);
   useOnboardingDraftStore.getState().clear();
+
+  if (profile.location) {
+    useDefaultFacilityStore.getState().setDefault(profile.id, {
+      id: `default-${profile.id}`,
+      benefit: 'PORADNIA PODSTAWOWEJ OPIEKI ZDROWOTNEJ',
+      providerName: 'Twoja Przychodnia',
+      placeName: 'Poradnia Ogólna',
+      address: 'ul. Zdrowotna 1',
+      locality: profile.location.label || 'Twoja miejscowość',
+      phone: '111 222 333',
+      lat: profile.location.lat,
+      lng: profile.location.lng,
+      distanceKm: 0,
+      firstAvailableDate: null,
+      waitDays: 0,
+      awaiting: 0,
+      anesthesia: null,
+      accessibility: { ramp: true, elevator: true, parking: true, toilet: true },
+      asOf: options.today,
+    });
+  }
+
   return profile;
 }

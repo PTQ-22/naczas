@@ -7,6 +7,7 @@ import { useOnboardingDraftStore, useToday, type OnboardingDraft } from '@/store
 import { useTheme } from '@/theme';
 
 import { completeOnboarding } from './complete-onboarding';
+import { loadDemoPreset } from './demo-preset';
 import { BasicsStep } from './steps/BasicsStep';
 import { LastExamsStep } from './steps/LastExamsStep';
 import { LifestyleStep } from './steps/LifestyleStep';
@@ -156,12 +157,26 @@ export default function SurveyStepScreen() {
     <Screen
       wall
       footer={
-        <Button
-          label={isLast ? t('onboarding.nav.finish') : t('onboarding.nav.next')}
-          onPress={goNext}
-          disabled={!canContinue(step, draft, today)}
-          fullWidth
-        />
+        <>
+          <Button
+            label={isLast ? t('onboarding.nav.finish') : t('onboarding.nav.next')}
+            onPress={goNext}
+            disabled={!canContinue(step, draft, today)}
+            fullWidth
+          />
+          {!draft.forRelative && (
+            <Button
+              variant="ghost"
+              label={t('onboarding.welcome.loadDemo')}
+              onPress={() => {
+                loadDemoPreset(today);
+                if (router.canDismiss()) router.dismissAll();
+                router.replace('/plan');
+              }}
+              fullWidth
+            />
+          )}
+        </>
       }
     >
       <Plate>

@@ -9,6 +9,7 @@ import {
   useOnboardingDraftStore,
   useProfilesStore,
   useRecordsStore,
+  useDefaultFacilityStore,
 } from '@/store';
 
 import { postalLocationLabel } from './location-label';
@@ -109,6 +110,31 @@ export function loadDemoPreset(today: ISODate): Profile[] {
   const { addProfile, setActiveProfile } = useProfilesStore.getState();
   profiles.forEach(addProfile);
   records.forEach(useRecordsStore.getState().upsertRecord);
+
+  // Set default facility for demo profiles so it's not empty
+  profiles.forEach((profile) => {
+    if (profile.location) {
+      useDefaultFacilityStore.getState().setDefault(profile.id, {
+        id: `default-${profile.id}`,
+        benefit: 'PORADNIA PODSTAWOWEJ OPIEKI ZDROWOTNEJ',
+        providerName: 'Twoja Przychodnia',
+        placeName: 'Poradnia Ogólna',
+        address: 'ul. Zdrowotna 1',
+        locality: profile.location.label || 'Warszawa',
+        phone: '111 222 333',
+        lat: profile.location.lat,
+        lng: profile.location.lng,
+        distanceKm: 0,
+        firstAvailableDate: null,
+        waitDays: 0,
+        awaiting: 0,
+        anesthesia: null,
+        accessibility: { ramp: true, elevator: true, parking: true, toilet: true },
+        asOf: today,
+      });
+    }
+  });
+
   setActiveProfile(DEMO_MAMA_ID);
   useOnboardingDraftStore.getState().clear();
   return profiles;
