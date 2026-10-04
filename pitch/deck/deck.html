@@ -441,12 +441,6 @@
           <p class="lead" style="font-size: 56px; font-weight: 700; max-width: 900px">
             Wiesz co, kiedy i gdzie — zanim będzie za późno.
           </p>
-          <p class="lead muted" style="margin-top: 48px">
-            Zespół <span class="todo">{NAZWA ZESPOŁU}</span>
-          </p>
-          <p class="small muted" style="margin-top: 16px">
-            <span class="todo">{imiona członków zespołu}</span>
-          </p>
         </div>
         <!-- The app's signature: queue number on the enamel plate (same copy as the plan screen). -->
         <div class="plate" style="display: flex; flex-direction: column; gap: 8px">
@@ -503,7 +497,7 @@
       </div>
       <div class="notes">
         ¹ NFZ, „Dane o realizacji programów”, stan na 1.10.2026<br />
-        ² API NFZ Terminy Leczenia, stan na 2026-09: średni czas oczekiwania raportowany przez placówki (kolejki do poradni, nie program przesiewowy, nie pierwszy wolny termin); mediana: mazowieckie 137,5 dnia, małopolskie 158 dni
+        ² API NFZ Terminy Leczenia, stan na 2026-09: mediana średniego czasu oczekiwania: mazowieckie 137,5 dnia, małopolskie 158 dni
       </div>
     </section>
 
@@ -578,7 +572,7 @@
             <b>kiedy zacząć</b> = termin badania − szacowany czas oczekiwania w okolicy (p75 z kolejek NFZ) − zapas na skierowanie
           </div>
           <p class="small muted" style="line-height: 1.25">
-            Szacunek z kolejek NFZ w Twojej okolicy: średni czas oczekiwania raportowany przez placówki (co miesiąc). Bierzemy ostrożnie p75 — u 3 na 4 placówek średnie czekanie jest krótsze. Przykład z demo: kolonoskopia w poradniach w okolicy — ok. 29 tyg., więc przypomnienie przychodzi z takim wyprzedzeniem. Badania w programach (mammografia, HPV, LDCT) i bilans: stałe 21 dni wyprzedzenia.
+            p75 = w 3 na 4 placówkach w okolicy czeka się krócej.
           </p>
         </div>
         <div class="plate" style="padding: 24px 32px; display: flex; flex-direction: column; justify-content: center">
@@ -600,38 +594,38 @@
           <tr>
             <td>Plan badań wg profilu</td>
             <td><span class="yes">✓</span></td>
-            <td><span class="yes">✓</span> jednorazowy bilans</td>
-            <td class="ours"><span class="yes">✓</span> ciągły plan</td>
+            <td><span class="yes">✓</span></td>
+            <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
             <td>Przypomnienia o badaniach</td>
             <td><span class="yes">✓</span></td>
-            <td><span class="unk">?</span> (leki, wizyty)</td>
+            <td><span class="unk">?</span></td>
             <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
             <td>Kolejki NFZ</td>
             <td><span class="unk">?</span></td>
-            <td><span class="yes">✓</span> osobno, na portalu</td>
-            <td class="ours"><span class="yes">✓</span> w planie</td>
+            <td><span class="yes">✓</span></td>
+            <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
             <td>Wskazanie placówek</td>
-            <td><span class="no">✗</span> w planach</td>
-            <td><span class="yes">✓</span> e-rejestracja</td>
+            <td><span class="no">✗</span></td>
+            <td><span class="yes">✓</span></td>
             <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
             <td>Profile rodzinne / opiekun</td>
             <td><span class="unk">?</span></td>
-            <td><span class="yes">✓</span> dzieci, upoważnienia</td>
+            <td><span class="yes">✓</span></td>
             <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
             <td>Umawia wizytę za Ciebie</td>
-            <td><span class="no">✗</span> w planach</td>
-            <td><span class="unk">?</span> tylko samodzielna e-rejestracja</td>
-            <td class="ours"><span class="yes">✓</span> agent AI</td>
+            <td><span class="no">✗</span></td>
+            <td><span class="unk">?</span></td>
+            <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
             <td>„Kiedy zacząć” = plan × kolejka</td>
@@ -653,16 +647,16 @@
       <h2>Zdrowie mamy i swoje — na jednym telefonie</h2>
       <div class="grid" style="grid-template-columns: 1fr 0.55fr 0.55fr; align-items: stretch">
         <ul class="points" style="justify-content: center">
-          <li><b>Profile rodzinne</b> — przełącznik Ja / Mama, licznik pilnych badań mamy</li>
+          <li><b>Profile rodzinne</b> — plan mamy obok Twojego</li>
           <li><b>Agent umawia też mamę</b> — dzwoni w imieniu Kasi, termin trafia do planu mamy</li>
-          <li><b>Przygotowanie do wizyty</b> — dla lekarza rodzinnego: „Proszę o skierowanie na…”, czynniki ryzyka, lista badań (PDF)</li>
+          <li><b>Przygotowanie do wizyty</b> — wiesz, co powiedzieć lekarzowi i o co zapytać, np. o skierowanie</li>
           <li><b>Karta aktywności</b> — mały krok ruchu dopasowany do ankiety</li>
         </ul>
         <div>
           <img class="shot-img" src="../screenshots/v3/family-light.jpg" alt="Ekran Rodzina: profile Kasi i mamy z liczbą pilnych badań" />
         </div>
         <div>
-          <img class="shot-img doc" src="screens/visit-prep-pdf.png" alt="PDF dla lekarza rodzinnego: czynniki ryzyka i lista badań" />
+          <img class="shot-img" src="../screenshots/v3/visit-prep-light.jpg" alt="Przygotowanie do wizyty: pytania do lekarza i co powiedzieć" />
         </div>
       </div>
       <div class="footer"><span class="app-name"></span><span class="page"></span></div>
@@ -672,13 +666,12 @@
     <section class="slide">
       <p class="eyebrow">Design i dostępność</p>
       <h2 style="margin-bottom: 36px">Czytelne dla mamy, wygodne dla Kasi</h2>
-      <div class="grid" style="grid-template-columns: 1.1fr repeat(3, 0.55fr); gap: 40px">
+      <div class="grid" style="grid-template-columns: 1.2fr repeat(2, 0.55fr); gap: 56px">
         <ul class="points" style="justify-content: center; gap: 24px">
-          <li>Kontrast WCAG AA dla wszystkich par kolorów</li>
-          <li>Tryb senior: tekst ×1.3, przyciski 56 pt, kontrast ≥ 7:1</li>
-          <li>Pilność = ikona + tekst, nigdy sam kolor</li>
-          <li>Jeden główny przycisk na ekran</li>
-          <li>Systemowe powiększenie czcionki i czytnik ekranu</li>
+          <li>Czytelny kontrast (WCAG AA)</li>
+          <li>Tryb senior: większy tekst i przyciski</li>
+          <li>Pilność pokazana ikoną i tekstem, nie tylko kolorem</li>
+          <li>Działa z systemowym powiększeniem czcionki</li>
         </ul>
         <div>
           <img class="shot-img" src="../screenshots/v3/plan-light.jpg" alt="Plan w trybie standardowym" />
@@ -688,10 +681,6 @@
           <img class="shot-img" src="../screenshots/v3/plan-senior.jpg" alt="Plan w trybie senior" />
           <p class="shot-caption">Tryb senior</p>
         </div>
-        <div>
-          <img class="shot-img" src="../screenshots/v3/plan-dark.jpg" alt="Plan w trybie ciemnym" />
-          <p class="shot-caption">Dark mode</p>
-        </div>
       </div>
       <div class="footer"><span class="app-name"></span><span class="page"></span></div>
     </section>
@@ -699,7 +688,7 @@
     <!-- 8. Technologia -->
     <section class="slide">
       <p class="eyebrow">Technologia</p>
-      <h2 style="margin-bottom: 32px; max-width: 1680px">Prawdziwe dane NFZ. Dane zdrowotne zostają na telefonie.</h2>
+      <h2 style="margin-bottom: 32px; max-width: 1680px">Prawdziwe dane NFZ. Prywatność od początku.</h2>
       <div class="grid" style="grid-template-columns: 1.25fr 1fr; gap: 64px; align-items: center">
         <svg
           viewBox="0 0 960 620"
@@ -717,7 +706,7 @@
           <!-- Phone -->
           <rect x="10" y="10" width="940" height="170" rx="24" fill="#fbf9f3" stroke="#0e1b2c" stroke-width="4" />
           <text x="40" y="66" font-size="36" font-weight="700" fill="#0e1b2c">Telefon — Expo: iOS · Android · web</text>
-          <text x="40" y="112" font-size="28" fill="#4a5160">Profile i historia badań tylko lokalnie</text>
+          <text x="40" y="112" font-size="28" fill="#4a5160">Profile i historia badań na telefonie</text>
           <text x="40" y="152" font-size="28" fill="#4a5160">Silnik reguł liczy plan offline</text>
           <!-- Arrow phone -> API -->
           <line x1="480" y1="184" x2="480" y2="262" stroke="#ffffff" stroke-width="5" marker-end="url(#arrow)" />
@@ -734,19 +723,18 @@
           <text x="40" y="568" font-size="36" font-weight="700" fill="#0e1b2c">API NFZ „Terminy leczenia” · Vapi + Twilio</text>
         </svg>
         <ul class="points">
-          <li><b>Privacy by design</b> — profil, historia i czynniki ryzyka tylko na telefonie, bez kont</li>
-          <li><b>Agent AI</b> dostaje tylko to, co potrzebne do rozmowy: dla kogo, jakie badanie, która placówka, kiedy pasuje — bez PESEL i nazwiska</li>
+          <li><b>Dane zdrowotne na telefonie</b> — konto rodzinne w demo działa na bazie testowej; w docelowej wersji dane są szyfrowane</li>
+          <li><b>Agent AI</b> dostaje tylko to, co potrzebne do rozmowy — bez PESEL i nazwiska. Docelowo działa na naszych serwerach</li>
           <li><b>Odporne na awarię NFZ</b> — cache i kopia zapasowa danych</li>
-          <li><b>Testy</b> — 1018: silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 584, kontrakty 54</li>
         </ul>
       </div>
-      <div class="footer"><span>TypeScript · Expo · Hono · Zod · Vitest</span><span class="page"></span></div>
+      <div class="footer"><span>TypeScript · Expo · Hono · Zod</span><span class="page"></span></div>
     </section>
 
     <!-- 9. Wdrożenie i roadmap -->
     <section class="slide">
-      <p class="eyebrow">Wdrożenie i roadmap</p>
-      <h2>Publiczne, otwarte narzędzie — gotowe do rozwoju</h2>
+      <p class="eyebrow">Roadmap</p>
+      <h2>Co dalej</h2>
       <div class="grid" style="grid-template-columns: 1fr 1fr 1fr">
         <div class="card">
           <p class="eyebrow" style="color: var(--done)">✓ Teraz — MVP</p>
@@ -756,25 +744,23 @@
             <li>Placówki NFZ</li>
             <li>Agent AI umawia wizytę</li>
             <li>Profile rodzinne</li>
-            <li>PDF dla lekarza</li>
+            <li>Przygotowanie do wizyty</li>
           </ul>
         </div>
         <div class="card">
           <p class="eyebrow">◆ Dalej</p>
           <ul class="points" style="margin-top: 8px; gap: 14px; font-size: 32px">
-            <li>Wspólny plan opiekuna i rodzica (szyfrowany E2E)</li>
+            <li>Bezpieczeństwo i prywatność: szyfrowanie danych, agent na naszych serwerach</li>
+            <li>Wspólny plan opiekuna i rodzica</li>
             <li>Integracja z IKP</li>
             <li>Agent z e-rejestracją zamiast telefonu</li>
-            <li>Realizatorzy programów przesiewowych z API NFZ „Umowy”</li>
-            <li>Harmonogram mammobusów</li>
           </ul>
         </div>
         <div class="card">
           <p class="eyebrow" style="color: var(--primary)">■ Model</p>
           <ul class="points" style="margin-top: 8px; gap: 18px; font-size: 32px">
-            <li>Open source / narzędzie publiczne</li>
-            <li>Partnerzy: NFZ, samorządy, organizacje pacjentów</li>
-            <li>Opcjonalnie: benefit profilaktyczny dla pracodawców</li>
+            <li>Open source</li>
+            <li>Możliwi partnerzy: NFZ, samorządy, organizacje pacjentów</li>
           </ul>
         </div>
       </div>
