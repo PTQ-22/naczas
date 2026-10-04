@@ -106,8 +106,6 @@ export function UnknownHistorySection({
                     }))}
                     selected={undefined}
                     onSelect={(value) => answer(item.examId, value)}
-                    startLabel={t('onboarding.steps.lastExams.axisRecent')}
-                    endLabel={t('onboarding.steps.lastExams.axisLongAgo')}
                   />
                   <Button
                     variant="ghost"

@@ -3,6 +3,7 @@ import type { Facility } from '@naczas/shared';
 import {
   accessibilityLabels,
   asOfLabel,
+  displayPhone,
   distanceLabel,
   escapeMarkerText,
   facilityA11yLabel,
@@ -107,5 +108,22 @@ describe('mapsUrl', () => {
     );
     expect(mapsUrl(facility, 'android')).toBe('geo:52.19,20.99?q=52.19,20.99(Szpital%20Testowy)');
     expect(mapsUrl(facility, 'web')).toContain('openstreetmap.org/?mlat=52.19&mlon=20.99');
+  });
+});
+
+describe('displayPhone', () => {
+  it.each([
+    ['+48 25 781 73 30 wew. 330', '25 781 73 30'],
+    ['0048 22 670 91 72', '22 670 91 72'],
+    ['22-31-86-374, 506293691', '22 318 63 74'],
+    ['885 900 300', '885 900 300'],
+    ['506293691', '506 293 691'],
+  ])('%s → %s', (phone, shown) => {
+    expect(displayPhone(phone)).toBe(shown);
+  });
+
+  it('returns null when there is nothing to dial', () => {
+    expect(displayPhone(null)).toBeNull();
+    expect(displayPhone('brak')).toBeNull();
   });
 });

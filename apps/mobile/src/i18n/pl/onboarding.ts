@@ -204,8 +204,6 @@ export const onboarding = {
         never: 'Nigdy',
         unknown: 'Nie pamiętam',
       },
-      axisRecent: '← niedawno',
-      axisLongAgo: 'dawniej →',
       unanswered: 'Nie pamiętasz? Zostaw puste — zaplanujemy to badanie od dziś.',
       clear: 'Wyczyść — nie pamiętam',
       clearA11y: '{{exam}}: wyczyść odpowiedź, nie pamiętam',
