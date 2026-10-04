@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import { API_BASE_URL } from './api';
-import { isSyncEnabled } from './feature-flags';
 
 /** The free API host sleeps when idle — the first request can take ~50 s. */
 const AUTH_TIMEOUT_MS = 70_000;
@@ -30,7 +29,6 @@ export async function authenticate(
   password: string,
   fetchFn: typeof fetch = fetch,
 ): Promise<{ familyCode: string; email: string }> {
-  if (!isSyncEnabled()) throw new AuthError('unknown', 'Sync disabled');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), AUTH_TIMEOUT_MS);
   let res: Response;

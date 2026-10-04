@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 
 import { Button, Disclaimer, Plate, Screen, Text } from '@/components';
 import { t } from '@/i18n';
-import { isSyncEnabled } from '@/services/feature-flags';
 import { useOnboardingDraftStore, useSettingsStore, useToday } from '@/store';
 
 import { loadDemoPreset } from './demo-preset';
@@ -21,9 +20,7 @@ export default function WelcomeScreen() {
   const hasDraft = useOnboardingDraftStore((s) => s.draft !== null);
   const start = useOnboardingDraftStore((s) => s.start);
   const today = useToday();
-  const syncEnabled = isSyncEnabled();
-  const hasFamilyCode = useSettingsStore((s) => s.familyCode !== null);
-  const loggedIn = syncEnabled && hasFamilyCode;
+  const loggedIn = useSettingsStore((s) => s.familyCode !== null);
 
   useEffect(() => {
     if (!forRelative) return;
@@ -62,7 +59,7 @@ export default function WelcomeScreen() {
             fullWidth
           />
           {/* Logged in already (empty family): no second login — that was the "login loop". */}
-          {syncEnabled && !loggedIn && (
+          {!loggedIn && (
             <Button
               variant="secondary"
               label={t('onboarding.welcome.login')}

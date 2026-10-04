@@ -16,7 +16,6 @@ import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
 import { t } from '@/i18n';
-import { isSyncEnabled } from '@/services/feature-flags';
 import { useRecordsStore } from '@/store';
 import { useTheme } from '@/theme';
 
@@ -258,13 +257,11 @@ export default function PlanScreen() {
             <Text color={colors.onWall}>{t('plan.summary.none')}</Text>
           )}
         </View>
-        {isSyncEnabled() && (
-          <IconButton
-            icon="people"
-            accessibilityLabel="Konto rodzinne i logowanie"
-            onPress={() => router.push('/login')}
-          />
-        )}
+        <IconButton
+          icon="people"
+          accessibilityLabel="Konto rodzinne i logowanie"
+          onPress={() => router.push('/login')}
+        />
       </View>
 
       <View>

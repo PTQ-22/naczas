@@ -3,7 +3,7 @@ import type { ExamRecord } from '@naczas/shared';
 
 import { useProfilesStore, useRecordsStore } from '@/store';
 
-import { applyFamily, parseFamily, pushNow, syncFamily, useSyncStatus } from '../cloud-sync';
+import { applyFamily, parseFamily, syncFamily, useSyncStatus } from '../cloud-sync';
 
 jest.mock('@react-native-async-storage/async-storage', () =>
   jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
@@ -47,25 +47,12 @@ describe('parseFamily', () => {
 describe('applyFamily / syncFamily', () => {
   let fetchMock: jest.Mock<Promise<Response>, [string, RequestInit?]>;
   beforeEach(() => {
-    process.env.EXPO_PUBLIC_ENABLE_SYNC = '1';
     useProfilesStore.setState({ profiles: [], activeProfileId: null });
     useRecordsStore.setState({ records: [] });
     useSyncStatus.setState({ syncing: false, lastSync: null, error: null, initialSyncFor: null });
     fetchMock = jest.fn<Promise<Response>, [string, RequestInit?]>();
     // Our code only ever calls fetch(url: string, init).
     global.fetch = fetchMock as unknown as typeof fetch;
-  });
-
-  afterEach(() => {
-    delete process.env.EXPO_PUBLIC_ENABLE_SYNC;
-  });
-
-  it('flag off: never calls the API, even when asked to sync directly', async () => {
-    delete process.env.EXPO_PUBLIC_ENABLE_SYNC;
-    useProfilesStore.setState({ profiles: [mama], activeProfileId: 'p1' });
-    await expect(syncFamily('ABC')).rejects.toThrow('Sync disabled');
-    await pushNow('ABC');
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('an empty cloud never wipes local data', () => {

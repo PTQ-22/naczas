@@ -4,7 +4,6 @@ import { useProfilesStore, useRecordsStore, useStoresHydrated } from '@/store';
 import { useSettingsStore } from '@/store/settings-store';
 
 import { isApplyingPull, pushNow, syncFamily, useSyncStatus } from './cloud-sync';
-import { isSyncEnabled } from './feature-flags';
 
 /** Local edits are pushed after this much quiet, so a burst of taps is one request. */
 const PUSH_DEBOUNCE_MS = 2000;
@@ -19,8 +18,7 @@ export function AutoSync() {
   const familyCode = useSettingsStore((s) => s.familyCode);
 
   useEffect(() => {
-    // Flag off: a familyCode persisted by an older build must not start uploading again.
-    if (!isSyncEnabled() || !hydrated || !familyCode) return;
+    if (!hydrated || !familyCode) return;
     const status = useSyncStatus.getState();
     if (status.initialSyncFor !== familyCode && !status.syncing) {
       void syncFamily(familyCode).catch(() => undefined);

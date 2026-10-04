@@ -6,22 +6,6 @@ const respond = (status: number, body: unknown) =>
   );
 
 describe('authenticate', () => {
-  beforeEach(() => {
-    process.env.EXPO_PUBLIC_ENABLE_SYNC = '1';
-  });
-  afterEach(() => {
-    delete process.env.EXPO_PUBLIC_ENABLE_SYNC;
-  });
-
-  it('flag off: never calls /v1/auth', async () => {
-    delete process.env.EXPO_PUBLIC_ENABLE_SYNC;
-    const fetchFn = respond(200, { user: { id: 'u', email: 'a@b.pl', familyCode: 'ABC' } });
-    await expect(
-      authenticate('login', 'a@b.pl', 'x', fetchFn as unknown as typeof fetch),
-    ).rejects.toBeInstanceOf(AuthError);
-    expect(fetchFn).not.toHaveBeenCalled();
-  });
-
   it('returns the family code and trims the email', async () => {
     const fetchFn = respond(200, { user: { id: 'u', email: 'a@b.pl', familyCode: 'ABC' } });
     await expect(
