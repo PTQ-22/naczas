@@ -19,7 +19,10 @@ const norm = (s: string | null | undefined) => (s ?? '').trim().replace(/\s+/g, 
 const STREET_TYPE = /^(?:(?:UL|AL|PL|OS|ULICA|ALEJA|ALEJE|PLAC|OSIEDLE)\.?\s+)+/;
 
 /** 'LOCALITY|ADDRESS' (normalized), or null when either part is missing */
-export function addressKey(locality: string | null | undefined, address: string | null | undefined) {
+export function addressKey(
+  locality: string | null | undefined,
+  address: string | null | undefined,
+) {
   const loc = norm(locality);
   const addr = norm(address).replace(STREET_TYPE, '');
   return loc && addr ? `${loc}|${addr}` : null;

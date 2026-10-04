@@ -17,17 +17,24 @@ import {
 
 import { errorResponse, validationMessage } from './common';
 import { buildAssistant, type AssistantOptions } from '../call-assist/assistant';
+import { sipBridgeTwiml, type TwilioClient } from '../call-assist/twilio-client';
 import { rateLimit, type RateLimitOptions } from '../middleware/rate-limit';
 
 import type { VapiCall, VapiClient } from '../call-assist/vapi-client';
 
-export interface CallAssistConfig {
+export type CallAssistConfig = {
   vapi: VapiClient;
-  phoneNumberId: string;
   /** The only number ever dialled (DEMO_CALL_TO) — never taken from the request */
   callTo: string;
   assistant?: AssistantOptions;
-}
+} & (
+  | /** Vapi dials from a phone number imported into Vapi */
+    { via: 'vapi-number'; phoneNumberId: string } /**
+     * Twilio dials from a *verified caller ID* (no purchased number, no compliance profile) and,
+     * once answered, bridges the call to the Vapi assistant over Vapi's free SIP URI.
+     */
+  | { via: 'twilio-sip'; twilio: TwilioClient; from: string; sipUri: string }
+);
 
 type Line = CallAssistStatus['transcript'][number];
 
@@ -38,6 +45,10 @@ interface CallEntry {
   today: ISODate;
   /** Live transcript pushed by the Vapi webhook (only when PUBLIC_URL is configured) */
   lines: Line[];
+  vapiCallId?: string;
+  /** twilio-sip: the per-call assistant (finds the Vapi call) and the Twilio leg */
+  assistantId?: string;
+  twilioSid?: string;
 }
 
 const TTL_MS = 60 * 60_000;
@@ -54,6 +65,8 @@ export function createCallStore(now: () => number) {
       calls.set(id, entry);
     },
     get: (id: string) => calls.get(id),
+    /** Same entry under the Vapi call id, so webhook events find it. */
+    alias: (aliasId: string, entry: CallEntry) => calls.set(aliasId, entry),
   };
 }
 export type CallStore = ReturnType<typeof createCallStore>;
@@ -74,6 +87,21 @@ export function mapVapiStatus(call: VapiCall): CallAssistStatus['status'] {
       return call.endedReason && FAILED_REASON.test(call.endedReason) ? 'failed' : 'ended';
     default:
       return 'failed';
+  }
+}
+
+/** Before Vapi picks up the SIP leg, the Twilio call is the only source of truth. */
+export function mapTwilioStatus(status: string): CallAssistStatus['status'] {
+  switch (status) {
+    case 'queued':
+    case 'initiated':
+      return 'queued';
+    case 'ringing':
+      return 'ringing';
+    case 'in-progress':
+      return 'in_progress';
+    default:
+      return 'failed'; // busy, no-answer, failed, canceled, completed without reaching Vapi
   }
 }
 
@@ -144,13 +172,41 @@ export function callAssistRoutes({
         }
 
         try {
-          const call = await config.vapi.startCall({
-            phoneNumberId: config.phoneNumberId,
-            customer: { number: config.callTo },
-            assistant: buildAssistant(req, today, config.assistant),
+          const assistant = buildAssistant(req, today, config.assistant);
+          if (config.via === 'vapi-number') {
+            const call = await config.vapi.startCall({
+              phoneNumberId: config.phoneNumberId,
+              customer: { number: config.callTo },
+              assistant,
+            });
+            store.add(call.id, {
+              mode: 'live',
+              startedAt,
+              req,
+              today,
+              lines: [],
+              vapiCallId: call.id,
+            });
+            return c.json({ callId: call.id, mode: 'live' } satisfies CallAssistStartResponse);
+          }
+          // One assistant per call: the SIP URI answers with it, and it lets us find the call.
+          const { id: assistantId } = await config.vapi.createAssistant(assistant);
+          await config.vapi.routeSipUri(config.sipUri, assistantId);
+          const tw = await config.twilio.startCall({
+            from: config.from,
+            to: config.callTo,
+            twiml: sipBridgeTwiml(config.sipUri),
           });
-          store.add(call.id, { mode: 'live', startedAt, req, today, lines: [] });
-          return c.json({ callId: call.id, mode: 'live' } satisfies CallAssistStartResponse);
+          store.add(tw.sid, {
+            mode: 'live',
+            startedAt,
+            req,
+            today,
+            lines: [],
+            assistantId,
+            twilioSid: tw.sid,
+          });
+          return c.json({ callId: tw.sid, mode: 'live' } satisfies CallAssistStartResponse);
         } catch (err) {
           console.error(err);
           return errorResponse(c, 502, 'call_failed', 'Could not start the call');
@@ -169,7 +225,25 @@ export function callAssistRoutes({
 
       let call: VapiCall;
       try {
-        call = await config!.vapi.getCall(callId);
+        const cfg = config!;
+        if (!entry.vapiCallId && cfg.via === 'twilio-sip' && entry.assistantId) {
+          const [found] = await cfg.vapi.listCallsByAssistant(entry.assistantId);
+          if (found) {
+            entry.vapiCallId = found.id;
+            store.alias(found.id, entry);
+          } else {
+            // Not answered yet (or never): report the phone leg.
+            const tw = await cfg.twilio.getCall(entry.twilioSid!);
+            const status = mapTwilioStatus(tw.status);
+            return c.json({
+              callId,
+              status: status === 'in_progress' ? 'ringing' : status, // answered, SIP connecting
+              transcript: [],
+              result: null,
+            } satisfies CallAssistStatus);
+          }
+        }
+        call = await cfg.vapi.getCall(entry.vapiCallId ?? callId);
       } catch (err) {
         console.error(err);
         return errorResponse(c, 502, 'call_failed', 'Could not read the call status');
