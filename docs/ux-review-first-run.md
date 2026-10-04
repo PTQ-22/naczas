@@ -81,7 +81,7 @@ is shown; ask on the first "Znajdź placówkę" instead.
 ## Priority
 
 1. ☑ Unknown ≠ overdue; ≤ 3 in "Teraz"; hero by queue length (#1)
-2. ☐ One status vocabulary; Szukam/Umówione/Zrobione indicator with one primary per state (#2, #6)
+2. ☑ One status vocabulary; Szukam/Umówione/Zrobione indicator with one primary per state (#2, #6)
 3. ☐ Exam screen: what-to-do-now on top, rest collapsed (#4)
 4. ☐ Queue number consistent with the facility list (#3)
 5. ☐ Remove ±1m; Zakład from tab to plan card (#5, #8)
@@ -89,6 +89,11 @@ is shown; ask on the first "Znajdź placówkę" instead.
 Later: #7, #9.
 
 ## Notes
+
+- Left for WS3 (their i18n files): profile badges still say "Pilne: N" / "pilne badania: N"
+  (`i18n/pl/profiles.ts`, `common.ts`) — should become "Teraz: N" to match.
+- For #3: a booked exam still shows "Nie mamy aktualnych danych o kolejce — zacznij szukać…"
+  and the programme link; the queue block should disappear once the exam is booked.
 
 - In the web preview, synthetic taps landed on the element below the target (tooling offset,
   not an app bug); DOM clicks route correctly. Worth a quick on-device tap check anyway.

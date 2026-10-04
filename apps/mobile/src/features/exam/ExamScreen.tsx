@@ -28,6 +28,7 @@ import { addToCalendar } from './add-to-calendar';
 import { buildCalendarEvent } from './calendar-event';
 import {
   examCtas,
+  examStep,
   frequencyMessage,
   queueInfo,
   referralText,
@@ -35,6 +36,7 @@ import {
   type ExamAction,
   type Message,
 } from './exam-view-model';
+import { ExamProgress } from './ExamProgress';
 
 import type { ReactNode } from 'react';
 
@@ -105,6 +107,7 @@ export default function ExamScreen() {
   const showProgramNote = queue !== null && Boolean(programUrl);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;
+  const step = notRecommended ? null : examStep(item);
 
   const run = (action: ExamAction) => {
     switch (action) {
@@ -182,10 +185,14 @@ export default function ExamScreen() {
     <Screen wall edges={['left', 'right', 'bottom']} footer={footer}>
       <Plate>
         <View style={{ gap: space.sm }}>
-          {item && (
-            <Text variant="eyebrow" color={palette?.fg}>
-              {t(`plan.urgency.${item.urgency}`)}
-            </Text>
+          {step ? (
+            <ExamProgress step={step} />
+          ) : (
+            item && (
+              <Text variant="eyebrow" color={palette?.fg}>
+                {t(`plan.urgency.${item.urgency}`)}
+              </Text>
+            )
           )}
           <Text variant="display" accessibilityRole="header">
             {rule.name}

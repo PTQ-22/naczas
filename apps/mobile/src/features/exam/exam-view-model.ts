@@ -43,13 +43,33 @@ export function timingMessages(item: PlanItem, today: string): Message[] {
     case 'done':
     case 'later':
       return [{ key: 'exam.doneNext', params: { date: monthYear(item.dueDate) } }];
+    default: {
+      const due: Message = { key: 'exam.dueBy', params: { date: monthYear(item.dueDate) } };
+      // "Start now" would repeat the "Teraz" status above; only a future start date adds info.
+      return item.notifyDate <= today
+        ? [due]
+        : [due, { key: 'exam.startFrom', params: { date: fullDate(item.notifyDate) } }];
+    }
+  }
+}
+
+export type ExamStep = 'toBook' | 'booked' | 'done';
+export const EXAM_STEPS: readonly ExamStep[] = ['toBook', 'booked', 'done'];
+
+/**
+ * Where the exam is in "do umówienia → umówione → zrobione" — the progress strip on the exam
+ * screen. null while it isn't time to act yet (this year / later): no progress to show.
+ */
+export function examStep(item: PlanItem | undefined): ExamStep | null {
+  switch (item?.urgency) {
+    case 'act_now':
+      return 'toBook';
+    case 'booked':
+      return 'booked';
+    case 'done':
+      return 'done';
     default:
-      return [
-        { key: 'exam.dueBy', params: { date: monthYear(item.dueDate) } },
-        item.notifyDate <= today
-          ? { key: 'exam.startNow' }
-          : { key: 'exam.startFrom', params: { date: fullDate(item.notifyDate) } },
-      ];
+      return null;
   }
 }
 

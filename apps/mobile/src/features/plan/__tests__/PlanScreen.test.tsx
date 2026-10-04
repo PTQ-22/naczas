@@ -75,7 +75,7 @@ describe('PlanScreen (mockPlan)', () => {
     // p75 213 days ≈ 30 weeks, printed big and read out in full.
     expect(screen.getByText('30')).toBeOnTheScreen();
     expect(
-      screen.getByRole('button', { name: /^Kolonoskopia, Pilne, Czeka się około 30 tygodni/ }),
+      screen.getByRole('button', { name: /^Kolonoskopia, Teraz, Czeka się około 30 tygodni/ }),
     ).toBeOnTheScreen();
     expect(screen.getByText(/^Zacznij szukać terminu dziś/)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: /Znajdź placówkę: Kolonoskopia/ })).toBeOnTheScreen();

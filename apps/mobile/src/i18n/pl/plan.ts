@@ -9,7 +9,7 @@ export const plan = {
     many: '{{count}} badań wymaga działania',
   },
   urgency: {
-    act_now: 'Działaj teraz',
+    act_now: 'Teraz',
     this_year: 'W tym roku',
     later: 'Później',
     booked: 'Umówione',
@@ -46,7 +46,7 @@ export const plan = {
     dueNow: 'Warto umówić to badanie jak najszybciej.',
     radius: '{{km}} km',
     radiusA11y: 'kolejka NFZ w promieniu {{km}} km',
-    status: { act_now: 'Pilne', this_year: 'W tym roku' },
+    status: { act_now: 'Teraz', this_year: 'W tym roku' },
     a11yHint: 'Otwiera szczegóły badania',
   },
   card: {

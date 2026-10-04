@@ -3,6 +3,7 @@ import type { ExamRule, PlanItem, WaitTimeSummary } from '@naczas/shared';
 
 import {
   examCtas,
+  examStep,
   frequencyMessage,
   queueInfo,
   referralText,
@@ -48,10 +49,9 @@ describe('referralText', () => {
 });
 
 describe('timingMessages', () => {
-  it('act_now: due month + start now', () => {
+  it('act_now: due month only — the status already says "now"', () => {
     expect(timingMessages(itemFor('colonoscopy_screening'), MOCK_TODAY).map((m) => m.key)).toEqual([
       'exam.dueBy',
-      'exam.startNow',
     ]);
   });
 
@@ -64,6 +64,20 @@ describe('timingMessages', () => {
     expect(timingMessages(itemFor('mammography'), MOCK_TODAY)).toEqual([
       { key: 'exam.bookedFor', params: { date: '15.10.2026' } },
     ]);
+  });
+});
+
+describe('examStep', () => {
+  it('maps the exam to its step in "do umówienia → umówione → zrobione"', () => {
+    expect(examStep(itemFor('colonoscopy_screening'))).toBe('toBook');
+    expect(examStep(itemFor('mammography'))).toBe('booked');
+    expect(examStep({ ...itemFor('mammography'), urgency: 'done' })).toBe('done');
+  });
+
+  it('has no step for exams that are not due yet (or not in the plan)', () => {
+    expect(examStep(itemFor('eye_exam'))).toBeNull();
+    expect(examStep({ ...itemFor('eye_exam'), urgency: 'later' })).toBeNull();
+    expect(examStep(undefined)).toBeNull();
   });
 });
 

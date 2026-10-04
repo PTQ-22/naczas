@@ -12,8 +12,13 @@ export const exam = {
   dueBy: 'Zrób do: {{date}}',
   bookedFor: 'Wizyta: {{date}}',
   doneNext: 'Następne: ok. {{date}}',
-  startNow: 'Zacznij szukać: teraz',
   startFrom: 'Zacznij szukać: od {{date}}',
+  progress: {
+    toBook: 'Do umówienia',
+    booked: 'Umówione',
+    done: 'Zrobione',
+    a11y: 'Etap {{current}} z 3: {{label}}',
+  },
   queue: {
     radius: 'W promieniu {{km}} km czeka się',
     weeks: 'ok. {{weeks}} tyg.',

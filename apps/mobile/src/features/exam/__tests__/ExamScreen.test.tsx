@@ -81,6 +81,17 @@ describe('ExamScreen', () => {
     }
   });
 
+  it('shows where the exam is in "do umówienia → umówione → zrobione"', () => {
+    renderExam('colonoscopy_screening');
+    expect(screen.getByLabelText('Etap 1 z 3: Do umówienia')).toBeOnTheScreen();
+    expect(screen.queryByText('Zacznij szukać: teraz')).toBeNull();
+  });
+
+  it('booked exam is on step 2', () => {
+    renderExam('mammography');
+    expect(screen.getByLabelText('Etap 2 z 3: Umówione')).toBeOnTheScreen();
+  });
+
   it('links to visit prep even when no referral is needed (M3 H2)', () => {
     renderExam('colonoscopy_screening');
     fireEvent.press(screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza' }));
@@ -109,7 +120,9 @@ describe('ExamScreen', () => {
   it('"Dodaj do kalendarza" adds the visit for a booked exam and confirms with a toast', async () => {
     (addToCalendar as jest.Mock).mockResolvedValue('saved');
     renderExam('mammography');
-    fireEvent.press(screen.getByRole('button', { name: /Dodaj przypomnienie o badaniu Mammografia/ }));
+    fireEvent.press(
+      screen.getByRole('button', { name: /Dodaj przypomnienie o badaniu Mammografia/ }),
+    );
     await waitFor(() => expect(screen.getByText('Dodano do kalendarza')).toBeOnTheScreen());
     expect(addToCalendar).toHaveBeenCalledWith(
       expect.objectContaining({
