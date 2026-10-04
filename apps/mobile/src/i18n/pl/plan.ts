@@ -74,11 +74,7 @@ export const plan = {
     source: 'Źródło: {{name}}',
     sourceA11y: 'Źródło: {{name}}, otwiera przeglądarkę',
   },
-  noProfile: {
-    title: 'Nie ma jeszcze profilu',
-    body: 'Odpowiedz na kilka pytań, a przygotujemy plan badań.',
-    cta: 'Zacznij',
-  },
+
   visitPrep: {
     title: 'Przygotuj się do wizyty u lekarza rodzinnego',
     body: 'Zestawienie badań i skierowań do omówienia — do pokazania na wizycie albo jako PDF.',
