@@ -7,7 +7,9 @@ describe('resolveEntryRoute', () => {
 
   // 880e4de: a signed-in family account skips onboarding — its profiles arrive via cloud sync.
   it('sends signed-in family accounts to the plan before profiles sync', () => {
-    expect(resolveEntryRoute({ hydrated: true, profileCount: 0, familyCode: 'XYZ' })).toBe('/plan');
+    expect(resolveEntryRoute({ hydrated: true, profileCount: 0, familyCode: 'XYZ' })).toBe(
+      '/(tabs)/plan',
+    );
   });
 
   it('sends users without family code to onboarding if no profiles', () => {
@@ -17,6 +19,8 @@ describe('resolveEntryRoute', () => {
   });
 
   it('sends returning users to the plan', () => {
-    expect(resolveEntryRoute({ hydrated: true, profileCount: 1, familyCode: 'XYZ' })).toBe('/plan');
+    expect(resolveEntryRoute({ hydrated: true, profileCount: 1, familyCode: 'XYZ' })).toBe(
+      '/(tabs)/plan',
+    );
   });
 });

@@ -12,8 +12,8 @@ const PersistedSettingsSchema = z.object({
   seniorMode: z.boolean(),
   darkMode: z.enum(['system', 'light', 'dark']) satisfies z.ZodType<DarkModePreference>,
   /** Demo "time travel" — when set, the whole app treats this as today. */
-  todayOverride: ISODateSchema.nullable(),
-  familyCode: z.string().nullable(),
+  todayOverride: ISODateSchema.nullable().optional(),
+  familyCode: z.string().nullable().optional(),
 });
 type PersistedSettings = z.infer<typeof PersistedSettingsSchema>;
 

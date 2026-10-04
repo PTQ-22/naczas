@@ -42,8 +42,8 @@ export function LoginModal() {
 
       setFamilyCode(data.user.familyCode);
 
-      // Always redirect to plan on successful login, instead of back
-      router.replace('/plan');
+      // Always redirect to plan on successful login
+      router.replace('/(tabs)/plan');
     } catch (e: unknown) {
       if (e instanceof Error) {
         Alert.alert('Błąd', e.message);
@@ -60,7 +60,7 @@ export function LoginModal() {
     setTimeout(() => {
       setMObywatelLoading(false);
       setFamilyCode('MOBY24'); // Mock successful family code
-      router.replace('/plan');
+      router.replace('/(tabs)/plan');
     }, 2000);
   };
 
