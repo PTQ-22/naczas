@@ -13,6 +13,8 @@ interface PlanSectionProps {
   count: number;
   collapsible: boolean;
   initiallyCollapsed: boolean;
+  /** Rows shown before a "Pokaż jeszcze N" row; all when omitted. */
+  limit?: number;
   children: ReactNode;
 }
 
@@ -22,10 +24,17 @@ export function PlanSection({
   count,
   collapsible,
   initiallyCollapsed,
+  limit,
   children,
 }: PlanSectionProps) {
   const { colors, layout, space, borderWidth } = useTheme();
   const [collapsed, setCollapsed] = useState(collapsible && initiallyCollapsed);
+  const [showAll, setShowAll] = useState(false);
+  const rows = Children.toArray(children);
+  const hidden = limit !== undefined && !showAll ? Math.max(0, rows.length - limit) : 0;
+  const hairline = (
+    <View style={{ height: borderWidth.hairline, backgroundColor: colors.border }} />
+  );
   const label = t(`plan.urgency.${urgency}`);
   const title = collapsible ? t('plan.section.withCount', { label, count }) : label;
   const color = urgency === 'act_now' ? colors.urgency.act_now.fg : colors.textMuted;
@@ -77,14 +86,28 @@ export function PlanSection({
         </View>
       )}
       {!collapsed &&
-        Children.toArray(children).map((child, i) => (
+        rows.slice(0, rows.length - hidden).map((child, i) => (
           <Fragment key={i}>
-            {i > 0 && (
-              <View style={{ height: borderWidth.hairline, backgroundColor: colors.border }} />
-            )}
+            {i > 0 && hairline}
             {child}
           </Fragment>
         ))}
+      {!collapsed && hidden > 0 && (
+        <>
+          {hairline}
+          <Pressable
+            onPress={() => setShowAll(true)}
+            accessibilityRole="button"
+            accessibilityLabel={t('plan.section.more', { count: hidden })}
+            style={[rowStyle, { gap: space.xs }]}
+          >
+            <Text variant="label" tone="primary">
+              {t('plan.section.more', { count: hidden })}
+            </Text>
+            <Icon name="chevronDown" size="sm" color={colors.primary} />
+          </Pressable>
+        </>
+      )}
     </View>
   );
 }

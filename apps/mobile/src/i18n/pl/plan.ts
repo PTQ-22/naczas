@@ -17,6 +17,13 @@ export const plan = {
   },
   section: {
     withCount: '{{label}} ({{count}})',
+    more: 'Pokaż jeszcze {{count}}',
+  },
+  unknown: {
+    heading: 'Kiedy ostatnio?',
+    rowA11y: '{{name}}: kiedy ostatnio? Rozwiń, by zaznaczyć',
+    about: 'O badaniu',
+    saved: 'Zapisano — {{name}} jest teraz w planie.',
   },
   row: {
     weeks: '{{weeks}} tyg.',

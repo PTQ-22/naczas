@@ -1,6 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { mockProfileMama } from '@naczas/rules';
+import type { ExamRecord } from '@naczas/shared';
+
 import { useRecordsStore } from '@/store';
 import { ThemeProvider } from '@/theme';
 
@@ -50,10 +53,20 @@ const renderPlan = (seniorMode = false) =>
     </ThemeProvider>,
   );
 
+// As in the demo preset: colonoscopy never done is a known act_now, not an unknown history.
+const neverDone = (profileId: string): ExamRecord => ({
+  profileId,
+  examId: 'colonoscopy_screening',
+  lastDone: 'never',
+  status: 'none',
+  updatedAt: '2026-10-01',
+});
+
 describe('PlanScreen (mockPlan)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUsePlanData.mockReturnValue(mockPlanData());
+    useRecordsStore.setState({ records: [neverDone(mockProfileMama.id), neverDone('kasia')] });
   });
 
   it('leads with the queue number of the most urgent exam and its one CTA', () => {
@@ -161,5 +174,20 @@ describe('PlanScreen (mockPlan)', () => {
   it('senior mode also collapses "Później"', () => {
     renderPlan(true);
     expect(screen.getByRole('button', { name: 'Później (1)' })).toBeCollapsed();
+  });
+
+  it('unknown history: no red ticket, a "Kiedy ostatnio?" row that saves the answer, with undo', () => {
+    useRecordsStore.getState().reset();
+    renderPlan();
+    expect(screen.queryByText('30')).toBeNull();
+    expect(screen.queryByText('Termin minął')).toBeNull();
+    expect(screen.getByText('Kiedy ostatnio?')).toBeOnTheScreen();
+
+    fireEvent.press(screen.getByRole('button', { name: /^Kolonoskopia: kiedy ostatnio/ }));
+    fireEvent.press(screen.getByRole('radio', { name: /Kolonoskopia.*Nigdy/ }));
+    expect(useRecordsStore.getState().records).toEqual([
+      expect.objectContaining({ examId: 'colonoscopy_screening', lastDone: 'never' }),
+    ]);
+    expect(screen.getByText(/^Zapisano — Kolonoskopia/)).toBeOnTheScreen();
   });
 });

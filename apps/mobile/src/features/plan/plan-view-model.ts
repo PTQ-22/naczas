@@ -2,7 +2,7 @@ import { format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
 import { URGENCY_ORDER } from '@naczas/rules';
-import type { BookingType, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
+import type { BookingType, ExamRecord, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
 
 import type { MessageKey, TranslateParams } from '@/i18n';
 
@@ -151,11 +151,61 @@ export function countActNow(items: readonly PlanItem[]): number {
 // ---- Redesign v2 „Numerek”: queue ticket + quiet list (docs/design/redesign.md §2, §4) ----
 
 /**
- * The single ticket on the plan: the most urgent item. act_now first; with nothing urgent the
+ * The single ticket on the plan: among act_now items, the one with the longest NFZ queue — that is
+ * where starting today changes the outcome (engine order breaks ties). With nothing urgent the
  * next this_year item still gets it, so the screen always leads with "what to do next".
  */
-export function ticketItem(items: readonly PlanItem[]): PlanItem | undefined {
-  return items.find((i) => i.urgency === 'act_now') ?? items.find((i) => i.urgency === 'this_year');
+export function ticketItem(
+  items: readonly PlanItem[],
+  queueWeeks: (examId: string) => number | null = () => null,
+): PlanItem | undefined {
+  const urgent = items.filter((i) => i.urgency === 'act_now');
+  const longest = urgent.reduce<PlanItem | undefined>(
+    (best, i) =>
+      best === undefined || (queueWeeks(i.examId) ?? -1) > (queueWeeks(best.examId) ?? -1)
+        ? i
+        : best,
+    undefined,
+  );
+  return longest ?? items.find((i) => i.urgency === 'this_year');
+}
+
+/**
+ * True when we don't know when the exam was last done: no record, or the "Kiedy ostatnio?"
+ * question was left empty / answered "nie pamiętam". The engine schedules these from today, but
+ * the plan must not present them as missed deadlines (docs/ux-review-first-run.md #1).
+ */
+export function hasUnknownHistory(record: ExamRecord | undefined): boolean {
+  if (!record) return true;
+  if (record.status !== 'none') return false;
+  return record.lastDone === undefined || record.lastDone === 'unknown';
+}
+
+export interface PlanLayout {
+  hero: PlanItem | undefined;
+  /** act_now exams with unknown history — shown as a quiet "Kiedy ostatnio?" group. */
+  unknown: PlanItem[];
+  /** Everything else except the hero, in engine section order. */
+  sections: PlanSection[];
+  /** Known act_now exams (hero included) — the number on the profile badge. */
+  actNowCount: number;
+}
+
+/** Splits a plan into hero / unknown-history group / urgency sections. */
+export function planLayout(
+  items: readonly PlanItem[],
+  unknownExamIds: ReadonlySet<string>,
+  queueWeeks?: (examId: string) => number | null,
+): PlanLayout {
+  const isUnknown = (i: PlanItem) => i.urgency === 'act_now' && unknownExamIds.has(i.examId);
+  const known = items.filter((i) => !isUnknown(i));
+  const hero = ticketItem(known, queueWeeks);
+  return {
+    hero,
+    unknown: items.filter(isUnknown),
+    sections: groupSections(known.filter((i) => i !== hero)),
+    actNowCount: countActNow(known),
+  };
 }
 
 export interface TicketContent {
@@ -180,18 +230,21 @@ export function ticketContent(
   today: string,
 ): TicketContent {
   const weeks = booking === 'queue' ? queueWaitWeeks(summary) : null;
-  const pastDue = item.overdue || item.dueDate <= today;
+  // "Termin minął" only for a deadline we know was missed; due-from-today (never done, unknown
+  // history) is "do it now", not "too late".
+  const pastDue = item.overdue;
+  const dueNow = pastDue || item.dueDate <= today;
   const date = monthYearGenitive(item.dueDate);
 
   let message: Message;
   if (item.urgency === 'this_year') {
     message = { key: 'plan.ticket.startFrom', params: { date: fullDate(item.notifyDate) } };
   } else if (booking === 'queue') {
-    message = pastDue
+    message = dueNow
       ? { key: 'plan.ticket.startToday' }
       : { key: 'plan.ticket.startTodayToMake', params: { date } };
   } else {
-    message = pastDue
+    message = dueNow
       ? { key: 'plan.ticket.dueNow' }
       : { key: 'plan.ticket.dueBy', params: { date } };
   }

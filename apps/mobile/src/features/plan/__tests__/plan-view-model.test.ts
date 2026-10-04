@@ -1,13 +1,15 @@
 import { MOCK_TODAY, mockPlan } from '@naczas/rules';
-import type { PlanItem, WaitTimeSummary } from '@naczas/shared';
+import type { ExamRecord, PlanItem, WaitTimeSummary } from '@naczas/shared';
 
 import {
   countActNow,
   dateMessage,
   queueWaitWeeks,
   groupSections,
+  hasUnknownHistory,
   isCollapsedByDefault,
   planCta,
+  planLayout,
   pluralForm,
   rowDate,
   summaryMessage,
@@ -168,10 +170,64 @@ describe('ticketItem', () => {
     expect(ticketItem(plan.items)?.urgency).toBe('act_now');
   });
 
+  it('prefers the act_now item with the longest queue — that is where starting early matters', () => {
+    const a: PlanItem = { ...byUrgency('act_now'), examId: 'a' };
+    const b: PlanItem = { ...byUrgency('act_now'), examId: 'b' };
+    const weeks = (id: string) => (id === 'b' ? 29 : null);
+    expect(ticketItem([a, b], weeks)?.examId).toBe('b');
+    expect(ticketItem([a, b], () => null)?.examId).toBe('a');
+  });
+
   it('falls back to this_year when nothing is urgent, and to nothing at all', () => {
     const calm = plan.items.filter((i) => i.urgency !== 'act_now');
     expect(ticketItem(calm)?.urgency).toBe('this_year');
     expect(ticketItem(calm.filter((i) => i.urgency !== 'this_year'))).toBeUndefined();
+  });
+});
+
+describe('hasUnknownHistory', () => {
+  const rec = (patch: Partial<ExamRecord>): ExamRecord => ({
+    profileId: 'p',
+    examId: 'x',
+    status: 'none',
+    updatedAt: '2026-10-01',
+    ...patch,
+  });
+
+  it('is true without a record or with an unanswered / "unknown" last date', () => {
+    expect(hasUnknownHistory(undefined)).toBe(true);
+    expect(hasUnknownHistory(rec({}))).toBe(true);
+    expect(hasUnknownHistory(rec({ lastDone: 'unknown' }))).toBe(true);
+  });
+
+  it('is false once we know anything: a date, a bucket, "never", a booking', () => {
+    expect(hasUnknownHistory(rec({ lastDone: '2024-05-01' }))).toBe(false);
+    expect(hasUnknownHistory(rec({ lastDone: 'never' }))).toBe(false);
+    expect(hasUnknownHistory(rec({ lastDone: 'over_interval' }))).toBe(false);
+    expect(hasUnknownHistory(rec({ status: 'booked', bookedFor: '2026-11-01' }))).toBe(false);
+  });
+});
+
+describe('planLayout', () => {
+  const act = (examId: string): PlanItem => ({ ...byUrgency('act_now'), examId });
+  const items = [act('known'), act('unknown1'), act('unknown2'), byUrgency('this_year')];
+  const layout = planLayout(items, new Set(['unknown1', 'unknown2']));
+
+  it('moves act_now exams with unknown history out of the urgent group', () => {
+    expect(layout.unknown.map((i) => i.examId)).toEqual(['unknown1', 'unknown2']);
+    expect(layout.hero?.examId).toBe('known');
+    expect(layout.sections.flatMap((s) => s.items).map((i) => i.examId)).not.toContain('unknown1');
+  });
+
+  it('counts only known act_now exams as urgent (badge, summary)', () => {
+    expect(layout.actNowCount).toBe(1);
+  });
+
+  it('has no hero when every urgent exam is unknown — the unknown group leads instead', () => {
+    const allUnknown = planLayout([act('u')], new Set(['u']));
+    expect(allUnknown.hero).toBeUndefined();
+    expect(allUnknown.unknown).toHaveLength(1);
+    expect(allUnknown.actNowCount).toBe(0);
   });
 });
 
@@ -205,6 +261,13 @@ describe('ticketContent', () => {
     expect(ticketContent(late, 'queue', summary(203), '2026-10-03').message).toEqual({
       key: 'plan.ticket.startToday',
     });
+  });
+
+  it('does not call an exam overdue just because it is due from today (unknown history)', () => {
+    const fromToday = { ...future, dueDate: '2026-10-03', overdue: false };
+    const c = ticketContent(fromToday, 'program', undefined, '2026-10-03');
+    expect(c.unit).toEqual({ key: 'plan.ticket.dueUnit' });
+    expect(c.message).toEqual({ key: 'plan.ticket.dueNow' });
   });
 
   it('prints the due month instead of a made-up wait when there is no queue data', () => {

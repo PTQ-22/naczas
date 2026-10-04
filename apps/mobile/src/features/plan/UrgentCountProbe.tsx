@@ -2,7 +2,8 @@ import { useEffect } from 'react';
 
 import { usePlan } from '@/services';
 
-import { countActNow } from './plan-view-model';
+import { planLayout } from './plan-view-model';
+import { useUnknownExamIds } from './use-unknown-exam-ids';
 
 interface UrgentCountProbeProps {
   profileId: string;
@@ -15,7 +16,9 @@ interface UrgentCountProbeProps {
  */
 export function UrgentCountProbe({ profileId, onCount }: UrgentCountProbeProps) {
   const { plan } = usePlan(profileId);
-  const count = countActNow(plan.items);
+  // Same count as the active profile's badge: unknown-history exams aren't "urgent".
+  const unknownIds = useUnknownExamIds(profileId, plan.items);
+  const count = planLayout(plan.items, unknownIds).actNowCount;
   useEffect(() => onCount(profileId, count), [profileId, count, onCount]);
   return null;
 }
