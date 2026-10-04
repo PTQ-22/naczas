@@ -26,6 +26,7 @@ const symbols = {
   people: { ios: 'person.2', android: 'group', web: 'group' },
   settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
   trophy: { ios: 'trophy', android: 'emoji_events', web: 'emoji_events' },
+  trash: { ios: 'trash', android: 'delete', web: 'delete' },
   heart: { ios: 'heart', android: 'favorite', web: 'favorite' },
   star: { ios: 'star.fill', android: 'star', web: 'star' },
   close: { ios: 'xmark', android: 'close', web: 'close' },

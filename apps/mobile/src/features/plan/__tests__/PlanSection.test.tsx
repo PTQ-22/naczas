@@ -7,7 +7,7 @@ import { PlanSection } from '../PlanSection';
 
 const renderSection = (rows: number, limit?: number) =>
   render(
-    <ThemeProvider initial={{ seniorMode: false, darkMode: 'light' }}>
+    <ThemeProvider initial={{ seniorMode: false }}>
       <PlanSection
         urgency="act_now"
         count={rows}

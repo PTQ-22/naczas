@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "naczas",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#1565C0",
@@ -33,10 +33,7 @@
         {
           "backgroundColor": "#1565C0",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "dark": {
-            "backgroundColor": "#0B1628"
-          }
+          "imageWidth": 200
         }
       ],
       "expo-sharing",

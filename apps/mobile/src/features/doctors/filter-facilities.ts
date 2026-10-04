@@ -1,7 +1,7 @@
 import type { Facility } from '@naczas/shared';
 
 export type MaxDistance = 'any' | '10' | '25' | '50';
-export type FacilityFeature = 'phone' | 'accessible' | 'parking';
+export type FacilityFeature = 'phone' | 'ramp' | 'elevator' | 'parking' | 'toilet';
 
 export interface FacilityFilters {
   maxDistance: MaxDistance;
@@ -12,9 +12,12 @@ export const defaultFacilityFilters: FacilityFilters = { maxDistance: 'any', fea
 
 const hasFeature: Record<FacilityFeature, (f: Facility) => boolean> = {
   phone: (f) => !!f.phone?.trim(),
-  // Step-free entrance: a ramp or a lift is what a wheelchair or a pram needs.
-  accessible: (f) => f.accessibility.ramp || f.accessibility.elevator,
+  // Separate filters: a ramp and a lift are different needs (a pram vs. a wheelchair user on an
+  // upper floor), and NFZ reports them as separate flags.
+  ramp: (f) => f.accessibility.ramp,
+  elevator: (f) => f.accessibility.elevator,
   parking: (f) => f.accessibility.parking,
+  toilet: (f) => f.accessibility.toilet,
 };
 
 /** Pure client-side filter over what the API returned; keeps the API's order. */

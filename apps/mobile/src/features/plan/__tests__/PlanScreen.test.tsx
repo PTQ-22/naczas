@@ -48,7 +48,7 @@ const mockUsePlanData = usePlanData as jest.Mock;
 
 const renderPlan = (seniorMode = false) =>
   render(
-    <ThemeProvider initial={{ seniorMode, darkMode: 'light' }}>
+    <ThemeProvider initial={{ seniorMode }}>
       <PlanScreen />
     </ThemeProvider>,
   );

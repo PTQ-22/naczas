@@ -16,7 +16,7 @@ jest.mock('expo-notifications', () => ({
 
 const renderSettings = () =>
   render(
-    <ThemeProvider initial={{ seniorMode: false, darkMode: 'light' }}>
+    <ThemeProvider initial={{ seniorMode: false }}>
       <SettingsScreen />
     </ThemeProvider>,
   );
@@ -29,7 +29,7 @@ beforeEach(() => {
 });
 
 describe('SettingsScreen', () => {
-  it('toggles senior mode and picks the colour theme', () => {
+  it('toggles senior mode', () => {
     renderSettings();
     const senior = screen.getByRole('switch', { name: 'Tryb senior (większy tekst)' });
     expect(senior).not.toBeChecked();
@@ -37,9 +37,12 @@ describe('SettingsScreen', () => {
     fireEvent.press(senior);
     expect(useSettingsStore.getState().seniorMode).toBe(true);
     expect(screen.getByRole('switch', { name: 'Tryb senior (większy tekst)' })).toBeChecked();
+  });
 
-    fireEvent.press(screen.getByRole('radio', { name: 'Ciemny' }));
-    expect(useSettingsStore.getState().darkMode).toBe('dark');
+  it('offers no theme or palette choice — the app is always light', () => {
+    renderSettings();
+    expect(screen.queryByText('Motyw')).toBeNull();
+    expect(screen.queryByText(/Kolorystyka/)).toBeNull();
   });
 
   it('time-travels with the demo presets and resets to the real date', () => {

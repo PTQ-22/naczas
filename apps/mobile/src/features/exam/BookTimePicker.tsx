@@ -23,7 +23,7 @@ const toDate = (hhmm: string) => {
  * dialog — same pattern as BookDatePicker.
  */
 export function BookTimePicker({ value, onChange }: BookTimePickerProps) {
-  const { colors, layout, radius, borderWidth, space, scheme } = useTheme();
+  const { colors, layout, radius, borderWidth, space } = useTheme();
   const [open, setOpen] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, date?: Date) => {
@@ -39,7 +39,7 @@ export function BookTimePicker({ value, onChange }: BookTimePickerProps) {
       is24Hour
       minuteInterval={5}
       locale="pl-PL"
-      themeVariant={scheme}
+      themeVariant="light"
       accentColor={colors.primary}
       onChange={handleChange}
       accessibilityLabel={t('exam.book.timeA11y', { time: value })}

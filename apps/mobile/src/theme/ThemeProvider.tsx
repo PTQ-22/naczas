@@ -13,16 +13,15 @@ interface ThemeProviderProps {
   initial?: Partial<ThemePreferences>;
 }
 
-/** Holds senior/dark mode preferences (local state until WS3's store replaces it). */
+/** Holds the senior mode preference (local state until WS3's store replaces it). */
 export function ThemeProvider({ children, initial }: ThemeProviderProps) {
   const [seniorMode, setSeniorMode] = useState(
     initial?.seniorMode ?? defaultThemePreferences.seniorMode,
   );
-  const [darkMode, setDarkMode] = useState(initial?.darkMode ?? defaultThemePreferences.darkMode);
 
   const value = useMemo<ThemePreferencesContextValue>(
-    () => ({ seniorMode, darkMode, setSeniorMode, setDarkMode }),
-    [seniorMode, darkMode],
+    () => ({ seniorMode, setSeniorMode }),
+    [seniorMode],
   );
 
   return (

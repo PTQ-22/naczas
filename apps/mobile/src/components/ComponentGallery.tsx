@@ -19,7 +19,7 @@ import { TextField } from './TextField';
 
 const noop = () => undefined;
 
-/** Dev-only gallery (/dev/components) for quick visual review in senior + dark mode. */
+/** Dev-only gallery (/dev/components) for quick visual review in senior mode. */
 export function ComponentGallery() {
   const prefs = useThemePreferences();
   const { space } = useTheme();
@@ -45,12 +45,6 @@ export function ComponentGallery() {
         label={t('common.dev.senior')}
         selected={prefs.seniorMode}
         onPress={() => prefs.setSeniorMode(!prefs.seniorMode)}
-      />
-      <OptionTile
-        mode="checkbox"
-        label={t('common.dev.dark')}
-        selected={prefs.darkMode === 'dark'}
-        onPress={() => prefs.setDarkMode(prefs.darkMode === 'dark' ? 'light' : 'dark')}
       />
 
       <Text variant="display">{t('common.dev.sample')}</Text>

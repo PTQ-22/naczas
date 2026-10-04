@@ -44,7 +44,7 @@ const me: Profile = {
 
 const renderFamily = () =>
   render(
-    <ThemeProvider initial={{ darkMode: 'light' }}>
+    <ThemeProvider>
       <FamilyScreen />
     </ThemeProvider>,
   );

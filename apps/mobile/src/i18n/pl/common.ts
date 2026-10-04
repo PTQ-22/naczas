@@ -27,7 +27,6 @@ export const common = {
     secondary: 'Akcja drugorzędna',
     ghost: 'Akcja tekstowa',
     senior: 'Tryb senior',
-    dark: 'Ciemny motyw',
     emptyTitle: 'Wszystko na czas',
     emptyBody: 'Następne badanie: za 2 lata.',
     optionA: 'Rak piersi',

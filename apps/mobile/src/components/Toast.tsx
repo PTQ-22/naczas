@@ -37,7 +37,7 @@ export function Toast({ message, action, onHide, durationMs = TOAST_DURATION_MS 
         paddingVertical: space.sm,
         paddingHorizontal: layout.cardPadding,
         borderRadius: radius.md,
-        // Inverted surface so it stands out from cards in both schemes (text on text = AA pair).
+        // Inverted surface so it stands out from cards (text on text = AA pair).
         backgroundColor: colors.text,
       }}
     >

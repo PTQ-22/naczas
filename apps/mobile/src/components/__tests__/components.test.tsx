@@ -10,7 +10,7 @@ import { Toast, TOAST_DURATION_MS } from '../Toast';
 import type { ReactElement } from 'react';
 
 const renderThemed = (ui: ReactElement, seniorMode = false) =>
-  render(<ThemeProvider initial={{ seniorMode, darkMode: 'light' }}>{ui}</ThemeProvider>);
+  render(<ThemeProvider initial={{ seniorMode }}>{ui}</ThemeProvider>);
 
 describe('Button', () => {
   it('exposes role + label and fires onPress', () => {

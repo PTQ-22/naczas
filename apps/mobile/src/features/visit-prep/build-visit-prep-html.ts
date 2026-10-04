@@ -32,7 +32,7 @@ const section = (title: string, body: string) =>
  * (no birth year, location or contact data). Always light colours — it is meant for paper.
  */
 export function buildVisitPrepHtml(summary: VisitPrepSummary, today: ISODate): string {
-  const c = colors.light;
+  const c = colors;
   const type = typography.normal;
   const { person } = summary;
   const e = escapeHtml;

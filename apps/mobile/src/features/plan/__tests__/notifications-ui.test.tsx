@@ -26,8 +26,7 @@ const mockGet = getNotificationPermission as jest.Mock;
 const mockRequest = requestNotificationPermission as jest.Mock;
 const mockReminders = useInAppReminders as jest.Mock;
 
-const renderThemed = (ui: ReactElement) =>
-  render(<ThemeProvider initial={{ darkMode: 'light' }}>{ui}</ThemeProvider>);
+const renderThemed = (ui: ReactElement) => render(<ThemeProvider>{ui}</ThemeProvider>);
 
 describe('NotificationPrompt', () => {
   beforeEach(() => jest.clearAllMocks());

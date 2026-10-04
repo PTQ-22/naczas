@@ -5,7 +5,7 @@ import type { BookDatePickerProps } from './book-date-picker-props';
 
 /** Browser-native date field: keyboard, screen readers and locale formatting come for free. */
 export function BookDatePicker({ value, min, max, onChange }: BookDatePickerProps) {
-  const { colors, layout, radius, borderWidth, space, type, scheme } = useTheme();
+  const { colors, layout, radius, borderWidth, space, type } = useTheme();
   return (
     <input
       type="date"
@@ -25,8 +25,8 @@ export function BookDatePicker({ value, min, max, onChange }: BookDatePickerProp
         backgroundColor: colors.surface,
         border: `${borderWidth.strong}px solid ${colors.borderStrong}`,
         borderRadius: radius.md,
-        // Makes the browser's own calendar popup follow the app theme.
-        colorScheme: scheme,
+        // Makes the browser's own calendar popup stay light, like the app.
+        colorScheme: 'light',
       }}
     />
   );

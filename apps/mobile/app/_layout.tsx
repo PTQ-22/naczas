@@ -43,16 +43,16 @@ export default function RootLayout() {
 
 // Separate component so useTheme() runs inside SettingsThemeProvider.
 function ThemedStack() {
-  const { colors, scheme, type } = useTheme();
+  const { colors, type } = useTheme();
   return (
     <>
-      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: colors.bg },
           headerStyle: { backgroundColor: colors.surface },
-          // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
+          // Default separator is a light hairline that glares on white; surface vs bg is enough.
           headerShadowVisible: false,
           // Chevron only — otherwise iOS shows the previous route's name, e.g. "(tabs)".
           headerBackButtonDisplayMode: 'minimal',

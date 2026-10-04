@@ -37,6 +37,8 @@ export const facilities = {
   // NFZ `anesthesia` flag — shown only when the facility offers it (e.g. colonoscopy).
   anesthesia: 'Możliwe znieczulenie',
   accessibility: {
+    header: 'Udogodnienia',
+    none: 'Brak danych o udogodnieniach',
     elevator: 'winda',
     ramp: 'podjazd',
     parking: 'parking',

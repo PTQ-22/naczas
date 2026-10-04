@@ -29,8 +29,10 @@ export const doctors = {
     features: 'Udogodnienia',
     featureOptions: {
       phone: 'Ma telefon',
-      accessible: 'Bez barier',
+      ramp: 'Podjazd',
+      elevator: 'Winda',
       parking: 'Parking',
+      toilet: 'Toaleta',
     },
   },
   // "pasuje: N z M" avoids Polish numeral declension (see facilities.summary).

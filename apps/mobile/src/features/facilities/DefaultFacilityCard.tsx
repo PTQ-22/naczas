@@ -1,6 +1,7 @@
 import { Linking, Platform, View } from 'react-native';
 
 import { Button } from '@/components/Button';
+import { IconButton } from '@/components/IconButton';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
 import { useDefaultFacilityStore, useProfilesStore } from '@/store';
@@ -36,11 +37,22 @@ export function DefaultFacilityCard({ showTitle = true }: { showTitle?: boolean 
   return (
     <View style={{ gap: space.sm }} testID="default-facility">
       {title}
-      <View accessible style={{ gap: space.xs / 2 }}>
-        <Text variant="label">{name}</Text>
-        <Text variant="caption" tone="textMuted">
-          {`${nfzTitleCase(facility.address)}, ${nfzTitleCase(facility.locality)}`}
-        </Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        <View accessible style={{ flex: 1, gap: space.xs / 2 }}>
+          <Text variant="label">{name}</Text>
+          <Text variant="caption" tone="textMuted">
+            {`${nfzTitleCase(facility.address)}, ${nfzTitleCase(facility.locality)}`}
+          </Text>
+        </View>
+        <IconButton
+          icon="trash"
+          danger
+          accessibilityLabel={t('facilities.defaultFacility.unsetA11y', { name })}
+          onPress={() => {
+            if (profileId) clear(profileId);
+          }}
+          testID="default-facility-clear"
+        />
       </View>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs }}>
         {tel ? (
@@ -63,14 +75,6 @@ export function DefaultFacilityCard({ showTitle = true }: { showTitle?: boolean 
           variant="ghost"
           icon="external"
           onPress={() => void Linking.openURL(mapsUrl(facility, Platform.OS))}
-        />
-        <Button
-          label={t('facilities.defaultFacility.unset')}
-          accessibilityLabel={t('facilities.defaultFacility.unsetA11y', { name })}
-          variant="ghost"
-          onPress={() => {
-            if (profileId) clear(profileId);
-          }}
         />
       </View>
     </View>

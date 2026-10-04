@@ -26,7 +26,7 @@ Ludzie odkładają badania profilaktyczne, bo nie pamiętają, kiedy je robili, 
 - **Profile rodzinne** — opiekun prowadzi plan rodzica na swoim telefonie.
 - **Przygotowanie do wizyty** — podsumowanie dla lekarza POZ („proszę o skierowanie na…”) jako ekran / PDF.
 - **Statusy i powiadomienia** — zaplanowane → umówione → zrobione, lokalne przypomnienia, tryb „przewiń czas” na demo.
-- **Dostępność** — tryb senior (typografia ×1.3, większe pola dotyku, wyższy kontrast), dark mode, kontrast WCAG AA ([tokeny](docs/design/tokens.md)).
+- **Dostępność** — tryb senior (typografia ×1.3, większe pola dotyku, wyższy kontrast), kontrast WCAG AA ([tokeny](docs/design/tokens.md)).
 - **Prywatność** — bez zakładania konta; dane zdrowotne (profil, historia badań, czynniki ryzyka) domyślnie tylko na telefonie. Szczegóły niżej w [Prywatność — co i komu wysyłamy](#prywatność--co-i-komu-wysyłamy).
 
 ## Prywatność — co i komu wysyłamy

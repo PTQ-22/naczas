@@ -8,7 +8,7 @@ Wspólne dla wszystkich ekranów:
 - **Jeden główny CTA na ekran** = jedyny wypełniony przycisk `primary`. Reszta akcji: `secondary` / `ghost`.
 - Główny CTA na ekranach z formularzem / szczegółami jest **przyklejony do dołu** (nad safe area), żeby był osiągalny kciukiem i nie znikał przy powiększonej czcionce.
 - Tryb senior: te same komponenty, tokeny `typography.senior` + `layout.senior` + nadpisania kontrastu. Dodatkowo ukrywamy elementy oznaczone niżej jako *[senior: ukryj]*.
-- Dark mode: tylko tokeny, bez osobnych wariantów layoutu.
+- Tylko jasny motyw (ciemny usunięty); tryb senior = tokeny, bez osobnych wariantów layoutu.
 - Każdy element klikalny: `accessibilityRole` + `accessibilityLabel` (przykłady w sekcjach „A11y”).
 
 ---

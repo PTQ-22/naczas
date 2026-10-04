@@ -40,7 +40,7 @@ const mockParams = useLocalSearchParams as jest.Mock;
 const renderExam = (examId: unknown) => {
   mockParams.mockReturnValue({ examId });
   return render(
-    <ThemeProvider initial={{ darkMode: 'light' }}>
+    <ThemeProvider>
       <ExamScreen />
     </ThemeProvider>,
   );

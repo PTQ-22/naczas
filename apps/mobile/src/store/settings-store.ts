@@ -4,8 +4,6 @@ import { persist } from 'zustand/middleware';
 
 import { ISODateSchema, type ISODate } from '@naczas/shared';
 
-import type { DarkModePreference } from '@/theme';
-
 import { validatedPersist } from './persist';
 
 /**
@@ -35,7 +33,6 @@ const NO_DISCLOSURE: CallDisclosure = {
 
 const PersistedSettingsSchema = z.object({
   seniorMode: z.boolean(),
-  darkMode: z.enum(['system', 'light', 'dark']) satisfies z.ZodType<DarkModePreference>,
   /** Demo "time travel" — when set, the whole app treats this as today. */
   todayOverride: ISODateSchema.nullable().default(null),
   familyCode: z.string().nullable().default(null),
@@ -46,7 +43,6 @@ type PersistedSettings = z.infer<typeof PersistedSettingsSchema>;
 
 interface SettingsState extends PersistedSettings {
   setSeniorMode: (value: boolean) => void;
-  setDarkMode: (value: DarkModePreference) => void;
   setTodayOverride: (value: ISODate | null) => void;
   setFamilyCode: (value: string | null) => void;
   setCallDisclosure: (field: DisclosureField, allowed: boolean) => void;
@@ -55,7 +51,6 @@ interface SettingsState extends PersistedSettings {
 
 const initialState: PersistedSettings = {
   seniorMode: false,
-  darkMode: 'system',
   todayOverride: null,
   familyCode: null,
   callDisclosure: NO_DISCLOSURE,
@@ -66,7 +61,6 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       ...initialState,
       setSeniorMode: (seniorMode) => set({ seniorMode }),
-      setDarkMode: (darkMode) => set({ darkMode }),
       setTodayOverride: (todayOverride) => set({ todayOverride }),
       setFamilyCode: (familyCode) => set({ familyCode }),
       setCallDisclosure: (field, allowed) =>
@@ -78,9 +72,8 @@ export const useSettingsStore = create<SettingsState>()(
       version: 1,
       migrations: { 0: (state) => state },
       schema: PersistedSettingsSchema,
-      partialize: ({ seniorMode, darkMode, todayOverride, familyCode, callDisclosure }) => ({
+      partialize: ({ seniorMode, todayOverride, familyCode, callDisclosure }) => ({
         seniorMode,
-        darkMode,
         todayOverride,
         familyCode,
         callDisclosure,

@@ -16,7 +16,7 @@ import { SPECIALTY_EXAM_IDS, type SpecialtyExamId } from './specialties';
 import type { FacilityFeature, MaxDistance } from './filter-facilities';
 
 const DISTANCES: readonly MaxDistance[] = ['any', '10', '25', '50'];
-const FEATURES: readonly FacilityFeature[] = ['phone', 'accessible', 'parking'];
+const FEATURES: readonly FacilityFeature[] = ['phone', 'ramp', 'elevator', 'parking', 'toilet'];
 
 interface FiltersSheetProps {
   visible: boolean;

@@ -17,6 +17,8 @@ interface IconButtonProps {
   expanded?: boolean;
   /** No circle, larger glyph: for low-key controls like "⋯". Touch target stays the same. */
   bare?: boolean;
+  /** Destructive action: red outline and icon instead of cobalt. */
+  danger?: boolean;
   testID?: string;
 }
 
@@ -30,9 +32,11 @@ export function IconButton({
   filled = false,
   expanded,
   bare = false,
+  danger = false,
   testID,
 }: IconButtonProps) {
   const { colors, layout, radius, borderWidth } = useTheme();
+  const tint = danger ? colors.danger : colors.primary;
   return (
     <Pressable
       testID={testID}
@@ -48,7 +52,7 @@ export function IconButton({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: bare ? 0 : borderWidth.strong,
-        borderColor: colors.primary,
+        borderColor: tint,
         backgroundColor: filled
           ? pressed
             ? colors.primaryPressed
@@ -58,11 +62,7 @@ export function IconButton({
             : 'transparent',
       })}
     >
-      <Icon
-        name={icon}
-        size={bare ? 'lg' : 'md'}
-        color={filled ? colors.onPrimary : colors.primary}
-      />
+      <Icon name={icon} size={bare ? 'lg' : 'md'} color={filled ? colors.onPrimary : tint} />
     </Pressable>
   );
 }

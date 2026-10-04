@@ -1,25 +1,20 @@
 import {
   borderWidth,
-  DEFAULT_PALETTE,
+  colors,
+  layout,
   motion,
-  palettes,
   radius,
   seniorColorOverrides,
   space,
   typography,
-  layout,
-  type ColorScheme,
   type ColorTokens,
   type LayoutTokens,
-  type PaletteId,
   type TypeStyle,
   type TypeVariant,
 } from './tokens';
 
 export interface Theme {
-  scheme: ColorScheme;
   seniorMode: boolean;
-  palette: PaletteId;
   colors: ColorTokens;
   type: Record<TypeVariant, TypeStyle>;
   layout: LayoutTokens;
@@ -30,24 +25,15 @@ export interface Theme {
 }
 
 export interface ThemeOptions {
-  scheme: ColorScheme;
   seniorMode: boolean;
-  palette?: PaletteId;
 }
 
-/** Pure: resolves tokens for a given scheme + senior mode. Components read only from this. */
-export function createTheme({
-  scheme,
-  seniorMode,
-  palette = DEFAULT_PALETTE,
-}: ThemeOptions): Theme {
+/** Pure: resolves tokens for senior or normal mode. Components read only from this. */
+export function createTheme({ seniorMode }: ThemeOptions): Theme {
   const mode = seniorMode ? 'senior' : 'normal';
-  const base = palettes[palette][scheme];
   return {
-    scheme,
     seniorMode,
-    palette,
-    colors: seniorMode ? { ...base, ...seniorColorOverrides[scheme] } : base,
+    colors: seniorMode ? { ...colors, ...seniorColorOverrides } : colors,
     type: typography[mode],
     layout: layout[mode],
     space,

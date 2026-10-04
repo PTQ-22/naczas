@@ -38,7 +38,7 @@ interface FacilityRowProps {
  * One facility as a row on the plate (redesign §4): weeks of waiting on the left in mono, like a
  * position on a departures board; distance under the wait figure; name and address on the right.
  * Actions: the phone number (tap to call), a map icon, "Zadzwoń za mnie" on the first row, and the
- * rest behind "⋯".
+ * rest, amenities included, behind "⋯".
  */
 export function FacilityRow({ facility: f, examId, primary = false }: FacilityRowProps) {
   const { colors, seniorMode, space, layout } = useTheme();
@@ -56,7 +56,7 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
   );
   const setDefault = useDefaultFacilityStore((s) => s.setDefault);
   const clearDefault = useDefaultFacilityStore((s) => s.clear);
-  // Distance lives under the wait figure (never wraps); amenities stay a quiet text line.
+  // Distance lives under the wait figure (never wraps); amenities (ramp, lift, parking, toilet) are behind "⋯" with the other secondary info.
 
   return (
     <View style={{ flexDirection: 'row', gap: space.md, paddingVertical: space.md }}>
@@ -102,11 +102,6 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
           {f.anesthesia === true && (
             <Text variant="caption" tone="textMuted">
               {t('facilities.anesthesia')}
-            </Text>
-          )}
-          {access.length > 0 && (
-            <Text variant="caption" tone="textMuted">
-              {access.join(' · ')}
             </Text>
           )}
         </View>
@@ -155,6 +150,11 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
         {/* Less frequent actions behind "⋯", inline rather than a native sheet (works on web too). */}
         {moreOpen && (
           <View style={{ alignItems: seniorMode ? 'stretch' : 'flex-start', gap: space.xs }}>
+            <Text variant="caption" tone="textMuted" testID="facility-amenities">
+              {access.length > 0
+                ? `${t('facilities.accessibility.header')}: ${access.join(' · ')}`
+                : t('facilities.accessibility.none')}
+            </Text>
             <Button
               label={t(
                 isDefault ? 'facilities.defaultFacility.unset' : 'facilities.defaultFacility.set',

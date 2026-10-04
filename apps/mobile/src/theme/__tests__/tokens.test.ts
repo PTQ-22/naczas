@@ -2,24 +2,12 @@ import { UrgencySchema } from '@naczas/shared';
 
 import { contrastRatio } from '../contrast';
 import { createTheme } from '../create-theme';
-import {
-  colors,
-  PALETTE_IDS,
-  palettes,
-  seniorColorOverrides,
-  typography,
-  waitBucket,
-  type ColorScheme,
-} from '../tokens';
+import { colors, seniorColorOverrides, typography, waitBucket } from '../tokens';
 
 const AA_TEXT = 4.5;
 const UI_NON_TEXT = 3;
 const AAA_TEXT = 7;
-const schemes: ColorScheme[] = ['light', 'dark'];
 const urgencies = UrgencySchema.options;
-const paletteSchemes = PALETTE_IDS.flatMap((palette) =>
-  schemes.map((scheme) => [palette, scheme] as const),
-);
 
 describe('contrastRatio', () => {
   it('matches known WCAG extremes', () => {
@@ -37,8 +25,8 @@ describe('contrastRatio', () => {
 });
 
 // Mirrors docs/design/tokens.md §3 — a hex change that breaks AA must fail `pnpm check`.
-describe.each(paletteSchemes)('%s/%s palette contrast', (palette, scheme) => {
-  const c = palettes[palette][scheme];
+describe('palette contrast', () => {
+  const c = colors;
   const backgrounds = { bg: c.bg, surface: c.surface, surfaceAlt: c.surfaceAlt };
 
   it.each(['text', 'textMuted', 'textSubtle', 'primary', 'danger'] as const)(
@@ -79,24 +67,18 @@ describe.each(paletteSchemes)('%s/%s palette contrast', (palette, scheme) => {
     expect(contrastRatio(c.onWall, c.wallGrout)).toBeGreaterThanOrEqual(AA_TEXT);
     expect(contrastRatio(c.urgentOnWall, c.wall)).toBeGreaterThanOrEqual(AA_TEXT);
     expect(contrastRatio(c.urgentOnWall, c.wallGrout)).toBeGreaterThanOrEqual(AA_TEXT);
-    // A plate's edge is its fill (light: cream on cobalt) or its 3 px ink frame (dark) — one of
-    // the two must be a >= 3:1 UI boundary against the wall.
+    // A plate's edge is its fill or its 3 px ink frame — one of the two must be a >= 3:1 UI
+    // boundary against the wall.
     const edge = Math.max(contrastRatio(c.surface, c.wall), contrastRatio(c.text, c.wall));
     expect(edge).toBeGreaterThanOrEqual(UI_NON_TEXT);
   });
 
-  it('marker: ink text on the highlighter is AA, the marker itself is visible on bg/surface', () => {
-    // Light: marker is a fill behind ink. Dark: a 3 px underline — must read as a mark (>= 3:1).
-    if (scheme === 'light') {
-      expect(contrastRatio(c.text, c.marker)).toBeGreaterThanOrEqual(AAA_TEXT);
-    } else {
-      expect(contrastRatio(c.marker, c.surface)).toBeGreaterThanOrEqual(UI_NON_TEXT);
-      expect(contrastRatio(c.marker, c.bg)).toBeGreaterThanOrEqual(UI_NON_TEXT);
-    }
+  it('marker: ink text on the highlighter is AAA', () => {
+    expect(contrastRatio(c.text, c.marker)).toBeGreaterThanOrEqual(AAA_TEXT);
   });
 
   it('senior overrides reach AAA for secondary text', () => {
-    const s = seniorColorOverrides[scheme];
+    const s = seniorColorOverrides;
     for (const bg of Object.values(backgrounds)) {
       expect(contrastRatio(s.textMuted, bg)).toBeGreaterThanOrEqual(AAA_TEXT);
       expect(contrastRatio(s.textSubtle, bg)).toBeGreaterThanOrEqual(AAA_TEXT);
@@ -131,31 +113,24 @@ describe('typography', () => {
 });
 
 describe('createTheme', () => {
-  it('picks the requested palette', () => {
-    const theme = createTheme({ scheme: 'light', seniorMode: false, palette: 'redcross' });
-    expect(theme.colors).toBe(palettes.redcross.light);
-  });
-
   it('uses base colors and normal scale by default', () => {
-    const theme = createTheme({ scheme: 'light', seniorMode: false });
-    expect(theme.colors).toBe(colors.light);
+    const theme = createTheme({ seniorMode: false });
+    expect(theme.colors).toBe(colors);
     expect(theme.type.body.fontSize).toBe(17);
     expect(theme.layout.minTouch).toBe(44);
   });
 
-  it('applies senior overrides on top of the scheme', () => {
-    const theme = createTheme({ scheme: 'dark', seniorMode: true });
-    expect(theme.colors.textMuted).toBe(seniorColorOverrides.dark.textMuted);
-    expect(theme.colors.primary).toBe(colors.dark.primary);
+  it('applies senior overrides on top of the base colors', () => {
+    const theme = createTheme({ seniorMode: true });
+    expect(theme.colors.textMuted).toBe(seniorColorOverrides.textMuted);
+    expect(theme.colors.primary).toBe(colors.primary);
     expect(theme.type.body.fontSize).toBe(22);
     expect(theme.layout.minTouch).toBe(56);
   });
 
   it('keeps min touch target >= 44 in every mode', () => {
-    for (const scheme of schemes) {
-      for (const seniorMode of [false, true]) {
-        expect(createTheme({ scheme, seniorMode }).layout.minTouch).toBeGreaterThanOrEqual(44);
-      }
+    for (const seniorMode of [false, true]) {
+      expect(createTheme({ seniorMode }).layout.minTouch).toBeGreaterThanOrEqual(44);
     }
   });
 });

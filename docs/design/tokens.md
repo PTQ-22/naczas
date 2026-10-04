@@ -1,3 +1,5 @@
+> **Uwaga:** aplikacja ma wyłącznie jasny motyw w kolorystyce „sky” — warianty „Dark” i palety B/C poniżej są historyczne (usunięte z kodu).
+
 # Design tokens — NaCzas (WS5-1)
 
 > Źródło wartości dla `apps/mobile/src/theme/tokens.ts` (właściciel: WS4). Ten dokument jest projektem — implementację w TS robi WS4; blok kodu w §7 jest gotowy do skopiowania.

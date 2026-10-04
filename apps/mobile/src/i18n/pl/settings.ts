@@ -4,18 +4,6 @@ export const settings = {
     header: 'Wygląd',
     seniorMode: 'Tryb senior (większy tekst)',
     seniorModeHint: 'Powiększa tekst i przyciski w całej aplikacji.',
-    darkMode: 'Motyw',
-    darkModeOptions: {
-      system: 'Jak w systemie',
-      light: 'Jasny',
-      dark: 'Ciemny',
-    },
-    palette: 'Kolorystyka (podgląd)',
-    paletteOptions: {
-      sky: 'A — błękit kliniczny',
-      navy: 'B — granat i czerwień',
-      redcross: 'C — czerwony krzyż',
-    },
   },
   defaultFacility: {
     header: 'Domyślna przychodnia',

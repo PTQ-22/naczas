@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { View } from 'react-native';
 
-import { Button, Disclaimer, OptionTile, Plate, Screen, Text } from '@/components';
+import { Button, Disclaimer, Plate, Screen, Text } from '@/components';
 import { AccountSection } from '@/features/auth/AccountSection';
 import { DefaultFacilityCard } from '@/features/facilities/DefaultFacilityCard';
 import { t } from '@/i18n';
@@ -23,14 +23,12 @@ import {
   useSettingsStore,
   useToday,
 } from '@/store';
-import { PALETTE_IDS, usePaletteStore, useTheme, type DarkModePreference } from '@/theme';
+import { useTheme } from '@/theme';
 
 import { applyDemoPreset, DEMO_PRESETS } from './demo-presets';
 import { LocationSection } from './LocationSection';
 import { SettingsSection } from './SettingsSection';
 import { ToggleRow } from './ToggleRow';
-
-const DARK_MODES: readonly DarkModePreference[] = ['system', 'light', 'dark'];
 
 const longDate = (date: string) => format(parseISO(date), 'd MMMM yyyy', { locale: pl });
 
@@ -51,12 +49,8 @@ function testResultText(result: TestNotificationResult, title: string): string {
 export default function SettingsScreen() {
   const { space } = useTheme();
   const seniorMode = useSettingsStore((s) => s.seniorMode);
-  const darkMode = useSettingsStore((s) => s.darkMode);
   const todayOverride = useSettingsStore((s) => s.todayOverride);
   const setSeniorMode = useSettingsStore((s) => s.setSeniorMode);
-  const setDarkMode = useSettingsStore((s) => s.setDarkMode);
-  const palette = usePaletteStore((s) => s.palette);
-  const setPalette = usePaletteStore((s) => s.setPalette);
   const setTodayOverride = useSettingsStore((s) => s.setTodayOverride);
   const callDisclosure = useSettingsStore((s) => s.callDisclosure);
   const setCallDisclosure = useSettingsStore((s) => s.setCallDisclosure);
@@ -105,40 +99,6 @@ export default function SettingsScreen() {
             value={seniorMode}
             onChange={setSeniorMode}
           />
-          <View
-            accessibilityRole="radiogroup"
-            accessibilityLabel={t('settings.display.darkMode')}
-            style={{ gap: space.xs }}
-          >
-            <Text variant="label">{t('settings.display.darkMode')}</Text>
-            {DARK_MODES.map((mode) => (
-              <OptionTile
-                key={mode}
-                testID={`settings-dark-${mode}`}
-                mode="radio"
-                label={t(`settings.display.darkModeOptions.${mode}`)}
-                selected={darkMode === mode}
-                onPress={() => setDarkMode(mode)}
-              />
-            ))}
-          </View>
-          <View
-            accessibilityRole="radiogroup"
-            accessibilityLabel={t('settings.display.palette')}
-            style={{ gap: space.xs }}
-          >
-            <Text variant="label">{t('settings.display.palette')}</Text>
-            {PALETTE_IDS.map((id) => (
-              <OptionTile
-                key={id}
-                testID={`settings-palette-${id}`}
-                mode="radio"
-                label={t(`settings.display.paletteOptions.${id}`)}
-                selected={palette === id}
-                onPress={() => setPalette(id)}
-              />
-            ))}
-          </View>
         </SettingsSection>
 
         <SettingsSection title={t('settings.defaultFacility.header')}>

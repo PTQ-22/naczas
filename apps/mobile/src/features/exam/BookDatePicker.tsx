@@ -18,7 +18,7 @@ const fullDate = (iso: string) => format(parseISO(iso), 'dd.MM.yyyy');
  * field showing the current date — the platform picker brings its own accessibility.
  */
 export function BookDatePicker({ value, min, max, onChange }: BookDatePickerProps) {
-  const { colors, layout, radius, borderWidth, space, scheme } = useTheme();
+  const { colors, layout, radius, borderWidth, space } = useTheme();
   const [open, setOpen] = useState(false);
 
   const handleChange = (event: DateTimePickerEvent, date?: Date) => {
@@ -34,7 +34,7 @@ export function BookDatePicker({ value, min, max, onChange }: BookDatePickerProp
       minimumDate={parseISO(min)}
       maximumDate={parseISO(max)}
       locale="pl-PL"
-      themeVariant={scheme}
+      themeVariant="light"
       accentColor={colors.primary}
       onChange={handleChange}
     />

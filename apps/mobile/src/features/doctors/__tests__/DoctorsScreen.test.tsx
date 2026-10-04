@@ -73,12 +73,12 @@ describe('DoctorsScreen (no active profile → mock mama, Warszawa)', () => {
     expect(screen.getByText(/^Dentysta · pasuje: (\d+) z \1$/)).toBeTruthy();
     fireEvent.press(screen.getByTestId('doctors-filters-button'));
     fireEvent.press(screen.getByRole('radio', { name: 'Odległość: do 10 km' }));
-    for (const name of ['Ma telefon', 'Bez barier', 'Parking']) {
+    for (const name of ['Ma telefon', 'Podjazd', 'Winda', 'Parking', 'Toaleta']) {
       fireEvent.press(screen.getByRole('checkbox', { name: `Udogodnienia: ${name}` }));
     }
     fireEvent.press(screen.getByTestId('doctors-filters-apply'));
-    // The button counts the narrowing filters: distance + three amenities.
-    expect(screen.getByRole('button', { name: /^Filtry \(4\)/ })).toBeTruthy();
+    // The button counts the narrowing filters: distance + five amenities.
+    expect(screen.getByRole('button', { name: /^Filtry \(6\)/ })).toBeTruthy();
     const summary = screen.getByText(/pasuje: \d+ z \d+$/);
     const [, count, total] = /(\d+) z (\d+)/.exec(String(summary.props.children)) ?? [];
     expect(Number(count)).toBeLessThan(Number(total));

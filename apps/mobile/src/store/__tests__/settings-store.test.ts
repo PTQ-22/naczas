@@ -19,18 +19,16 @@ beforeEach(async () => {
 });
 
 describe('settings store', () => {
-  it('has accessible, system-following defaults', () => {
-    expect(store()).toMatchObject({ seniorMode: false, darkMode: 'system', todayOverride: null });
+  it('has accessible defaults', () => {
+    expect(store()).toMatchObject({ seniorMode: false, todayOverride: null });
   });
 
   it('updates preferences', () => {
     store().setSeniorMode(true);
-    store().setDarkMode('dark');
     store().setTodayOverride('2026-10-04');
 
     expect(store()).toMatchObject({
       seniorMode: true,
-      darkMode: 'dark',
       todayOverride: '2026-10-04',
     });
   });
@@ -45,7 +43,7 @@ describe('settings store', () => {
     expect(store().callDisclosure.pesel).toBe(false);
   });
 
-  it('restores settings saved before call disclosure existed with everything off', async () => {
+  it('restores settings saved before call disclosure existed with everything off (a stale darkMode is ignored)', async () => {
     await AsyncStorage.setItem(
       `${STORAGE_PREFIX}settings`,
       JSON.stringify({

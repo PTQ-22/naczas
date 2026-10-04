@@ -1,7 +1,11 @@
 import { rules } from '@naczas/rules';
 import type { Facility } from '@naczas/shared';
 
-import { defaultFacilityFilters, filterFacilities } from '../filter-facilities';
+import {
+  defaultFacilityFilters,
+  filterFacilities,
+  type FacilityFeature,
+} from '../filter-facilities';
 import { SPECIALTY_EXAM_IDS } from '../specialties';
 
 const base: Facility = {
@@ -62,16 +66,23 @@ describe('filterFacilities', () => {
     );
   });
 
-  it('accessible: a ramp or a lift', () => {
-    expect(ids(filterFacilities(items, { maxDistance: 'any', features: ['accessible'] }))).toEqual([
-      'ramp',
-      'lift',
-    ]);
+  it('ramp, elevator and toilet are separate filters', () => {
+    const wc: Facility = {
+      ...base,
+      id: 'wc',
+      accessibility: { ...base.accessibility, toilet: true },
+    };
+    const run = (features: FacilityFeature[]) =>
+      ids(filterFacilities([...items, wc], { maxDistance: 'any', features }));
+    expect(run(['ramp'])).toEqual(['ramp']);
+    expect(run(['elevator'])).toEqual(['lift']);
+    expect(run(['toilet'])).toEqual(['wc']);
+    expect(run(['parking'])).toEqual(['ramp']);
   });
 
   it('combines features with AND', () => {
     expect(
-      ids(filterFacilities(items, { maxDistance: '25', features: ['accessible', 'parking'] })),
+      ids(filterFacilities(items, { maxDistance: '25', features: ['ramp', 'parking'] })),
     ).toEqual(['ramp']);
   });
 });

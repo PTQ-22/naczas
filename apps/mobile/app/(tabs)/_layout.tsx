@@ -39,7 +39,7 @@ export default function TabsLayout() {
           fontFamily: type.label.fontFamily,
         },
         headerStyle: { backgroundColor: colors.surface },
-        // Default separator is a light hairline that glares in dark mode; surface vs bg is enough.
+        // Default separator is a light hairline that glares on white; surface vs bg is enough.
         headerShadowVisible: false,
         headerTintColor: colors.text,
         headerTitleStyle: { fontFamily: type.heading.fontFamily },
