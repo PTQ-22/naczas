@@ -113,7 +113,7 @@ Na telefonie: `corepack pnpm dev:mobile` i zeskanuj QR w Expo Go. Wszystko naraz
 
 > Skrypty w `package.json` wołają `pnpm` bezpośrednio. Jeśli `pnpm` nie jest w `PATH`, uruchom raz `corepack enable` (zmienia globalną konfigurację Node — instaluje shim `pnpm`).
 
-Testy i lint (to samo co CI) — 1013 testów: silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 579, kontrakty 54 (stan na 2026-10-04):
+Testy i lint (to samo co CI) — 1016 testów: silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 582, kontrakty 54 (stan na 2026-10-04):
 
 ```bash
 corepack pnpm check
