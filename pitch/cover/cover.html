@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NaCzas — okładka</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;700&family=Bricolage+Grotesque:wght@700;800&family=IBM+Plex+Mono:wght@600&display=block"
+    />
+    <!--
+      Submission cover (Challenge Rocket), store-banner style. Rendered by
+      pitch/scripts/render-cover.mjs to cover.png (1920×1080) and cover-1200x630.png
+      (?og: stage 1920×1008, scaled ×0.625). Tokens: redesign v2, same as pitch/deck/deck.html.
+    -->
+    <style>
+      :root {
+        --wall: #24477a;
+        --grout: #1c3964;
+        --on-wall: #ffffff;
+        --on-wall-muted: #d3dceb;
+        --plate: #fbf9f3;
+        --ink: #0e1b2c;
+        --now: #b4231a;
+        --marker: #ffe24a;
+        --tile: 48px;
+        --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+        --font-body: 'Atkinson Hyperlegible Next', system-ui, sans-serif;
+        --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+        --stage-h: 1080px;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: var(--wall);
+      }
+
+      .stage {
+        position: relative;
+        width: 1920px;
+        height: var(--stage-h);
+        overflow: hidden;
+        background-color: var(--wall);
+        background-image:
+          radial-gradient(ellipse 60% 70% at 78% 55%, rgba(142, 197, 255, 0.22), transparent 70%),
+          linear-gradient(var(--grout) 2px, transparent 2px),
+          linear-gradient(90deg, var(--grout) 2px, transparent 2px);
+        background-size:
+          100% 100%,
+          var(--tile) var(--tile),
+          var(--tile) var(--tile);
+      }
+
+      /* ---------- copy (left) ---------- */
+      .copy {
+        position: absolute;
+        left: 120px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 860px;
+        color: var(--on-wall);
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 14px 24px;
+        background: var(--plate);
+        color: var(--ink);
+        border: 4px solid var(--ink);
+        border-radius: 14px;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        font-size: 28px;
+        letter-spacing: 0.02em;
+      }
+
+      .name {
+        margin: 40px 0 0;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 176px;
+        line-height: 0.95;
+        letter-spacing: -0.03em;
+      }
+
+      .claim {
+        margin: 28px 0 0;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 62px;
+        line-height: 1.12;
+        letter-spacing: -0.01em;
+      }
+
+      /* Yellow highlighter under the urgent part — same role as the app's marker token. */
+      .claim mark {
+        background: none;
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: var(--marker);
+        text-decoration-thickness: 10px;
+        text-underline-offset: 14px;
+        text-decoration-skip-ink: none;
+      }
+
+      .sub {
+        margin: 36px 0 0;
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 34px;
+        line-height: 1.3;
+        color: var(--on-wall-muted);
+      }
+
+      /* ---------- phones (right) ---------- */
+      .phones {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 960px;
+        height: 100%;
+      }
+
+      .phone {
+        position: absolute;
+        width: var(--w);
+        padding: 14px;
+        border-radius: 64px;
+        background: #0b1220;
+        box-shadow:
+          0 0 0 2px #3a4a66 inset,
+          0 50px 90px rgba(5, 14, 30, 0.55),
+          0 18px 36px rgba(5, 14, 30, 0.35);
+      }
+
+      .screen {
+        position: relative;
+        border-radius: 50px;
+        overflow: hidden;
+        background: var(--sb);
+      }
+
+      .statusbar {
+        height: calc(var(--w) * 0.11);
+        background: var(--sb);
+        position: relative;
+      }
+
+      .statusbar::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 12px;
+        width: 34%;
+        height: 30px;
+        transform: translateX(-50%);
+        border-radius: 20px;
+        background: #0b1220;
+      }
+
+      .screen img {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+
+      .p-back-left {
+        --w: 320px;
+        --sb: #ffffff;
+        left: 0;
+        top: 175px;
+        transform: rotate(-7deg);
+      }
+
+      .p-back-right {
+        --w: 320px;
+        --sb: #ffffff;
+        left: 566px;
+        top: 190px;
+        transform: rotate(7deg);
+      }
+
+      .p-front {
+        --w: 370px;
+        --sb: #ddeffc;
+        left: 282px;
+        top: 85px;
+        z-index: 2;
+      }
+
+      /* ---------- 1200×630 variant (stage 1920×1008, rendered ×0.625) ---------- */
+      .og {
+        --stage-h: 1008px;
+      }
+      .og .p-front {
+        top: 55px;
+      }
+      .og .p-back-left {
+        top: 140px;
+      }
+      .og .p-back-right {
+        top: 155px;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="stage" id="stage">
+      <section class="copy">
+        <span class="tag">HackYeah 2026 · Sport &amp; Healthcare</span>
+        <h1 class="name">NaCzas</h1>
+        <p class="claim">Wiesz co, kiedy i gdzie — <mark>zanim będzie za późno.</mark></p>
+        <p class="sub">Plan badań · kolejki NFZ · agent AI umawia wizytę</p>
+      </section>
+
+      <section class="phones" aria-hidden="true">
+        <div class="phone p-back-left">
+          <div class="screen">
+            <div class="statusbar"></div>
+            <img src="../screenshots/v3/call-light.jpg" alt="" />
+          </div>
+        </div>
+        <div class="phone p-back-right">
+          <div class="screen">
+            <div class="statusbar"></div>
+            <img src="../screenshots/v3/facilities-light.jpg" alt="" />
+          </div>
+        </div>
+        <div class="phone p-front">
+          <div class="screen">
+            <div class="statusbar"></div>
+            <img src="../screenshots/v3/plan-light.jpg" alt="" />
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      if (new URLSearchParams(location.search).has('og')) {
+        document.getElementById('stage').classList.add('og');
+      }
+    </script>
+  </body>
+</html>
