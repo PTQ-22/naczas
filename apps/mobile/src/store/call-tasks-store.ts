@@ -31,7 +31,11 @@ const CallTaskSchema = z.object({
 });
 export type CallTask = z.infer<typeof CallTaskSchema>;
 
-const PersistedSchema = z.object({ tasks: z.array(CallTaskSchema) });
+const PersistedSchema = z.object({
+  tasks: z.array(CallTaskSchema),
+  /** Mock calls were put in once — deleting them must not bring them back. Default for old data. */
+  demoSeeded: z.boolean().default(false),
+});
 type Persisted = z.infer<typeof PersistedSchema>;
 
 export type NewCallTask = Pick<CallTask, 'id' | 'mode' | 'profileId' | 'examId' | 'facilityName'>;
@@ -43,6 +47,8 @@ interface CallTasksState extends Persisted {
   markApplied: (id: string) => void;
   remove: (id: string) => void;
   removeProfile: (profileId: string) => void;
+  /** Puts mock calls into an empty history, once per device. */
+  seedDemo: (tasks: CallTask[]) => void;
   reset: () => void;
 }
 
@@ -56,6 +62,7 @@ export const useCallTasksStore = create<CallTasksState>()(
         set((s) => ({ tasks: s.tasks.map((t) => (t.id === id ? { ...t, ...patch(t) } : t)) }));
       return {
         tasks: [],
+        demoSeeded: false,
         add: (task, now) =>
           set((s) => {
             const fresh: CallTask = {
@@ -86,14 +93,20 @@ export const useCallTasksStore = create<CallTasksState>()(
         remove: (id) => set((s) => ({ tasks: s.tasks.filter((t) => t.id !== id) })),
         removeProfile: (profileId) =>
           set((s) => ({ tasks: s.tasks.filter((t) => t.profileId !== profileId) })),
-        reset: () => set({ tasks: [] }),
+        seedDemo: (demo) =>
+          set((s) =>
+            s.demoSeeded || s.tasks.length > 0
+              ? { demoSeeded: true }
+              : { tasks: demo, demoSeeded: true },
+          ),
+        reset: () => set({ tasks: [], demoSeeded: false }),
       };
     },
     validatedPersist<CallTasksState, Persisted>({
       name: 'call-tasks',
       version: 1,
       schema: PersistedSchema,
-      partialize: ({ tasks }) => ({ tasks }),
+      partialize: ({ tasks, demoSeeded }) => ({ tasks, demoSeeded }),
     }),
   ),
 );

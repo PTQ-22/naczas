@@ -30,7 +30,11 @@ function scripted(req: CallAssistRequest, today: ISODate): CallAssistStatus {
  * total and conversations to open. Mock data (mode 'simulated'); phone times are typical
  * registration-desk waits picked for the demo, not measurements.
  */
-export function buildDemoCalls(today: ISODate): CallTask[] {
+export function buildDemoCalls(
+  today: ISODate,
+  /** Whose calls these are — the demo profiles by default, the user's own when seeding. */
+  who: { main: string; second: string } = { main: DEMO_MAMA_ID, second: DEMO_KASIA_ID },
+): CallTask[] {
   const day = parseISO(today);
   const at = (daysAgo: number, hour: number) => addHours(subDays(day, daysAgo), hour).getTime();
   // Each call books relative to the day it was made, so the visits don't all share one date.
@@ -89,12 +93,12 @@ export function buildDemoCalls(today: ISODate): CallTask[] {
   });
 
   return [
-    call(1, DEMO_MAMA_ID, 'eye_check', 'Poradnia Okulistyczna Wilda', at(1, 9), eye, {
+    call(1, who.main, 'eye_check', 'Poradnia Okulistyczna Wilda', at(1, 9), eye, {
       attempts: 2,
       waitedSec: 23 * 60 + 40,
       talkedSec: 4 * 60 + 10,
     }),
-    call(2, DEMO_KASIA_ID, 'dermatolog', 'Centrum Dermatologii Grunwald', at(3, 11), derm, {
+    call(2, who.second, 'dermatolog', 'Centrum Dermatologii Grunwald', at(3, 11), derm, {
       attempts: 1,
       waitedSec: 17 * 60 + 5,
       talkedSec: 3 * 60 + 20,
@@ -103,7 +107,7 @@ export function buildDemoCalls(today: ISODate): CallTask[] {
     {
       ...base,
       id: ID(3),
-      profileId: DEMO_MAMA_ID,
+      profileId: who.main,
       examId: 'neurolog',
       facilityName: 'Poradnia Neurologiczna Rataje',
       createdAt: at(5, 8),
@@ -113,18 +117,10 @@ export function buildDemoCalls(today: ISODate): CallTask[] {
       transcript: [],
       stats: { attempts: 3, waitedSec: 3 * 60, talkedSec: 0 },
     },
-    call(
-      4,
-      DEMO_MAMA_ID,
-      'dental_checkup',
-      'Przychodnia Stomatologiczna Jeżyce',
-      at(9, 10),
-      dentist,
-      {
-        attempts: 1,
-        waitedSec: 31 * 60 + 15,
-        talkedSec: 3 * 60 + 45,
-      },
-    ),
+    call(4, who.main, 'dental_checkup', 'Przychodnia Stomatologiczna Jeżyce', at(9, 10), dentist, {
+      attempts: 1,
+      waitedSec: 31 * 60 + 15,
+      talkedSec: 3 * 60 + 45,
+    }),
   ];
 }
