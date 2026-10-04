@@ -3,9 +3,18 @@
 > HackYeah 2026 · Open Task **SPORT & HEALTHCARE** · zespół **{NAZWA ZESPOŁU}**
 > Nazwa „NaCzas” może się jeszcze zmienić — alternatywy: [pitch/naming.md](pitch/naming.md).
 
-**Demo (web):** https://naczas-web.onrender.com
+**Demo (web):** https://naczas-web.onrender.com · **Wideo:** https://youtu.be/7qw5hh6vLqE · **Prezentacja:** [pitch/deck/deck.pdf](pitch/deck/deck.pdf)
 
 *Wiesz co, kiedy i gdzie — i zdążysz na czas.*
+
+<p align="center">
+  <img src="pitch/screenshots/v3/onboarding-light.jpg" alt="Ankieta" width="160" />
+  <img src="pitch/screenshots/v3/plan-demo-light.jpg" alt="Plan badań" width="160" />
+  <img src="pitch/screenshots/v3/facilities-light.jpg" alt="Placówki NFZ" width="160" />
+  <img src="pitch/screenshots/v3/agent-light.jpg" alt="Agent AI" width="160" />
+  <img src="pitch/screenshots/v3/family-light.jpg" alt="Rodzina" width="160" />
+</p>
+<p align="center"><sub>Ankieta · Plan badań · Placówki NFZ · Agent AI · Rodzina</sub></p>
 
 
 ## Problem i rozwiązanie
