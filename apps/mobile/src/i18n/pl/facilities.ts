@@ -54,6 +54,7 @@ export const facilities = {
     bookedA11y: 'Umówiłem/am się w: {{name}}, zapisz datę wizyty',
     callForMe: 'Zadzwoń za mnie',
     callForMeA11y: 'Zadzwoń za mnie do: {{name}}, asystent AI poprosi o termin',
+    more: 'Więcej działań: {{name}}',
   },
   map: {
     a11y: 'Mapa placówek. Te same placówki są na liście.',

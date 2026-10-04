@@ -60,6 +60,15 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     expect(openURL).toHaveBeenLastCalledWith(expect.stringContaining('maps.apple.com'));
   });
 
+  it('less frequent actions sit behind "⋯"', async () => {
+    render(<FacilitiesScreen />);
+    const more = (await screen.findAllByRole('button', { name: /^Więcej działań: / }))[0]!;
+    expect(screen.queryByText('Ustaw jako moją przychodnię')).toBeNull();
+    fireEvent.press(more);
+    expect(screen.getByText('Ustaw jako moją przychodnię')).toBeOnTheScreen();
+    expect(screen.getByText('Umówiłem/am się')).toBeOnTheScreen();
+  });
+
   it('sort and view toggles are radio groups', async () => {
     render(<FacilitiesScreen />);
     await screen.findAllByText('tyg.');

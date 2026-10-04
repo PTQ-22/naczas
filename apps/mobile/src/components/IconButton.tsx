@@ -13,6 +13,8 @@ interface IconButtonProps {
   onPress: () => void;
   /** Filled cobalt for the screen's main action; outlined otherwise. */
   filled?: boolean;
+  /** For disclosure buttons (e.g. "⋯"): announced as expanded / collapsed. */
+  expanded?: boolean;
   testID?: string;
 }
 
@@ -24,6 +26,7 @@ export function IconButton({
   accessibilityRole = 'button',
   onPress,
   filled = false,
+  expanded,
   testID,
 }: IconButtonProps) {
   const { colors, layout, radius, borderWidth } = useTheme();
@@ -34,6 +37,7 @@ export function IconButton({
       accessibilityRole={accessibilityRole}
       accessibilityLabel={accessibilityLabel}
       accessibilityHint={accessibilityHint}
+      accessibilityState={expanded === undefined ? undefined : { expanded }}
       style={({ pressed }) => ({
         width: layout.minTouch,
         height: layout.minTouch,

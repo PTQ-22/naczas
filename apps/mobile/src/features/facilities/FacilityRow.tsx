@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
 
 import type { Facility } from '@naczas/shared';
@@ -12,6 +13,7 @@ import { fonts, useTheme } from '@/theme';
 
 import {
   accessibilityLabels,
+  displayPhone,
   distanceLabel,
   distinctPlaceName,
   facilityA11yLabel,
@@ -27,19 +29,23 @@ import type { FacilitiesSort } from './use-facilities';
 interface FacilityRowProps {
   facility: Facility;
   examId: string;
-  /** First row gets the screen's one filled call button (screens.md §4). */
+  /** First row gets the screen's one filled button, "Zadzwoń za mnie" (screens.md §4). */
   primary?: boolean;
   sort: FacilitiesSort;
 }
 
 /**
  * One facility as a row on the plate (redesign §4): weeks of waiting on the left in mono, like a
- * position on a departures board; distance under the wait figure; name and address on the right; a 44 pt call button.
+ * position on a departures board; distance under the wait figure; name and address on the right.
+ * Actions: the phone number (tap to call), a map icon, "Zadzwoń za mnie" on the first row, and the
+ * rest behind "⋯".
  */
 export function FacilityRow({ facility: f, examId, primary = false }: FacilityRowProps) {
   const { colors, seniorMode, space, layout } = useTheme();
   const placeLine = distinctPlaceName(f.providerName, f.placeName);
   const tel = telUrl(f.phone);
+  const phone = displayPhone(f.phone);
+  const [moreOpen, setMoreOpen] = useState(false);
   const weeks = waitWeeks(f.waitDays);
   const tone = colors.urgency[waitTone(f.waitDays)].fg;
   const distance = distanceLabel(f.distanceKm);
@@ -106,96 +112,88 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
             )}
           </View>
         </View>
-        {tel && !seniorMode && (
+        {/* Quiet icons on the right: navigate, and "⋯" for the less frequent actions. */}
+        <View style={{ gap: space.xs }}>
           <IconButton
-            icon="phone"
-            filled={primary}
+            icon="map"
             accessibilityRole="link"
-            accessibilityLabel={t('facilities.actions.callA11y', { name: f.providerName })}
-            onPress={() => void Linking.openURL(tel)}
+            accessibilityLabel={t('facilities.actions.navigateA11y', { name: f.providerName })}
+            onPress={() => void Linking.openURL(mapsUrl(f, Platform.OS))}
           />
-        )}
+          <IconButton
+            icon="more"
+            accessibilityLabel={t('facilities.actions.more', { name: f.providerName })}
+            expanded={moreOpen}
+            onPress={() => setMoreOpen((open) => !open)}
+          />
+        </View>
       </View>
-      <View
-        style={{
-          flexDirection: seniorMode ? 'column' : 'row',
-          flexWrap: seniorMode ? 'nowrap' : 'wrap',
-          alignItems: seniorMode ? 'stretch' : 'center',
-          gap: space.xs,
-        }}
-      >
-        {/* Senior mode: a labelled full-width call button instead of the bare icon. */}
-        {tel && seniorMode && (
-          <Button
-            label={t('facilities.actions.call')}
-            accessibilityLabel={t('facilities.actions.callA11y', { name: f.providerName })}
-            accessibilityRole="link"
-            variant={primary ? 'primary' : 'secondary'}
-            icon="phone"
-            fullWidth
-            onPress={() => void Linking.openURL(tel)}
-          />
-        )}
-        {/* Demo: an AI voice agent phones for the visit — only on the best facility. */}
-        {primary && (
-          <Button
-            label={t('facilities.actions.callForMe')}
-            accessibilityLabel={t('facilities.actions.callForMeA11y', { name: f.providerName })}
-            variant="secondary"
-            icon="phone"
-            fullWidth={seniorMode}
-            onPress={() =>
-              router.push({
-                pathname: '/exam/[examId]/call',
-                params: {
-                  examId,
-                  facility: nfzTitleCase(f.providerName),
-                  // Lets the availability calendar open on the day the clinic can take the patient.
-                  ...(f.firstAvailableDate && { firstDate: f.firstAvailableDate }),
-                },
-              })
-            }
-          />
-        )}
+      {/* The number itself is the call button, so people see what they are dialling. */}
+      {tel && phone && (
         <Button
-          label={t('facilities.actions.navigate')}
-          accessibilityLabel={t('facilities.actions.navigateA11y', { name: f.providerName })}
+          label={phone}
+          accessibilityLabel={t('facilities.actions.callA11y', { name: f.providerName })}
           accessibilityRole="link"
-          variant="ghost"
-          icon="external"
+          variant={seniorMode ? 'secondary' : 'ghost'}
+          icon="phone"
           fullWidth={seniorMode}
-          onPress={() => void Linking.openURL(mapsUrl(f, Platform.OS))}
+          onPress={() => void Linking.openURL(tel)}
         />
+      )}
+      {primary && (
+        // Demo: an AI voice agent phones for the visit — only on the best facility.
         <Button
-          label={t(
-            isDefault ? 'facilities.defaultFacility.unset' : 'facilities.defaultFacility.set',
-          )}
-          accessibilityLabel={t(
-            isDefault
-              ? 'facilities.defaultFacility.unsetA11y'
-              : 'facilities.defaultFacility.setA11y',
-            { name: f.providerName },
-          )}
-          variant="ghost"
-          icon="star"
-          fullWidth={seniorMode}
-          onPress={() => (isDefault ? clearDefault() : setDefault(f))}
-        />
-        {/* After calling, the user records the visit; the facility name is shown as context. */}
-        <Button
-          label={t('facilities.actions.booked')}
-          accessibilityLabel={t('facilities.actions.bookedA11y', { name: f.providerName })}
-          variant="ghost"
-          icon="booked"
+          label={t('facilities.actions.callForMe')}
+          accessibilityLabel={t('facilities.actions.callForMeA11y', { name: f.providerName })}
+          variant="primary"
+          icon="phone"
           fullWidth={seniorMode}
           onPress={() =>
             router.push({
-              pathname: '/exam/[examId]/book',
-              params: { examId, facility: f.providerName },
+              pathname: '/exam/[examId]/call',
+              params: {
+                examId,
+                facility: nfzTitleCase(f.providerName),
+                // Lets the availability calendar open on the day the clinic can take the patient.
+                ...(f.firstAvailableDate && { firstDate: f.firstAvailableDate }),
+              },
             })
           }
         />
-      </View>
+      )}
+      {/* Less frequent actions behind "⋯", inline rather than a native sheet (works on web too). */}
+      {moreOpen && (
+        <View style={{ alignItems: seniorMode ? 'stretch' : 'flex-start', gap: space.xs }}>
+          <Button
+            label={t(
+              isDefault ? 'facilities.defaultFacility.unset' : 'facilities.defaultFacility.set',
+            )}
+            accessibilityLabel={t(
+              isDefault
+                ? 'facilities.defaultFacility.unsetA11y'
+                : 'facilities.defaultFacility.setA11y',
+              { name: f.providerName },
+            )}
+            variant="ghost"
+            icon="star"
+            fullWidth={seniorMode}
+            onPress={() => (isDefault ? clearDefault() : setDefault(f))}
+          />
+          <Button
+            label={t('facilities.actions.booked')}
+            accessibilityLabel={t('facilities.actions.bookedA11y', { name: f.providerName })}
+            variant="ghost"
+            icon="booked"
+            fullWidth={seniorMode}
+            onPress={() =>
+              router.push({
+                pathname: '/exam/[examId]/book',
+                params: { examId, facility: f.providerName },
+              })
+            }
+          />
+        </View>
+      )}
     </View>
   );
 }

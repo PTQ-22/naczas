@@ -39,6 +39,23 @@ export function accessibilityLabels(a: Facility['accessibility']): string[] {
  * "(22) 502-13-04", "0257583001". Dial the first Polish number (9 digits); null if none.
  */
 export function telUrl(phone: string | null): string | null {
+  const digits = firstPhoneDigits(phone);
+  return digits ? `tel:+48${digits}` : null;
+}
+
+// Polish mobile prefixes; everything else is a landline with a 2-digit area code.
+const MOBILE_PREFIX = /^(45|50|51|53|57|60|66|69|72|73|78|79|88)/;
+
+/** The number `telUrl` dials, grouped the way Poles write it: "22 670 91 72", "885 900 300". */
+export function displayPhone(phone: string | null): string | null {
+  const d = firstPhoneDigits(phone);
+  if (!d) return null;
+  return MOBILE_PREFIX.test(d)
+    ? `${d.slice(0, 3)} ${d.slice(3, 6)} ${d.slice(6)}`
+    : `${d.slice(0, 2)} ${d.slice(2, 5)} ${d.slice(5, 7)} ${d.slice(7)}`;
+}
+
+function firstPhoneDigits(phone: string | null): string | null {
   if (!phone) return null;
   const first = phone.split(/,|;|wew|\bw\s*\d/i)[0] ?? '';
   let digits = first.replace(/\D/g, '');
@@ -47,7 +64,7 @@ export function telUrl(phone: string | null): string | null {
   if (digits.length === 10 && digits.startsWith('0')) digits = digits.slice(1);
   // Two numbers written with spaces only ("23 691-99-25 23 691-99-58") → keep the first one.
   if (digits.length > 9) digits = digits.slice(0, 9);
-  return digits.length === 9 ? `tel:+48${digits}` : null;
+  return digits.length === 9 ? digits : null;
 }
 
 /** Link to the platform's map app; facility coordinates are public NFZ data. */

@@ -29,6 +29,8 @@ const symbols = {
   heart: { ios: 'heart', android: 'favorite', web: 'favorite' },
   star: { ios: 'star.fill', android: 'star', web: 'star' },
   close: { ios: 'xmark', android: 'close', web: 'close' },
+  map: { ios: 'map', android: 'map', web: 'map' },
+  more: { ios: 'ellipsis', android: 'more_horiz', web: 'more_horiz' },
   filter: {
     ios: 'line.3.horizontal.decrease.circle',
     android: 'filter_list',
