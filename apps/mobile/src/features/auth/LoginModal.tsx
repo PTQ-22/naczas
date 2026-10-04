@@ -125,6 +125,8 @@ export function LoginModal() {
               secureTextEntry
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
               testID="auth-password"
+              returnKeyType="done"
+              onSubmitEditing={() => void submit()}
             />
             {error && (
               <Text tone="danger" accessibilityRole="alert" testID="auth-error">
