@@ -1,6 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react-native';
 import { router } from 'expo-router';
 
+import { mockProfileMama } from '@naczas/rules';
+import type { ExamRecord } from '@naczas/shared';
+
 import { useRecordsStore } from '@/store';
 import { ThemeProvider } from '@/theme';
 
@@ -50,19 +53,29 @@ const renderPlan = (seniorMode = false) =>
     </ThemeProvider>,
   );
 
+// As in the demo preset: colonoscopy never done is a known act_now, not an unknown history.
+const neverDone = (profileId: string): ExamRecord => ({
+  profileId,
+  examId: 'colonoscopy_screening',
+  lastDone: 'never',
+  status: 'none',
+  updatedAt: '2026-10-01',
+});
+
 describe('PlanScreen (mockPlan)', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUsePlanData.mockReturnValue(mockPlanData());
+    useRecordsStore.setState({ records: [neverDone(mockProfileMama.id), neverDone('kasia')] });
   });
 
   it('leads with the queue number of the most urgent exam and its one CTA', () => {
     renderPlan();
     expect(screen.getByRole('header', { name: 'Plan badań — Mama' })).toBeOnTheScreen();
-    // p75 213 days ≈ 30 weeks, printed big and read out in full.
-    expect(screen.getByText('30')).toBeOnTheScreen();
+    // fastest 21 days ≈ 3 weeks to p75 213 days ≈ 30 weeks, printed big and read out in full.
+    expect(screen.getByText('3–30')).toBeOnTheScreen();
     expect(
-      screen.getByRole('button', { name: /^Kolonoskopia, Pilne, Czeka się około 30 tygodni/ }),
+      screen.getByRole('button', { name: /^Kolonoskopia, Teraz, Czeka się od 3 do 30 tygodni/ }),
     ).toBeOnTheScreen();
     expect(screen.getByText(/^Zacznij szukać terminu dziś/)).toBeOnTheScreen();
     expect(screen.getByRole('button', { name: /Znajdź placówkę: Kolonoskopia/ })).toBeOnTheScreen();
@@ -121,6 +134,12 @@ describe('PlanScreen (mockPlan)', () => {
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
   });
 
+  it('reaches "Zakład o zdrowie" from the plan instead of a tab', () => {
+    renderPlan();
+    fireEvent.press(screen.getByRole('button', { name: 'Zakład o zdrowie' }));
+    expect(router.push).toHaveBeenCalledWith('/bet');
+  });
+
   it('booked card: "Oznacz jako zrobione" marks done here, with undo (M3 M6)', () => {
     useRecordsStore.getState().reset();
     renderPlan();
@@ -161,5 +180,28 @@ describe('PlanScreen (mockPlan)', () => {
   it('senior mode also collapses "Później"', () => {
     renderPlan(true);
     expect(screen.getByRole('button', { name: 'Później (1)' })).toBeCollapsed();
+  });
+
+  it('unknown history: the longest queue still leads, the rest wait in "Kiedy ostatnio?"', () => {
+    // Pitch flow: Mama answers "nie pamiętam" for every exam.
+    useRecordsStore.getState().reset();
+    const base = mockPlanData();
+    const colonoscopy = base.plan!.items.find((i) => i.examId === 'colonoscopy_screening')!;
+    const skin = { ...colonoscopy, examId: 'skin_check' };
+    mockUsePlanData.mockReturnValue(
+      mockPlanData({ plan: { ...base.plan!, items: [skin, ...base.plan!.items] } }),
+    );
+    renderPlan();
+    expect(screen.getByText('3–30')).toBeOnTheScreen();
+    expect(screen.queryByText('Termin minął')).toBeNull();
+    expect(screen.getByText('Kiedy ostatnio?')).toBeOnTheScreen();
+    expect(screen.getByRole('tab', { name: 'Mama, pilne badania: 1' })).toBeOnTheScreen();
+
+    fireEvent.press(screen.getByRole('button', { name: /^Kontrola znamion.*: kiedy ostatnio/ }));
+    fireEvent.press(screen.getByRole('radio', { name: /Kontrola znamion.*Nigdy/ }));
+    expect(useRecordsStore.getState().records).toEqual([
+      expect.objectContaining({ examId: 'skin_check', lastDone: 'never' }),
+    ]);
+    expect(screen.getByText(/^Zapisano — Kontrola znamion/)).toBeOnTheScreen();
   });
 });

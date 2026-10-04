@@ -7,13 +7,7 @@ import { Text } from '@/components/Text';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
 
-import {
-  dateMessage,
-  queueWaitWeeks,
-  rowDate,
-  whyNowMessage,
-  type Message,
-} from './plan-view-model';
+import { dateMessage, queueRange, rowDate, whyNowMessage, type Message } from './plan-view-model';
 
 const msg = (m: Message) => t(m.key, m.params);
 
@@ -40,13 +34,13 @@ export function PlanRow({ item, rule, today, waitTime, onOpen, cta }: PlanRowPro
   const { colors, layout, space, seniorMode } = useTheme();
   const date = msg(dateMessage(item));
   const whyNow = whyNowMessage(item, rule.booking, waitTime);
-  const weeks = item.urgency === 'act_now' ? queueWaitWeeks(waitTime) : null;
-  const right = weeks !== null ? t('plan.row.weeks', { weeks }) : rowDate(item, today);
+  const range = item.urgency === 'act_now' ? queueRange(waitTime) : null;
+  const right = range !== null ? t('plan.row.weeks', { weeks: range.text }) : rowDate(item, today);
   const rightColor =
     item.urgency === 'act_now'
       ? colors.urgency.act_now.fg
       : item.urgency === 'booked'
-        ? colors.primary
+        ? colors.urgency.booked.fg
         : item.urgency === 'later' || item.urgency === 'done'
           ? colors.textMuted
           : colors.text;

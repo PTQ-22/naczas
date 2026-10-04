@@ -9,7 +9,7 @@ export const plan = {
     many: '{{count}} badań wymaga działania',
   },
   urgency: {
-    act_now: 'Działaj teraz',
+    act_now: 'Teraz',
     this_year: 'W tym roku',
     later: 'Później',
     booked: 'Umówione',
@@ -17,6 +17,13 @@ export const plan = {
   },
   section: {
     withCount: '{{label}} ({{count}})',
+    more: 'Pokaż jeszcze {{count}}',
+  },
+  unknown: {
+    heading: 'Kiedy ostatnio?',
+    rowA11y: '{{name}}: kiedy ostatnio? Rozwiń, by zaznaczyć',
+    about: 'O badaniu',
+    saved: 'Zapisano — {{name}} jest teraz w planie.',
   },
   row: {
     weeks: '{{weeks}} tyg.',
@@ -28,6 +35,7 @@ export const plan = {
       few: 'Czeka się około {{weeks}} tygodnie',
       many: 'Czeka się około {{weeks}} tygodni',
     },
+    rangeA11y: 'Czeka się od {{min}} do {{max}} tygodni',
     dueUnit: 'Zrób do',
     overdueUnit: 'Termin minął',
     dueA11y: 'Zrób do: {{date}}',
@@ -39,7 +47,7 @@ export const plan = {
     dueNow: 'Warto umówić to badanie jak najszybciej.',
     radius: '{{km}} km',
     radiusA11y: 'kolejka NFZ w promieniu {{km}} km',
-    status: { act_now: 'Pilne', this_year: 'W tym roku' },
+    status: { act_now: 'Teraz', this_year: 'W tym roku' },
     a11yHint: 'Otwiera szczegóły badania',
   },
   card: {
@@ -47,7 +55,7 @@ export const plan = {
     dueBy: 'Zrób do: {{date}}',
     bookedFor: 'Wizyta: {{date}}',
     nextAround: 'Następne: ok. {{year}}',
-    whyNowQueue: 'W okolicy czeka się ok. {{weeks}} tyg. — zacznij szukać teraz.',
+    whyNowQueue: 'W okolicy czeka się {{weeks}} tyg. — zacznij szukać teraz.',
     startEarly: 'Zacznij szukać terminu z wyprzedzeniem.',
     startFrom: 'Zacznij szukać terminu od {{date}}.',
     a11yHint: 'Otwiera szczegóły badania',

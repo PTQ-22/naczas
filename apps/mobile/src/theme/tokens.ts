@@ -29,7 +29,7 @@ export interface ColorTokens {
   text: string;
   textMuted: string;
   textSubtle: string;
-  /** Cobalt — buttons, links, focus, "booked". */
+  /** Cobalt — buttons, links, focus. */
   primary: string;
   primaryPressed: string;
   onPrimary: string;
@@ -77,7 +77,8 @@ export const colors: Record<ColorScheme, ColorTokens> = {
       this_year: { fg: '#0E1B2C', bg: '#ECE7DB', accent: '#6E6A60' },
       later: { fg: '#4A5160', bg: '#ECE7DB', accent: '#6E6A60' },
       done: { fg: '#17693F', bg: '#DDEEE2', accent: '#1F7A4C' },
-      booked: { fg: '#24477A', bg: '#E1E6EF', accent: '#24477A' },
+      // Traffic light: Teraz red → Umówione amber → Zrobione green.
+      booked: { fg: '#7A4E00', bg: '#F7E9C6', accent: '#B07800' },
     },
   },
   dark: {
@@ -105,7 +106,7 @@ export const colors: Record<ColorScheme, ColorTokens> = {
       this_year: { fg: '#E8EEF5', bg: '#1C2D50', accent: '#7A8CAE' },
       later: { fg: '#AEBAD0', bg: '#1C2D50', accent: '#7A8CAE' },
       done: { fg: '#7FD8A8', bg: '#123227', accent: '#3DB27A' },
-      booked: { fg: '#A9BDFF', bg: '#22325C', accent: '#8EA9FF' },
+      booked: { fg: '#F2C55C', bg: '#3A2E14', accent: '#E0A82E' },
     },
   },
 };

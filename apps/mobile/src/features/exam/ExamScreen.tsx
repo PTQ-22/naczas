@@ -1,12 +1,11 @@
 import { createURL } from 'expo-linking';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Linking, View } from 'react-native';
+import { Linking, Pressable, View } from 'react-native';
 import { z } from 'zod';
 
 import { rules } from '@naczas/rules';
 
-import { Accordion } from '@/components/Accordion';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Disclaimer } from '@/components/Disclaimer';
@@ -18,7 +17,7 @@ import { QueueNumber } from '@/components/QueueNumber';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { Toast } from '@/components/Toast';
-import { pluralForm } from '@/features/plan/plan-view-model';
+import { pluralForm, queueRangeA11y } from '@/features/plan/plan-view-model';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
 import { useCoverage } from '@/services';
@@ -30,6 +29,7 @@ import { buildCalendarEvent } from './calendar-event';
 import { CoverageCard } from './CoverageCard';
 import {
   examCtas,
+  examStep,
   frequencyMessage,
   queueInfo,
   referralText,
@@ -37,6 +37,7 @@ import {
   type ExamAction,
   type Message,
 } from './exam-view-model';
+import { ExamProgress } from './ExamProgress';
 
 import type { ReactNode } from 'react';
 
@@ -45,22 +46,54 @@ const msg = (m: Message) => t(m.key, m.params);
 // URL params are external input (AGENTS.md §3): validate before touching rules.
 const ParamsSchema = z.object({ examId: z.string().min(1) });
 
-/** Plain-text section on the plate: ink rule + mono eyebrow, no card (redesign §4). */
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  const { colors, space, borderWidth } = useTheme();
+/**
+ * Plain-text section on the plate: ink rule + mono eyebrow, no card (redesign §4). `collapsible`
+ * sections start closed: the top of the screen answers "what do I do now", reference material
+ * waits one tap away (docs/ux-review-first-run.md #4).
+ */
+function Section({
+  title,
+  collapsible = false,
+  children,
+}: {
+  title: string;
+  collapsible?: boolean;
+  children: ReactNode;
+}) {
+  const { colors, layout, space, borderWidth } = useTheme();
+  const [open, setOpen] = useState(!collapsible);
+  const frame = {
+    gap: space.sm,
+    paddingTop: collapsible ? space.xs : space.md,
+    borderTopWidth: collapsible ? borderWidth.hairline : borderWidth.strong,
+    borderTopColor: collapsible ? colors.border : colors.text,
+  };
+  if (!collapsible) {
+    return (
+      <View style={frame}>
+        <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
+          {title}
+        </Text>
+        {children}
+      </View>
+    );
+  }
   return (
-    <View
-      style={{
-        gap: space.sm,
-        paddingTop: space.md,
-        borderTopWidth: borderWidth.strong,
-        borderTopColor: colors.text,
-      }}
-    >
-      <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
-        {title}
-      </Text>
-      {children}
+    <View style={frame}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityHint={t(open ? 'common.components.collapse' : 'common.components.expand')}
+        accessibilityState={{ expanded: open }}
+        style={{ minHeight: layout.minTouch, flexDirection: 'row', alignItems: 'center' }}
+      >
+        <Text variant="eyebrow" tone="textMuted" style={{ flex: 1 }}>
+          {title}
+        </Text>
+        <Icon name={open ? 'chevronUp' : 'chevronDown'} size="sm" color={colors.textMuted} />
+      </Pressable>
+      {open && children}
     </View>
   );
 }
@@ -109,6 +142,9 @@ export default function ExamScreen() {
   const showProgramNote = queue !== null && Boolean(programUrl);
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;
+  const step = notRecommended ? null : examStep(item);
+  // Once booked or done, "where and how long" is answered — the queue block would only distract.
+  const showQueue = step !== 'booked' && step !== 'done';
 
   const run = (action: ExamAction) => {
     switch (action) {
@@ -186,10 +222,14 @@ export default function ExamScreen() {
     <Screen wall edges={['left', 'right', 'bottom']} footer={footer}>
       <Plate>
         <View style={{ gap: space.sm }}>
-          {item && (
-            <Text variant="eyebrow" color={palette?.fg}>
-              {t(`plan.urgency.${item.urgency}`)}
-            </Text>
+          {step ? (
+            <ExamProgress step={step} />
+          ) : (
+            item && (
+              <Text variant="eyebrow" color={palette?.fg}>
+                {t(`plan.urgency.${item.urgency}`)}
+              </Text>
+            )
           )}
           <Text variant="display" accessibilityRole="header">
             {rule.name}
@@ -220,22 +260,20 @@ export default function ExamScreen() {
           </View>
         )}
 
-        {queue?.weeks !== undefined && queue.lines.label && (
+        {showQueue && queue?.range && queue.lines.label && (
           <QueueNumber
             size="compact"
             title={msg(queue.lines.label)}
             tone={item?.urgency ?? 'later'}
-            value={String(queue.weeks)}
-            unit={t(`plan.ticket.weeks.${pluralForm(queue.weeks)}`)}
-            valueA11y={t(`plan.ticket.weeksA11y.${pluralForm(queue.weeks)}`, {
-              weeks: queue.weeks,
-            })}
+            value={queue.range.text}
+            unit={t(`plan.ticket.weeks.${pluralForm(queue.range.max)}`)}
+            valueA11y={msg(queueRangeA11y(queue.range))}
           />
         )}
-        {queue && !queue.hasData && queue.lines.label && (
+        {showQueue && queue && !queue.hasData && queue.lines.label && (
           <Text tone="textMuted">{msg(queue.lines.label)}</Text>
         )}
-        {(showProgramNote || queue?.lines.meta) && (
+        {showQueue && (showProgramNote || queue?.lines.meta) && (
           <View style={{ gap: space.xs }}>
             {showProgramNote && (
               <Text variant="caption" tone="textMuted">
@@ -249,7 +287,7 @@ export default function ExamScreen() {
             )}
           </View>
         )}
-        {showProgramNote && programUrl && (
+        {showQueue && showProgramNote && programUrl && (
           <Button
             variant="ghost"
             icon="external"
@@ -270,41 +308,25 @@ export default function ExamScreen() {
           </Section>
         )}
 
-        <Section title={t('exam.section.about')}>
+        <Section title={t('exam.section.about')} collapsible>
           <Text>{rule.description}</Text>
         </Section>
 
-        <Section title={t('exam.section.frequency')}>
+        <Section title={t('exam.section.frequency')} collapsible>
           <Text>{msg(frequencyMessage(currentInterval))}</Text>
-          {activeProfile && (
-            <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.sm }}>
-              <Button
-                variant="ghost"
-                icon="minus"
-                label="- 1m"
-                onPress={() =>
-                  setIntervalOverride(activeProfile.id, rule.id, Math.max(1, currentInterval - 1))
-                }
-              />
-              <Button
-                variant="ghost"
-                icon="plus"
-                label="+ 1m"
-                onPress={() => setIntervalOverride(activeProfile.id, rule.id, currentInterval + 1)}
-              />
-              {currentInterval !== rule.intervalMonths && (
-                <Button
-                  variant="ghost"
-                  label="Reset"
-                  onPress={() => setIntervalOverride(activeProfile.id, rule.id, null)}
-                />
-              )}
-            </View>
+          {/* Intervals come from sourced rules (AGENTS.md §7) — no editing here. Overrides saved
+              by the old ±1 month buttons can still be undone. */}
+          {activeProfile && currentInterval !== rule.intervalMonths && (
+            <Button
+              variant="ghost"
+              label={t('exam.resetInterval')}
+              onPress={() => setIntervalOverride(activeProfile.id, rule.id, null)}
+            />
           )}
           {!rule.verified && <Chip tone="later" icon="info" label={t('exam.approximate')} />}
         </Section>
 
-        <Section title={t('exam.section.referral')}>
+        <Section title={t('exam.section.referral')} collapsible>
           <Text>{typeof referral === 'string' ? referral : msg(referral)}</Text>
           {/* Always reachable (M3 H2): even without a referral the GP visit summary is useful. */}
           <Button
@@ -316,11 +338,11 @@ export default function ExamScreen() {
         </Section>
 
         {rule.prepTips && rule.prepTips.length > 0 && (
-          <Accordion title={t('exam.section.prep')}>
+          <Section title={t('exam.section.prep')} collapsible>
             {rule.prepTips.map((tip) => (
               <Text key={tip}>{`• ${tip}`}</Text>
             ))}
-          </Accordion>
+          </Section>
         )}
 
         <Button

@@ -2,7 +2,7 @@ import { format, parseISO } from 'date-fns';
 import { pl } from 'date-fns/locale';
 
 import { URGENCY_ORDER } from '@naczas/rules';
-import type { BookingType, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
+import type { BookingType, ExamRecord, PlanItem, Urgency, WaitTimeSummary } from '@naczas/shared';
 
 import type { MessageKey, TranslateParams } from '@/i18n';
 
@@ -36,6 +36,34 @@ export function waitWeeks(days: number): number {
  */
 export function queueWaitWeeks(summary?: WaitTimeSummary): number | null {
   return summary?.p75Days != null ? waitWeeks(summary.p75Days) : null;
+}
+
+export interface QueueRange {
+  /** Fastest nearby facility in weeks; null when unknown or rounding to the same as `max`. */
+  min: number | null;
+  /** p75 wait in weeks. */
+  max: number;
+  /** "3–29" or "29" — the printed number. */
+  text: string;
+}
+
+/**
+ * The wait as "fastest nearby – p75". p75 alone ("29 tyg.") contradicted the facility list, which
+ * opens sorted by the shortest wait ("3 tyg.") — the range is true on both screens.
+ */
+export function queueRange(summary?: WaitTimeSummary): QueueRange | null {
+  const max = queueWaitWeeks(summary);
+  if (max === null) return null;
+  const fastest = summary?.minDays != null ? waitWeeks(summary.minDays) : null;
+  const min = fastest !== null && fastest < max ? fastest : null;
+  return { min, max, text: min === null ? String(max) : `${min}–${max}` };
+}
+
+/** Accessible reading of a range: "Czeka się od 3 do 29 tygodni" / "…około 29 tygodni". */
+export function queueRangeA11y(range: QueueRange): Message {
+  return range.min === null
+    ? { key: `plan.ticket.weeksA11y.${pluralForm(range.max)}`, params: { weeks: range.max } }
+    : { key: 'plan.ticket.rangeA11y', params: { min: range.min, max: range.max } };
 }
 
 export interface Message {
@@ -86,10 +114,10 @@ export function whyNowMessage(
 ): Message | null {
   if (booking !== 'queue') return null;
   if (item.urgency === 'act_now') {
-    const weeks = queueWaitWeeks(summary);
-    return weeks === null
+    const range = queueRange(summary);
+    return range === null
       ? { key: 'plan.card.startEarly' }
-      : { key: 'plan.card.whyNowQueue', params: { weeks } };
+      : { key: 'plan.card.whyNowQueue', params: { weeks: range.text } };
   }
   if (item.urgency === 'this_year') {
     return { key: 'plan.card.startFrom', params: { date: fullDate(item.notifyDate) } };
@@ -151,11 +179,68 @@ export function countActNow(items: readonly PlanItem[]): number {
 // ---- Redesign v2 „Numerek”: queue ticket + quiet list (docs/design/redesign.md §2, §4) ----
 
 /**
- * The single ticket on the plan: the most urgent item. act_now first; with nothing urgent the
+ * The single ticket on the plan: among act_now items, the one with the longest NFZ queue — that is
+ * where starting today changes the outcome (engine order breaks ties). With nothing urgent the
  * next this_year item still gets it, so the screen always leads with "what to do next".
  */
-export function ticketItem(items: readonly PlanItem[]): PlanItem | undefined {
-  return items.find((i) => i.urgency === 'act_now') ?? items.find((i) => i.urgency === 'this_year');
+export function ticketItem(
+  items: readonly PlanItem[],
+  queueWeeks: (examId: string) => number | null = () => null,
+): PlanItem | undefined {
+  const urgent = items.filter((i) => i.urgency === 'act_now');
+  const longest = urgent.reduce<PlanItem | undefined>(
+    (best, i) =>
+      best === undefined || (queueWeeks(i.examId) ?? -1) > (queueWeeks(best.examId) ?? -1)
+        ? i
+        : best,
+    undefined,
+  );
+  return longest ?? items.find((i) => i.urgency === 'this_year');
+}
+
+/**
+ * True when we don't know when the exam was last done: no record, or the "Kiedy ostatnio?"
+ * question was left empty / answered "nie pamiętam". The engine schedules these from today, but
+ * the plan must not present them as missed deadlines (docs/ux-review-first-run.md #1).
+ */
+export function hasUnknownHistory(record: ExamRecord | undefined): boolean {
+  if (!record) return true;
+  if (record.status !== 'none') return false;
+  return record.lastDone === undefined || record.lastDone === 'unknown';
+}
+
+export interface PlanLayout {
+  hero: PlanItem | undefined;
+  /** act_now exams with unknown history (minus the hero) — a quiet "Kiedy ostatnio?" group. */
+  unknown: PlanItem[];
+  /** Everything else except the hero, in engine section order. */
+  sections: PlanSection[];
+  /** act_now exams shown as urgent (hero included) — the number on the profile badge. */
+  actNowCount: number;
+}
+
+/** Splits a plan into hero / unknown-history group / urgency sections. */
+export function planLayout(
+  items: readonly PlanItem[],
+  unknownExamIds: ReadonlySet<string>,
+  queueWeeks?: (examId: string) => number | null,
+): PlanLayout {
+  const isUnknown = (i: PlanItem) => i.urgency === 'act_now' && unknownExamIds.has(i.examId);
+  const known = items.filter((i) => !isUnknown(i));
+  const unknown = items.filter(isUnknown);
+  // Known urgency wins the ticket; with none, the unknown exam with the longest queue still leads
+  // — "start looking today" holds either way, only "termin minął" needed a known date.
+  const knownHero = known.find((i) => i.urgency === 'act_now')
+    ? ticketItem(known, queueWeeks)
+    : undefined;
+  const hero = knownHero ?? ticketItem(unknown, queueWeeks) ?? ticketItem(known, queueWeeks);
+  const heroIsUnknown = hero !== undefined && unknown.includes(hero);
+  return {
+    hero,
+    unknown: unknown.filter((i) => i !== hero),
+    sections: groupSections(known.filter((i) => i !== hero)),
+    actNowCount: countActNow(known) + (heroIsUnknown ? 1 : 0),
+  };
 }
 
 export interface TicketContent {
@@ -179,31 +264,30 @@ export function ticketContent(
   summary: WaitTimeSummary | undefined,
   today: string,
 ): TicketContent {
-  const weeks = booking === 'queue' ? queueWaitWeeks(summary) : null;
-  const pastDue = item.overdue || item.dueDate <= today;
+  const range = booking === 'queue' ? queueRange(summary) : null;
+  // "Termin minął" only for a deadline we know was missed; due-from-today (never done, unknown
+  // history) is "do it now", not "too late".
+  const pastDue = item.overdue;
+  const dueNow = pastDue || item.dueDate <= today;
   const date = monthYearGenitive(item.dueDate);
 
   let message: Message;
   if (item.urgency === 'this_year') {
     message = { key: 'plan.ticket.startFrom', params: { date: fullDate(item.notifyDate) } };
   } else if (booking === 'queue') {
-    message = pastDue
+    message = dueNow
       ? { key: 'plan.ticket.startToday' }
       : { key: 'plan.ticket.startTodayToMake', params: { date } };
   } else {
-    message = pastDue
+    message = dueNow
       ? { key: 'plan.ticket.dueNow' }
       : { key: 'plan.ticket.dueBy', params: { date } };
   }
 
-  if (weeks !== null) {
-    const unit: Message = { key: `plan.ticket.weeks.${pluralForm(weeks)}` };
-    return {
-      value: String(weeks),
-      unit,
-      message,
-      a11yValue: { key: `plan.ticket.weeksA11y.${pluralForm(weeks)}`, params: { weeks } },
-    };
+  if (range !== null) {
+    // "3–29 tygodni": a Polish range takes the form of its last number.
+    const unit: Message = { key: `plan.ticket.weeks.${pluralForm(range.max)}` };
+    return { value: range.text, unit, message, a11yValue: queueRangeA11y(range) };
   }
   // No queue data (program / walk-in / missing NFZ): print the due month instead of a made-up wait.
   return {

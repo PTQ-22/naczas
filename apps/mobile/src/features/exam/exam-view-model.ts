@@ -2,6 +2,7 @@ import { format, parseISO } from 'date-fns';
 
 import type { ExamRule, PlanItem, WaitTimeSummary } from '@naczas/shared';
 
+import { queueRange, type QueueRange } from '@/features/plan/plan-view-model';
 import type { MessageKey, TranslateParams } from '@/i18n';
 
 export interface Message {
@@ -11,7 +12,6 @@ export interface Message {
 
 const fullDate = (iso: string) => format(parseISO(iso), 'dd.MM.yyyy');
 const monthYear = (iso: string) => format(parseISO(iso), 'MM.yyyy');
-const weeks = (days: number) => Math.max(1, Math.round(days / 7));
 
 /** "Co 10 lat" / "Co 2 lata" / "Co rok" / "Co 6 miesięcy" — Polish plural for years. */
 export function frequencyMessage(intervalMonths: number): Message {
@@ -43,22 +43,42 @@ export function timingMessages(item: PlanItem, today: string): Message[] {
     case 'done':
     case 'later':
       return [{ key: 'exam.doneNext', params: { date: monthYear(item.dueDate) } }];
+    default: {
+      const due: Message = { key: 'exam.dueBy', params: { date: monthYear(item.dueDate) } };
+      // "Start now" would repeat the "Teraz" status above; only a future start date adds info.
+      return item.notifyDate <= today
+        ? [due]
+        : [due, { key: 'exam.startFrom', params: { date: fullDate(item.notifyDate) } }];
+    }
+  }
+}
+
+export type ExamStep = 'toBook' | 'booked' | 'done';
+export const EXAM_STEPS: readonly ExamStep[] = ['toBook', 'booked', 'done'];
+
+/**
+ * Where the exam is in "do umówienia → umówione → zrobione" — the progress strip on the exam
+ * screen. null while it isn't time to act yet (this year / later): no progress to show.
+ */
+export function examStep(item: PlanItem | undefined): ExamStep | null {
+  switch (item?.urgency) {
+    case 'act_now':
+      return 'toBook';
+    case 'booked':
+      return 'booked';
+    case 'done':
+      return 'done';
     default:
-      return [
-        { key: 'exam.dueBy', params: { date: monthYear(item.dueDate) } },
-        item.notifyDate <= today
-          ? { key: 'exam.startNow' }
-          : { key: 'exam.startFrom', params: { date: fullDate(item.notifyDate) } },
-      ];
+      return null;
   }
 }
 
 export interface QueueInfo {
   /** true → render on the urgency bg; false → neutral surfaceAlt "no data" box. */
   hasData: boolean;
-  /** p75 wait in weeks — printed big by QueueNumber; undefined without NFZ data. */
-  weeks?: number;
-  lines: { label?: Message; value?: Message; meta?: Message };
+  /** Fastest–p75 wait in weeks — printed big by QueueNumber; undefined without NFZ data. */
+  range?: QueueRange;
+  lines: { label?: Message; meta?: Message };
 }
 
 /**
@@ -67,13 +87,13 @@ export interface QueueInfo {
  */
 export function queueInfo(rule: ExamRule, summary: WaitTimeSummary | undefined): QueueInfo | null {
   if (rule.booking !== 'queue') return null;
-  if (summary?.p75Days != null) {
+  const range = queueRange(summary);
+  if (summary && range) {
     return {
       hasData: true,
-      weeks: weeks(summary.p75Days),
+      range,
       lines: {
         label: { key: 'exam.queue.radius', params: { km: summary.radiusKm } },
-        value: { key: 'exam.queue.weeks', params: { weeks: weeks(summary.p75Days) } },
         meta: { key: 'exam.queue.asOf', params: { date: summary.asOf } },
       },
     };

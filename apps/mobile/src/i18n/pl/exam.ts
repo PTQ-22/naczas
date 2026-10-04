@@ -12,11 +12,15 @@ export const exam = {
   dueBy: 'Zrób do: {{date}}',
   bookedFor: 'Wizyta: {{date}}',
   doneNext: 'Następne: ok. {{date}}',
-  startNow: 'Zacznij szukać: teraz',
   startFrom: 'Zacznij szukać: od {{date}}',
+  progress: {
+    toBook: 'Do umówienia',
+    booked: 'Umówione',
+    done: 'Zrobione',
+    a11y: 'Etap {{current}} z 3: {{label}}',
+  },
   queue: {
     radius: 'W promieniu {{km}} km czeka się',
-    weeks: 'ok. {{weeks}} tyg.',
     asOf: 'Dane NFZ, stan na {{date}}',
     clinicNote:
       'To kolejki NFZ do poradni — w programie przesiewowym zapiszesz się bez skierowania.',
@@ -55,6 +59,7 @@ export const exam = {
     yearsMany: 'Co {{count}} lat',
   },
   approximate: 'Wartość orientacyjna',
+  resetInterval: 'Przywróć zalecany odstęp',
   referral: {
     required: 'Potrzebne — od lekarza rodzinnego.',
     notRequired: 'Nie jest potrzebne.',
