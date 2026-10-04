@@ -60,12 +60,14 @@ export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: Faci
           [bounds.sw.lat, bounds.sw.lng],
           [bounds.ne.lat, bounds.ne.lng],
         ],
-        { padding: [FIT_PADDING_PX, FIT_PADDING_PX], maxZoom: MAX_FIT_ZOOM },
+        { padding: [FIT_PADDING_PX, FIT_PADDING_PX], maxZoom: MAX_FIT_ZOOM, animate: false },
       );
     };
     fit();
     // Leaflet only tracks window resizes; an expanding container (doctors tab) needs telling.
     const observer = new ResizeObserver(() => {
+      // Prevent "_leaflet_pos" errors if the observer fires during/after unmount
+      if (!map.getContainer()?.isConnected) return;
       map.invalidateSize();
       fit();
     });
