@@ -37,8 +37,6 @@ export function LastExamsStep({ draft, today }: StepProps) {
               }))}
               selected={selected}
               onSelect={(value) => setLastDone(rule.id, value)}
-              startLabel={t('onboarding.steps.lastExams.axisRecent')}
-              endLabel={t('onboarding.steps.lastExams.axisLongAgo')}
             />
             {selected ? (
               <Button
