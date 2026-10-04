@@ -18,14 +18,14 @@
 | Relation to category | 20% | brief literally lists "preparation for appointments", "share with caregivers" → visit prep + family profiles | the activity/sport side is weak (activity card only) |
 | Practical applicability | 20% | real NFZ data, works on web/iOS/Android, senior mode | no public demo link yet |
 | Design | 20% | v2 redesign, senior + dark, WCAG AA | screenshots are outdated (show the removed "Zakład" tab, no agent screen) |
-| Completeness | 10% | 1013 tests green, snapshot fallback, deploy config ready | test numbers on slide 8 are outdated; repo is private |
+| Completeness | 10% | 1018 tests green, snapshot fallback, deploy config ready | test numbers on slide 8 are outdated; repo is private |
 
 ## 2. Where the project is now
 
 **Done (on `main`):**
 - App: onboarding, plan with lead time, exam card, NFZ facilities list + map, family profiles, visit prep + PDF, senior/dark mode, notifications, time-travel for the demo.
 - Added overnight (03.10 22:00 → 04.10 04:00), **not yet in the pitch:** "Zadzwoń za mnie" AI voice agent (Vapi + Twilio, agent-first home tab, availability calendar, call result → calendar event), optional family login + cloud sync (Neon), custom exams, doctors tab. The "Zakład o zdrowie" bet was **removed**.
-- `pnpm check` **green as CI runs it**: shared 54, rules 206, API 174, mobile 579 = **1013 tests**.
+- `pnpm check` **green as CI runs it**: shared 54, rules 206, API 174, mobile 584 = **1018 tests**.
   - Local note: `pnpm check` fails on this machine only because the generated `apps/mobile/.expo/types/router.d.ts` is stale (it doesn't know the `agent` tab yet). Fix: run `pnpm dev:web` once (regenerates it). It's not a code bug.
 - Pitch materials: `pitch/deck/deck.html` (10 slides) + `deck.pdf` (from 03.10 22:17), `slides-outline.md` with sourced numbers, `script.md` (3 min), Q&A in `docs/07`, README with an AI disclosure section, name research in `naming.md`.
 - Deploy config: `Dockerfile`, `render.yaml`, `vercel.json`, step-by-step guide in `docs/deploy.md`.
@@ -61,7 +61,7 @@
 ### Step 2 — Fix the content to match reality (07:00–08:00, person B)
 - [ ] Slide 8 + README + Q&A in `docs/07`: privacy statement per decision 3.2. Proposed wording: *„Dane zdrowotne domyślnie tylko na telefonie. Do API: nazwa świadczenia + lokalizacja ≈ 1 km. Agent AI dostaje tylko: dla kogo, jakie badanie, która placówka.”*
 - [ ] AI and resources disclosure (slide 10 + README): Claude Code (dev), **Vapi + OpenAI gpt-4o + ElevenLabs + Deepgram** (voice agent at runtime), Twilio, Neon/Drizzle (if kept), NFZ API, OSM. Fill in `{ZESPÓŁ…}`.
-- [ ] Test numbers on slide 8: 1013 (54 / 206 / 174 / 579). Re-measure rules coverage: `pnpm --filter @naczas/rules test -- --coverage`.
+- [ ] Test numbers on slide 8: 1018 (54 / 206 / 174 / 584). Re-measure rules coverage: `pnpm --filter @naczas/rules test -- --coverage`.
 - [ ] Pre-hackathon work statement: the repo starts on 03.10 16:32 (docs), no code from before the event.
 
 ### Step 3 — Update the deck (text 08:00–08:45 person B; screenshots + QR + export 08:30–09:30 once the deploy is live)
@@ -111,7 +111,7 @@ Cut list if late (in this order): video → Expo Go QR → new comparison-table 
 > NaCzas na podstawie krótkiej ankiety układa indywidualny plan badań profilaktycznych dla Ciebie i Twoich bliskich, z uzasadnieniem i źródłem każdego zalecenia. Dzięki realnym danym o kolejkach NFZ w okolicy mówi nie tylko jakie badanie i kiedy, ale też kiedy zacząć je organizować, żeby zdążyć, i gdzie zrobić je najszybciej. Na koniec agent AI może zadzwonić do rejestracji i umówić wizytę w godzinach, które Ci pasują, a termin trafia do kalendarza i planu. Dane zdrowotne domyślnie zostają na telefonie.
 
 **What's done so far and goal of your project:**
-> Wszystko powstało podczas HackYeah (pierwszy commit 3.10, wcześniej tylko koncepcja na papierze). Działa: ankieta dla siebie i bliskiej osoby, plan badań z silnika reguł opartego o oficjalne programy MZ/NFZ (każda reguła ze źródłem), algorytm „kiedy zacząć szukać” liczony z prawdziwych danych API NFZ „Terminy leczenia” (p75 czasu oczekiwania w okolicy), lista i mapa placówek NFZ, agent głosowy AI dzwoniący do rejestracji, przygotowanie do wizyty z PDF dla lekarza, profile rodzinne, tryb senior i dark mode. Aplikacja działa na iOS, Androidzie i w przeglądarce; 1013 testów automatycznych, demo działa nawet przy awarii API NFZ (snapshot danych).
+> Wszystko powstało podczas HackYeah (pierwszy commit 3.10, wcześniej tylko koncepcja na papierze). Działa: ankieta dla siebie i bliskiej osoby, plan badań z silnika reguł opartego o oficjalne programy MZ/NFZ (każda reguła ze źródłem), algorytm „kiedy zacząć szukać” liczony z prawdziwych danych API NFZ „Terminy leczenia” (p75 czasu oczekiwania w okolicy), lista i mapa placówek NFZ, agent głosowy AI dzwoniący do rejestracji, przygotowanie do wizyty z PDF dla lekarza, profile rodzinne, tryb senior i dark mode. Aplikacja działa na iOS, Androidzie i w przeglądarce; 1018 testów automatycznych, demo działa nawet przy awarii API NFZ (snapshot danych).
 > Cel: publiczne, otwarte narzędzie, które zwiększa zgłaszalność na badania profilaktyczne — rozwijane z NFZ, samorządami i organizacjami pacjentów. Następne kroki: szyfrowana synchronizacja opiekun–rodzic, integracja z IKP, realizatorzy programów przesiewowych z API NFZ „Umowy”.
 
 **Skills comment** (the field asks what skills we'd expect from new team members):

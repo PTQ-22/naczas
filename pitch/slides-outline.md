@@ -129,7 +129,7 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
   - **Prawdziwe dane NFZ** (api.nfz.gov.pl), cache + snapshot — demo działa nawet, gdy NFZ nie odpowiada
   - **Privacy by design:** dane zdrowotne domyślnie tylko na telefonie, bez zakładania konta; synchronizacja rodzinna — prototyp wyłączony w demo
   - **Otwarte reguły:** każde zalecenie w JSON ze źródłem; reguły niezweryfikowane oznaczone w aplikacji jako „wartość orientacyjna”
-  - **1013 testów automatycznych:** silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 579, kontrakty 54 (stan na 2026-10-04)
+  - **1018 testów automatycznych:** silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 584, kontrakty 54 (stan na 2026-10-04)
 
 **Kryterium:** Completeness & Implementation Value (10%)
 
