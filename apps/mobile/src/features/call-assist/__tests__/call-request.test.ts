@@ -56,4 +56,14 @@ describe('buildCallRequest', () => {
       buildCallRequest({ patient: kasia, profiles: [kasia], rule, facilityName: 'X' }).forWhom,
     ).toBe('ją');
   });
+
+  it('never turns the "Ja" profile label into a name ("w imieniu i")', () => {
+    const me = makeProfile({ id: 'p-me', name: 'Ja', relation: 'self' });
+    expect(
+      buildCallRequest({ patient: me, profiles: [me], rule, facilityName: 'X' }).callerName,
+    ).toBe('pacjenta');
+    expect(
+      buildCallRequest({ patient: mama, profiles: [mama, me], rule, facilityName: 'X' }).callerName,
+    ).toBe('rodziny');
+  });
 });

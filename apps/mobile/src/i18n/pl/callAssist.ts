@@ -72,6 +72,8 @@ export const callAssist = {
   },
   // "…w imieniu {{callerName}}" when we don't know the caregiver's name
   callerFallback: 'rodziny',
+  /** Own profile without a real name ("Ja"): "…w imieniu pacjenta" */
+  callerSelfFallback: 'pacjenta',
   availability: {
     title: 'Kiedy możesz?',
     cardTitle: 'Kiedy możesz przyjść',

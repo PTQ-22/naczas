@@ -59,11 +59,18 @@ export function buildCallRequest({
 }): CallAssistRequest {
   const caller =
     patient.relation === 'self' ? patient : profiles.find((p) => p.relation === 'self');
+  // "Ja" is the default label of one's own profile, not a name ("w imieniu i" otherwise).
+  const callerName = caller?.name.trim();
+  const named = callerName && !/^ja$/i.test(callerName) ? polishGenitive(callerName) : null;
+  const fallback =
+    patient.relation === 'self'
+      ? t('callAssist.callerSelfFallback')
+      : t('callAssist.callerFallback');
   return {
     examName: inSentence(rule.name),
     facilityName,
     forWhom: t(`callAssist.forWhom.${patient.relation}.${patient.sex}`),
-    callerName: caller ? polishGenitive(caller.name) : t('callAssist.callerFallback'),
+    callerName: named ?? fallback,
     ...(bookBy && { bookBy }),
     ...(availability && { availability }),
   };
