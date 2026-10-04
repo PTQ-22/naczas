@@ -40,7 +40,7 @@ export function PlanRow({ item, rule, today, waitTime, onOpen, cta }: PlanRowPro
     item.urgency === 'act_now'
       ? colors.urgency.act_now.fg
       : item.urgency === 'booked'
-        ? colors.primary
+        ? colors.urgency.booked.fg
         : item.urgency === 'later' || item.urgency === 'done'
           ? colors.textMuted
           : colors.text;
