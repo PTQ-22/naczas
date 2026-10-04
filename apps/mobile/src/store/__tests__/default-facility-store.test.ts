@@ -57,12 +57,12 @@ describe('pinDefaultFirst', () => {
 });
 
 describe('useDefaultFacilityStore', () => {
-  beforeEach(() => useDefaultFacilityStore.getState().clear());
+  beforeEach(() => useDefaultFacilityStore.getState().reset());
 
-  it('stores only the clinic fields, keyed by provider + address', () => {
+  it('stores only the clinic fields, keyed by provider + address, per profile', () => {
     const f = make('q1', 'Przychodnia A');
-    useDefaultFacilityStore.getState().setDefault(f);
-    expect(useDefaultFacilityStore.getState().facility).toEqual({
+    useDefaultFacilityStore.getState().setDefault('p1', f);
+    expect(useDefaultFacilityStore.getState().facilities['p1']).toEqual({
       key: facilityKey(f),
       providerName: 'Przychodnia A',
       address: 'ul. Prosta 1',
@@ -74,8 +74,8 @@ describe('useDefaultFacilityStore', () => {
   });
 
   it('is cleared by "delete all data"', () => {
-    useDefaultFacilityStore.getState().setDefault(make('q1', 'A'));
+    useDefaultFacilityStore.getState().setDefault('p1', make('q1', 'A'));
     resetAllData();
-    expect(useDefaultFacilityStore.getState().facility).toBeNull();
+    expect(useDefaultFacilityStore.getState().facilities).toEqual({});
   });
 });

@@ -1,0 +1,16 @@
+{
+  "state": {
+    "records": [
+      {
+        "profileId": "prof-1",
+        "examId": "cholesterol",
+        "status": "done",
+        "lastDone": "2023-01-01",
+        "bookedFor": null,
+        "bookedTime": null,
+        "updatedAt": "2023-01-01"
+      }
+    ]
+  },
+  "version": 1
+}

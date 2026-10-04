@@ -8,7 +8,7 @@ import { Button } from '@/components/Button';
 import { IconButton } from '@/components/IconButton';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
-import { facilityKey, useDefaultFacilityStore } from '@/store';
+import { facilityKey, useDefaultFacilityStore, useProfilesStore } from '@/store';
 import { fonts, useTheme } from '@/theme';
 
 import {
@@ -42,6 +42,7 @@ interface FacilityRowProps {
  */
 export function FacilityRow({ facility: f, examId, primary = false }: FacilityRowProps) {
   const { colors, seniorMode, space, layout } = useTheme();
+  const profileId = useProfilesStore((s) => s.activeProfileId);
   const placeLine = distinctPlaceName(f.providerName, f.placeName);
   const tel = telUrl(f.phone);
   const phone = displayPhone(f.phone);
@@ -50,7 +51,9 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
   const tone = colors.urgency[waitTone(f.waitDays)].fg;
   const distance = distanceLabel(f.distanceKm);
   const access = accessibilityLabels(f.accessibility);
-  const isDefault = useDefaultFacilityStore((s) => s.facility?.key === facilityKey(f));
+  const isDefault = useDefaultFacilityStore(
+    (s) => profileId && s.facilities[profileId]?.key === facilityKey(f),
+  );
   const setDefault = useDefaultFacilityStore((s) => s.setDefault);
   const clearDefault = useDefaultFacilityStore((s) => s.clear);
   // Distance lives under the wait figure (never wraps); amenities stay a quiet text line.
@@ -165,7 +168,11 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
               variant="ghost"
               icon="star"
               fullWidth={seniorMode}
-              onPress={() => (isDefault ? clearDefault() : setDefault(f))}
+              onPress={() =>
+                isDefault && profileId
+                  ? clearDefault(profileId)
+                  : profileId && setDefault(profileId, f)
+              }
             />
             <Button
               label={t('facilities.actions.booked')}

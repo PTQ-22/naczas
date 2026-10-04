@@ -1,0 +1,32 @@
+{
+  "state": {
+    "profiles": [
+      {
+        "id": "p-mut3jtzf-1wcc",
+        "name": "Ja",
+        "relation": "self",
+        "birthYear": 2005,
+        "sex": "male",
+        "location": { "province": "15", "lat": 52.41, "lng": 16.93, "label": "woj. wielkopolskie" },
+        "conditions": [],
+        "familyHistory": [],
+        "smoking": { "status": "never" },
+        "createdAt": "2026-10-04"
+      },
+      {
+        "id": "prof-1",
+        "name": "Test",
+        "relation": "self",
+        "birthYear": 1990,
+        "sex": "male",
+        "conditions": [],
+        "familyHistory": [],
+        "smoking": { "status": "never" },
+        "subscribedExams": ["kardiolog"],
+        "createdAt": "2023-01-01"
+      }
+    ],
+    "activeProfileId": "p-mut3jtzf-1wcc"
+  },
+  "version": 2
+}

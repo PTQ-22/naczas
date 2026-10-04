@@ -54,7 +54,9 @@ export default function DoctorsScreen() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [mapExpanded, setMapExpanded] = useState(false);
   const [selectedId, setSelectedId] = useState<string>();
-  const defaultKey = useDefaultFacilityStore((s) => s.facility?.key ?? null);
+  const defaultKey = useDefaultFacilityStore((s) =>
+    profile.id ? (s.facilities[profile.id]?.key ?? null) : null,
+  );
 
   const query = useMemo(
     () =>

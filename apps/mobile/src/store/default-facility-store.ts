@@ -22,12 +22,17 @@ const DefaultFacilitySchema = z.object({
 });
 export type DefaultFacility = z.infer<typeof DefaultFacilitySchema>;
 
-const PersistedSchema = z.object({ facility: DefaultFacilitySchema.nullable() });
+const PersistedSchema = z.object({
+  facilities: z
+    .record(z.string(), DefaultFacilitySchema)
+    .default({} as Record<string, DefaultFacility>),
+});
 type Persisted = z.infer<typeof PersistedSchema>;
 
 interface DefaultFacilityState extends Persisted {
-  setDefault: (facility: Facility) => void;
-  clear: () => void;
+  setDefault: (profileId: string, facility: Facility) => void;
+  clear: (profileId: string) => void;
+  reset: () => void;
 }
 
 const normalize = (s: string) => s.trim().toLocaleLowerCase('pl').replace(/\s+/g, ' ');
@@ -47,26 +52,42 @@ export function pinDefaultFirst<T extends Facility>(items: readonly T[], key: st
 export const useDefaultFacilityStore = create<DefaultFacilityState>()(
   persist(
     (set) => ({
-      facility: null,
-      setDefault: (f) =>
-        set({
-          facility: {
-            key: facilityKey(f),
-            providerName: f.providerName,
-            address: f.address,
-            locality: f.locality,
-            phone: f.phone,
-            lat: f.lat,
-            lng: f.lng,
+      facilities: {},
+      setDefault: (profileId, f) =>
+        set((state) => ({
+          facilities: {
+            ...state.facilities,
+            [profileId]: {
+              key: facilityKey(f),
+              providerName: f.providerName,
+              address: f.address,
+              locality: f.locality,
+              phone: f.phone,
+              lat: f.lat,
+              lng: f.lng,
+            },
           },
+        })),
+      clear: (profileId) =>
+        set((state) => {
+          const next = { ...state.facilities };
+          delete next[profileId];
+          return { facilities: next };
         }),
-      clear: () => set({ facility: null }),
+      reset: () => set({ facilities: {} }),
     }),
     validatedPersist<DefaultFacilityState, Persisted>({
       name: 'default-facility',
-      version: 1,
+      // Bump version because schema shape changed (was { facility: ... }, now { facilities: ... })
+      version: 2,
       schema: PersistedSchema,
-      partialize: ({ facility }) => ({ facility }),
+      partialize: ({ facilities }) => ({ facilities }),
+      migrations: {
+        1: (_state: unknown) => ({
+          // Can't automatically guess which profile it belonged to, so drop old single facility
+          facilities: {},
+        }),
+      },
     }),
   ),
 );

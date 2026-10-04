@@ -36,7 +36,9 @@ export default function FacilitiesScreen() {
   const profile = useProfilesStore(selectActiveProfile) ?? mockProfileMama;
   const location = profile.location;
   const rule = rules.find((r) => r.id === examId);
-  const defaultKey = useDefaultFacilityStore((s) => s.facility?.key ?? null);
+  const defaultKey = useDefaultFacilityStore((s) =>
+    profile.id ? (s.facilities[profile.id]?.key ?? null) : null,
+  );
 
   const [sort, setSort] = useState<FacilitiesSort>('soonest');
   // Starts on the list (always in senior mode, screens.md §4); the list has everything the map has.

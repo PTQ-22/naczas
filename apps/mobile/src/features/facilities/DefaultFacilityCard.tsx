@@ -3,7 +3,7 @@ import { Linking, Platform, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
-import { useDefaultFacilityStore } from '@/store';
+import { useDefaultFacilityStore, useProfilesStore } from '@/store';
 import { useTheme } from '@/theme';
 
 import { mapsUrl, nfzTitleCase, telUrl } from './facility-format';
@@ -11,7 +11,8 @@ import { mapsUrl, nfzTitleCase, telUrl } from './facility-format';
 /** The user's default clinic with quick call / navigate / clear — or how to pick one. */
 export function DefaultFacilityCard({ showTitle = true }: { showTitle?: boolean }) {
   const { space } = useTheme();
-  const facility = useDefaultFacilityStore((s) => s.facility);
+  const profileId = useProfilesStore((s) => s.activeProfileId);
+  const facility = useDefaultFacilityStore((s) => (profileId ? s.facilities[profileId] : null));
   const clear = useDefaultFacilityStore((s) => s.clear);
   const title = showTitle && (
     <Text variant="label" accessibilityRole="header">
@@ -67,7 +68,9 @@ export function DefaultFacilityCard({ showTitle = true }: { showTitle?: boolean 
           label={t('facilities.defaultFacility.unset')}
           accessibilityLabel={t('facilities.defaultFacility.unsetA11y', { name })}
           variant="ghost"
-          onPress={clear}
+          onPress={() => {
+            if (profileId) clear(profileId);
+          }}
         />
       </View>
     </View>

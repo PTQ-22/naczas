@@ -21,6 +21,6 @@ export function resetAllData() {
   useCallTasksStore.getState().reset();
   useProfilesStore.getState().reset();
   useSettingsStore.getState().reset();
-  useDefaultFacilityStore.getState().clear();
+  useDefaultFacilityStore.getState().reset();
   useOnboardingDraftStore.getState().clear();
 }
