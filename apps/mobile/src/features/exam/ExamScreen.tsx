@@ -308,30 +308,14 @@ export default function ExamScreen() {
 
         <Section title={t('exam.section.frequency')} collapsible>
           <Text>{msg(frequencyMessage(currentInterval))}</Text>
-          {activeProfile && (
-            <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.sm }}>
-              <Button
-                variant="ghost"
-                icon="minus"
-                label="- 1m"
-                onPress={() =>
-                  setIntervalOverride(activeProfile.id, rule.id, Math.max(1, currentInterval - 1))
-                }
-              />
-              <Button
-                variant="ghost"
-                icon="plus"
-                label="+ 1m"
-                onPress={() => setIntervalOverride(activeProfile.id, rule.id, currentInterval + 1)}
-              />
-              {currentInterval !== rule.intervalMonths && (
-                <Button
-                  variant="ghost"
-                  label="Reset"
-                  onPress={() => setIntervalOverride(activeProfile.id, rule.id, null)}
-                />
-              )}
-            </View>
+          {/* Intervals come from sourced rules (AGENTS.md §7) — no editing here. Overrides saved
+              by the old ±1 month buttons can still be undone. */}
+          {activeProfile && currentInterval !== rule.intervalMonths && (
+            <Button
+              variant="ghost"
+              label={t('exam.resetInterval')}
+              onPress={() => setIntervalOverride(activeProfile.id, rule.id, null)}
+            />
           )}
           {!rule.verified && <Chip tone="later" icon="info" label={t('exam.approximate')} />}
         </Section>

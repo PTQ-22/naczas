@@ -112,6 +112,22 @@ describe('ExamScreen', () => {
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
   });
 
+  it('does not let the user edit a sourced interval, only undo an old override', () => {
+    renderExam('colonoscopy_screening');
+    fireEvent.press(screen.getByRole('button', { name: 'Jak często' }));
+    expect(screen.queryByRole('button', { name: /1m/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Przywróć zalecany odstęp' })).toBeNull();
+  });
+
+  it('offers to undo an interval override saved earlier', () => {
+    const { mockProfileMama } = jest.requireActual<typeof import('@naczas/rules')>('@naczas/rules');
+    useRecordsStore.getState().setIntervalOverride(mockProfileMama.id, 'colonoscopy_screening', 60);
+    renderExam('colonoscopy_screening');
+    fireEvent.press(screen.getByRole('button', { name: 'Jak często' }));
+    fireEvent.press(screen.getByRole('button', { name: 'Przywróć zalecany odstęp' }));
+    expect(screen.queryByRole('button', { name: 'Przywróć zalecany odstęp' })).toBeNull();
+  });
+
   it('marks "Wartość orientacyjna" for unverified rules', () => {
     renderExam('eye_exam');
     fireEvent.press(screen.getByRole('button', { name: 'Jak często' }));

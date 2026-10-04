@@ -42,6 +42,7 @@ export const exam = {
     yearsMany: 'Co {{count}} lat',
   },
   approximate: 'Wartość orientacyjna',
+  resetInterval: 'Przywróć zalecany odstęp',
   referral: {
     required: 'Potrzebne — od lekarza rodzinnego.',
     notRequired: 'Nie jest potrzebne.',
