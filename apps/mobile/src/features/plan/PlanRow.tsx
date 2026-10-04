@@ -2,7 +2,7 @@ import { Pressable, View } from 'react-native';
 
 import type { ExamRule, PlanItem, WaitTimeSummary } from '@naczas/shared';
 
-import { IconButton } from '@/components/IconButton';
+import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
@@ -31,7 +31,7 @@ interface PlanRowProps {
  * no chip — the section eyebrow already says the status (redesign §4).
  */
 export function PlanRow({ item, rule, today, waitTime, onOpen, onMarkDone }: PlanRowProps) {
-  const { colors, layout, space, seniorMode } = useTheme();
+  const { colors, layout, space, radius, borderWidth, seniorMode } = useTheme();
   const date = msg(dateMessage(item));
   const whyNow = whyNowMessage(item, rule.booking, waitTime);
   const range = item.urgency === 'act_now' ? queueRange(waitTime) : null;
@@ -57,11 +57,35 @@ export function PlanRow({ item, rule, today, waitTime, onOpen, onMarkDone }: Pla
     >
       {/* A check in the row instead of a full button under it, so the list keeps its rhythm. */}
       {onMarkDone && (
-        <IconButton
-          icon="check"
-          accessibilityLabel={onMarkDone.accessibilityLabel}
+        // Checkbox-sized circle inside a full touch target: the row stays a list row, not a
+        // button bar. The negative margin lines the circle up with the list's left edge.
+        <Pressable
           onPress={onMarkDone.onPress}
-        />
+          accessibilityRole="button"
+          accessibilityLabel={onMarkDone.accessibilityLabel}
+          style={({ pressed }) => ({
+            width: layout.minTouch,
+            height: layout.minTouch,
+            marginHorizontal: -(layout.minTouch - layout.icon.lg) / 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: pressed ? 0.6 : 1,
+          })}
+        >
+          <View
+            style={{
+              width: layout.icon.lg,
+              height: layout.icon.lg,
+              borderRadius: radius.full,
+              borderWidth: borderWidth.strong,
+              borderColor: colors.borderStrong,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon name="check" size="sm" color={colors.textMuted} />
+          </View>
+        </Pressable>
       )}
       <Pressable
         onPress={() => onOpen(item.examId)}
