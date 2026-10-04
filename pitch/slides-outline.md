@@ -30,20 +30,22 @@
 **Kryterium:** Relation to Category (20%)
 
 ## 3. Rozwiązanie
-- Jedno zdanie: **„Mówimy nie tylko jakie badanie i kiedy, ale kiedy zacząć je organizować i gdzie zrobić je najszybciej na NFZ — dla Ciebie i Twoich bliskich.”**
-- 3 filary (ikona + 3–4 słowa):
+- Jedno zdanie: **„Mówimy nie tylko jakie badanie i kiedy, ale kiedy zacząć je organizować i gdzie zrobić je najszybciej na NFZ — a potem umawiamy wizytę za Ciebie i Twoich bliskich.”**
+- 4 filary (ikona + 3–4 słowa):
   1. **Plan** — indywidualne badania z uzasadnieniem i źródłem
   2. **Kiedy zacząć** — przypomnienie z wyprzedzeniem = szacunek z kolejek NFZ w okolicy (p75)
-  3. **Gdzie na NFZ** — placówki posortowane po pierwszym terminie, „Zadzwoń”
+  3. **Gdzie na NFZ** — placówki posortowane po średnim czasie oczekiwania, „Zadzwoń”
+  4. **Umówimy za Ciebie** — agent AI dzwoni do rejestracji i umawia termin w Twoich godzinach (demo: dzwoni na nasz numer testowy)
 
 **Kryterium:** Idea & Innovation (30%)
 
 ## 4. Jak to działa
-- 4 screeny w rzędzie (z buildu, nie z makiety), strzałki między nimi:
+- 5 screenów w rzędzie (z buildu, nie z makiety), strzałki między nimi:
   1. Ankieta (jeden temat na ekran; czas „< 2 min” tylko jeśli potwierdzony testem WS5-2)
   2. Plan — oś czasu z sekcjami „Działaj teraz / W tym roku / Później”
-  3. Karta badania — „W promieniu X km czeka się ok. N tyg.”
-  4. Placówki — lista + mapa, „Zadzwoń”
+  3. Placówki — lista + mapa, „Zadzwoń za mnie”
+  4. Agent dzwoni — transkrypcja rozmowy na żywo
+  5. Termin w kalendarzu — „Umówiono na …”, wizyta w planie i w kalendarzu telefonu
 - Podpis pod każdym: 3–5 słów.
 - Dopisek: „Działa na iOS, Androidzie i w przeglądarce.”
 
@@ -66,10 +68,12 @@ Na slajd (uproszczona; ✓/✗/? tylko tam, gdzie mamy URL — szczegóły i cyt
 | Wskazanie placówek | ✗ (w planach) | ✓ e-rejestracja (wybrane świadczenia) | ✓ |
 | Profile rodzinne / opiekun | ? | ✓ dzieci, upoważnienia | ✓ |
 | Przygotowanie do wizyty | ✓ do badań | ? | ✓ |
+| Umawia wizytę za Ciebie (agent dzwoni) | nie znaleziono³ | nie znaleziono³ | ✓ |
 | **„Kiedy zacząć szukać” = plan × kolejka** | ✗² | ✗² | ✓ |
 
 ¹ Brak przypomnień o badaniach profilaktycznych w opisach IKP, które otworzyliśmy — formalnie „nie znaleziono”, nie „brak”. Na slajdzie można zostawić ✗ tylko z tym przypisem albo wpisać „?”.
 ² Żaden z produktów nie łączy osobistego planu badań z danymi o kolejkach — to jest nasz wyróżnik. Wniosek z kombinacji wierszy wyżej, nie z deklaracji producentów.
+³ W źródłach [DR], [AS], [GP], [ER], [IKP3] nie znaleźliśmy funkcji, w której aplikacja sama dzwoni i umawia wizytę. IKP ma e-rejestrację (pacjent rezerwuje sam, wybrane świadczenia), Doctor Robert zapowiada rezerwację „w przyszłości” [GP]. Na slajdzie „nie znaleziono”, nie „✗”.
 
 **Uczciwy przekaz na slajd/Q&A:** nie mówimy „nikt nie ma danych NFZ” — IKP ma kolejki i e-rejestrację, Doctor Robert ma plan i przypomnienia. Mówimy: *„Doctor Robert mówi co i kiedy, IKP pozwala znaleźć termin — my łączymy to w jedno i mówimy, kiedy zacząć szukać, żeby zdążyć.”*
 
@@ -101,7 +105,7 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
 ## 6. Opiekun + przygotowanie do wizyty
 - **Rodzina na jednym telefonie:** przełącznik profili (Ja / Mama), badge z liczbą pilnych badań u mamy.
 - **Przygotowanie do wizyty:** PDF / ekran dla lekarza POZ — „Proszę o skierowanie na…”, czynniki ryzyka, lista badań.
-- **Karta aktywności** (stretch — tylko jeśli działa w demo; inaczej usunąć punkt).
+- **Karta aktywności** — „mały krok” ruchu pod planem, ze źródłem (jest w buildzie: `apps/mobile/src/features/plan/ActivityCard.tsx`).
 - Screen: przełącznik profili + fragment PDF.
 
 **Kryterium:** Relation to Category (20%)
@@ -118,22 +122,24 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
 
 ## 8. Technologia
 - Diagram (uproszczony z `docs/02-architecture.md`): Telefon (Expo: iOS/Android/web) → cienkie API (Hono) → API NFZ „Terminy leczenia”.
+- Druga gałąź: API → agent głosowy (Vapi: gpt-4o, Deepgram, ElevenLabs; Twilio) → **numer testowy zespołu**.
 - Strzałka telefon → API podpisana: **„tylko nazwa świadczenia + lokalizacja ≈ 1 km. Zero danych zdrowotnych.”**
+- Strzałka API → agent podpisana: **„tylko na Twoje zlecenie: dla kogo (»mamę«), badanie, placówka, godziny. Bez nazwiska i PESEL.”**
 - Punkty:
   - **Prawdziwe dane NFZ** (api.nfz.gov.pl), cache + snapshot — demo działa nawet, gdy NFZ nie odpowiada
-  - **Privacy by design:** bez kont, dane zdrowotne tylko na telefonie
+  - **Privacy by design:** dane zdrowotne domyślnie tylko na telefonie, bez zakładania konta; synchronizacja rodzinna — prototyp wyłączony w demo
   - **Otwarte reguły:** każde zalecenie w JSON ze źródłem; reguły niezweryfikowane oznaczone w aplikacji jako „wartość orientacyjna”
-  - **Testy silnika reguł:** {N_TESTS} testów, pokrycie {COVERAGE}% — wpisać z `pnpm test` w dniu oddania
+  - **1013 testów automatycznych:** silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 579, kontrakty 54 (stan na 2026-10-04)
 
 **Kryterium:** Completeness & Implementation Value (10%)
 
 ## 9. Wdrożenie i roadmap
-- **Teraz (MVP):** plan, „kiedy zacząć”, placówki NFZ, profile rodzinne, PDF dla lekarza.
+- **Teraz (MVP):** plan, „kiedy zacząć”, placówki NFZ, agent „Umów za mnie”, profile rodzinne, PDF dla lekarza, eksport wizyty do kalendarza.
 - **Dalej:**
-  1. Synchronizacja opiekun ↔ rodzic (szyfrowana E2E)
-  2. Integracja z IKP (import wykonanych badań)
-  3. Harmonogram mammobusów
-  4. Eksport do kalendarza
+  1. Synchronizacja opiekun ↔ rodzic (szyfrowana E2E; dziś prototyp wyłączony w demo)
+  2. Agent z e-rejestracją zamiast telefonu
+  3. Integracja z IKP (import wykonanych badań)
+  4. Harmonogram mammobusów
 - **Model:** narzędzie publiczne / open source; partnerzy: NFZ, samorządy, organizacje pacjentów; opcjonalnie white-label dla pracodawców jako benefit profilaktyczny.
 
 **Kryterium:** Completeness & Implementation Value (10%)
@@ -141,8 +147,10 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
 ## 10. Demo + linki
 - QR → web demo · QR → Expo Go · link do repo
 - **Ujawnienie AI i zasobów zewnętrznych** (wymóg regulaminu):
-  - Narzędzia AI w developmencie: {lista, np. Claude Code — uzupełnić faktycznie użyte}
-  - Dane: API NFZ „Terminy leczenia” (https://api.nfz.gov.pl/app-itl-api)
+  - Narzędzia AI w developmencie: Claude Code (Claude Opus 5.5), pod nadzorem zespołu
+  - AI w aplikacji (agent „Umów za mnie”): Vapi, OpenAI gpt-4o, Deepgram nova-2, ElevenLabs, Twilio; demo dzwoni tylko na numer testowy zespołu
+  - Zalecenia medyczne nie pochodzą od AI
+  - Dane: API NFZ „Terminy leczenia” (https://api.nfz.gov.pl/app-itl-api), dane NFZ o realizacji programów, GUGiK ULDK
   - Biblioteki open source: Expo, React Native, Hono, Zod, zustand, date-fns, react-native-maps, Leaflet + OpenStreetMap (atrybucja OSM)
   - Źródła medyczne: lista z `packages/rules/data/*.json` (pole `source`)
 - Disclaimer: *„Aplikacja przypomina i edukuje, nie diagnozuje.”*
