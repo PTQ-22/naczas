@@ -1,6 +1,8 @@
-import type { CallAssistRequest, CallAssistStatus } from '@naczas/shared';
+import { format } from 'date-fns';
 
-import { notifyAgentBooked } from '@/notifications';
+import { simulatedOutcome, type CallAssistRequest, type CallAssistStatus } from '@naczas/shared';
+
+import { cancelAgentBooked, notifyAgentBooked, scheduleAgentBooked } from '@/notifications';
 import { api } from '@/services';
 import { ApiRequestError } from '@/services/api';
 import { useCallTasksStore, useProfilesStore, useRecordsStore, type CallTask } from '@/store';
@@ -8,6 +10,11 @@ import { useCallTasksStore, useProfilesStore, useRecordsStore, type CallTask } f
 /** Post-call extraction usually lands within seconds; then the task is closed without it. */
 const MAX_ANALYSIS_POLLS = 20;
 const analysisPolls = new Map<string, number>();
+/** Simulated tasks whose "booked" notification is already scheduled with the OS. */
+const preScheduled = new Set<string>();
+
+const profileName = (profileId: string) =>
+  useProfilesStore.getState().profiles.find((p) => p.id === profileId)?.name ?? '';
 
 /** Nothing about this status can change any more. */
 export function isFinal(status: CallAssistStatus, id: string): boolean {
@@ -29,11 +36,11 @@ export function applyStatus(task: CallTask, status: CallAssistStatus, now: numbe
       .getState()
       .markBooked(task.profileId, task.examId, result.date, result.time ?? undefined);
     store.markApplied(task.id);
-    const profile = useProfilesStore.getState().profiles.find((p) => p.id === task.profileId);
+    if (preScheduled.delete(task.id)) return; // the OS delivers it at the scripted moment
     notifyAgentBooked({
       callId: task.id,
       examId: task.examId,
-      profileName: profile?.name ?? '',
+      profileName: profileName(task.profileId),
       facilityName: task.facilityName,
       date: result.date,
       time: result.time ?? undefined,
@@ -61,7 +68,35 @@ export async function startCallTask(input: StartCallInput, now = Date.now()): Pr
     },
     now,
   );
+  if (mode === 'simulated') void preScheduleBooked(callId, input, now);
   return callId;
+}
+
+/** The scripted story's ending is known now — schedule its notification (see scheduleAgentBooked). */
+async function preScheduleBooked(callId: string, input: StartCallInput, now: number) {
+  const outcome = simulatedOutcome(input.request, format(now, 'yyyy-MM-dd'), now);
+  if (!outcome?.result.date) return;
+  try {
+    const scheduled = await scheduleAgentBooked(
+      {
+        callId,
+        examId: input.examId,
+        profileName: profileName(input.profileId),
+        facilityName: input.facilityName,
+        date: outcome.result.date,
+        time: outcome.result.time ?? undefined,
+      },
+      outcome.endsAt,
+    );
+    if (scheduled) preScheduled.add(callId);
+  } catch {
+    // Falls back to notifying when the result arrives.
+  }
+}
+
+/** The scripted ending changes: forget the pre-scheduled notification, notify on the result. */
+function dropPreScheduled(id: string) {
+  if (preScheduled.delete(id)) cancelAgentBooked(id).catch(() => undefined);
 }
 
 const current = (id: string) => useCallTasksStore.getState().tasks.find((t) => t.id === id);
@@ -87,12 +122,14 @@ export async function pollTask(id: string, now = Date.now()): Promise<void> {
 export async function retryTaskNow(id: string, now = Date.now()): Promise<void> {
   const task = current(id);
   if (!task) return;
+  dropPreScheduled(id);
   applyStatus(task, await api.retryCallAssistNow(id), now);
 }
 
 export async function cancelTask(id: string, now = Date.now()): Promise<void> {
   const task = current(id);
   if (!task) return;
+  dropPreScheduled(id);
   applyStatus(task, await api.cancelCallAssist(id), now);
 }
 

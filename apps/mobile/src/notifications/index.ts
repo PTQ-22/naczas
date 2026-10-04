@@ -14,7 +14,12 @@ export {
   type NotificationPermission,
 } from './permissions';
 export { cancelAllOurNotifications, syncNotifications, type SyncResult } from './sync';
-export { notifyAgentBooked, agentBookedContent } from './booked-notification';
+export {
+  agentBookedContent,
+  cancelAgentBooked,
+  notifyAgentBooked,
+  scheduleAgentBooked,
+} from './booked-notification';
 export { sendTestNotification, type TestNotificationResult } from './test-notification';
 export { NotificationSync } from './NotificationSync';
 export { useSyncNotifications } from './use-sync-notifications';

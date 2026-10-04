@@ -1,4 +1,9 @@
-import { DEFAULT_CALL_RETRY, type CallAssistRequest, type CallAssistStatus } from './api';
+import {
+  DEFAULT_CALL_RETRY,
+  type CallAssistRequest,
+  type CallAssistResult,
+  type CallAssistStatus,
+} from './api';
 import {
   describeBlocked,
   firstAvailableSlot,
@@ -311,4 +316,26 @@ export function simulateCallAssist(
     0,
   );
   return simulatedCallStatus(callId, task, elapsedMs);
+}
+
+/**
+ * When a fresh simulated task will end and how — known up front because the story is scripted.
+ * Lets the app schedule the "booked" notification with the OS at start, so it arrives even when
+ * iOS suspends the app (locked phone, Notification Centre). `null` if it never ends booked.
+ */
+export function simulatedOutcome(
+  req: CallAssistRequest,
+  today: ISODate,
+  startMs: number,
+): { endsAt: number; result: CallAssistResult } | null {
+  const task = createSimulatedCallTask(req, today, startMs);
+  const STEP_MS = 250;
+  for (let t = startMs; t <= startMs + 10 * 60_000; t += STEP_MS) {
+    const status = simulatedCallStatus('outcome', task, t);
+    if (status.status === 'ended') {
+      return status.result?.booked ? { endsAt: t, result: status.result } : null;
+    }
+    if (status.status === 'failed' || status.status === 'cancelled') return null;
+  }
+  return null;
 }

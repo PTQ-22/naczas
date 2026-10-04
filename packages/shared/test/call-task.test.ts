@@ -10,6 +10,7 @@ import {
   SIMULATED_RETRY_INTERVAL_MS,
   SIMULATION_SPEEDUP,
   simulatedCallStatus,
+  simulatedOutcome,
   type CallAssistRequest,
 } from '../src';
 
@@ -77,6 +78,17 @@ describe('simulated call task (demo)', () => {
       T0,
     );
     expect(simulatedCallStatus('c', single, T0 + f(5000)).status).toBe('on_hold');
+  });
+});
+
+describe('simulatedOutcome', () => {
+  it('predicts when and how the scripted task ends (to schedule the OS notification)', () => {
+    const out = simulatedOutcome(req, '2026-10-04', T0);
+    expect(out?.result).toMatchObject({ booked: true, date: '2026-10-19', time: '10:30' });
+    const task = createSimulatedCallTask(req, '2026-10-04', T0);
+    expect(simulatedCallStatus('c', task, out!.endsAt).status).toBe('ended');
+    expect(simulatedCallStatus('c', task, out!.endsAt - 250).status).not.toBe('ended');
+    expect(out!.endsAt - T0).toBeLessThan(20_000); // ~15 s at SIMULATION_SPEEDUP = 3
   });
 });
 

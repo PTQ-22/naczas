@@ -13,8 +13,12 @@ jest.mock('@/services', () => ({
   },
 }));
 const mockNotify = jest.fn((_input: unknown) => Promise.resolve());
+let mockScheduled = false;
+const mockSchedule = jest.fn((_input: unknown, _at: number) => Promise.resolve(mockScheduled));
 jest.mock('@/notifications', () => ({
   notifyAgentBooked: (input: unknown) => mockNotify(input),
+  scheduleAgentBooked: (input: unknown, at: number) => mockSchedule(input, at),
+  cancelAgentBooked: () => Promise.resolve(),
 }));
 jest.mock('@react-native-async-storage/async-storage', () =>
   jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
@@ -36,6 +40,8 @@ describe('call tasks', () => {
     useRecordsStore.setState({ records: [] });
     mockGet.mockReset();
     mockNotify.mockClear();
+    mockSchedule.mockClear();
+    mockScheduled = false;
     await startCallTask(
       {
         request: { examName: 'x', facilityName: 'Y', forWhom: 'mamę', callerName: 'Kasi' },
@@ -62,6 +68,36 @@ describe('call tasks', () => {
       expect.objectContaining({ profileId: 'p1', examId: 'neurolog', bookedFor: '2026-10-20' }),
     ]);
     expect(task()).toMatchObject({ applied: true, closed: true });
+  });
+
+  it('a simulated call schedules its notification at the scripted end, then skips the live one', async () => {
+    useCallTasksStore.getState().reset();
+    mockScheduled = true;
+    await startCallTask(
+      {
+        request: { examName: 'x', facilityName: 'Y', forWhom: 'mamę', callerName: 'Kasi' },
+        profileId: 'p1',
+        examId: 'neurolog',
+        facilityName: 'Y',
+      },
+      1000,
+    );
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(mockSchedule).toHaveBeenCalledWith(
+      expect.objectContaining({ callId: 'c1', time: '10:30', facilityName: 'Y' }),
+      expect.any(Number),
+    );
+    expect(mockSchedule.mock.calls[0]![1]).toBeGreaterThan(1000);
+    applyStatus(
+      task(),
+      status({
+        status: 'ended',
+        result: { booked: true, date: '2026-10-20', time: '10:30', note: null },
+      }),
+      20_000,
+    );
+    expect(mockNotify).not.toHaveBeenCalled();
   });
 
   it('a booked result notifies once, with the hour and the facility', () => {
