@@ -237,11 +237,13 @@ describe('planLayout', () => {
     expect(layout.actNowCount).toBe(1);
   });
 
-  it('has no hero when every urgent exam is unknown — the unknown group leads instead', () => {
-    const allUnknown = planLayout([act('u')], new Set(['u']));
-    expect(allUnknown.hero).toBeUndefined();
-    expect(allUnknown.unknown).toHaveLength(1);
-    expect(allUnknown.actNowCount).toBe(0);
+  it('with no known urgent exam, the unknown one with the longest queue still gets the ticket', () => {
+    // Pitch flow: Mama answers "nie pamiętam" everywhere → colonoscopy still leads the plan.
+    const weeks = (id: string) => (id === 'long' ? 29 : 5);
+    const allUnknown = planLayout([act('short'), act('long')], new Set(['short', 'long']), weeks);
+    expect(allUnknown.hero?.examId).toBe('long');
+    expect(allUnknown.unknown.map((i) => i.examId)).toEqual(['short']);
+    expect(allUnknown.actNowCount).toBe(1);
   });
 });
 

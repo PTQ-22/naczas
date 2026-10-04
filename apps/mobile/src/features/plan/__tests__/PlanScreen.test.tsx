@@ -176,18 +176,26 @@ describe('PlanScreen (mockPlan)', () => {
     expect(screen.getByRole('button', { name: 'Później (1)' })).toBeCollapsed();
   });
 
-  it('unknown history: no red ticket, a "Kiedy ostatnio?" row that saves the answer, with undo', () => {
+  it('unknown history: the longest queue still leads, the rest wait in "Kiedy ostatnio?"', () => {
+    // Pitch flow: Mama answers "nie pamiętam" for every exam.
     useRecordsStore.getState().reset();
+    const base = mockPlanData();
+    const colonoscopy = base.plan!.items.find((i) => i.examId === 'colonoscopy_screening')!;
+    const skin = { ...colonoscopy, examId: 'skin_check' };
+    mockUsePlanData.mockReturnValue(
+      mockPlanData({ plan: { ...base.plan!, items: [skin, ...base.plan!.items] } }),
+    );
     renderPlan();
-    expect(screen.queryByText('3–30')).toBeNull();
+    expect(screen.getByText('3–30')).toBeOnTheScreen();
     expect(screen.queryByText('Termin minął')).toBeNull();
     expect(screen.getByText('Kiedy ostatnio?')).toBeOnTheScreen();
+    expect(screen.getByRole('tab', { name: 'Mama, pilne badania: 1' })).toBeOnTheScreen();
 
-    fireEvent.press(screen.getByRole('button', { name: /^Kolonoskopia: kiedy ostatnio/ }));
-    fireEvent.press(screen.getByRole('radio', { name: /Kolonoskopia.*Nigdy/ }));
+    fireEvent.press(screen.getByRole('button', { name: /^Kontrola znamion.*: kiedy ostatnio/ }));
+    fireEvent.press(screen.getByRole('radio', { name: /Kontrola znamion.*Nigdy/ }));
     expect(useRecordsStore.getState().records).toEqual([
-      expect.objectContaining({ examId: 'colonoscopy_screening', lastDone: 'never' }),
+      expect.objectContaining({ examId: 'skin_check', lastDone: 'never' }),
     ]);
-    expect(screen.getByText(/^Zapisano — Kolonoskopia/)).toBeOnTheScreen();
+    expect(screen.getByText(/^Zapisano — Kontrola znamion/)).toBeOnTheScreen();
   });
 });

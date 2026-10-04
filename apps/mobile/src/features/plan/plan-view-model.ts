@@ -211,11 +211,11 @@ export function hasUnknownHistory(record: ExamRecord | undefined): boolean {
 
 export interface PlanLayout {
   hero: PlanItem | undefined;
-  /** act_now exams with unknown history — shown as a quiet "Kiedy ostatnio?" group. */
+  /** act_now exams with unknown history (minus the hero) — a quiet "Kiedy ostatnio?" group. */
   unknown: PlanItem[];
   /** Everything else except the hero, in engine section order. */
   sections: PlanSection[];
-  /** Known act_now exams (hero included) — the number on the profile badge. */
+  /** act_now exams shown as urgent (hero included) — the number on the profile badge. */
   actNowCount: number;
 }
 
@@ -227,12 +227,19 @@ export function planLayout(
 ): PlanLayout {
   const isUnknown = (i: PlanItem) => i.urgency === 'act_now' && unknownExamIds.has(i.examId);
   const known = items.filter((i) => !isUnknown(i));
-  const hero = ticketItem(known, queueWeeks);
+  const unknown = items.filter(isUnknown);
+  // Known urgency wins the ticket; with none, the unknown exam with the longest queue still leads
+  // — "start looking today" holds either way, only "termin minął" needed a known date.
+  const knownHero = known.find((i) => i.urgency === 'act_now')
+    ? ticketItem(known, queueWeeks)
+    : undefined;
+  const hero = knownHero ?? ticketItem(unknown, queueWeeks) ?? ticketItem(known, queueWeeks);
+  const heroIsUnknown = hero !== undefined && unknown.includes(hero);
   return {
     hero,
-    unknown: items.filter(isUnknown),
+    unknown: unknown.filter((i) => i !== hero),
     sections: groupSections(known.filter((i) => i !== hero)),
-    actNowCount: countActNow(known),
+    actNowCount: countActNow(known) + (heroIsUnknown ? 1 : 0),
   };
 }
 
