@@ -21,3 +21,17 @@ services:
         value: '60'
       - key: CORS_ORIGINS
         sync: false # entered by a human in the dashboard
+      # "Zadzwoń za mnie" — empty = scripted simulation (apps/api/src/env.ts)
+      - key: VAPI_API_KEY
+        sync: false
+      - key: VAPI_PHONE_NUMBER_ID
+        sync: false
+      - key: DEMO_CALL_TO # the ONLY number the agent dials, +48XXXXXXXXX
+        sync: false
+      - key: PUBLIC_URL # this service's https URL — live call transcript webhook
+        sync: false
+      - key: VAPI_WEBHOOK_SECRET
+        sync: false
+      # Optional family login / cloud sync (Neon); without it only /v1/auth and /v1/sync fail
+      - key: DATABASE_URL
+        sync: false
