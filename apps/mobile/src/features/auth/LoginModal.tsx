@@ -45,7 +45,7 @@ export function LoginModal() {
     try {
       const { profileCount } = await syncFamily(code);
       // No profile in the cloud yet: the welcome screen (now showing "zalogowano") starts one.
-      leaveTo(profileCount > 0 ? '/(tabs)/plan' : '/onboarding/welcome');
+      leaveTo(profileCount > 0 ? '/(tabs)/agent' : '/onboarding/welcome');
     } catch {
       setPhase('syncFailed');
     }

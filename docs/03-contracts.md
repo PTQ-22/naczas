@@ -230,6 +230,8 @@ export interface CallAssistRequest {
   callerName: string;             // imię opiekuna w dopełniaczu („Kasi”)
   bookBy?: ISODate;               // najpóźniejszy akceptowalny termin
   availability?: CallAvailability; // kiedy pacjent może przyjść; brak = dowolny termin
+  retry?: { maxAttempts: number; intervalMin: number }; // ponowne próby gdy nikt nie odbierze;
+                                  // brak = 3 próby co 10 min; tylko pn–pt 7:30–18:00 (czas PL)
 }
 
 // Zaznaczone przez użytkownika przed telefonem (ekran „Kiedy możesz?”, widok tygodnia jak w
@@ -262,13 +264,25 @@ export interface CallAssistResult {
   note: string | null;
 }
 
+// on_hold = odebrano, agent czeka na linii (IVR / muzyczka) aż ktoś się odezwie;
+// retry_scheduled = nikt nie odebrał (brak odpowiedzi / zajęte / poczta głosowa), kolejna próba
+// o attempt.nextAt — tylko w godzinach rejestracji (pn–pt 7:30–18:00, czas PL).
 export interface CallAssistStatus {
   callId: string;
-  status: 'queued' | 'ringing' | 'in_progress' | 'ended' | 'failed';
+  status: 'queued' | 'ringing' | 'on_hold' | 'in_progress' | 'retry_scheduled'
+    | 'ended' | 'failed' | 'cancelled';
   transcript: { role: 'agent' | 'clinic'; text: string }[];
   result: CallAssistResult | null;   // po zakończeniu rozmowy
+  attempt?: { number: number; max: number; nextAt: string | null }; // nextAt: ISO date-time
+  stats?: { attempts: number; waitedSec: number; talkedSec: number }; // czas agenta na telefonie
 }
 ```
+
+### `POST /v1/call-assist/:callId/retry-now` → `CallAssistStatus`
+„Zadzwoń teraz” w trakcie `retry_scheduled` — kolejna próba startuje od razu. 409 `not_waiting`, gdy zlecenie nie czeka na ponowienie.
+
+### `POST /v1/call-assist/:callId/cancel` → `CallAssistStatus`
+Anuluje zlecenie (trwającą rozmowę agent kończy, zaplanowane próby przepadają). Zakończone zlecenie zwraca się bez zmian.
 
 ## Mapowanie examId → świadczenia NFZ
 Trzymane w `ExamRule.nfzBenefits` (pakiet `rules`), API importuje `@naczas/rules` żeby rozwiązać `examId` → nazwy świadczeń. Klient nigdy nie wysyła surowej nazwy świadczenia.

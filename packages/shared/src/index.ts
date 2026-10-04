@@ -6,3 +6,4 @@ export * from './domain';
 export * from './plan';
 export * from './rules';
 export * from './call-assist-script';
+export * from './call-schedule';

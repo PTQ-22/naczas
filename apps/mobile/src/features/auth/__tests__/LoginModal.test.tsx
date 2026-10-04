@@ -53,7 +53,7 @@ describe('LoginModal', () => {
     expect(mockReplace).not.toHaveBeenCalled(); // no empty plan while data is on its way
     expect(useSettingsStore.getState().familyCode).toBe('ABC');
     finish({ profileCount: 2 });
-    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/(tabs)/plan'));
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/(tabs)/agent'));
   });
 
   it('empty family: goes to the welcome screen to create the first profile', async () => {
@@ -80,7 +80,7 @@ describe('LoginModal', () => {
     render(<LoginModal />);
     fill();
     fireEvent.press(await screen.findByRole('button', { name: 'Spróbuj ponownie' }));
-    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/(tabs)/plan'));
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith('/(tabs)/agent'));
   });
 
   it('validates the form before calling the server', () => {

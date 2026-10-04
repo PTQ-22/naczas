@@ -182,6 +182,7 @@ namespace Doc {
     callerName: string;
     bookBy?: ISODate;
     availability?: CallAvailability;
+    retry?: { maxAttempts: number; intervalMin: number };
   }
 
   export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -207,9 +208,19 @@ namespace Doc {
 
   export interface CallAssistStatus {
     callId: string;
-    status: 'queued' | 'ringing' | 'in_progress' | 'ended' | 'failed';
+    status:
+      | 'queued'
+      | 'ringing'
+      | 'on_hold'
+      | 'in_progress'
+      | 'retry_scheduled'
+      | 'ended'
+      | 'failed'
+      | 'cancelled';
     transcript: { role: 'agent' | 'clinic'; text: string }[];
     result: CallAssistResult | null;
+    attempt?: { number: number; max: number; nextAt: string | null };
+    stats?: { attempts: number; waitedSec: number; talkedSec: number };
   }
 }
 /* eslint-enable @typescript-eslint/no-namespace */

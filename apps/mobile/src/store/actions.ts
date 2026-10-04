@@ -1,4 +1,5 @@
 import { useAvailabilityStore } from './availability-store';
+import { useCallTasksStore } from './call-tasks-store';
 import { useDefaultFacilityStore } from './default-facility-store';
 import { useOnboardingDraftStore } from './onboarding-draft-store';
 import { useProfilesStore } from './profiles-store';
@@ -9,6 +10,7 @@ import { useSettingsStore } from './settings-store';
 export function deleteProfileWithData(profileId: string) {
   useRecordsStore.getState().removeRecordsForProfile(profileId);
   useAvailabilityStore.getState().removeProfile(profileId);
+  useCallTasksStore.getState().removeProfile(profileId);
   useProfilesStore.getState().removeProfile(profileId);
 }
 
@@ -16,6 +18,7 @@ export function deleteProfileWithData(profileId: string) {
 export function resetAllData() {
   useRecordsStore.getState().reset();
   useAvailabilityStore.getState().reset();
+  useCallTasksStore.getState().reset();
   useProfilesStore.getState().reset();
   useSettingsStore.getState().reset();
   useDefaultFacilityStore.getState().clear();

@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { CallTasksSync } from '@/features/call-assist/CallTasksSync';
 import { RestoreErrorBanner } from '@/features/settings/RestoreErrorBanner';
 import { SettingsThemeProvider } from '@/features/settings/SettingsThemeProvider';
 import { t } from '@/i18n';
@@ -31,6 +32,7 @@ export default function RootLayout() {
           <RestoreErrorBanner />
           <NotificationSync />
           <AutoSync />
+          <CallTasksSync />
         </SettingsThemeProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

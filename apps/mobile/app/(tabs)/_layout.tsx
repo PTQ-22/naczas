@@ -46,13 +46,13 @@ export default function TabsLayout() {
         sceneStyle: { backgroundColor: colors.bg },
       }}
     >
+      {/* The agent is the product: first tab, the app's home. */}
       <Tabs.Screen
-        name="plan"
+        name="agent"
         options={{
-          title: t('common.tabs.plan'),
-          tabBarAccessibilityLabel: t('common.tabs.plan'),
-          tabBarIcon: tabIcon('plan'),
-          // Plan renders its own title + profile switcher; a native header would duplicate it.
+          title: t('agent.tab'),
+          tabBarAccessibilityLabel: t('agent.tab'),
+          tabBarIcon: tabIcon('agent'),
           headerShown: false,
         }}
       />
@@ -62,6 +62,16 @@ export default function TabsLayout() {
           title: t('common.tabs.doctors'),
           tabBarAccessibilityLabel: t('common.tabs.doctors'),
           tabBarIcon: tabIcon('phone'),
+        }}
+      />
+      <Tabs.Screen
+        name="plan"
+        options={{
+          title: t('common.tabs.plan'),
+          tabBarAccessibilityLabel: t('common.tabs.plan'),
+          tabBarIcon: tabIcon('plan'),
+          // Plan renders its own title + profile switcher; a native header would duplicate it.
+          headerShown: false,
         }}
       />
       <Tabs.Screen

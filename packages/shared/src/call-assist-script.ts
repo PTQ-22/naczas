@@ -1,3 +1,4 @@
+import { DEFAULT_CALL_RETRY, type CallAssistRequest, type CallAssistStatus } from './api';
 import {
   describeBlocked,
   firstAvailableSlot,
@@ -7,7 +8,6 @@ import {
   spokenDate,
 } from './availability';
 
-import type { CallAssistRequest, CallAssistStatus } from './api';
 import type { ISODate, TimeOfDay } from './domain';
 
 /**
@@ -34,15 +34,23 @@ export function simulatedSlotDate(today: ISODate): ISODate {
 }
 
 interface ScriptLine {
+  /** ms after the clinic picked up */
   atMs: number;
   role: 'agent' | 'clinic';
   text: string;
 }
 
+/** Simulated timeline (ms from the start of an attempt). */
 const RINGING_UNTIL_MS = 2500;
-export const SIMULATED_CALL_DURATION_MS = 23_000;
-/** With a counter-proposal the call takes two more turns. */
-export const SIMULATED_NEGOTIATED_CALL_DURATION_MS = 30_000;
+/** Answered, then IVR / hold music until a person speaks */
+const ANSWERED_AT_MS = 7500;
+/** The first attempt of a demo is never answered — it shows the re-dial */
+const UNANSWERED_RING_MS = 6000;
+/** Real retries wait `intervalMin` (10 min); the demo compresses that to a few seconds. */
+export const SIMULATED_RETRY_INTERVAL_MS = 8000;
+/** Talk time after pick-up: plain booking / with a counter-proposal */
+const TALK_MS = 21_500;
+const NEGOTIATED_TALK_MS = 28_500;
 
 interface Slot {
   date: ISODate;
@@ -85,14 +93,15 @@ const spokenSlot = (slot: Slot) => `${spokenDate(slot.date)} o ${slot.time}`;
 function script(req: CallAssistRequest, today: ISODate, offer: Slot, booked: Slot): ScriptLine[] {
   const when = spokenSlot(booked);
   const opening: ScriptLine[] = [
-    { atMs: 3000, role: 'agent', text: callAssistOpening(req) },
-    { atMs: 7000, role: 'clinic', text: 'Dzień dobry. A jest skierowanie?' },
+    { atMs: 0, role: 'clinic', text: 'Rejestracja, słucham.' },
+    { atMs: 1500, role: 'agent', text: callAssistOpening(req) },
+    { atMs: 5500, role: 'clinic', text: 'Dzień dobry. A jest skierowanie?' },
     {
-      atMs: 10_000,
+      atMs: 8500,
       role: 'agent',
       text: 'Tak, jest e-skierowanie. Jaki jest najbliższy wolny termin?',
     },
-    { atMs: 14_000, role: 'clinic', text: `Mam wolne ${spokenSlot(offer)}.` },
+    { atMs: 12_500, role: 'clinic', text: `Mam wolne ${spokenSlot(offer)}.` },
   ];
   const confirm = (atMs: number): ScriptLine[] => [
     {
@@ -103,7 +112,7 @@ function script(req: CallAssistRequest, today: ISODate, offer: Slot, booked: Slo
     { atMs: atMs + 3500, role: 'clinic', text: 'Do widzenia.' },
   ];
   if (offer.date === booked.date && offer.time === booked.time)
-    return [...opening, ...confirm(17_500)];
+    return [...opening, ...confirm(16_000)];
 
   // The offer clashes with the calendar: decline, say why, propose a time that fits.
   const blocked = req.availability ? describeBlocked(req.availability, today) : [];
@@ -114,39 +123,174 @@ function script(req: CallAssistRequest, today: ISODate, offer: Slot, booked: Slo
   return [
     ...opening,
     {
-      atMs: 17_500,
+      atMs: 16_000,
       role: 'agent',
       text: `Niestety ${why}. Sprawdziłam kalendarz — czy byłoby możliwe ${when}?${
         blocked.length ? ` Na pewno nie możemy: ${blocked.join('; ')}.` : ''
       }`,
     },
-    { atMs: 21_500, role: 'clinic', text: `Chwileczkę… Tak, ${when} jest wolne.` },
-    ...confirm(24_500),
+    { atMs: 20_000, role: 'clinic', text: `Chwileczkę… Tak, ${when} jest wolne.` },
+    ...confirm(23_000),
   ];
 }
 
-/** State of the scripted call `elapsedMs` after it was started. Pure — no clock inside. */
+/**
+ * A simulated "Zadzwoń za mnie" task: one or more dial attempts. Pure data + pure functions of
+ * `now`, so the API and the app's offline mock run the very same story.
+ */
+export interface SimulatedCallTask {
+  req: CallAssistRequest;
+  today: ISODate;
+  maxAttempts: number;
+  /** Start of each attempt (ms epoch); the first one is the task's start */
+  attemptStarts: number[];
+  cancelledAt: number | null;
+}
+
+export function createSimulatedCallTask(
+  req: CallAssistRequest,
+  today: ISODate,
+  now: number,
+): SimulatedCallTask {
+  const maxAttempts = (req.retry ?? DEFAULT_CALL_RETRY).maxAttempts;
+  return { req, today, maxAttempts, attemptStarts: [now], cancelledAt: null };
+}
+
+/** The demo's first attempt rings out — unless there is no second attempt to show. */
+const answered = (task: SimulatedCallTask, index: number) => index > 0 || task.maxAttempts === 1;
+
+function talkMs(task: SimulatedCallTask): number {
+  const offer = clinicOffer(task.today);
+  const slot = simulatedSlot(task.req, task.today);
+  return offer.date === slot.date && offer.time === slot.time ? TALK_MS : NEGOTIATED_TALK_MS;
+}
+
+/** Starts every attempt that is due by `now` (an unanswered attempt is followed by a retry). */
+function settle(task: SimulatedCallTask, now: number): SimulatedCallTask {
+  const until = task.cancelledAt ?? now;
+  const starts = [...task.attemptStarts];
+  for (;;) {
+    const i = starts.length - 1;
+    const start = starts[i] ?? 0;
+    if (answered(task, i) || starts.length >= task.maxAttempts) break;
+    const next = start + UNANSWERED_RING_MS + SIMULATED_RETRY_INTERVAL_MS;
+    if (next > until) break;
+    starts.push(next);
+  }
+  return starts.length === task.attemptStarts.length ? task : { ...task, attemptStarts: starts };
+}
+
+/** "Zadzwoń teraz" while a retry is scheduled: the next attempt starts at `now`. */
+export function retrySimulatedCallNow(task: SimulatedCallTask, now: number): SimulatedCallTask {
+  const settled = settle(task, now);
+  const status = simulatedCallStatus('', settled, now).status;
+  if (status !== 'retry_scheduled') return settled;
+  return { ...settled, attemptStarts: [...settled.attemptStarts, now] };
+}
+
+export function cancelSimulatedCall(task: SimulatedCallTask, now: number): SimulatedCallTask {
+  const settled = settle(task, now);
+  const { status } = simulatedCallStatus('', settled, now);
+  const finished = status === 'ended' || status === 'failed' || status === 'cancelled';
+  return finished ? settled : { ...settled, cancelledAt: now };
+}
+
+/** Status of the task at `now`. Pure — no clock inside. */
+export function simulatedCallStatus(
+  callId: string,
+  taskIn: SimulatedCallTask,
+  nowIn: number,
+): CallAssistStatus {
+  const task = settle(taskIn, nowIn);
+  const now = task.cancelledAt ?? nowIn;
+  const index = task.attemptStarts.length - 1;
+  const start = task.attemptStarts[index] ?? now;
+  const elapsed = Math.max(0, now - start);
+  const talk = talkMs(task);
+
+  // Earlier attempts all rang out (only the last one can be answered).
+  let waitedMs = index * UNANSWERED_RING_MS;
+  let talkedMs = 0;
+  if (answered(task, index)) {
+    waitedMs += Math.min(elapsed, ANSWERED_AT_MS);
+    talkedMs = Math.min(Math.max(0, elapsed - ANSWERED_AT_MS), talk);
+  } else {
+    waitedMs += Math.min(elapsed, UNANSWERED_RING_MS);
+  }
+  const base = {
+    callId,
+    stats: {
+      attempts: task.attemptStarts.length,
+      waitedSec: Math.round(waitedMs / 1000),
+      talkedSec: Math.round(talkedMs / 1000),
+    },
+  };
+  const attempt = (nextAt: number | null) => ({
+    number: index + 1,
+    max: task.maxAttempts,
+    nextAt: nextAt === null ? null : new Date(nextAt).toISOString(),
+  });
+
+  if (!answered(task, index)) {
+    const rangOut = elapsed >= UNANSWERED_RING_MS;
+    const more = index + 1 < task.maxAttempts;
+    const status = !rangOut
+      ? 'ringing'
+      : task.cancelledAt !== null
+        ? 'cancelled'
+        : more
+          ? 'retry_scheduled'
+          : 'failed';
+    const nextAt =
+      status === 'retry_scheduled'
+        ? start + UNANSWERED_RING_MS + SIMULATED_RETRY_INTERVAL_MS
+        : null;
+    return {
+      ...base,
+      status: task.cancelledAt !== null ? 'cancelled' : status,
+      transcript: [],
+      result: null,
+      attempt: attempt(nextAt),
+    };
+  }
+
+  const offer = clinicOffer(task.today);
+  const slot = simulatedSlot(task.req, task.today);
+  const transcript = script(task.req, task.today, offer, slot)
+    .filter((l) => l.atMs <= elapsed - ANSWERED_AT_MS)
+    .map(({ role, text }) => ({ role, text }));
+  const ended = elapsed >= ANSWERED_AT_MS + talk;
+  if (ended) {
+    return {
+      ...base,
+      status: 'ended',
+      transcript,
+      result: { booked: true, date: slot.date, time: slot.time, note: null },
+      attempt: attempt(null),
+    };
+  }
+  const status =
+    task.cancelledAt !== null
+      ? 'cancelled'
+      : elapsed < RINGING_UNTIL_MS
+        ? 'ringing'
+        : elapsed < ANSWERED_AT_MS
+          ? 'on_hold'
+          : 'in_progress';
+  return { ...base, status, transcript, result: null, attempt: attempt(null) };
+}
+
+/** One answered attempt, `elapsedMs` after dialling — the single-call view of the script. */
 export function simulateCallAssist(
   callId: string,
   req: CallAssistRequest,
   today: ISODate,
   elapsedMs: number,
 ): CallAssistStatus {
-  const offer = clinicOffer(today);
-  const slot = simulatedSlot(req, today);
-  const negotiated = offer.date !== slot.date || offer.time !== slot.time;
-  const duration = negotiated ? SIMULATED_NEGOTIATED_CALL_DURATION_MS : SIMULATED_CALL_DURATION_MS;
-  const transcript = script(req, today, offer, slot)
-    .filter((l) => l.atMs <= elapsedMs)
-    .map(({ role, text }) => ({ role, text }));
-  if (elapsedMs < RINGING_UNTIL_MS) return { callId, status: 'ringing', transcript, result: null };
-  if (elapsedMs < duration) {
-    return { callId, status: 'in_progress', transcript, result: null };
-  }
-  return {
-    callId,
-    status: 'ended',
-    transcript,
-    result: { booked: true, date: slot.date, time: slot.time, note: null },
-  };
+  const task = createSimulatedCallTask(
+    { ...req, retry: { maxAttempts: 1, intervalMin: 1 } },
+    today,
+    0,
+  );
+  return simulatedCallStatus(callId, task, elapsedMs);
 }

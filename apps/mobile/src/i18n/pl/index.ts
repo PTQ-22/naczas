@@ -1,4 +1,5 @@
 // Only merges per-feature files; each feature owner edits its own file (AGENTS.md §6).
+import { agent } from './agent';
 import { auth } from './auth';
 import { callAssist } from './callAssist';
 import { common } from './common';
@@ -12,6 +13,7 @@ import { settings } from './settings';
 import { visitPrep } from './visitPrep';
 
 export const pl = {
+  agent,
   auth,
   callAssist,
   common,
