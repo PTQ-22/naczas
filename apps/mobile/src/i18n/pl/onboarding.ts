@@ -9,6 +9,7 @@ export const onboarding = {
     start: 'Zaczynamy',
     resume: 'Dokończ rozpoczętą ankietę',
     loadDemo: 'Wczytaj profil demo',
+    login: 'Masz już Konto Rodzinne? Zaloguj się',
   },
   nav: {
     back: 'Wstecz',

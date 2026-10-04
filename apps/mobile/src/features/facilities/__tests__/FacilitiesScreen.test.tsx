@@ -25,6 +25,10 @@ jest.mock('../FacilitiesMap', () => ({
   FacilitiesMap: () => null,
 }));
 
+// The first render in this file loads the facilities feature cold (map, formatters) and took
+// 5–12 s under a full parallel `pnpm check` — over Jest's 5 s default, so it failed at random.
+jest.setTimeout(20_000);
+
 let openURL: jest.SpyInstance;
 
 describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
