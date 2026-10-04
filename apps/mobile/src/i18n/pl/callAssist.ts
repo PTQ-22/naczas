@@ -79,6 +79,16 @@ export const callAssist = {
     everyDay: 'Codziennie',
     workdays: 'Pn–Pt',
     weekends: 'Weekendy',
+    // Green = can come, red = surely can't (the agent refuses those hours).
+    mode: 'Zaznaczasz',
+    modeFree: 'Mogę',
+    modeBusy: 'Nie mogę',
+    kind: 'Rodzaj',
+    busyTitle: 'Nie możesz',
+    busyLine: '✕ {{line}}',
+    busyOnce: 'Nie mogę jednorazowo: {{count}}',
+    slotBusyA11y: 'Nie mogę: {{date}}, {{from}}–{{to}}',
+    slotBusyWeeklyA11y: 'Nie mogę, co tydzień, {{weekday}}, {{from}}–{{to}}',
     weekday: { '1': 'Pn', '2': 'Wt', '3': 'Śr', '4': 'Cz', '5': 'Pt', '6': 'So', '7': 'Nd' },
   },
 } as const;

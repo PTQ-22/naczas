@@ -6,7 +6,17 @@ import { ISODateSchema, TimeOfDaySchema, WeekdaySchema } from '@naczas/shared';
 
 import { validatedPersist } from './persist';
 
-const slotBase = { id: z.string(), from: TimeOfDaySchema, to: TimeOfDaySchema };
+export const SlotKindSchema = z.enum(['free', 'busy']);
+/** free = green "mogę", busy = red "na pewno nie mogę" */
+export type SlotKind = z.infer<typeof SlotKindSchema>;
+
+const slotBase = {
+  id: z.string(),
+  from: TimeOfDaySchema,
+  to: TimeOfDaySchema,
+  // Optional: blocks saved before "nie mogę" existed are free time.
+  kind: SlotKindSchema.optional(),
+};
 
 /** One block in the week view — like a calendar event: once, or every week on that weekday. */
 export const SlotSchema = z.discriminatedUnion('repeat', [
@@ -14,6 +24,8 @@ export const SlotSchema = z.discriminatedUnion('repeat', [
   z.object({ ...slotBase, repeat: z.literal('weekly'), weekday: WeekdaySchema }),
 ]);
 export type Slot = z.infer<typeof SlotSchema>;
+
+export const slotKind = (slot: Slot): SlotKind => slot.kind ?? 'free';
 
 const PersistedAvailabilitySchema = z.object({
   byProfile: z.record(z.string(), z.array(SlotSchema)),

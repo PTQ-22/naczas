@@ -11,9 +11,15 @@ import { EmptyState } from '@/components/EmptyState';
 import { IconButton } from '@/components/IconButton';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { SegmentedControl } from '@/features/facilities/SegmentedControl';
 import { t } from '@/i18n';
 import { selectActiveProfile, useProfilesStore, useToday } from '@/store';
-import { newSlotId, selectSlots, useAvailabilityStore } from '@/store/availability-store';
+import {
+  newSlotId,
+  selectSlots,
+  useAvailabilityStore,
+  type SlotKind,
+} from '@/store/availability-store';
 import { useTheme } from '@/theme';
 
 import { weekDays, weekStart } from './availability';
@@ -48,6 +54,8 @@ export default function AvailabilityScreen() {
   // Opens on the week of the facility's first free day — the one the user has to plan.
   const [start, setStart] = useState<ISODate>(weekStart(nearest ?? today));
   const [editing, setEditing] = useState<{ id: string; date: ISODate } | null>(null);
+  // What a new drag marks: green "mogę" or red "nie mogę".
+  const [mode, setMode] = useState<SlotKind>('free');
 
   if (!patient) {
     return (
@@ -104,15 +112,25 @@ export default function AvailabilityScreen() {
           onPress={() => setStart(shiftWeek(start, 1))}
         />
       </View>
+      <SegmentedControl
+        label={t('callAssist.availability.mode')}
+        value={mode}
+        onChange={setMode}
+        options={[
+          { value: 'free', label: t('callAssist.availability.modeFree') },
+          { value: 'busy', label: t('callAssist.availability.modeBusy') },
+        ]}
+      />
       <WeekGrid
         days={days}
         today={today}
         nearest={nearest}
         slots={slots}
+        mode={mode}
         selectedId={selected?.id ?? null}
         onCreate={(date, from, to) => {
           const id = newSlotId();
-          addSlot(patient.id, { id, from, to, repeat: 'once', date });
+          addSlot(patient.id, { id, from, to, kind: mode, repeat: 'once', date });
           setEditing({ id, date });
         }}
         onSelect={(slot, date) => setEditing({ id: slot.id, date })}

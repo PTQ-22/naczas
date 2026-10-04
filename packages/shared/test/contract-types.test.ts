@@ -185,9 +185,12 @@ namespace Doc {
   }
 
   export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
-  export interface CallAvailability {
+  export interface TimeRules {
     weekly: { days: Weekday[]; from: string; to: string }[];
     dates: { date: ISODate; from: string; to: string }[];
+  }
+  export interface CallAvailability extends TimeRules {
+    blocked?: TimeRules;
   }
 
   export interface CallAssistStartResponse {

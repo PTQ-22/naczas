@@ -35,7 +35,7 @@ import { SPECIALTY_EXAM_IDS, type SpecialtyExamId } from './specialties';
 
 /** API max — filters run on the client, so give them as much as the API allows. */
 const LIMIT = 50;
-const MAP_HEIGHT = { compact: 180, expanded: 420 } as const;
+const MAP_HEIGHT = { compact: 130, expanded: 420 } as const;
 
 /**
  * Doctors tab: any NFZ specialist the app knows about, whether the plan recommends it or not.

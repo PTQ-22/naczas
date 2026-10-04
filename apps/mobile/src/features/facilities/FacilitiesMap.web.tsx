@@ -75,7 +75,7 @@ export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: Faci
 
   if (!mods) {
     return (
-      <View style={{ flex: 1, minHeight: 160, borderRadius: radius.lg }}>
+      <View style={{ flex: 1, minHeight: 120, borderRadius: radius.lg }}>
         <Text tone="textMuted">{t('facilities.states.loading')}</Text>
       </View>
     );
@@ -98,13 +98,13 @@ export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: Faci
   return (
     <View
       accessibilityLabel={t('facilities.map.a11y')}
-      style={{ flex: 1, minHeight: 160, borderRadius: radius.lg, overflow: 'hidden' }}
+      style={{ flex: 1, minHeight: 120, borderRadius: radius.lg, overflow: 'hidden' }}
     >
       <MapContainer
         ref={setMap}
         center={[center.lat, center.lng]}
         zoom={ZOOM}
-        style={{ height: '100%', minHeight: 160, width: '100%' }}
+        style={{ height: '100%', minHeight: 120, width: '100%' }}
       >
         <TileLayer url={OSM_TILES} attribution={OSM_ATTRIBUTION} />
         {origin && (

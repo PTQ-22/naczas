@@ -46,11 +46,11 @@ describe('DoctorsScreen (no active profile → mock mama, Warszawa)', () => {
   it('map starts compact and expands on demand', async () => {
     render(<DoctorsScreen />);
     await screen.findAllByText('tyg.');
-    expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 180 });
+    expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 130 });
     fireEvent.press(screen.getByRole('button', { name: 'Rozwiń mapę' }));
     expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 420 });
     fireEvent.press(screen.getByRole('button', { name: 'Zwiń mapę' }));
-    expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 180 });
+    expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 130 });
   });
 
   it('switching the specialty queries that exam, regardless of the plan', async () => {

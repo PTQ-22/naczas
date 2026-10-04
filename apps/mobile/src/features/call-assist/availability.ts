@@ -9,7 +9,7 @@ import {
 } from '@naczas/shared';
 
 import { t } from '@/i18n';
-import type { Slot } from '@/store/availability-store';
+import { slotKind, type Slot, type SlotKind } from '@/store/availability-store';
 
 /** Rows of the week view: 7:00–21:00, typical clinic hours. */
 export const DAY_START = 7 * 60;
@@ -65,11 +65,17 @@ export function shiftEdge(slot: Slot, edge: 'from' | 'to', delta: number): Slot 
 
 /** "Powtarzaj co tydzień": `date` is the day the block was opened on, kept when switched off. */
 export function withRepeat(slot: Slot, weekly: boolean, date: ISODate): Slot {
-  const { id, from, to } = slot;
+  const { id, from, to, kind } = slot;
+  const base = { id, from, to, ...(kind && { kind }) };
   return weekly
-    ? { id, from, to, repeat: 'weekly', weekday: isoWeekday(date) }
-    : { id, from, to, repeat: 'once', date };
+    ? { ...base, repeat: 'weekly', weekday: isoWeekday(date) }
+    : { ...base, repeat: 'once', date };
 }
+
+export const withKind = (slot: Slot, kind: SlotKind): Slot => ({ ...slot, kind });
+
+const ofKind = (slots: readonly Slot[], kind: SlotKind) =>
+  slots.filter((s) => slotKind(s) === kind);
 
 /** Weekly blocks with the same hours, grouped: Mon 17–20 + Tue 17–20 → days [1, 2]. */
 function weeklyGroups(slots: readonly Slot[]) {
@@ -87,20 +93,29 @@ function weeklyGroups(slots: readonly Slot[]) {
 }
 
 /** What goes to the voice agent; undefined = nothing marked, take any slot. */
-export function toCallAvailability(
-  slots: readonly Slot[],
-  today: ISODate,
-): CallAvailability | undefined {
+function toRules(slots: readonly Slot[], today: ISODate) {
   const weekly = weeklyGroups(slots);
   const dates = slots
     .flatMap((s) => (s.repeat === 'once' && s.date >= today ? [s] : []))
     .map(({ date, from, to }) => ({ date, from, to }))
     .sort((x, y) => x.date.localeCompare(y.date) || x.from.localeCompare(y.from));
-  return weekly.length || dates.length ? { weekly, dates } : undefined;
+  return { weekly, dates };
 }
 
-export const upcomingOnce = (slots: readonly Slot[], today: ISODate) =>
-  slots.filter((s) => s.repeat === 'once' && s.date >= today).length;
+/** What goes to the voice agent: green blocks as free hours, red ones as `blocked`. */
+export function toCallAvailability(
+  slots: readonly Slot[],
+  today: ISODate,
+): CallAvailability | undefined {
+  const free = toRules(ofKind(slots, 'free'), today);
+  const busy = toRules(ofKind(slots, 'busy'), today);
+  const hasBusy = busy.weekly.length > 0 || busy.dates.length > 0;
+  if (!free.weekly.length && !free.dates.length && !hasBusy) return undefined;
+  return hasBusy ? { ...free, blocked: busy } : free;
+}
+
+export const upcomingOnce = (slots: readonly Slot[], today: ISODate, kind: SlotKind = 'free') =>
+  ofKind(slots, kind).filter((s) => s.repeat === 'once' && s.date >= today).length;
 
 /** "Pn–Pt", "Weekendy", "Pn, Śr" */
 export function daysLabel(days: readonly Weekday[]): string {
@@ -112,5 +127,5 @@ export function daysLabel(days: readonly Weekday[]): string {
 }
 
 /** One line per group of weekly blocks: "Pn, Śr 10:00–15:00". */
-export const weeklySummary = (slots: readonly Slot[]): string[] =>
-  weeklyGroups(slots).map((g) => `${daysLabel(g.days)} ${g.from}–${g.to}`);
+export const weeklySummary = (slots: readonly Slot[], kind: SlotKind = 'free'): string[] =>
+  weeklyGroups(ofKind(slots, kind)).map((g) => `${daysLabel(g.days)} ${g.from}–${g.to}`);

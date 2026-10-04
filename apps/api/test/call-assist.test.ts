@@ -218,7 +218,7 @@ describe('buildAssistant', () => {
     expect(a.server).toBeUndefined();
   });
 
-  it("tells the agent the patient's free hours, and nothing when none were given", () => {
+  it("gives the agent the patient's calendar as concrete windows, and nothing when none were given", () => {
     const prompt = (b: CallAssistRequest) =>
       (buildAssistant(b, '2026-10-04') as { model: { messages: { content: string }[] } }).model
         .messages[0]!.content;
@@ -229,9 +229,32 @@ describe('buildAssistant', () => {
         dates: [{ date: '2026-10-21', from: '09:00', to: '12:00' }],
       },
     });
-    expect(withHours).toContain('- w dni robocze 17:00–20:00');
-    expect(withHours).toContain('- 21 października 09:00–12:00');
-    expect(prompt(body)).not.toContain('Pacjent może przyjść');
+    // 04.10.2026 is a Sunday: the first window is Monday's.
+    expect(withHours).toContain('- poniedziałek 5 października 17:00–20:00');
+    expect(withHours).toContain('- środa 21 października 09:00–12:00');
+    expect(withHours).toContain('Negocjacja terminu:');
+    expect(withHours).toContain('zaproponuj konkretny termin z kalendarza');
+    expect(prompt(body)).not.toContain('Kalendarz pacjenta');
+    expect(prompt(body)).not.toContain('Negocjacja terminu');
+  });
+
+  it("tells the agent the hours the patient can't come, as a hard rule", () => {
+    const a = buildAssistant(
+      {
+        ...body,
+        availability: {
+          weekly: [],
+          dates: [],
+          blocked: { weekly: [{ days: [3], from: '08:00', to: '12:00' }], dates: [] },
+        },
+      },
+      '2026-10-04',
+    ) as { model: { messages: { content: string }[] } };
+    const content = a.model.messages[0]!.content;
+    expect(content).toContain('NA PEWNO NIE MOŻE');
+    expect(content).toContain('- w środy 08:00–12:00');
+    expect(content).not.toContain('Kalendarz pacjenta');
+    expect(content).toContain('odmów i poproś o inny');
   });
 
   it('wires the webhook only with a public URL', () => {

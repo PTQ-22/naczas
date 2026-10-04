@@ -18,8 +18,8 @@ const FROM_BEFORE_TO = { message: '`from` must be before `to`' };
 export const AvailabilityWindowSchema = z.object(windowShape).refine(fromBeforeTo, FROM_BEFORE_TO);
 export type AvailabilityWindow = z.infer<typeof AvailabilityWindowSchema>;
 
-export const CallAvailabilitySchema = z.object({
-  /** Usual free hours on given weekdays, e.g. Mon–Fri 17:00–20:00 */
+const timeRulesShape = {
+  /** Hours on given weekdays, e.g. Mon–Fri 17:00–20:00 */
   weekly: z
     .array(
       z
@@ -27,15 +27,31 @@ export const CallAvailabilitySchema = z.object({
         .refine(fromBeforeTo, FROM_BEFORE_TO),
     )
     .max(50),
-  /** One-off free hours on specific days, on top of the weekly ones */
+  /** One-off hours on specific days, on top of the weekly ones */
   dates: z
     .array(z.object({ date: ISODateSchema, ...windowShape }).refine(fromBeforeTo, FROM_BEFORE_TO))
     .max(200),
+};
+export const TimeRulesSchema = z.object(timeRulesShape);
+export type TimeRules = z.infer<typeof TimeRulesSchema>;
+
+export const CallAvailabilitySchema = z.object({
+  /** When the patient is free (weekly + dates) */
+  ...timeRulesShape,
+  /** When the patient surely can't come — beats the free hours. Optional: older clients omit it. */
+  blocked: TimeRulesSchema.optional(),
 });
 export type CallAvailability = z.infer<typeof CallAvailabilitySchema>;
 
+const rulesEmpty = (r: TimeRules | undefined) =>
+  !r || (r.weekly.length === 0 && r.dates.length === 0);
+
+/** Nothing marked at all — any slot is fine. */
 export const isAvailabilityEmpty = (av: CallAvailability) =>
-  av.weekly.length === 0 && av.dates.length === 0;
+  rulesEmpty(av) && rulesEmpty(av.blocked);
+
+/** True when the user marked free hours (not only blocked ones). */
+export const hasFreeHours = (av: CallAvailability) => !rulesEmpty(av);
 
 /** ISO weekday of a 'YYYY-MM-DD' date, independent of the machine's time zone. */
 export function isoWeekday(date: ISODate): Weekday {
@@ -45,15 +61,44 @@ export function isoWeekday(date: ISODate): Weekday {
 
 const byFrom = (a: AvailabilityWindow, b: AvailabilityWindow) => a.from.localeCompare(b.from);
 
-/** Hours the patient is free on `date`: the weekly ones plus that date's own (as in a calendar). */
-export function availabilityOn(av: CallAvailability, date: ISODate): AvailabilityWindow[] {
+/** Windows of `rules` on `date`: the weekly ones plus that date's own (as in a calendar). */
+function rulesOn(rules: TimeRules | undefined, date: ISODate): AvailabilityWindow[] {
+  if (!rules) return [];
   const weekday = isoWeekday(date);
   return [
-    ...av.weekly.filter((w) => w.days.includes(weekday)),
-    ...av.dates.filter((d) => d.date === date),
+    ...rules.weekly.filter((w) => w.days.includes(weekday)),
+    ...rules.dates.filter((d) => d.date === date),
   ]
     .map(({ from, to }) => ({ from, to }))
     .sort(byFrom);
+}
+
+/** `window` with every blocked window cut out — may split into several pieces or vanish. */
+function subtract(window: AvailabilityWindow, blocked: readonly AvailabilityWindow[]) {
+  let pieces = [window];
+  for (const b of blocked) {
+    pieces = pieces.flatMap((p) => {
+      if (b.to <= p.from || b.from >= p.to) return [p];
+      return [
+        ...(b.from > p.from ? [{ from: p.from, to: b.from }] : []),
+        ...(b.to < p.to ? [{ from: b.to, to: p.to }] : []),
+      ];
+    });
+  }
+  return pieces;
+}
+
+/** Hours the patient is free on `date`, minus the hours they marked as impossible. */
+export function availabilityOn(av: CallAvailability, date: ISODate): AvailabilityWindow[] {
+  const blocked = rulesOn(av.blocked, date);
+  return rulesOn(av, date)
+    .flatMap((w) => subtract(w, blocked))
+    .sort(byFrom);
+}
+
+/** True when `time` on `date` falls into a blocked window. */
+export function isBlocked(av: CallAvailability, date: ISODate, time: TimeOfDay): boolean {
+  return rulesOn(av.blocked, date).some((w) => w.from <= time && time < w.to);
 }
 
 function addDays(date: ISODate, days: number): ISODate {
@@ -75,6 +120,45 @@ export function firstAvailableSlot(
   }
   return null;
 }
+
+/** Does `time` on `date` suit the patient? Free hours (if any were marked) and not blocked. */
+export function slotFits(av: CallAvailability, date: ISODate, time: TimeOfDay): boolean {
+  if (isBlocked(av, date, time)) return false;
+  if (!hasFreeHours(av)) return true;
+  return availabilityOn(av, date).some((w) => w.from <= time && time < w.to);
+}
+
+/**
+ * The patient's calendar as concrete windows for the next `days` days — what the voice agent
+ * checks every offer against and picks counter-proposals from. Blocked hours are already cut out.
+ */
+export function upcomingWindows(
+  av: CallAvailability,
+  from: ISODate,
+  days = 21,
+  max = 20,
+): { date: ISODate; from: TimeOfDay; to: TimeOfDay }[] {
+  const out: { date: ISODate; from: TimeOfDay; to: TimeOfDay }[] = [];
+  for (let i = 0; i < days && out.length < max; i++) {
+    const date = addDays(from, i);
+    for (const w of availabilityOn(av, date)) out.push({ date, ...w });
+  }
+  return out.slice(0, max);
+}
+
+const WEEKDAYS_NOMINATIVE = [
+  'poniedziałek',
+  'wtorek',
+  'środa',
+  'czwartek',
+  'piątek',
+  'sobota',
+  'niedziela',
+];
+
+/** "poniedziałek 19 października" */
+export const spokenDayDate = (date: ISODate) =>
+  `${WEEKDAYS_NOMINATIVE[isoWeekday(date) - 1]} ${spokenDate(date)}`;
 
 const WEEKDAYS_PLURAL = [
   'poniedziałki',
@@ -125,11 +209,20 @@ export function spokenDate(date: ISODate): string {
  * Polish phrases for the voice agent, one per rule: "w dni robocze 17:00–20:00",
  * "21 października 9:00–12:00". Dates before `today` are left out — they can't be booked.
  */
-export function describeAvailability(av: CallAvailability, today: ISODate): string[] {
-  const weekly = av.weekly.map((w) => `${spokenDays(w.days)} ${w.from}–${w.to}`);
-  const dates = [...new Set(av.dates.map((d) => d.date))]
+function describeRules(rules: TimeRules, today: ISODate): string[] {
+  const weekly = rules.weekly.map((w) => `${spokenDays(w.days)} ${w.from}–${w.to}`);
+  const dates = [...new Set(rules.dates.map((d) => d.date))]
     .filter((date) => date >= today)
     .sort()
-    .map((date) => `${spokenDate(date)} ${spokenWindows(av.dates.filter((d) => d.date === date))}`);
+    .map(
+      (date) => `${spokenDate(date)} ${spokenWindows(rules.dates.filter((d) => d.date === date))}`,
+    );
   return [...weekly, ...dates];
 }
+
+export const describeAvailability = (av: CallAvailability, today: ISODate): string[] =>
+  describeRules(av, today);
+
+/** Same phrases for the hours the patient can't come. */
+export const describeBlocked = (av: CallAvailability, today: ISODate): string[] =>
+  av.blocked ? describeRules(av.blocked, today) : [];

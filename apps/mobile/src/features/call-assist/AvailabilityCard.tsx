@@ -27,7 +27,9 @@ export function AvailabilityCard({ examId, slots, today, nearest }: Availability
   const { space } = useTheme();
   const weekly = weeklySummary(slots);
   const once = upcomingOnce(slots, today);
-  const empty = weekly.length === 0 && once === 0;
+  const busyWeekly = weeklySummary(slots, 'busy');
+  const busyOnce = upcomingOnce(slots, today, 'busy');
+  const empty = weekly.length === 0 && once === 0 && busyWeekly.length === 0 && busyOnce === 0;
 
   return (
     <Plate testID="availability-card">
@@ -40,6 +42,14 @@ export function AvailabilityCard({ examId, slots, today, nearest }: Availability
           <Text key={line}>{`↻ ${line}`}</Text>
         ))}
         {once > 0 && <Text>{t('callAssist.availability.once', { count: once })}</Text>}
+        {busyWeekly.map((line) => (
+          <Text key={`busy-${line}`} tone="danger">
+            {t('callAssist.availability.busyLine', { line })}
+          </Text>
+        ))}
+        {busyOnce > 0 && (
+          <Text tone="danger">{t('callAssist.availability.busyOnce', { count: busyOnce })}</Text>
+        )}
         {nearest && (
           <Text tone="textMuted">
             {t('callAssist.availability.nearest', {

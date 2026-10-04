@@ -7,12 +7,13 @@ import type { ISODate } from '@naczas/shared';
 import { Button } from '@/components/Button';
 import { IconButton } from '@/components/IconButton';
 import { Text } from '@/components/Text';
+import { SegmentedControl } from '@/features/facilities/SegmentedControl';
 import { ToggleRow } from '@/features/settings/ToggleRow';
 import { t } from '@/i18n';
-import type { Slot } from '@/store/availability-store';
+import { slotKind, type Slot } from '@/store/availability-store';
 import { useTheme } from '@/theme';
 
-import { shiftEdge, STEP, withRepeat } from './availability';
+import { shiftEdge, STEP, withKind, withRepeat } from './availability';
 
 interface SlotEditorProps {
   slot: Slot;
@@ -87,6 +88,15 @@ export function SlotEditor({ slot, date, onChange, onDelete, onDone }: SlotEdito
           onLater={() => onChange(shiftEdge(slot, 'to', STEP))}
         />
       </View>
+      <SegmentedControl
+        label={t('callAssist.availability.kind')}
+        value={slotKind(slot)}
+        onChange={(kind) => onChange(withKind(slot, kind))}
+        options={[
+          { value: 'free', label: t('callAssist.availability.modeFree') },
+          { value: 'busy', label: t('callAssist.availability.modeBusy') },
+        ]}
+      />
       <ToggleRow
         label={t('callAssist.availability.repeat')}
         value={weekly}

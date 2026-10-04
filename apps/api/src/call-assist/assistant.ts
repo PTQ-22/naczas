@@ -1,6 +1,10 @@
 import {
   callAssistOpening,
   describeAvailability,
+  describeBlocked,
+  hasFreeHours,
+  spokenDayDate,
+  upcomingWindows,
   type CallAssistRequest,
   type ISODate,
 } from '@naczas/shared';
@@ -15,14 +19,38 @@ export interface AssistantOptions {
 
 /** The user's calendar, or nothing — then any slot is fine. */
 function availabilityLines(req: CallAssistRequest, today: ISODate): string[] {
-  const free = req.availability ? describeAvailability(req.availability, today) : [];
-  if (free.length === 0) return [];
+  const av = req.availability;
+  if (!av) return [];
+  const windows = hasFreeHours(av) ? upcomingWindows(av, today) : [];
+  const blocked = describeBlocked(av, today);
+  if (windows.length === 0 && blocked.length === 0) return [];
   return [
-    'Pacjent może przyjść tylko w tych terminach:',
-    ...free.map((line) => `- ${line}`),
-    'Pytaj o termin w tych godzinach i sam je podaj, gdy rejestracja zapyta, kiedy pacjentowi pasuje.',
-    'Jeśli proponują termin poza nimi, poproś o inny w podanych godzinach. Gdy żaden nie pasuje,',
-    'przyjmij najbliższy możliwy i powiedz, że pacjent w razie czego oddzwoni, żeby go zmienić.',
+    ...(windows.length
+      ? [
+          'Kalendarz pacjenta — najbliższe okna, w których MOŻE przyjść (godziny „nie może” są już wycięte):',
+          ...windows.map((w) => `- ${spokenDayDate(w.date)} ${w.from}–${w.to}`),
+          `Ogólnie pacjentowi pasuje: ${describeAvailability(av, today).join('; ')}.`,
+        ]
+      : []),
+    ...(blocked.length
+      ? [
+          'Pacjent NA PEWNO NIE MOŻE przyjść w tych terminach:',
+          ...blocked.map((line) => `- ${line}`),
+        ]
+      : []),
+    '',
+    'Negocjacja terminu:',
+    '- Najpierw zapytaj o najbliższy wolny termin.',
+    '- Każdy proponowany termin sprawdź w kalendarzu powyżej. Termin wpadający w godziny „nie może” jest wykluczony.',
+    ...(windows.length
+      ? [
+          '- Jeśli termin nie mieści się w żadnym oknie: grzecznie odmów i sam zaproponuj konkretny termin z kalendarza',
+          '  (dzień, data i godzina początku okna), np. „A czy byłoby możliwe 19 października o 17:00?”.',
+          '  Jeśli i to nie pasuje rejestracji, proponuj kolejne okna po kolei.',
+          '- Po trzech nieudanych próbach przyjmij najbliższy termin, który nie wpada w godziny „nie może”,',
+          '  i powiedz, że pacjent w razie czego oddzwoni, żeby go zmienić.',
+        ]
+      : ['- Jeśli termin wpada w godziny „nie może”, odmów i poproś o inny.']),
   ];
 }
 

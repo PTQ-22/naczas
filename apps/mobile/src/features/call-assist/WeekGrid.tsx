@@ -7,7 +7,7 @@ import { isoWeekday, type ISODate, type TimeOfDay } from '@naczas/shared';
 
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
-import type { Slot } from '@/store/availability-store';
+import { slotKind, type Slot, type SlotKind } from '@/store/availability-store';
 import { useTheme } from '@/theme';
 
 import { DAY_END, DAY_START, rangeFromDrag, slotsOn, toMinutes } from './availability';
@@ -19,6 +19,8 @@ interface WeekGridProps {
   /** The facility's first free date — ringed in the header */
   nearest: ISODate | null;
   slots: readonly Slot[];
+  /** Kind of block a new drag creates — colours the draft */
+  mode: SlotKind;
   selectedId: string | null;
   onCreate: (date: ISODate, from: TimeOfDay, to: TimeOfDay) => void;
   onSelect: (slot: Slot, date: ISODate) => void;
@@ -41,6 +43,7 @@ export function WeekGrid({
   today,
   nearest,
   slots,
+  mode,
   selectedId,
   onCreate,
   onSelect,
@@ -111,6 +114,9 @@ export function WeekGrid({
     height: ((toMinutes(to) - toMinutes(from)) / 60) * rowH,
   });
   const draftRange = draft && rangeFromDrag(draft.a, draft.b);
+  // Light green = can come, light red = surely can't — the urgency "done" / "act now" tokens.
+  const palette = (kind: SlotKind) =>
+    kind === 'busy' ? colors.urgency.act_now : colors.urgency.done;
 
   return (
     <View style={{ flex: 1, gap: space.xs }}>
@@ -227,6 +233,9 @@ export function WeekGrid({
               slotsOn(slots, date).map((slot) => {
                 const selected = slot.id === selectedId;
                 const weekly = slot.repeat === 'weekly';
+                const busy = slotKind(slot) === 'busy';
+                const tint = palette(slotKind(slot));
+                const ink = selected ? colors.surface : tint.fg;
                 return (
                   <Pressable
                     key={`${slot.id}-${date}`}
@@ -234,16 +243,26 @@ export function WeekGrid({
                     accessibilityRole="button"
                     accessibilityLabel={
                       weekly
-                        ? t('callAssist.availability.slotWeeklyA11y', {
-                            weekday: format(parseISO(date), 'EEEE', { locale: pl }),
-                            from: slot.from,
-                            to: slot.to,
-                          })
-                        : t('callAssist.availability.slotA11y', {
-                            date: longDate(date),
-                            from: slot.from,
-                            to: slot.to,
-                          })
+                        ? t(
+                            busy
+                              ? 'callAssist.availability.slotBusyWeeklyA11y'
+                              : 'callAssist.availability.slotWeeklyA11y',
+                            {
+                              weekday: format(parseISO(date), 'EEEE', { locale: pl }),
+                              from: slot.from,
+                              to: slot.to,
+                            },
+                          )
+                        : t(
+                            busy
+                              ? 'callAssist.availability.slotBusyA11y'
+                              : 'callAssist.availability.slotA11y',
+                            {
+                              date: longDate(date),
+                              from: slot.from,
+                              to: slot.to,
+                            },
+                          )
                     }
                     accessibilityState={{ selected }}
                     style={{
@@ -253,8 +272,8 @@ export function WeekGrid({
                       paddingVertical: space.xs / 2,
                       borderRadius: radius.sm / 2,
                       borderLeftWidth: borderWidth.plate * 1.5,
-                      borderColor: colors.primary,
-                      backgroundColor: selected ? colors.primary : colors.primarySoft,
+                      borderColor: tint.accent,
+                      backgroundColor: selected ? tint.accent : tint.bg,
                       opacity: date < today ? 0.5 : 1,
                     }}
                   >
@@ -262,7 +281,7 @@ export function WeekGrid({
                       variant="caption"
                       tabular
                       selectable={false}
-                      tone={selected ? 'onPrimary' : 'primary'}
+                      color={ink}
                       numberOfLines={1}
                     >
                       {short(slot.from)}
@@ -271,7 +290,7 @@ export function WeekGrid({
                       variant="caption"
                       tabular
                       selectable={false}
-                      tone={selected ? 'onPrimary' : 'primary'}
+                      color={ink}
                       numberOfLines={1}
                     >
                       {weekly ? `${short(slot.to)} ↻` : `–${short(slot.to)}`}
@@ -287,15 +306,15 @@ export function WeekGrid({
               style={{
                 ...block(draftRange.from, draftRange.to, draft.col),
                 borderRadius: radius.sm / 2,
-                backgroundColor: colors.primary,
+                backgroundColor: palette(mode).accent,
                 opacity: 0.6,
                 padding: space.xs / 2,
               }}
             >
-              <Text variant="caption" tone="onPrimary" tabular selectable={false}>
+              <Text variant="caption" color={colors.surface} tabular selectable={false}>
                 {short(draftRange.from)}
               </Text>
-              <Text variant="caption" tone="onPrimary" tabular selectable={false}>
+              <Text variant="caption" color={colors.surface} tabular selectable={false}>
                 {`–${short(draftRange.to)}`}
               </Text>
             </View>

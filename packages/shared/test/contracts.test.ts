@@ -12,6 +12,12 @@ import {
   ProfileSchema,
   availabilityOn,
   describeAvailability,
+  describeBlocked,
+  isAvailabilityEmpty,
+  isBlocked,
+  slotFits,
+  spokenDayDate,
+  upcomingWindows,
   firstAvailableSlot,
   simulateCallAssist,
   simulatedSlotDate,
@@ -341,8 +347,118 @@ describe('availability', () => {
       callerName: 'Kasi',
     };
     const end = simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', 60_000);
-    // 14 days out is Sun 18.10 → Mon 19.10, after 17:00
+    // The clinic offers Mon 19.10 at 10:30 (14 days out, off the weekend) — outside 17–20, so the
+    // agent declines and counter-proposes the first fitting time from the calendar.
     expect(end.result).toMatchObject({ booked: true, date: '2026-10-19', time: '17:00' });
-    expect(end.transcript[2]?.text).toContain('w dni robocze 17:00–20:00');
+    const lines = end.transcript.map((l) => l.text);
+    expect(lines[3]).toBe('Mam wolne 19 października o 10:30.');
+    expect(lines[4]).toMatch(
+      /^Niestety to poza godzinami.*czy byłoby możliwe 19 października o 17:00\?/,
+    );
+    expect(lines[5]).toContain('19 października o 17:00 jest wolne');
+    expect(lines[6]).toContain('potwierdzam: 19 października o 17:00');
+  });
+
+  it('negotiation takes longer; a fitting offer is accepted straight away', () => {
+    const req = {
+      examName: 'kolonoskopię',
+      facilityName: 'X',
+      forWhom: 'mamę',
+      callerName: 'Kasi',
+    };
+    expect(simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', 25_000).status).toBe(
+      'in_progress',
+    );
+    const morning: CallAvailability = {
+      weekly: [{ days: [1], from: '09:00', to: '12:00' }],
+      dates: [],
+    };
+    const end = simulateCallAssist('s', { ...req, availability: morning }, '2026-10-04', 60_000);
+    expect(end.result).toMatchObject({ date: '2026-10-19', time: '10:30' });
+    expect(end.transcript.map((l) => l.text).join(' ')).not.toContain('Niestety');
+  });
+
+  describe('blocked hours', () => {
+    const blocked: CallAvailability = {
+      ...av,
+      blocked: { weekly: [{ days: [1], from: '17:00', to: '18:30' }], dates: [] },
+    };
+    const req = {
+      examName: 'kolonoskopię',
+      facilityName: 'X',
+      forWhom: 'mamę',
+      callerName: 'Kasi',
+    };
+
+    it('are cut out of the free hours (may split a window)', () => {
+      expect(availabilityOn(blocked, '2026-10-19')).toEqual([{ from: '18:30', to: '20:00' }]);
+      const middle: CallAvailability = {
+        ...av,
+        blocked: { weekly: [], dates: [{ date: '2026-10-20', from: '18:00', to: '19:00' }] },
+      };
+      expect(availabilityOn(middle, '2026-10-20')).toEqual([
+        { from: '17:00', to: '18:00' },
+        { from: '19:00', to: '20:00' },
+      ]);
+      expect(availabilityOn(blocked, '2026-10-20')).toEqual([{ from: '17:00', to: '20:00' }]);
+    });
+
+    it('move the first free slot past them', () => {
+      expect(firstAvailableSlot(blocked, '2026-10-17')).toEqual({
+        date: '2026-10-19',
+        time: '18:30',
+      });
+    });
+
+    it('make the availability non-empty and are described separately', () => {
+      const onlyBlocked: CallAvailability = { weekly: [], dates: [], blocked: blocked.blocked };
+      expect(isAvailabilityEmpty(onlyBlocked)).toBe(false);
+      expect(isAvailabilityEmpty({ weekly: [], dates: [] })).toBe(true);
+      expect(isBlocked(onlyBlocked, '2026-10-19', '17:30')).toBe(true);
+      expect(isBlocked(onlyBlocked, '2026-10-19', '18:30')).toBe(false);
+      expect(describeBlocked(blocked, '2026-10-04')).toEqual(['w poniedziałki 17:00–18:30']);
+      expect(describeBlocked(av, '2026-10-04')).toEqual([]);
+    });
+
+    it('the simulated clinic skips a blocked day when only "can\'t" hours are marked', () => {
+      const onlyBlocked: CallAvailability = {
+        weekly: [],
+        dates: [],
+        // 14 days out from 04.10 is Mon 19.10 (after the weekend shift) — block its 10:30.
+        blocked: { weekly: [], dates: [{ date: '2026-10-19', from: '08:00', to: '12:00' }] },
+      };
+      const end = simulateCallAssist(
+        's',
+        { ...req, availability: onlyBlocked },
+        '2026-10-04',
+        60_000,
+      );
+      expect(end.result).toMatchObject({ booked: true, date: '2026-10-20', time: '10:30' });
+      expect(end.transcript[4]?.text).toMatch(/^Niestety wtedy na pewno nie damy rady/);
+      expect(end.transcript[4]?.text).toContain('Na pewno nie możemy: 19 października 08:00–12:00');
+    });
+
+    it('slotFits checks free hours and blocked hours', () => {
+      expect(slotFits(blocked, '2026-10-19', '17:00')).toBe(false); // blocked Mon 17–18:30
+      expect(slotFits(blocked, '2026-10-19', '19:00')).toBe(true);
+      expect(slotFits(blocked, '2026-10-19', '10:00')).toBe(false); // outside free hours
+      expect(slotFits({ weekly: [], dates: [] }, '2026-10-19', '10:00')).toBe(true);
+    });
+
+    it('upcomingWindows lists concrete windows for the agent, blocked hours cut out', () => {
+      expect(upcomingWindows(blocked, '2026-10-19', 2)).toEqual([
+        { date: '2026-10-19', from: '18:30', to: '20:00' },
+        { date: '2026-10-20', from: '17:00', to: '20:00' },
+      ]);
+      expect(upcomingWindows(blocked, '2026-10-19', 30, 3)).toHaveLength(3);
+      expect(spokenDayDate('2026-10-19')).toBe('poniedziałek 19 października');
+    });
+
+    it('parse in a request and old requests without them still parse', () => {
+      expect(CallAssistRequestSchema.parse({ ...req, availability: blocked }).availability).toEqual(
+        blocked,
+      );
+      expect(CallAssistRequestSchema.parse({ ...req, availability: av }).availability).toEqual(av);
+    });
   });
 });

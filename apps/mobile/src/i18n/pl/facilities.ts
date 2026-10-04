@@ -69,7 +69,7 @@ export const facilities = {
     unset: 'Usuń z domyślnych',
     unsetA11y: 'Przestań używać {{name}} jako domyślnej przychodni',
     title: 'Twoja przychodnia',
-    none: 'Nie wybrano. Przy dowolnej placówce dotknij „Ustaw jako moją przychodnię” — będzie zawsze na górze list i pod ręką do telefonu.',
+    none: 'Nie wybrano — oznacz gwiazdką przy placówce.',
     noPhone: 'Brak numeru telefonu w danych NFZ.',
   },
   states: {

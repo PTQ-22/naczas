@@ -10,6 +10,7 @@ import {
   weekDays,
   weeklySummary,
   weekStart,
+  withKind,
   withRepeat,
 } from '../availability';
 
@@ -90,5 +91,33 @@ describe('week view helpers', () => {
     expect(
       weeklySummary(([1, 2, 3, 4, 5] as const).map((d) => weekly(d, '17:00', '20:00'))),
     ).toEqual(['Pn–Pt 17:00–20:00']);
+  });
+
+  it('red "nie mogę" blocks go to the agent as blocked hours, not as free time', () => {
+    const slots = [
+      weekly(1, '17:00', '20:00'),
+      withKind(weekly(3, '08:00', '12:00'), 'busy'),
+      withKind(once('2026-10-21', '10:00', '11:00'), 'busy'),
+    ];
+    expect(toCallAvailability(slots, '2026-10-04')).toEqual({
+      weekly: [{ days: [1], from: '17:00', to: '20:00' }],
+      dates: [],
+      blocked: {
+        weekly: [{ days: [3], from: '08:00', to: '12:00' }],
+        dates: [{ date: '2026-10-21', from: '10:00', to: '11:00' }],
+      },
+    });
+    expect(weeklySummary(slots)).toEqual(['Pn 17:00–20:00']);
+    expect(weeklySummary(slots, 'busy')).toEqual(['Śr 08:00–12:00']);
+    // Only red blocks: still sent, so the agent knows what to refuse.
+    expect(toCallAvailability(slots.slice(1), '2026-10-04')).toMatchObject({
+      weekly: [],
+      dates: [],
+    });
+  });
+
+  it('repeat toggle keeps the block kind', () => {
+    const busy = withKind(once('2026-10-21', '10:00', '11:00'), 'busy');
+    expect(withRepeat(busy, true, '2026-10-21')).toMatchObject({ kind: 'busy', repeat: 'weekly' });
   });
 });

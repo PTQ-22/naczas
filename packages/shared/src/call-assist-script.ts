@@ -1,4 +1,11 @@
-import { describeAvailability, firstAvailableSlot, spokenDate } from './availability';
+import {
+  describeBlocked,
+  firstAvailableSlot,
+  hasFreeHours,
+  isBlocked,
+  slotFits,
+  spokenDate,
+} from './availability';
 
 import type { CallAssistRequest, CallAssistStatus } from './api';
 import type { ISODate, TimeOfDay } from './domain';
@@ -34,46 +41,87 @@ interface ScriptLine {
 
 const RINGING_UNTIL_MS = 2500;
 export const SIMULATED_CALL_DURATION_MS = 23_000;
+/** With a counter-proposal the call takes two more turns. */
+export const SIMULATED_NEGOTIATED_CALL_DURATION_MS = 30_000;
 
 interface Slot {
   date: ISODate;
   time: TimeOfDay;
 }
 
+/** What the simulated clinic offers first: its usual slot, two weeks out. */
+const clinicOffer = (today: ISODate): Slot => ({
+  date: simulatedSlotDate(today),
+  time: SIMULATED_SLOT_TIME,
+});
+
 /**
- * The clinic's "first free slot": two weeks out, or — when the user marked availability — the
- * first time from then on that fits it, so the demo shows the agent respecting the calendar.
+ * The slot the call ends up booking. Without a calendar it is the clinic's offer; with one, the
+ * offer is checked against it and — when it doesn't fit — the agent's counter-proposal (the first
+ * time from then on that fits) is booked instead, so the demo shows the negotiation.
  */
 export function simulatedSlot(req: CallAssistRequest, today: ISODate): Slot {
-  const base = simulatedSlotDate(today);
-  const fits = req.availability && firstAvailableSlot(req.availability, base);
-  return fits || { date: base, time: SIMULATED_SLOT_TIME };
+  const offer = clinicOffer(today);
+  const av = req.availability;
+  if (!av || slotFits(av, offer.date, offer.time)) return offer;
+  if (hasFreeHours(av)) {
+    const fits = firstAvailableSlot(av, offer.date);
+    if (fits) return fits;
+  }
+  // Only "can't" hours marked: the clinic's usual time, on the first day it isn't blocked.
+  let date = offer.date;
+  for (let i = 0; i < 60 && isBlocked(av, date, offer.time); i++) date = nextDay(date);
+  return { date, time: offer.time };
 }
 
-function script(req: CallAssistRequest, today: ISODate, slot: Slot): ScriptLine[] {
-  const when = `${spokenDate(slot.date)} o ${slot.time}`;
-  const free = req.availability ? describeAvailability(req.availability, today) : [];
-  return [
-    {
-      atMs: 3000,
-      role: 'agent',
-      text: callAssistOpening(req),
-    },
+function nextDay(date: ISODate): ISODate {
+  const d = new Date(`${date}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
+const spokenSlot = (slot: Slot) => `${spokenDate(slot.date)} o ${slot.time}`;
+
+function script(req: CallAssistRequest, today: ISODate, offer: Slot, booked: Slot): ScriptLine[] {
+  const when = spokenSlot(booked);
+  const opening: ScriptLine[] = [
+    { atMs: 3000, role: 'agent', text: callAssistOpening(req) },
     { atMs: 7000, role: 'clinic', text: 'Dzień dobry. A jest skierowanie?' },
     {
       atMs: 10_000,
       role: 'agent',
-      text: free.length
-        ? `Tak, jest e-skierowanie. Pasują nam terminy: ${free.join('; ')}. Co jest najbliżej?`
-        : 'Tak, jest e-skierowanie. Jaki jest najbliższy wolny termin?',
+      text: 'Tak, jest e-skierowanie. Jaki jest najbliższy wolny termin?',
     },
-    { atMs: 14_000, role: 'clinic', text: `Mam wolne ${when}.` },
+    { atMs: 14_000, role: 'clinic', text: `Mam wolne ${spokenSlot(offer)}.` },
+  ];
+  const confirm = (atMs: number): ScriptLine[] => [
     {
-      atMs: 17_500,
+      atMs,
       role: 'agent',
       text: `Świetnie, potwierdzam: ${when}. Dane osobowe zostaną podane przy rejestracji na miejscu. Dziękuję, do widzenia.`,
     },
-    { atMs: 21_000, role: 'clinic', text: 'Do widzenia.' },
+    { atMs: atMs + 3500, role: 'clinic', text: 'Do widzenia.' },
+  ];
+  if (offer.date === booked.date && offer.time === booked.time)
+    return [...opening, ...confirm(17_500)];
+
+  // The offer clashes with the calendar: decline, say why, propose a time that fits.
+  const blocked = req.availability ? describeBlocked(req.availability, today) : [];
+  const why =
+    req.availability && isBlocked(req.availability, offer.date, offer.time)
+      ? 'wtedy na pewno nie damy rady'
+      : 'to poza godzinami, w których możemy przyjść';
+  return [
+    ...opening,
+    {
+      atMs: 17_500,
+      role: 'agent',
+      text: `Niestety ${why}. Sprawdziłam kalendarz — czy byłoby możliwe ${when}?${
+        blocked.length ? ` Na pewno nie możemy: ${blocked.join('; ')}.` : ''
+      }`,
+    },
+    { atMs: 21_500, role: 'clinic', text: `Chwileczkę… Tak, ${when} jest wolne.` },
+    ...confirm(24_500),
   ];
 }
 
@@ -84,12 +132,15 @@ export function simulateCallAssist(
   today: ISODate,
   elapsedMs: number,
 ): CallAssistStatus {
+  const offer = clinicOffer(today);
   const slot = simulatedSlot(req, today);
-  const transcript = script(req, today, slot)
+  const negotiated = offer.date !== slot.date || offer.time !== slot.time;
+  const duration = negotiated ? SIMULATED_NEGOTIATED_CALL_DURATION_MS : SIMULATED_CALL_DURATION_MS;
+  const transcript = script(req, today, offer, slot)
     .filter((l) => l.atMs <= elapsedMs)
     .map(({ role, text }) => ({ role, text }));
   if (elapsedMs < RINGING_UNTIL_MS) return { callId, status: 'ringing', transcript, result: null };
-  if (elapsedMs < SIMULATED_CALL_DURATION_MS) {
+  if (elapsedMs < duration) {
     return { callId, status: 'in_progress', transcript, result: null };
   }
   return {

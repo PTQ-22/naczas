@@ -235,9 +235,15 @@ export interface CallAssistRequest {
 // Zaznaczone przez użytkownika przed telefonem (ekran „Kiedy możesz?”, widok tygodnia jak w
 // Google Calendar). Same dni i godziny — nie są to dane zdrowotne. Dostępność danego dnia =
 // bloki cotygodniowe pasujące do dnia tygodnia + jednorazowe bloki z tą datą.
-export interface CallAvailability {
+// `blocked` (opcjonalne, 2026-10-04): godziny, w których pacjent NA PEWNO nie może (czerwone bloki
+// w kalendarzu). Wygrywają z wolnymi godzinami; agent nie przyjmuje terminu, który w nie wpada.
+export interface TimeRules {
   weekly: { days: Weekday[]; from: TimeOfDay; to: TimeOfDay }[]; // Weekday: 1 = pon. … 7 = niedz.
   dates: { date: ISODate; from: TimeOfDay; to: TimeOfDay }[];   // from < to, 'HH:mm'
+}
+
+export interface CallAvailability extends TimeRules {
+  blocked?: TimeRules;
 }
 
 export interface CallAssistStartResponse {
