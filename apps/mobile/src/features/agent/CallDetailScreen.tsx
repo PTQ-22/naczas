@@ -159,11 +159,6 @@ export default function CallDetailScreen() {
         )}
 
         <CallStats stats={task.stats} />
-        {task.mode === 'simulated' && (
-          <Text variant="caption" tone="textMuted">
-            {t('callAssist.simulated')}
-          </Text>
-        )}
       </Plate>
 
       <Plate>

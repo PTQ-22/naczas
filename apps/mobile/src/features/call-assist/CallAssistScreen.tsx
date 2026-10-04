@@ -284,11 +284,6 @@ export default function CallAssistScreen() {
               >
                 {taskStatusLine(task, now).toUpperCase()}
               </Text>
-              {task.mode === 'simulated' && (
-                <Text variant="caption" tone="textMuted">
-                  {t('callAssist.simulated')}
-                </Text>
-              )}
               <CallStats stats={task.stats} />
               {task.status === 'failed' && <Text>{t('callAssist.failed.body')}</Text>}
               {task.status === 'cancelled' && <Text>{t('callAssist.cancelledBody')}</Text>}

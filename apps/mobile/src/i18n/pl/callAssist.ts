@@ -40,7 +40,6 @@ export const callAssist = {
   cancel: 'Anuluj zlecenie',
   cancelledBody: 'Agent nie będzie już dzwonić w tej sprawie.',
   background: 'Zamknij — agent działa dalej',
-  simulated: 'Symulacja — bez prawdziwego połączenia',
   speaker: { agent: 'Asystent AI', clinic: 'Rejestracja' },
   waitingForWords: 'Rozmowa się zaczyna…',
   booked: {
