@@ -448,7 +448,7 @@
             style="font-size: var(--fs-h1); line-height: 1; margin-bottom: 40px"
           ></h1>
           <p class="lead" style="font-size: 56px; font-weight: 700; max-width: 900px">
-            Wiesz co, kiedy i gdzie — i&nbsp;zdążysz na czas.
+            Wiesz co, kiedy i gdzie — i&nbsp;<span style="text-decoration: underline; text-decoration-color: var(--marker); text-decoration-thickness: 8px; text-underline-offset: 12px">zdążysz na czas.</span>
           </p>
         </div>
         <!-- The app's signature: queue number on the enamel plate (same copy as the plan screen). -->
@@ -650,41 +650,47 @@
       </div>
     </section>
 
-    <!-- 6. Opiekun + przygotowanie do wizyty -->
+    <!-- 6. Agent AI -->
     <section class="slide">
-      <p class="eyebrow">Dla opiekunów</p>
-      <h2>Zdrowie mamy i swoje — na jednym telefonie</h2>
-      <div class="grid" style="grid-template-columns: 1fr 0.55fr 0.55fr; align-items: stretch">
-        <ul class="points" style="justify-content: center">
-          <li><b>Profile rodzinne</b> — plan mamy obok Twojego</li>
-          <li><b>Agent umawia też mamę</b> — dzwoni w imieniu Kasi, termin trafia do planu mamy</li>
-          <li><b>Przygotowanie do wizyty</b> — wiesz, co powiedzieć lekarzowi i o co zapytać, np. o skierowanie</li>
-          <li><b>Karta aktywności</b> — mały krok ruchu dopasowany do ankiety</li>
+      <p class="eyebrow">Agent AI</p>
+      <h2 style="margin-bottom: 36px">Nie wisisz na infolinii — agent dzwoni za Ciebie</h2>
+      <div class="grid" style="grid-template-columns: 1.2fr repeat(2, 0.55fr); gap: 56px">
+        <ul class="points" style="justify-content: center; gap: 28px">
+          <li><b>Zaznaczasz, kiedy możesz</b> — agent proponuje rejestracji tylko te godziny</li>
+          <li><b>Mówi, że jest asystentem AI</b> i w czyim imieniu dzwoni</li>
+          <li><b>Nikt nie odbiera?</b> Dzwoni ponownie, do 3 razy, w godzinach pracy rejestracji</li>
+          <li><b>Termin trafia do planu</b> — widzisz też, ile czasu przy telefonie oszczędzasz</li>
         </ul>
         <div>
-          <img class="shot-img" src="../screenshots/v3/family-light.jpg" alt="Ekran Rodzina: profile Kasi i mamy z liczbą pilnych badań" />
+          <img class="shot-img" src="../screenshots/v3/calendar-light.jpg" alt="Kalendarz: kiedy możesz przyjść" />
+          <p class="shot-caption">Kiedy możesz?</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/v3/visit-prep-light.jpg" alt="Przygotowanie do wizyty: pytania do lekarza i co powiedzieć" />
+          <img class="shot-img" src="../screenshots/v3/agent-light.jpg" alt="Agent: zaoszczędzony czas i historia rozmów" />
+          <p class="shot-caption">Zaoszczędzony czas</p>
         </div>
       </div>
-      <div class="footer"><span class="app-name"></span><span class="page"></span></div>
+      <div class="footer"><span>Dane w demo przykładowe · agent dzwoni tylko na numer testowy zespołu</span><span class="page"></span></div>
     </section>
 
-    <!-- 7. Design i dostępność -->
+    <!-- 7. Opiekun, przygotowanie do wizyty, dostępność -->
     <section class="slide">
-      <p class="eyebrow">Design i dostępność</p>
-      <h2 style="margin-bottom: 36px">Czytelne dla mamy, wygodne dla Kasi</h2>
-      <div class="grid" style="grid-template-columns: 1.2fr repeat(2, 0.55fr); gap: 56px">
-        <ul class="points" style="justify-content: center; gap: 24px">
-          <li>Czytelny kontrast (WCAG AA)</li>
-          <li>Tryb senior: większy tekst i przyciski</li>
-          <li>Pilność pokazana ikoną i tekstem, nie tylko kolorem</li>
-          <li>Działa z systemowym powiększeniem czcionki</li>
+      <p class="eyebrow">Dla opiekunów</p>
+      <h2 style="margin-bottom: 36px">Zdrowie mamy i swoje — na jednym telefonie</h2>
+      <div class="grid" style="grid-template-columns: 1.1fr repeat(3, 0.5fr); gap: 40px">
+        <ul class="points" style="justify-content: center; gap: 28px">
+          <li><b>Profile rodzinne</b> — plan mamy obok Twojego</li>
+          <li><b>Przygotowanie do wizyty</b> — co powiedzieć lekarzowi i o co zapytać</li>
+          <li><b>Tryb senior</b> — większy tekst i przyciski</li>
+          <li><b>Czytelny kontrast</b> (WCAG AA), pilność ikoną i tekstem</li>
         </ul>
         <div>
-          <img class="shot-img" src="../screenshots/v3/plan-light.jpg" alt="Plan w trybie standardowym" />
-          <p class="shot-caption">Standard</p>
+          <img class="shot-img" src="../screenshots/v3/family-light.jpg" alt="Ekran Rodzina: profile mamy i taty" />
+          <p class="shot-caption">Rodzina</p>
+        </div>
+        <div>
+          <img class="shot-img" src="../screenshots/v3/visit-prep-light.jpg" alt="Przygotowanie do wizyty: pytania do lekarza" />
+          <p class="shot-caption">Przed wizytą</p>
         </div>
         <div>
           <img class="shot-img" src="../screenshots/v3/plan-senior.jpg" alt="Plan w trybie senior" />
