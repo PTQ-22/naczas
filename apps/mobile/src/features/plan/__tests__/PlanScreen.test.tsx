@@ -134,6 +134,31 @@ describe('PlanScreen (mockPlan)', () => {
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
   });
 
+  it('labels the queue on urgent rows, so weeks are not read as a deadline', () => {
+    const base = mockPlanData();
+    const colonoscopy = base.plan!.items.find((i) => i.examId === 'colonoscopy_screening')!;
+    const skin = { ...colonoscopy, examId: 'skin_check' };
+    const skinWait = {
+      ...base.waitTimes.colonoscopy_screening!,
+      examId: 'skin_check',
+      p75Days: 70,
+    };
+    useRecordsStore.setState({
+      records: [
+        neverDone(mockProfileMama.id),
+        { ...neverDone(mockProfileMama.id), examId: 'skin_check' },
+      ],
+    });
+    mockUsePlanData.mockReturnValue(
+      mockPlanData({
+        plan: { ...base.plan!, items: [...base.plan!.items, skin] },
+        waitTimes: { ...base.waitTimes, skin_check: skinWait },
+      }),
+    );
+    renderPlan();
+    expect(screen.getByText('kolejka 3–10 tyg.')).toBeOnTheScreen();
+  });
+
   it('reaches "Zakład o zdrowie" from the plan instead of a tab', () => {
     renderPlan();
     fireEvent.press(screen.getByRole('button', { name: 'Zakład o zdrowie' }));

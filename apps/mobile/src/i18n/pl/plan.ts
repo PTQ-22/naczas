@@ -26,7 +26,8 @@ export const plan = {
     saved: 'Zapisano — {{name}} jest teraz w planie.',
   },
   row: {
-    weeks: '{{weeks}} tyg.',
+    // Same column shows due dates on other rows — name the queue so "tyg." isn't read as a deadline.
+    weeks: 'kolejka {{weeks}} tyg.',
   },
   ticket: {
     weeks: { one: 'tydzień w kolejce', few: 'tygodnie w kolejce', many: 'tygodni w kolejce' },
