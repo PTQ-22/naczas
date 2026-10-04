@@ -18,7 +18,7 @@ Opcjonalne (robimy wszystkie):
 Inne:
 - [ ] Język: PL lub EN
 - [ ] Platforma: HackTribe / Challenge Rocket (dokumenty podają obie nazwy — potwierdzić na Discordzie)
-- [ ] Termin: 4.10, 23:00 — **wysyłamy do 22:00**. Zmiany po terminie nie są brane pod uwagę.
+- [ ] Termin: 4.10, 11:00 — **wysyłamy do 10:15**. Zmiany po terminie nie są brane pod uwagę.
 - [ ] **Ujawnienie AI i zasobów zewnętrznych** (wymóg regulaminu): narzędzia AI użyte w development, API NFZ, biblioteki open source, źródła medyczne
 - [ ] Oddzielenie pracy sprzed hackathonu — u nas: brak kodu sprzed startu (tylko ta dokumentacja koncepcyjna)
 - Faza 1: ocena zgłoszenia przez mentorów (min. 50% punktów) → faza 2: pitch na żywo przed jury
