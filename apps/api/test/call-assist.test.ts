@@ -4,6 +4,7 @@ import {
   ApiErrorSchema,
   CallAssistStartResponseSchema,
   CallAssistStatusSchema,
+  type CallAssistRequest,
 } from '@naczas/shared';
 
 import { createApp } from '../src/app';
@@ -19,7 +20,7 @@ beforeAll(() => {
   globalThis.fetch = () => Promise.reject(new Error('Real network access in tests'));
 });
 
-const body = {
+const body: CallAssistRequest = {
   examName: 'kolonoskopia',
   facilityName: 'Szpital Bielański',
   forWhom: 'mamę',
@@ -215,6 +216,22 @@ describe('buildAssistant', () => {
     expect(a.firstMessage).toMatch(/^Dzień dobry, jestem asystentem AI dzwoniącym w imieniu Kasi/);
     expect(a.transcriber.language).toBe('pl');
     expect(a.server).toBeUndefined();
+  });
+
+  it("tells the agent the patient's free hours, and nothing when none were given", () => {
+    const prompt = (b: CallAssistRequest) =>
+      (buildAssistant(b, '2026-10-04') as { model: { messages: { content: string }[] } }).model
+        .messages[0]!.content;
+    const withHours = prompt({
+      ...body,
+      availability: {
+        weekly: [{ days: [1, 2, 3, 4, 5], from: '17:00', to: '20:00' }],
+        dates: [{ date: '2026-10-21', from: '09:00', to: '12:00' }],
+      },
+    });
+    expect(withHours).toContain('- w dni robocze 17:00–20:00');
+    expect(withHours).toContain('- 21 października 09:00–12:00');
+    expect(prompt(body)).not.toContain('Pacjent może przyjść');
   });
 
   it('wires the webhook only with a public URL', () => {

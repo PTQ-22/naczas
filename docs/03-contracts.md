@@ -229,6 +229,15 @@ export interface CallAssistRequest {
   forWhom: string;                // np. „mamę” (biernik, mówione przez agenta)
   callerName: string;             // imię opiekuna w dopełniaczu („Kasi”)
   bookBy?: ISODate;               // najpóźniejszy akceptowalny termin
+  availability?: CallAvailability; // kiedy pacjent może przyjść; brak = dowolny termin
+}
+
+// Zaznaczone przez użytkownika przed telefonem (ekran „Kiedy możesz?”, widok tygodnia jak w
+// Google Calendar). Same dni i godziny — nie są to dane zdrowotne. Dostępność danego dnia =
+// bloki cotygodniowe pasujące do dnia tygodnia + jednorazowe bloki z tą datą.
+export interface CallAvailability {
+  weekly: { days: Weekday[]; from: TimeOfDay; to: TimeOfDay }[]; // Weekday: 1 = pon. … 7 = niedz.
+  dates: { date: ISODate; from: TimeOfDay; to: TimeOfDay }[];   // from < to, 'HH:mm'
 }
 
 export interface CallAssistStartResponse {

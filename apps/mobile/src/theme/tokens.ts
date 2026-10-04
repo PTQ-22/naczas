@@ -1,6 +1,6 @@
-// Redesign v2: docs/design/redesign.md, palette switched to cobalt tiles + enamel plates by team
-// pick. Contrast pairs are verified in __tests__/tokens.test.ts — a hex change that breaks AA
-// fails `pnpm check`.
+// Redesign v2: docs/design/redesign.md, palette candidates: light blue + red accents.
+// Contrast pairs are verified in __tests__/tokens.test.ts — a hex change that breaks AA fails
+// `pnpm check`.
 import type { Urgency } from '@naczas/shared';
 
 export type ColorScheme = 'light' | 'dark';
@@ -49,74 +49,140 @@ export interface ColorTokens {
   urgency: Record<Urgency, UrgencyColor>;
 }
 
-// Redesign v2 — cobalt hospital tiles + cream enamel plates (direction picked by the team over
-// docs/design/redesign.md §3). Contrast pairs are guarded in __tests__/tokens.test.ts.
-export const colors: Record<ColorScheme, ColorTokens> = {
-  light: {
-    bg: '#F6F3EA',
-    surface: '#FBF9F3',
-    surfaceAlt: '#ECE7DB',
-    border: '#DDD6C6',
-    borderStrong: '#6E6A60',
-    text: '#0E1B2C',
-    textMuted: '#4A5160',
-    textSubtle: '#4A5160',
-    primary: '#24477A',
-    primaryPressed: '#1C3964',
-    onPrimary: '#FFFFFF',
-    primarySoft: '#E1E6EF',
-    focus: '#24477A',
-    danger: '#B4231A',
-    marker: '#FFE24A',
-    wall: '#24477A',
-    wallGrout: '#1C3964',
-    onWall: '#FFFFFF',
-    urgentOnWall: '#FFA39A',
-    urgency: {
-      act_now: { fg: '#B4231A', bg: '#F7E0DA', accent: '#C8322A' },
-      this_year: { fg: '#0E1B2C', bg: '#ECE7DB', accent: '#6E6A60' },
-      later: { fg: '#4A5160', bg: '#ECE7DB', accent: '#6E6A60' },
-      done: { fg: '#17693F', bg: '#DDEEE2', accent: '#1F7A4C' },
-      // Traffic light: Teraz red → Umówione amber → Zrobione green.
-      booked: { fg: '#7A4E00', bg: '#F7E9C6', accent: '#B07800' },
+// Three light-blue palette candidates with red accents — the team picks one in Settings, the rest
+// get deleted. White plates on a pale blue wall; red marks urgency (marker, act_now, focus).
+// Contrast pairs of every palette are guarded in __tests__/tokens.test.ts.
+export type PaletteId = 'sky' | 'navy' | 'redcross';
+export const PALETTE_IDS: readonly PaletteId[] = ['sky', 'navy', 'redcross'];
+export const DEFAULT_PALETTE: PaletteId = 'sky';
+
+const lightBase = {
+  bg: '#FFFFFF',
+  surface: '#FFFFFF',
+  border: '#DCE4EE',
+  borderStrong: '#6B7686',
+  text: '#0E1B2C',
+  textMuted: '#4A5568',
+  textSubtle: '#4A5568',
+  onPrimary: '#FFFFFF',
+  danger: '#C62828',
+  onWall: '#0E1B2C',
+  urgentOnWall: '#A11B1B',
+} as const;
+
+const lightUrgency = (neutralBg: string): ColorTokens['urgency'] => ({
+  act_now: { fg: '#B3261E', bg: '#FDE4E1', accent: '#D32F2F' },
+  this_year: { fg: '#0E1B2C', bg: neutralBg, accent: '#6B7686' },
+  later: { fg: '#4A5568', bg: neutralBg, accent: '#6B7686' },
+  done: { fg: '#17693F', bg: '#DDEEE2', accent: '#1F7A4C' },
+  // Traffic light: Teraz red → Umówione amber → Zrobione green.
+  booked: { fg: '#7A4E00', bg: '#F7E9C6', accent: '#B07800' },
+});
+
+const darkBase: Omit<ColorTokens, 'primary' | 'primaryPressed' | 'primarySoft' | 'focus'> = {
+  bg: '#0B1628',
+  surface: '#152440',
+  surfaceAlt: '#1C2D50',
+  border: '#2A3B5E',
+  borderStrong: '#7A8CAE',
+  text: '#E8EEF5',
+  textMuted: '#AEBAD0',
+  textSubtle: '#AEBAD0',
+  onPrimary: '#0B1628',
+  danger: '#FF8F85',
+  marker: '#FF8F85',
+  wall: '#0B1628',
+  wallGrout: '#08111F',
+  onWall: '#E8EEF5',
+  urgentOnWall: '#FF8F85',
+  urgency: {
+    act_now: { fg: '#FF8F85', bg: '#3A1C24', accent: '#F0564B' },
+    this_year: { fg: '#E8EEF5', bg: '#1C2D50', accent: '#7A8CAE' },
+    later: { fg: '#AEBAD0', bg: '#1C2D50', accent: '#7A8CAE' },
+    done: { fg: '#7FD8A8', bg: '#123227', accent: '#3DB27A' },
+    booked: { fg: '#F2C55C', bg: '#3A2E14', accent: '#E0A82E' },
+  },
+};
+
+export const palettes: Record<PaletteId, Record<ColorScheme, ColorTokens>> = {
+  // A: clinical sky blue — blue buttons, red only where something is urgent.
+  sky: {
+    light: {
+      ...lightBase,
+      surfaceAlt: '#EDF5FC',
+      primary: '#1565C0',
+      primaryPressed: '#0D4F9E',
+      primarySoft: '#E3F0FC',
+      focus: '#1565C0',
+      marker: '#FFD6D2',
+      wall: '#DDEFFC',
+      wallGrout: '#C6E3F8',
+      urgency: lightUrgency('#EDF5FC'),
+    },
+    dark: {
+      ...darkBase,
+      primary: '#8EC5FF',
+      primaryPressed: '#AED5FF',
+      primarySoft: '#1E3557',
+      focus: '#8EC5FF',
     },
   },
-  dark: {
-    bg: '#0B1628',
-    surface: '#152440',
-    surfaceAlt: '#1C2D50',
-    border: '#2A3B5E',
-    borderStrong: '#7A8CAE',
-    text: '#E8EEF5',
-    textMuted: '#AEBAD0',
-    textSubtle: '#AEBAD0',
-    primary: '#8EA9FF',
-    primaryPressed: '#A9BDFF',
-    onPrimary: '#0B1628',
-    primarySoft: '#22325C',
-    focus: '#8EA9FF',
-    danger: '#FF8F85',
-    marker: '#FFE24A',
-    wall: '#0B1628',
-    wallGrout: '#08111F',
-    onWall: '#E8EEF5',
-    urgentOnWall: '#FF8F85',
-    urgency: {
-      act_now: { fg: '#FF8F85', bg: '#3A1C24', accent: '#F0564B' },
-      this_year: { fg: '#E8EEF5', bg: '#1C2D50', accent: '#7A8CAE' },
-      later: { fg: '#AEBAD0', bg: '#1C2D50', accent: '#7A8CAE' },
-      done: { fg: '#7FD8A8', bg: '#123227', accent: '#3DB27A' },
-      booked: { fg: '#F2C55C', bg: '#3A2E14', accent: '#E0A82E' },
+  // B: navy buttons on a stronger light blue, red focus ring and highlighter.
+  navy: {
+    light: {
+      ...lightBase,
+      surfaceAlt: '#EEF4FA',
+      primary: '#0B3D78',
+      primaryPressed: '#082E5B',
+      primarySoft: '#E1ECF8',
+      focus: '#D32F2F',
+      marker: '#FFCDD2',
+      wall: '#C9E3F7',
+      wallGrout: '#B3D7F2',
+      urgency: lightUrgency('#EEF4FA'),
+    },
+    dark: {
+      ...darkBase,
+      primary: '#8EA9FF',
+      primaryPressed: '#A9BDFF',
+      primarySoft: '#22325C',
+      focus: '#FF8F85',
+    },
+  },
+  // C: "red cross" — red buttons on white, the palest blue wall.
+  redcross: {
+    light: {
+      ...lightBase,
+      surfaceAlt: '#EFF6FC',
+      primary: '#C62828',
+      primaryPressed: '#A31F1F',
+      primarySoft: '#FDECEC',
+      focus: '#C62828',
+      marker: '#FFE24A',
+      wall: '#E6F2FB',
+      wallGrout: '#D0E6F6',
+      urgency: lightUrgency('#EFF6FC'),
+    },
+    dark: {
+      ...darkBase,
+      primary: '#FF8F85',
+      primaryPressed: '#FFABA3',
+      primarySoft: '#3A1C24',
+      focus: '#FF8F85',
+      marker: '#FFE24A',
     },
   },
 };
+
+/** Default palette — kept as `colors` for code that doesn't care which palette is active. */
+export const colors = palettes[DEFAULT_PALETTE];
 
 // Senior mode raises secondary-text contrast to AAA (>= 7:1); everything else is shared.
 export const seniorColorOverrides: Record<
   ColorScheme,
   Pick<ColorTokens, 'textMuted' | 'textSubtle' | 'borderStrong'>
 > = {
-  light: { textMuted: '#323846', textSubtle: '#323846', borderStrong: '#4A5160' },
+  light: { textMuted: '#2F3A4A', textSubtle: '#2F3A4A', borderStrong: '#4A5568' },
   dark: { textMuted: '#CDD6E6', textSubtle: '#CDD6E6', borderStrong: '#95A5C4' },
 };
 
@@ -155,9 +221,6 @@ export const borderWidth = {
 
 // stagger kept for list entering; the only signature animation is the ticket slide-in.
 export const motion = { fast: 150, base: 300, reduced: 0, stagger: 40, plate: 420 } as const;
-
-/** Tile size of the wall pattern (cobalt hospital tiles). */
-export const tile = { size: 24 } as const;
 
 /**
  * Font family names as registered by `useAppFonts` (keys of `fontAssets`). One family per weight:

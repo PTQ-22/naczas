@@ -10,9 +10,13 @@ import {
   HealthResponseSchema,
   PlanSchema,
   ProfileSchema,
+  availabilityOn,
+  describeAvailability,
+  firstAvailableSlot,
   simulateCallAssist,
   simulatedSlotDate,
   WaitTimeSummarySchema,
+  type CallAvailability,
   type Profile,
 } from '../src';
 
@@ -236,6 +240,24 @@ describe('CallAssist schemas', () => {
     bookBy: '2026-12-01',
   };
 
+  it('parses availability and rejects a window that ends before it starts', () => {
+    const availability = {
+      weekly: [{ days: [1, 2, 3, 4, 5], from: '17:00', to: '20:00' }],
+      dates: [{ date: '2026-10-21', from: '09:00', to: '12:00' }],
+    };
+    expect(CallAssistRequestSchema.parse({ ...request, availability })).toMatchObject({
+      availability,
+    });
+    const bad = { ...availability, weekly: [{ days: [1], from: '20:00', to: '17:00' }] };
+    expect(CallAssistRequestSchema.safeParse({ ...request, availability: bad }).success).toBe(
+      false,
+    );
+    const noDays = { ...availability, weekly: [{ days: [], from: '17:00', to: '20:00' }] };
+    expect(CallAssistRequestSchema.safeParse({ ...request, availability: noDays }).success).toBe(
+      false,
+    );
+  });
+
   it('parses a request and rejects an empty exam name', () => {
     expect(CallAssistRequestSchema.parse(request)).toEqual(request);
     expect(CallAssistRequestSchema.safeParse({ ...request, examName: ' ' }).success).toBe(false);
@@ -270,5 +292,57 @@ describe('simulateCallAssist', () => {
   it('moves a weekend slot to Monday', () => {
     expect(simulatedSlotDate('2026-10-03')).toBe('2026-10-19'); // Sat + 14 = Sat → Mon
     expect(simulatedSlotDate('2026-10-05')).toBe('2026-10-19'); // Mon + 14 = Mon
+  });
+});
+
+describe('availability', () => {
+  const av: CallAvailability = {
+    weekly: [{ days: [1, 2, 3, 4, 5], from: '17:00', to: '20:00' }],
+    dates: [
+      { date: '2026-10-21', from: '13:00', to: '15:00' },
+      { date: '2026-10-21', from: '08:00', to: '10:00' },
+    ],
+  };
+
+  it('adds one-off hours to the weekly ones on that day', () => {
+    expect(availabilityOn(av, '2026-10-21')).toEqual([
+      { from: '08:00', to: '10:00' },
+      { from: '13:00', to: '15:00' },
+      { from: '17:00', to: '20:00' },
+    ]);
+    expect(availabilityOn(av, '2026-10-20')).toEqual([{ from: '17:00', to: '20:00' }]); // Tue
+    expect(availabilityOn(av, '2026-10-24')).toEqual([]); // Sat
+  });
+
+  it('finds the first free slot from a given day', () => {
+    expect(firstAvailableSlot(av, '2026-10-17')).toEqual({ date: '2026-10-19', time: '17:00' });
+    expect(firstAvailableSlot({ weekly: [], dates: [] }, '2026-10-17')).toBeNull();
+  });
+
+  it('describes the rules in Polish and skips past dates', () => {
+    expect(describeAvailability(av, '2026-10-04')).toEqual([
+      'w dni robocze 17:00–20:00',
+      '21 października 08:00–10:00 i 13:00–15:00',
+    ]);
+    expect(describeAvailability(av, '2026-10-22')).toEqual(['w dni robocze 17:00–20:00']);
+    expect(
+      describeAvailability(
+        { weekly: [{ days: [6, 2], from: '07:00', to: '12:00' }], dates: [] },
+        '2026-10-04',
+      ),
+    ).toEqual(['w wtorki, soboty 07:00–12:00']);
+  });
+
+  it('the simulated clinic offers a slot that fits the calendar', () => {
+    const req = {
+      examName: 'kolonoskopię',
+      facilityName: 'X',
+      forWhom: 'mamę',
+      callerName: 'Kasi',
+    };
+    const end = simulateCallAssist('s', { ...req, availability: av }, '2026-10-04', 60_000);
+    // 14 days out is Sun 18.10 → Mon 19.10, after 17:00
+    expect(end.result).toMatchObject({ booked: true, date: '2026-10-19', time: '17:00' });
+    expect(end.transcript[2]?.text).toContain('w dni robocze 17:00–20:00');
   });
 });

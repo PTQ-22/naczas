@@ -2,6 +2,7 @@ export const common = {
   tabs: {
     plan: 'Plan',
     family: 'Rodzina',
+    doctors: 'Lekarze',
     settings: 'Ustawienia',
     // Tab bar only: with four tabs "Ustawienia" is clipped at 390 pt (senior: "Ustawie…").
     settingsShort: 'Opcje',

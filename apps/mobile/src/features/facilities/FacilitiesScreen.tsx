@@ -11,52 +11,23 @@ import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
-import { selectActiveProfile, useProfilesStore } from '@/store';
+import {
+  pinDefaultFirst,
+  selectActiveProfile,
+  useDefaultFacilityStore,
+  useProfilesStore,
+} from '@/store';
 import { useTheme } from '@/theme';
 
 import { FacilitiesMap } from './FacilitiesMap';
 import { asOfLabel } from './facility-format';
 import { FacilityRow } from './FacilityRow';
+import { FacilityRows } from './FacilityRows';
+import { FacilitySkeleton } from './FacilitySkeleton';
 import { SegmentedControl } from './SegmentedControl';
 import { useFacilities, type FacilitiesSort } from './use-facilities';
 
 type ViewMode = 'list' | 'map';
-
-function Skeleton() {
-  const { colors, radius, space } = useTheme();
-  return (
-    <View accessibilityLabel={t('facilities.states.loading')} style={{ gap: space.md }}>
-      {[0, 1, 2].map((i) => (
-        <View
-          key={i}
-          testID="facility-skeleton"
-          style={{ height: 112, borderRadius: radius.sm, backgroundColor: colors.surfaceAlt }}
-        />
-      ))}
-    </View>
-  );
-}
-
-/** Rows on the plate, separated by hairlines (no cards — redesign §4). */
-function Rows({ children }: { children: ReactNode[] }) {
-  const { colors, borderWidth } = useTheme();
-  return (
-    <View>
-      {children.map((child, i) => (
-        <View
-          key={i}
-          style={
-            i > 0
-              ? { borderTopWidth: borderWidth.hairline, borderTopColor: colors.border }
-              : undefined
-          }
-        >
-          {child}
-        </View>
-      ))}
-    </View>
-  );
-}
 
 export default function FacilitiesScreen() {
   const { examId = '' } = useLocalSearchParams<{ examId: string }>();
@@ -65,6 +36,7 @@ export default function FacilitiesScreen() {
   const profile = useProfilesStore(selectActiveProfile) ?? mockProfileMama;
   const location = profile.location;
   const rule = rules.find((r) => r.id === examId);
+  const defaultKey = useDefaultFacilityStore((s) => s.facility?.key ?? null);
 
   const [sort, setSort] = useState<FacilitiesSort>('soonest');
   // Starts on the list (always in senior mode, screens.md §4); the list has everything the map has.
@@ -147,7 +119,7 @@ export default function FacilitiesScreen() {
 
   let body: ReactNode;
   if (state.status === 'loading') {
-    body = <Skeleton />;
+    body = <FacilitySkeleton />;
   } else if (state.status === 'error') {
     body = (
       <EmptyState
@@ -160,14 +132,16 @@ export default function FacilitiesScreen() {
   } else if (state.data.items.length === 0) {
     body = <EmptyState icon="info" title={t('facilities.states.emptyTitle')} />;
   } else {
-    const { items, source } = state.data;
+    const { source } = state.data;
+    // The user's own clinic goes first; the API order follows.
+    const items = pinDefaultFirst(state.data.items, defaultKey);
     const selected = items.find((f) => f.id === selectedId);
     const list = (
-      <Rows>
+      <FacilityRows>
         {items.map((f, i) => (
           <FacilityRow key={f.id} facility={f} examId={examId} primary={i === 0} sort={sort} />
         ))}
-      </Rows>
+      </FacilityRows>
     );
     const map = (
       <View style={{ gap: space.md }}>

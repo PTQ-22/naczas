@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+import { CallAvailabilitySchema } from './availability';
 import { ISODateSchema, ProvinceCodeSchema } from './domain';
 
 const DataSourceSchema = z.enum(['nfz_live', 'nfz_snapshot']);
@@ -75,6 +76,7 @@ export const CallAssistRequestSchema = z.object({
   forWhom: z.string().trim().min(1).max(40), // e.g. "mamę" (accusative, spoken by the agent)
   callerName: z.string().trim().min(1).max(40), // caregiver's first name, genitive ("Kasi")
   bookBy: ISODateSchema.optional(), // latest acceptable date from the plan
+  availability: CallAvailabilitySchema.optional(), // when the patient can come; absent = any time
 });
 export type CallAssistRequest = z.infer<typeof CallAssistRequestSchema>;
 

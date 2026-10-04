@@ -2,6 +2,7 @@ import { useContext, useMemo } from 'react';
 import { useColorScheme } from 'react-native';
 
 import { createTheme, type Theme } from './create-theme';
+import { usePaletteStore } from './palette-store';
 import {
   defaultThemePreferences,
   resolveScheme,
@@ -18,5 +19,6 @@ export function useTheme(): Theme {
   const system = useColorScheme();
   const scheme = resolveScheme(prefs.darkMode, system);
   const { seniorMode } = prefs;
-  return useMemo(() => createTheme({ scheme, seniorMode }), [scheme, seniorMode]);
+  const palette = usePaletteStore((s) => s.palette);
+  return useMemo(() => createTheme({ scheme, seniorMode, palette }), [scheme, seniorMode, palette]);
 }

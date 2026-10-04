@@ -8,5 +8,6 @@ export {
   type DarkModePreference,
   type ThemePreferences,
 } from './theme-preferences';
+export { usePaletteStore } from './palette-store';
 export { ThemeProvider } from './ThemeProvider';
 export { useTheme } from './use-theme';

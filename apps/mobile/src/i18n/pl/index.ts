@@ -2,6 +2,7 @@
 import { bet } from './bet';
 import { callAssist } from './callAssist';
 import { common } from './common';
+import { doctors } from './doctors';
 import { exam } from './exam';
 import { facilities } from './facilities';
 import { onboarding } from './onboarding';
@@ -14,6 +15,7 @@ export const pl = {
   bet,
   callAssist,
   common,
+  doctors,
   onboarding,
   profiles,
   plan,

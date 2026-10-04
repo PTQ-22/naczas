@@ -2,13 +2,24 @@ import { UrgencySchema } from '@naczas/shared';
 
 import { contrastRatio } from '../contrast';
 import { createTheme } from '../create-theme';
-import { colors, seniorColorOverrides, typography, waitBucket, type ColorScheme } from '../tokens';
+import {
+  colors,
+  PALETTE_IDS,
+  palettes,
+  seniorColorOverrides,
+  typography,
+  waitBucket,
+  type ColorScheme,
+} from '../tokens';
 
 const AA_TEXT = 4.5;
 const UI_NON_TEXT = 3;
 const AAA_TEXT = 7;
 const schemes: ColorScheme[] = ['light', 'dark'];
 const urgencies = UrgencySchema.options;
+const paletteSchemes = PALETTE_IDS.flatMap((palette) =>
+  schemes.map((scheme) => [palette, scheme] as const),
+);
 
 describe('contrastRatio', () => {
   it('matches known WCAG extremes', () => {
@@ -26,8 +37,8 @@ describe('contrastRatio', () => {
 });
 
 // Mirrors docs/design/tokens.md §3 — a hex change that breaks AA must fail `pnpm check`.
-describe.each(schemes)('%s palette contrast', (scheme) => {
-  const c = colors[scheme];
+describe.each(paletteSchemes)('%s/%s palette contrast', (palette, scheme) => {
+  const c = palettes[palette][scheme];
   const backgrounds = { bg: c.bg, surface: c.surface, surfaceAlt: c.surfaceAlt };
 
   it.each(['text', 'textMuted', 'textSubtle', 'primary', 'danger'] as const)(
@@ -120,6 +131,11 @@ describe('typography', () => {
 });
 
 describe('createTheme', () => {
+  it('picks the requested palette', () => {
+    const theme = createTheme({ scheme: 'light', seniorMode: false, palette: 'redcross' });
+    expect(theme.colors).toBe(palettes.redcross.light);
+  });
+
   it('uses base colors and normal scale by default', () => {
     const theme = createTheme({ scheme: 'light', seniorMode: false });
     expect(theme.colors).toBe(colors.light);

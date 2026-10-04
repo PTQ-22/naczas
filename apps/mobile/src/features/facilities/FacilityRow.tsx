@@ -7,6 +7,7 @@ import { Button } from '@/components/Button';
 import { IconButton } from '@/components/IconButton';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
+import { facilityKey, useDefaultFacilityStore } from '@/store';
 import { fonts, useTheme } from '@/theme';
 
 import {
@@ -43,6 +44,9 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
   const tone = colors.urgency[waitTone(f.waitDays)].fg;
   const distance = distanceLabel(f.distanceKm);
   const access = accessibilityLabels(f.accessibility);
+  const isDefault = useDefaultFacilityStore((s) => s.facility?.key === facilityKey(f));
+  const setDefault = useDefaultFacilityStore((s) => s.setDefault);
+  const clearDefault = useDefaultFacilityStore((s) => s.clear);
   // Distance lives under the wait figure (never wraps); amenities stay a quiet text line.
 
   return (
@@ -76,6 +80,11 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
             </Text>
           </View>
           <View style={{ flex: 1, gap: space.xs / 2 }}>
+            {isDefault && (
+              <Text variant="caption" tone="primary" testID="default-facility-badge">
+                {t('facilities.defaultFacility.badge')}
+              </Text>
+            )}
             <Text variant="label">{nfzTitleCase(f.providerName)}</Text>
             {!seniorMode && placeLine && (
               <Text variant="caption" tone="textMuted">
@@ -138,7 +147,12 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
             onPress={() =>
               router.push({
                 pathname: '/exam/[examId]/call',
-                params: { examId, facility: nfzTitleCase(f.providerName) },
+                params: {
+                  examId,
+                  facility: nfzTitleCase(f.providerName),
+                  // Lets the availability calendar open on the day the clinic can take the patient.
+                  ...(f.firstAvailableDate && { firstDate: f.firstAvailableDate }),
+                },
               })
             }
           />
@@ -151,6 +165,21 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
           icon="external"
           fullWidth={seniorMode}
           onPress={() => void Linking.openURL(mapsUrl(f, Platform.OS))}
+        />
+        <Button
+          label={t(
+            isDefault ? 'facilities.defaultFacility.unset' : 'facilities.defaultFacility.set',
+          )}
+          accessibilityLabel={t(
+            isDefault
+              ? 'facilities.defaultFacility.unsetA11y'
+              : 'facilities.defaultFacility.setA11y',
+            { name: f.providerName },
+          )}
+          variant="ghost"
+          icon="star"
+          fullWidth={seniorMode}
+          onPress={() => (isDefault ? clearDefault() : setDefault(f))}
         />
         {/* After calling, the user records the visit; the facility name is shown as context. */}
         <Button

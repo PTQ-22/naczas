@@ -52,19 +52,30 @@ export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: Faci
   // Re-fits when the covered area changes, e.g. after a reload.
   const [map, setMap] = useState<LeafletMap | null>(null);
   useEffect(() => {
-    if (!map || !bounds) return;
-    map.fitBounds(
-      [
-        [bounds.sw.lat, bounds.sw.lng],
-        [bounds.ne.lat, bounds.ne.lng],
-      ],
-      { padding: [FIT_PADDING_PX, FIT_PADDING_PX], maxZoom: MAX_FIT_ZOOM },
-    );
+    if (!map) return;
+    const fit = () => {
+      if (!bounds) return;
+      map.fitBounds(
+        [
+          [bounds.sw.lat, bounds.sw.lng],
+          [bounds.ne.lat, bounds.ne.lng],
+        ],
+        { padding: [FIT_PADDING_PX, FIT_PADDING_PX], maxZoom: MAX_FIT_ZOOM },
+      );
+    };
+    fit();
+    // Leaflet only tracks window resizes; an expanding container (doctors tab) needs telling.
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+      fit();
+    });
+    observer.observe(map.getContainer());
+    return () => observer.disconnect();
   }, [map, bounds]);
 
   if (!mods) {
     return (
-      <View style={{ flex: 1, minHeight: 320, borderRadius: radius.lg }}>
+      <View style={{ flex: 1, minHeight: 160, borderRadius: radius.lg }}>
         <Text tone="textMuted">{t('facilities.states.loading')}</Text>
       </View>
     );
@@ -87,13 +98,13 @@ export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: Faci
   return (
     <View
       accessibilityLabel={t('facilities.map.a11y')}
-      style={{ flex: 1, minHeight: 320, borderRadius: radius.lg, overflow: 'hidden' }}
+      style={{ flex: 1, minHeight: 160, borderRadius: radius.lg, overflow: 'hidden' }}
     >
       <MapContainer
         ref={setMap}
         center={[center.lat, center.lng]}
         zoom={ZOOM}
-        style={{ height: '100%', minHeight: 320, width: '100%' }}
+        style={{ height: '100%', minHeight: 160, width: '100%' }}
       >
         <TileLayer url={OSM_TILES} attribution={OSM_ATTRIBUTION} />
         {origin && (

@@ -16,7 +16,7 @@ interface ScreenProps {
   scroll?: boolean;
   /** Screens under a native header / tab bar don't need the top / bottom inset. */
   edges?: Edge[];
-  /** Cobalt tile wall behind the content instead of the plain background (plan, onboarding). */
+  /** Tinted wall behind the content instead of the plain background (plan, onboarding). */
   wall?: boolean;
   testID?: string;
 }
@@ -77,7 +77,7 @@ export function Screen({
       {footer && (
         <View
           style={
-            // On the tile wall the CTA floats over the tiles (iOS-style) instead of a square band.
+            // On the wall the CTA floats over it (iOS-style) instead of a square band.
             wall
               ? undefined
               : {

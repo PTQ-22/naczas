@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Button, Disclaimer, OptionTile, Plate, Screen, Text } from '@/components';
+import { DefaultFacilityCard } from '@/features/facilities/DefaultFacilityCard';
 import { t } from '@/i18n';
 import {
   cancelAllOurNotifications,
@@ -15,7 +16,7 @@ import {
 import { usePlan } from '@/services';
 import { useCloudSync } from '@/services/cloud-sync';
 import { resetAllData, resolveToday, useProfilesStore, useSettingsStore, useToday } from '@/store';
-import { useTheme, type DarkModePreference } from '@/theme';
+import { PALETTE_IDS, usePaletteStore, useTheme, type DarkModePreference } from '@/theme';
 
 import { applyDemoPreset, DEMO_PRESETS } from './demo-presets';
 import { LocationSection } from './LocationSection';
@@ -47,6 +48,8 @@ export default function SettingsScreen() {
   const todayOverride = useSettingsStore((s) => s.todayOverride);
   const setSeniorMode = useSettingsStore((s) => s.setSeniorMode);
   const setDarkMode = useSettingsStore((s) => s.setDarkMode);
+  const palette = usePaletteStore((s) => s.palette);
+  const setPalette = usePaletteStore((s) => s.setPalette);
   const setTodayOverride = useSettingsStore((s) => s.setTodayOverride);
   const familyCode = useSettingsStore((s) => s.familyCode);
   const setFamilyCode = useSettingsStore((s) => s.setFamilyCode);
@@ -113,6 +116,27 @@ export default function SettingsScreen() {
               />
             ))}
           </View>
+          <View
+            accessibilityRole="radiogroup"
+            accessibilityLabel={t('settings.display.palette')}
+            style={{ gap: space.xs }}
+          >
+            <Text variant="label">{t('settings.display.palette')}</Text>
+            {PALETTE_IDS.map((id) => (
+              <OptionTile
+                key={id}
+                testID={`settings-palette-${id}`}
+                mode="radio"
+                label={t(`settings.display.paletteOptions.${id}`)}
+                selected={palette === id}
+                onPress={() => setPalette(id)}
+              />
+            ))}
+          </View>
+        </SettingsSection>
+
+        <SettingsSection title={t('settings.defaultFacility.header')}>
+          <DefaultFacilityCard showTitle={false} />
         </SettingsSection>
 
         {activeProfile ? <LocationSection profile={activeProfile} /> : null}

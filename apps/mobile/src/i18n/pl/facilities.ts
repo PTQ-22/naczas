@@ -62,6 +62,16 @@ export const facilities = {
     youShort: 'Ty',
     attribution: '© OpenStreetMap',
   },
+  defaultFacility: {
+    badge: '★ Twoja przychodnia',
+    set: 'Ustaw jako moją przychodnię',
+    setA11y: 'Ustaw {{name}} jako moją domyślną przychodnię',
+    unset: 'Usuń z domyślnych',
+    unsetA11y: 'Przestań używać {{name}} jako domyślnej przychodni',
+    title: 'Twoja przychodnia',
+    none: 'Nie wybrano. Przy dowolnej placówce dotknij „Ustaw jako moją przychodnię” — będzie zawsze na górze list i pod ręką do telefonu.',
+    noPhone: 'Brak numeru telefonu w danych NFZ.',
+  },
   states: {
     errorTitle: 'Nie udało się pobrać placówek',
     errorBody: 'Sprawdź połączenie z internetem.',

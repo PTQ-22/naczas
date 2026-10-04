@@ -1,4 +1,10 @@
-import type { CallAssistRequest, ExamRule, ISODate, Profile } from '@naczas/shared';
+import type {
+  CallAssistRequest,
+  CallAvailability,
+  ExamRule,
+  ISODate,
+  Profile,
+} from '@naczas/shared';
 
 import { t } from '@/i18n';
 
@@ -32,7 +38,8 @@ export function inSentence(examName: string): string {
 
 /**
  * Everything the agent will say about the patient — deliberately no surname, PESEL or birth
- * year (AGENTS.md §8). The caregiver is the "self" profile; without one we say "rodziny".
+ * year (AGENTS.md §8); free hours are just days and times, not health data. The caregiver is
+ * the "self" profile; without one we say "rodziny".
  */
 export function buildCallRequest({
   patient,
@@ -40,12 +47,15 @@ export function buildCallRequest({
   rule,
   facilityName,
   bookBy,
+  availability,
 }: {
   patient: Profile;
   profiles: readonly Profile[];
   rule: ExamRule;
   facilityName: string;
   bookBy?: ISODate | undefined;
+  /** Free days and hours marked in the calendar; undefined = any slot */
+  availability?: CallAvailability | undefined;
 }): CallAssistRequest {
   const caller =
     patient.relation === 'self' ? patient : profiles.find((p) => p.relation === 'self');
@@ -55,5 +65,6 @@ export function buildCallRequest({
     forWhom: t(`callAssist.forWhom.${patient.relation}.${patient.sex}`),
     callerName: caller ? polishGenitive(caller.name) : t('callAssist.callerFallback'),
     ...(bookBy && { bookBy }),
+    ...(availability && { availability }),
   };
 }

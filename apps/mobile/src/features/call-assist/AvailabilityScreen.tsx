@@ -1,0 +1,122 @@
+import { addDays, format, parseISO } from 'date-fns';
+import { pl } from 'date-fns/locale';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
+import { View } from 'react-native';
+
+import { ISODateSchema, type ISODate } from '@naczas/shared';
+
+import { Button } from '@/components/Button';
+import { EmptyState } from '@/components/EmptyState';
+import { IconButton } from '@/components/IconButton';
+import { Screen } from '@/components/Screen';
+import { Text } from '@/components/Text';
+import { t } from '@/i18n';
+import { selectActiveProfile, useProfilesStore, useToday } from '@/store';
+import { newSlotId, selectSlots, useAvailabilityStore } from '@/store/availability-store';
+import { useTheme } from '@/theme';
+
+import { weekDays, weekStart } from './availability';
+import { SlotEditor } from './SlotEditor';
+import { WeekGrid } from './WeekGrid';
+
+const shiftWeek = (start: ISODate, weeks: number) =>
+  format(addDays(parseISO(start), weeks * 7), 'yyyy-MM-dd');
+
+/** "19–25 października", "26 października – 1 listopada" */
+function weekTitle(days: readonly ISODate[]): string {
+  const first = parseISO(days[0] ?? '');
+  const last = parseISO(days[days.length - 1] ?? '');
+  return first.getMonth() === last.getMonth()
+    ? `${format(first, 'd')}–${format(last, 'd MMMM', { locale: pl })}`
+    : `${format(first, 'd MMMM', { locale: pl })} – ${format(last, 'd MMMM', { locale: pl })}`;
+}
+
+/** "Kiedy możesz?" — a week view of the patient's free time, read by the voice agent. */
+export default function AvailabilityScreen() {
+  const { firstDate } = useLocalSearchParams<{ firstDate?: string }>();
+  const { space, layout } = useTheme();
+  const today = useToday();
+  const patient = useProfilesStore(selectActiveProfile);
+  const slots = useAvailabilityStore(selectSlots(patient?.id));
+  const { addSlot, updateSlot, removeSlot } = useAvailabilityStore.getState();
+
+  // URL params are external input (AGENTS.md §3).
+  const parsed = ISODateSchema.safeParse(firstDate);
+  const nearest = parsed.success && parsed.data >= today ? parsed.data : null;
+  const thisWeek = weekStart(today);
+  // Opens on the week of the facility's first free day — the one the user has to plan.
+  const [start, setStart] = useState<ISODate>(weekStart(nearest ?? today));
+  const [editing, setEditing] = useState<{ id: string; date: ISODate } | null>(null);
+
+  if (!patient) {
+    return (
+      <Screen edges={['left', 'right', 'bottom']}>
+        <EmptyState icon="info" title={t('exam.notFound.title')} />
+      </Screen>
+    );
+  }
+
+  const days = weekDays(start);
+  const selected = editing && slots.find((s) => s.id === editing.id);
+
+  const footer =
+    selected && editing ? (
+      <SlotEditor
+        slot={selected}
+        date={editing.date}
+        onChange={(slot) => updateSlot(patient.id, slot)}
+        onDelete={() => {
+          removeSlot(patient.id, selected.id);
+          setEditing(null);
+        }}
+        onDone={() => setEditing(null)}
+      />
+    ) : (
+      <Button label={t('callAssist.availability.done')} fullWidth onPress={() => router.back()} />
+    );
+
+  return (
+    <Screen edges={['left', 'right', 'bottom']} scroll={false} footer={footer}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+        {start > thisWeek ? (
+          <IconButton
+            icon="chevronLeft"
+            accessibilityLabel={t('callAssist.availability.prevWeek')}
+            onPress={() => setStart(shiftWeek(start, -1))}
+          />
+        ) : (
+          <View style={{ width: layout.minTouch }} />
+        )}
+        <View style={{ flex: 1, alignItems: 'center' }}>
+          <Text variant="heading" accessibilityRole="header">
+            {weekTitle(days)}
+          </Text>
+          {nearest && days.includes(nearest) && (
+            <Text variant="caption" tone="textMuted">
+              {`◯ ${t('callAssist.availability.legendNearest')}`}
+            </Text>
+          )}
+        </View>
+        <IconButton
+          icon="chevronRight"
+          accessibilityLabel={t('callAssist.availability.nextWeek')}
+          onPress={() => setStart(shiftWeek(start, 1))}
+        />
+      </View>
+      <WeekGrid
+        days={days}
+        today={today}
+        nearest={nearest}
+        slots={slots}
+        selectedId={selected?.id ?? null}
+        onCreate={(date, from, to) => {
+          const id = newSlotId();
+          addSlot(patient.id, { id, from, to, repeat: 'once', date });
+          setEditing({ id, date });
+        }}
+        onSelect={(slot, date) => setEditing({ id: slot.id, date })}
+      />
+    </Screen>
+  );
+}

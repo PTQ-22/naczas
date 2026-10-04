@@ -1,26 +1,13 @@
+import { describeAvailability, firstAvailableSlot, spokenDate } from './availability';
+
 import type { CallAssistRequest, CallAssistStatus } from './api';
-import type { ISODate } from './domain';
+import type { ISODate, TimeOfDay } from './domain';
 
 /**
  * Scripted "Zadzwoń za mnie" conversation, used when no voice provider is configured (API) and
  * in the mobile mock client — the demo must work offline and on web. Lives in shared so both
  * sides tell the same story.
  */
-
-const MONTHS_GENITIVE = [
-  'stycznia',
-  'lutego',
-  'marca',
-  'kwietnia',
-  'maja',
-  'czerwca',
-  'lipca',
-  'sierpnia',
-  'września',
-  'października',
-  'listopada',
-  'grudnia',
-];
 
 export const SIMULATED_SLOT_TIME = '10:30';
 
@@ -39,11 +26,6 @@ export function simulatedSlotDate(today: ISODate): ISODate {
   return d.toISOString().slice(0, 10);
 }
 
-function spokenDate(date: ISODate): string {
-  const [, month, day] = date.split('-').map(Number);
-  return `${day} ${MONTHS_GENITIVE[(month ?? 1) - 1]}`;
-}
-
 interface ScriptLine {
   atMs: number;
   role: 'agent' | 'clinic';
@@ -53,8 +35,24 @@ interface ScriptLine {
 const RINGING_UNTIL_MS = 2500;
 export const SIMULATED_CALL_DURATION_MS = 23_000;
 
-function script(req: CallAssistRequest, slot: ISODate): ScriptLine[] {
-  const when = `${spokenDate(slot)} o ${SIMULATED_SLOT_TIME}`;
+interface Slot {
+  date: ISODate;
+  time: TimeOfDay;
+}
+
+/**
+ * The clinic's "first free slot": two weeks out, or — when the user marked availability — the
+ * first time from then on that fits it, so the demo shows the agent respecting the calendar.
+ */
+export function simulatedSlot(req: CallAssistRequest, today: ISODate): Slot {
+  const base = simulatedSlotDate(today);
+  const fits = req.availability && firstAvailableSlot(req.availability, base);
+  return fits || { date: base, time: SIMULATED_SLOT_TIME };
+}
+
+function script(req: CallAssistRequest, today: ISODate, slot: Slot): ScriptLine[] {
+  const when = `${spokenDate(slot.date)} o ${slot.time}`;
+  const free = req.availability ? describeAvailability(req.availability, today) : [];
   return [
     {
       atMs: 3000,
@@ -65,7 +63,9 @@ function script(req: CallAssistRequest, slot: ISODate): ScriptLine[] {
     {
       atMs: 10_000,
       role: 'agent',
-      text: 'Tak, jest e-skierowanie. Jaki jest najbliższy wolny termin?',
+      text: free.length
+        ? `Tak, jest e-skierowanie. Pasują nam terminy: ${free.join('; ')}. Co jest najbliżej?`
+        : 'Tak, jest e-skierowanie. Jaki jest najbliższy wolny termin?',
     },
     { atMs: 14_000, role: 'clinic', text: `Mam wolne ${when}.` },
     {
@@ -84,8 +84,8 @@ export function simulateCallAssist(
   today: ISODate,
   elapsedMs: number,
 ): CallAssistStatus {
-  const slot = simulatedSlotDate(today);
-  const transcript = script(req, slot)
+  const slot = simulatedSlot(req, today);
+  const transcript = script(req, today, slot)
     .filter((l) => l.atMs <= elapsedMs)
     .map(({ role, text }) => ({ role, text }));
   if (elapsedMs < RINGING_UNTIL_MS) return { callId, status: 'ringing', transcript, result: null };
@@ -96,6 +96,6 @@ export function simulateCallAssist(
     callId,
     status: 'ended',
     transcript,
-    result: { booked: true, date: slot, time: SIMULATED_SLOT_TIME, note: null },
+    result: { booked: true, date: slot.date, time: slot.time, note: null },
   };
 }

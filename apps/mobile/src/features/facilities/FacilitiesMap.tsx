@@ -66,7 +66,9 @@ export function FacilitiesMap({ facilities, origin, selectedId, onSelect }: Faci
     <MapView
       ref={mapRef}
       accessibilityLabel={t('facilities.map.a11y')}
-      style={{ flex: 1, minHeight: 320, borderRadius: radius.lg }}
+      // Low floor: the doctors tab shows a compact map; it re-fits whenever its size changes.
+      style={{ flex: 1, minHeight: 160, borderRadius: radius.lg }}
+      onLayout={fit}
       initialRegion={{
         latitude: center.lat,
         longitude: center.lng,

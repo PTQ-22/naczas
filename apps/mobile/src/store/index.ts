@@ -1,6 +1,12 @@
 export { activeBetForProfile, betsForProfile, useBetStore } from './bet-store';
 export { deleteProfileWithData, resetAllData } from './actions';
 export {
+  facilityKey,
+  pinDefaultFirst,
+  useDefaultFacilityStore,
+  type DefaultFacility,
+} from './default-facility-store';
+export {
   emptyDraft,
   OnboardingDraftSchema,
   useOnboardingDraftStore,

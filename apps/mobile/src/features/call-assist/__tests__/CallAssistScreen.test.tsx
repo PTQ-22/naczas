@@ -4,6 +4,7 @@ import { simulateCallAssist, type CallAssistRequest } from '@naczas/shared';
 
 import { useProfilesStore, useRecordsStore, useSettingsStore } from '@/store';
 import { makeProfile } from '@/store/__fixtures__/fixtures';
+import { useAvailabilityStore } from '@/store/availability-store';
 
 import CallAssistScreen from '../CallAssistScreen';
 
@@ -50,6 +51,7 @@ describe('CallAssistScreen', () => {
       useSettingsStore.setState({ todayOverride: '2026-10-04' });
       useProfilesStore.setState({ profiles: [mama, kasia], activeProfileId: mama.id });
       useRecordsStore.setState({ records: [] });
+      useAvailabilityStore.getState().reset();
     });
   });
   afterEach(() => jest.useRealTimers());
@@ -83,6 +85,39 @@ describe('CallAssistScreen', () => {
         status: 'booked',
         bookedFor: '2026-10-19',
       }),
+    ]);
+  });
+
+  it('passes the marked free hours to the agent, which books a slot that fits', async () => {
+    act(() => {
+      for (const weekday of [1, 2, 3, 4, 5] as const) {
+        useAvailabilityStore.getState().addSlot(mama.id, {
+          id: `w${weekday}`,
+          repeat: 'weekly',
+          weekday,
+          from: '17:00',
+          to: '20:00',
+        });
+      }
+    });
+    render(<CallAssistScreen />);
+    expect(screen.getByText('↻ Pn–Pt 17:00–20:00')).toBeTruthy();
+
+    await act(async () => {
+      fireEvent.press(screen.getByRole('button', { name: /Zadzwoń za mnie/ }));
+      await Promise.resolve();
+    });
+    expect(mockRequest?.availability).toEqual({
+      weekly: [{ days: [1, 2, 3, 4, 5], from: '17:00', to: '20:00' }],
+      dates: [],
+    });
+
+    mockElapsed = 30_000;
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(1000);
+    });
+    expect(useRecordsStore.getState().records).toEqual([
+      expect.objectContaining({ bookedFor: '2026-10-19', bookedTime: '17:00' }),
     ]);
   });
 

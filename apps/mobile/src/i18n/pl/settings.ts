@@ -10,6 +10,15 @@ export const settings = {
       light: 'Jasny',
       dark: 'Ciemny',
     },
+    palette: 'Kolorystyka (podgląd)',
+    paletteOptions: {
+      sky: 'A — błękit kliniczny',
+      navy: 'B — granat i czerwień',
+      redcross: 'C — czerwony krzyż',
+    },
+  },
+  defaultFacility: {
+    header: 'Domyślna przychodnia',
   },
   location: {
     header: 'Lokalizacja',

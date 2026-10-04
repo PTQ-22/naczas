@@ -6,7 +6,7 @@ import { View } from 'react-native';
 import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
 
 import { rules } from '@naczas/rules';
-import type { CallAssistStatus } from '@naczas/shared';
+import { ISODateSchema, type CallAssistStatus } from '@naczas/shared';
 
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
@@ -16,9 +16,12 @@ import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
-import { selectActiveProfile, useProfilesStore, useRecordsStore } from '@/store';
+import { selectActiveProfile, useProfilesStore, useRecordsStore, useToday } from '@/store';
+import { selectSlots, useAvailabilityStore } from '@/store/availability-store';
 import { fonts, useTheme } from '@/theme';
 
+import { toCallAvailability } from './availability';
+import { AvailabilityCard } from './AvailabilityCard';
 import { buildCallRequest, inSentence } from './call-request';
 import { useCallAssist, type CallAssistState } from './use-call-assist';
 
@@ -95,9 +98,19 @@ function Transcript({ lines }: { lines: CallAssistStatus['transcript'] }) {
 }
 
 export default function CallAssistScreen() {
-  const { examId, facility } = useLocalSearchParams<{ examId: string; facility?: string }>();
+  const { examId, facility, firstDate } = useLocalSearchParams<{
+    examId: string;
+    facility?: string;
+    firstDate?: string;
+  }>();
   const { space, colors, type } = useTheme();
+  const today = useToday();
   const patient = useProfilesStore(selectActiveProfile);
+  const slots = useAvailabilityStore(selectSlots(patient?.id));
+  // URL params are external input (AGENTS.md §3).
+  const parsedFirstDate = ISODateSchema.safeParse(firstDate);
+  const nearest =
+    parsedFirstDate.success && parsedFirstDate.data >= today ? parsedFirstDate.data : null;
   const profiles = useProfilesStore((s) => s.profiles);
   const markBooked = useRecordsStore((s) => s.markBooked);
   const rule = rules.find((r) => r.id === examId);
@@ -128,7 +141,15 @@ export default function CallAssistScreen() {
   const facilityName = facility ?? '';
   const call = () => {
     saved.current = false;
-    void start(buildCallRequest({ patient, profiles, rule, facilityName }));
+    void start(
+      buildCallRequest({
+        patient,
+        profiles,
+        rule,
+        facilityName,
+        availability: toCallAvailability(slots, today),
+      }),
+    );
   };
   const toManual = () =>
     router.replace({ pathname: '/exam/[examId]/book', params: { examId, facility: facilityName } });
@@ -192,6 +213,7 @@ export default function CallAssistScreen() {
             <Point icon="check" text={t('callAssist.points.privacy')} />
             <Point icon="phone" text={t('callAssist.points.demo')} />
           </View>
+          <AvailabilityCard examId={examId} slots={slots} today={today} nearest={nearest} />
         </View>
       ) : (
         <View style={{ gap: space.lg }}>

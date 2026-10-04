@@ -57,6 +57,14 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="doctors"
+        options={{
+          title: t('common.tabs.doctors'),
+          tabBarAccessibilityLabel: t('common.tabs.doctors'),
+          tabBarIcon: tabIcon('phone'),
+        }}
+      />
+      <Tabs.Screen
         name="family"
         options={{
           title: t('common.tabs.family'),

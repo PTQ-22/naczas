@@ -82,6 +82,15 @@ function ThemedStack() {
           name="exam/[examId]/call"
           options={{ headerShown: true, title: t('callAssist.title'), presentation: 'modal' }}
         />
+        {/* Modal too: a card pushed from a modal would open underneath it on iOS. */}
+        <Stack.Screen
+          name="exam/[examId]/availability"
+          options={{
+            headerShown: true,
+            title: t('callAssist.availability.title'),
+            presentation: 'modal',
+          }}
+        />
         <Stack.Screen
           name="visit-prep"
           options={{ headerShown: true, title: t('visitPrep.title') }}

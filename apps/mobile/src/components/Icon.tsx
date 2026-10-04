@@ -19,6 +19,7 @@ const symbols = {
   minus: { ios: 'minus', android: 'remove', web: 'remove' },
   chevronDown: { ios: 'chevron.down', android: 'expand_more', web: 'expand_more' },
   chevronUp: { ios: 'chevron.up', android: 'expand_less', web: 'expand_less' },
+  chevronLeft: { ios: 'chevron.left', android: 'chevron_left', web: 'chevron_left' },
   chevronRight: { ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' },
   external: { ios: 'arrow.up.right', android: 'open_in_new', web: 'open_in_new' },
   phone: { ios: 'phone.fill', android: 'call', web: 'call' },
@@ -26,6 +27,13 @@ const symbols = {
   settings: { ios: 'gearshape', android: 'settings', web: 'settings' },
   trophy: { ios: 'trophy', android: 'emoji_events', web: 'emoji_events' },
   heart: { ios: 'heart', android: 'favorite', web: 'favorite' },
+  star: { ios: 'star.fill', android: 'star', web: 'star' },
+  close: { ios: 'xmark', android: 'close', web: 'close' },
+  filter: {
+    ios: 'line.3.horizontal.decrease.circle',
+    android: 'filter_list',
+    web: 'filter_list',
+  },
 } as const satisfies Record<string, SymbolName>;
 
 export type IconName = keyof typeof symbols;

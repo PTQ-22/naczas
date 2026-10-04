@@ -1,4 +1,9 @@
-import { callAssistOpening, type CallAssistRequest, type ISODate } from '@naczas/shared';
+import {
+  callAssistOpening,
+  describeAvailability,
+  type CallAssistRequest,
+  type ISODate,
+} from '@naczas/shared';
 
 export interface AssistantOptions {
   /** ElevenLabs voice; without it Azure's native Polish neural voice is used */
@@ -6,6 +11,19 @@ export interface AssistantOptions {
   /** Public base URL of this API — Vapi then streams transcripts to our webhook */
   publicUrl?: string | undefined;
   webhookSecret?: string | undefined;
+}
+
+/** The user's calendar, or nothing — then any slot is fine. */
+function availabilityLines(req: CallAssistRequest, today: ISODate): string[] {
+  const free = req.availability ? describeAvailability(req.availability, today) : [];
+  if (free.length === 0) return [];
+  return [
+    'Pacjent może przyjść tylko w tych terminach:',
+    ...free.map((line) => `- ${line}`),
+    'Pytaj o termin w tych godzinach i sam je podaj, gdy rejestracja zapyta, kiedy pacjentowi pasuje.',
+    'Jeśli proponują termin poza nimi, poproś o inny w podanych godzinach. Gdy żaden nie pasuje,',
+    'przyjmij najbliższy możliwy i powiedz, że pacjent w razie czego oddzwoni, żeby go zmienić.',
+  ];
 }
 
 function systemPrompt(req: CallAssistRequest, today: ISODate): string {
@@ -16,6 +34,7 @@ function systemPrompt(req: CallAssistRequest, today: ISODate): string {
     req.bookBy
       ? `Termin powinien być najpóźniej ${req.bookBy}; jeśli proponują późniejszy, zapytaj raz o wcześniejszy, a potem przyjmij najbliższy dostępny.`
       : 'Przyjmij najbliższy dostępny termin.',
+    ...availabilityLines(req, today),
     '',
     'Zasady:',
     '- Mów krótko, uprzejmie, naturalnie, po polsku. Jedno-dwa zdania na raz.',
