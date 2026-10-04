@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- G2: kartka kalendarza z plusem o ostrych narożnikach — umówiona wizyta -->
+  <rect width="512" height="512" rx="112" fill="#1565C0"/>
+  <rect x="100" y="124" width="312" height="290" rx="44" fill="#fff"/>
+  <path d="M100 168a44 44 0 0 1 44-44h224a44 44 0 0 1 44 44v34H100z" fill="#E53935"/>
+  <path d="M184 96v60M328 96v60" stroke="#fff" stroke-width="30" stroke-linecap="round"/>
+  <path d="M234 240h44v48h48v44h-48v48h-44v-48h-48v-44h48z" fill="#1565C0"/>
+</svg>
