@@ -135,6 +135,19 @@ describe('SettingsScreen', () => {
     }
   });
 
+  it('lets the user choose which personal data the call agent may say', () => {
+    renderSettings();
+    expect(screen.getByRole('header', { name: 'Dane w rozmowach AI' })).toBeOnTheScreen();
+    const pesel = screen.getByRole('switch', { name: 'PESEL' });
+    expect(pesel).not.toBeChecked();
+    expect(screen.getByRole('switch', { name: 'Nazwisko' })).not.toBeChecked();
+
+    fireEvent.press(pesel);
+    expect(useSettingsStore.getState().callDisclosure.pesel).toBe(true);
+    expect(screen.getByRole('switch', { name: 'PESEL' })).toBeChecked();
+    expect(useSettingsStore.getState().callDisclosure.lastName).toBe(false);
+  });
+
   it('explains that data stays on the device', () => {
     renderSettings();
     expect(screen.getByRole('header', { name: 'Prywatność' })).toBeOnTheScreen();

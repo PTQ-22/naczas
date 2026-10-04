@@ -15,7 +15,14 @@ import {
 } from '@/notifications';
 import { usePlan } from '@/services';
 import { useCloudSync } from '@/services/cloud-sync';
-import { resetAllData, resolveToday, useProfilesStore, useSettingsStore, useToday } from '@/store';
+import {
+  DISCLOSURE_FIELDS,
+  resetAllData,
+  resolveToday,
+  useProfilesStore,
+  useSettingsStore,
+  useToday,
+} from '@/store';
 import { PALETTE_IDS, usePaletteStore, useTheme, type DarkModePreference } from '@/theme';
 
 import { applyDemoPreset, DEMO_PRESETS } from './demo-presets';
@@ -53,6 +60,8 @@ export default function SettingsScreen() {
   const setTodayOverride = useSettingsStore((s) => s.setTodayOverride);
   const familyCode = useSettingsStore((s) => s.familyCode);
   const setFamilyCode = useSettingsStore((s) => s.setFamilyCode);
+  const callDisclosure = useSettingsStore((s) => s.callDisclosure);
+  const setCallDisclosure = useSettingsStore((s) => s.setCallDisclosure);
   const activeProfile = useProfilesStore((s) => s.profiles.find((p) => p.id === s.activeProfileId));
   const today = useToday();
   const { plan } = usePlan(activeProfile?.id ?? '');
@@ -180,6 +189,20 @@ export default function SettingsScreen() {
 
         <SettingsSection title={t('settings.privacy.header')}>
           <Text>{t('settings.privacy.body')}</Text>
+        </SettingsSection>
+
+        <SettingsSection title={t('settings.callDisclosure.header')}>
+          <Text tone="textMuted">{t('settings.callDisclosure.intro')}</Text>
+          {DISCLOSURE_FIELDS.map((field) => (
+            <ToggleRow
+              key={field}
+              testID={`settings-disclosure-${field}`}
+              label={t(`settings.callDisclosure.fields.${field}`)}
+              {...(field === 'pesel' && { hint: t('settings.callDisclosure.hints.pesel') })}
+              value={callDisclosure[field]}
+              onChange={(allowed) => setCallDisclosure(field, allowed)}
+            />
+          ))}
         </SettingsSection>
 
         <SettingsSection title="Konto Rodzinne">

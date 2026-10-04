@@ -14,6 +14,11 @@ export {
 export { selectActiveProfile, useProfilesStore } from './profiles-store';
 export { findRecord, recordKey, recordsForProfile, useRecordsStore } from './records-store';
 export { useRestoreStatus } from './restore-status';
-export { useSettingsStore } from './settings-store';
+export {
+  DISCLOSURE_FIELDS,
+  useSettingsStore,
+  type CallDisclosure,
+  type DisclosureField,
+} from './settings-store';
 export { useStoresHydrated } from './use-hydrated';
 export { currentToday, resolveToday, useToday } from './use-today';
