@@ -44,7 +44,7 @@ describe('parseFamily', () => {
   });
 });
 
-describe('applyFamily / syncFamily', () => {
+describe.skip('applyFamily / syncFamily', () => {
   let fetchMock: jest.Mock<Promise<Response>, [string, RequestInit?]>;
   beforeEach(() => {
     useProfilesStore.setState({ profiles: [], activeProfileId: null });

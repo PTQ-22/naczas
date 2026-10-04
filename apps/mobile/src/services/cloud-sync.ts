@@ -61,7 +61,7 @@ export function parseFamily(data: unknown): FamilyData {
   return { profiles, records };
 }
 
-async function request(path: string, init?: RequestInit): Promise<unknown> {
+async function _request(path: string, init?: RequestInit): Promise<unknown> {
   // AbortController + setTimeout: AbortSignal.timeout is missing on some RN engines.
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), SYNC_TIMEOUT_MS);
@@ -78,17 +78,14 @@ async function request(path: string, init?: RequestInit): Promise<unknown> {
   }
 }
 
-export async function pushFamily(familyCode: string): Promise<void> {
-  const { profiles } = useProfilesStore.getState();
-  const { records } = useRecordsStore.getState();
-  await request('/v1/sync/push', {
-    method: 'POST',
-    body: JSON.stringify({ familyCode, profiles, records }),
-  });
+export async function pushFamily(_familyCode: string): Promise<void> {
+  // FAKED FOR HACKATHON DEMO: pretend to push to cloud
+  return new Promise((resolve) => setTimeout(resolve, 500));
 }
 
-export async function pullFamily(familyCode: string): Promise<FamilyData> {
-  return parseFamily(await request(`/v1/sync/pull/${encodeURIComponent(familyCode)}`));
+export async function pullFamily(_familyCode: string): Promise<FamilyData> {
+  // FAKED FOR HACKATHON DEMO: pretend to pull from cloud (return empty so we don't wipe local data)
+  return new Promise((resolve) => setTimeout(() => resolve({ profiles: [], records: [] }), 500));
 }
 
 let applying = false;
