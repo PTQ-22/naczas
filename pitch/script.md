@@ -33,7 +33,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 **1:00–1:25 · Plan**
 [AKCJA] Ekran planu, animacja osi czasu. D wskazuje czerwoną kartę.
 **P:**
-> To plan mamy. Kolonoskopia — w poradniach NFZ w okolicy czeka się średnio około 29 tygodni. To szacunek z danych, które placówki raportują do NFZ — więc terminu trzeba szukać już dziś. Każde badanie ma uzasadnienie i źródło.
+> To plan mamy. Kolonoskopia — w poradniach NFZ w okolicy czeka się od 9 do 19 tygodni. To szacunek z danych, które placówki raportują do NFZ — więc terminu trzeba szukać już dziś. Każde badanie ma uzasadnienie i źródło.
 
 **1:25–1:35 · Placówki**
 [AKCJA] „Znajdź termin” → lista placówek posortowana „najszybciej”, widoczne „stan na …”.
@@ -74,14 +74,14 @@ Pełne odpowiedzi: `docs/07-pitch-and-submission.md` §Q&A. Jedno zdanie na star
 | Pytanie | Pierwsze zdanie |
 |---|---|
 | Skąd zalecenia? | „Z oficjalnych programów MZ i NFZ — każda reguła ma źródło w otwartym pliku, a te jeszcze niezweryfikowane aplikacja oznacza jako orientacyjne.” |
-| RODO? | „Dane zdrowotne domyślnie zostają na telefonie; serwer dostaje tylko nazwę świadczenia i lokalizację z dokładnością do ok. 1 km. Agent — tylko to, co potrzebne do rozmowy, bez nazwiska i PESEL.” Na dopytanie: synchronizacja rodzinna w demo działa na testowej bazie; docelowo szyfrowana E2E. |
+| RODO? | „Dane zdrowotne domyślnie zostają na telefonie; serwer dostaje tylko nazwę świadczenia i lokalizację z dokładnością do ok. 1 km. Agent podaje tylko dane, na które pozwolisz w Ustawieniach — nazwisko czy PESEL są domyślnie wyłączone i mówi je tylko, gdy rejestracja zapyta.” Na dopytanie: synchronizacja rodzinna w demo działa na testowej bazie; docelowo szyfrowana E2E. |
 | Czy agent naprawdę dzwoni do przychodni? | „Połączenie jest prawdziwe, ale w demo tylko na nasz numer testowy ustawiony na serwerze — aplikacja nie może podać innego. Na scenie pokazujemy symulację, prawdziwą rozmowę — na wideo.” |
-| RODO przy rozmowie? | „Agent zna tylko relację (»mamę«), imię zlecającej osoby, badanie, placówkę i wolne godziny. Przetwarzają to Vapi, OpenAI, Deepgram, ElevenLabs i Twilio — wszystko wymieniamy w ujawnieniu.” |
+| RODO przy rozmowie? | „Agent zna tylko relację (»mamę«), imię zlecającej osoby, badanie, placówkę i wolne godziny — nazwisko, PESEL czy telefon tylko, jeśli włączysz je w Ustawieniach. Przetwarzają to Vapi, OpenAI, Deepgram, ElevenLabs i Twilio — wszystko wymieniamy w ujawnieniu.” |
 | Co jeśli rejestracja odmówi / AI się pomyli? | „Agent ponawia w godzinach pracy rejestracji, odrzuca terminy poza kalendarzem i proponuje własne; użytkownik widzi transkrypcję i może jednym przyciskiem poprawić datę albo wpisać ją ręcznie.” |
 | Ile kosztuje rozmowa? | „To kwestia wdrożenia i umowy z dostawcami — nie podajemy liczby bez wyceny. W kodzie: maks. 3 minuty na rozmowę i domyślnie 3 próby.” |
 | Aktualność kolejek? | „API NFZ, aktualizacja mniej więcej co miesiąc — zawsze pokazujemy »stan na«.” |
 | Czym różnicie się od Doctor Robert / IKP? | „Doctor Robert mówi, co i kiedy zbadać; IKP pozwala znaleźć termin. My łączymy jedno z drugim i mówimy, kiedy zacząć szukać, żeby zdążyć — także dla bliskich.” (Nie mówić, że IKP nie ma danych o kolejkach — ma; tabela w `slides-outline.md` slajd 5.) |
-| Czy 29 tygodni to prawdziwy czas oczekiwania? | „To szacunek, nie pierwszy wolny termin: NFZ co miesiąc publikuje średni czas oczekiwania, który raportuje każda poradnia. Bierzemy ostrożnie 75. percentyl z placówek w okolicy — u trzech na cztery czeka się średnio krócej — i zawsze pokazujemy »stan na«.” Na dopytanie: to kolejki do poradni (zwykle ze skierowaniem), nie program przesiewowy. |
+| Czy 9–19 tygodni to prawdziwy czas oczekiwania? | „To szacunek, nie pierwszy wolny termin: NFZ co miesiąc publikuje średni czas oczekiwania, który raportuje każda poradnia. 9 to najszybsza placówka w okolicy, 19 to ostrożny 75. percentyl — u trzech na cztery czeka się średnio krócej. Zawsze pokazujemy »stan na«.” Na dopytanie: to kolejki do poradni (zwykle ze skierowaniem), nie program przesiewowy. |
 | A co z programem przesiewowym / mammografią? | „Programy nie mają danych o kolejkach w API Terminy Leczenia, więc dla mammografii, HPV, LDCT i bilansu przypominamy ze stałym wyprzedzeniem 21 dni i linkujemy wyszukiwarkę programów. Następny krok: realizatorzy programów z API NFZ »Umowy« — placówki i terminy także dla kolonoskopii w programie.” |
 | Jak użyliście AI? | „W developmencie Claude Code, w aplikacji tylko agent głosowy — wszystko ujawniamy na ostatnim slajdzie i w README. Zalecenia medyczne nie pochodzą od AI, a algorytm i architekturę tłumaczymy sami.” |
 | Model biznesowy? | „Narzędzie publiczne / open source z partnerami jak NFZ i samorządy; opcjonalnie white-label dla pracodawców.” |

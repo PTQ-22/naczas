@@ -456,13 +456,13 @@
           <p class="eyebrow" style="margin: 0; display: flex; justify-content: space-between">
             <span style="color: var(--ink)">Kolonoskopia</span><span class="now" style="color: var(--now)">Pilne</span>
           </p>
-          <span class="num" style="font-family: var(--font-display); font-weight: 800; font-size: 200px; letter-spacing: -0.03em; color: var(--ink)">29</span>
+          <span class="num" style="font-family: var(--font-display); font-weight: 800; font-size: 200px; letter-spacing: -0.03em; color: var(--ink)">9–19</span>
           <p class="eyebrow" style="margin: 0; color: var(--ink)">Tygodni w kolejce · 15 km</p>
           <span>Zacznij szukać terminu dziś.</span>
           <span class="btn" style="align-self: stretch; text-align: center">Znajdź placówkę</span>
           <p class="eyebrow rule" style="margin: 24px 0 0">Umówione</p>
           <div class="row" style="border-top: none; padding: 4px 0 8px">
-            <b>Mammografia</b><span class="num" style="font-size: var(--fs-body); color: var(--primary)">17.10</span>
+            <b>Mammografia</b><span class="num" style="font-size: var(--fs-body); color: var(--primary)">18.10</span>
           </div>
           <p class="eyebrow rule" style="margin: 0">Później</p>
           <div class="row" style="border-top: none; padding: 4px 0 0">
@@ -500,12 +500,12 @@
           <span>uprawnionych objął program badań przesiewowych raka jelita grubego¹</span>
         </div>
         <div class="stat plate" style="padding: 20px 36px; gap: 8px">
-          <span class="num">&gt; 4,5 mies.</span>
+          <span class="num">&gt;4,5<span style="font-size: 0.6em"> mies.</span></span>
           <span>lub dłużej — taki średni czas oczekiwania na kolonoskopię raportuje połowa poradni NFZ²</span>
         </div>
       </div>
       <div class="notes">
-        ¹ NFZ, „Dane o realizacji programów”, stan na 1.10.2026<br />
+        ¹ NFZ, „Dane o realizacji programów”, stan na 2026-10-01<br />
         ² API NFZ Terminy Leczenia, stan na 2026-09: mediana średniego czasu oczekiwania: mazowieckie 137,5 dnia, małopolskie 158 dni
       </div>
     </section>
@@ -514,7 +514,7 @@
     <section class="slide">
       <p class="eyebrow">Rozwiązanie</p>
       <h2 style="max-width: 1680px">
-        Mówimy nie tylko jakie badanie i kiedy, ale <span style="box-shadow: inset 0 -10px 0 var(--marker)">kiedy zacząć je organizować</span> i
+        Nie tylko jakie badanie i w jakim terminie, ale też <span style="box-shadow: inset 0 -10px 0 var(--marker)">kiedy zacząć je organizować</span> i
         <span style="box-shadow: inset 0 -10px 0 var(--marker)">gdzie zrobić je najszybciej na NFZ</span> — dla Ciebie i Twoich bliskich.
       </h2>
       <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 40px; align-content: center">
@@ -533,7 +533,7 @@
           <h3>Gdzie na NFZ</h3>
           <p class="muted">Placówki, gdzie czeka się najkrócej</p>
         </div>
-        <div class="card pillar" style="border-color: var(--primary); box-shadow: inset 0 0 0 4px var(--primary)">
+        <div class="card pillar">
           <span class="idx">4</span>
           <h3>Umówimy za Ciebie</h3>
           <p class="muted">Agent AI dzwoni do rejestracji i umawia termin w godzinach, które Ci pasują</p>
@@ -552,7 +552,7 @@
           <p class="shot-caption">1. Ankieta</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/v3/plan-light.jpg" alt="Plan badań mamy: kolonoskopia w sekcji Działaj teraz" />
+          <img class="shot-img" src="../screenshots/v3/plan-demo-light.jpg" alt="Plan badań mamy: kolonoskopia w sekcji Teraz, mammografia umówiona" />
           <p class="shot-caption">2. Plan: co i kiedy</p>
         </div>
         <div>
@@ -586,7 +586,7 @@
         </div>
         <div class="plate" style="padding: 24px 32px; display: flex; flex-direction: column; justify-content: center">
           <p class="eyebrow" style="margin-bottom: 4px">Demo</p>
-          <span class="num" style="font-size: 150px; color: var(--ink)">29</span>
+          <span class="num" style="font-size: 120px; white-space: nowrap; color: var(--ink)">9–19</span>
           <p class="eyebrow now" style="margin: 8px 0 0">tyg. w kolejce</p>
         </div>
       </div>
@@ -640,7 +640,7 @@
             <td>„Kiedy zacząć” = plan × kolejka</td>
             <td><span class="no">✗</span></td>
             <td><span class="no">✗</span></td>
-            <td><span class="yes">✓</span></td>
+            <td class="ours"><span class="yes">✓</span></td>
           </tr>
         </tbody>
       </table>
@@ -721,7 +721,7 @@
           <!-- Phone -->
           <rect x="10" y="10" width="940" height="170" rx="24" fill="#fbf9f3" stroke="#0e1b2c" stroke-width="4" />
           <text x="40" y="66" font-size="36" font-weight="700" fill="#0e1b2c">Telefon — Expo: iOS · Android · web</text>
-          <text x="40" y="112" font-size="28" fill="#4a5160">Profile i historia badań na telefonie</text>
+          <text x="40" y="112" font-size="28" fill="#4a5160">Profile i historia badań domyślnie na telefonie</text>
           <text x="40" y="152" font-size="28" fill="#4a5160">Silnik reguł liczy plan offline</text>
           <!-- Arrow phone -> API -->
           <line x1="480" y1="184" x2="480" y2="262" stroke="#ffffff" stroke-width="5" marker-end="url(#arrow)" />
@@ -738,8 +738,8 @@
           <text x="40" y="568" font-size="36" font-weight="700" fill="#0e1b2c">API NFZ „Terminy leczenia” · Vapi + Twilio</text>
         </svg>
         <ul class="points">
-          <li><b>Dane zdrowotne na telefonie</b> — konto rodzinne w demo działa na bazie testowej; w docelowej wersji dane są szyfrowane</li>
-          <li><b>Agent AI</b> dostaje tylko to, co potrzebne do rozmowy — bez PESEL i nazwiska. Docelowo działa na naszych serwerach</li>
+          <li><b>Dane zdrowotne domyślnie na telefonie</b> — synchronizacja rodzinna opcjonalna</li>
+          <li><b>Agent AI</b> podaje tylko dane, na które się zgodzisz — PESEL czy nazwisko domyślnie wyłączone. Docelowo działa na naszych serwerach</li>
           <li><b>Odporne na awarię NFZ</b> — cache i kopia zapasowa danych</li>
         </ul>
       </div>
@@ -758,7 +758,7 @@
             <li>„Kiedy zacząć szukać”</li>
             <li>Placówki NFZ</li>
             <li>Agent AI umawia wizytę</li>
-            <li>Profile rodzinne i synchronizacja (demo)</li>
+            <li>Profile rodzinne</li>
             <li>Przygotowanie do wizyty</li>
           </ul>
         </div>

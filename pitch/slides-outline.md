@@ -124,7 +124,7 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
 - Diagram (uproszczony z `docs/02-architecture.md`): Telefon (Expo: iOS/Android/web) → cienkie API (Hono) → API NFZ „Terminy leczenia”.
 - Druga gałąź: API → agent głosowy (Vapi: gpt-4o, Deepgram, ElevenLabs; Twilio) → **numer testowy zespołu**.
 - Strzałka telefon → API podpisana: **„tylko nazwa świadczenia + lokalizacja ≈ 1 km. Zero danych zdrowotnych.”**
-- Strzałka API → agent podpisana: **„tylko na Twoje zlecenie: dla kogo (»mamę«), badanie, placówka, godziny. Bez nazwiska i PESEL.”**
+- Strzałka API → agent podpisana: **„tylko na Twoje zlecenie: dla kogo (»mamę«), badanie, placówka, godziny. Nazwisko czy PESEL tylko, jeśli na to pozwolisz.”**
 - Punkty:
   - **Prawdziwe dane NFZ** (api.nfz.gov.pl), cache + snapshot — demo działa nawet, gdy NFZ nie odpowiada
   - **Privacy by design:** dane zdrowotne domyślnie tylko na telefonie, bez zakładania konta; synchronizacja rodzinna w demo na testowej bazie, docelowo szyfrowana
