@@ -1,4 +1,4 @@
-# Render Blueprint for the API (https://render.com/docs/blueprint-spec).
+# Render Blueprint: API + web app (https://render.com/docs/blueprint-spec).
 # Render injects PORT itself; CORS_ORIGINS is set in the dashboard once the Vercel URL is known.
 services:
   - type: web
@@ -19,8 +19,9 @@ services:
         value: 'true'
       - key: RATE_LIMIT_PER_MIN
         value: '60'
+      # The web app below; adjust if Render gives naczas-web a different URL.
       - key: CORS_ORIGINS
-        sync: false # entered by a human in the dashboard
+        value: https://naczas-web.onrender.com
       # "Zadzwoń za mnie": public demo = scripted call + transcript, never a real phone call.
       # To test a real call set the Vapi keys and flip CALL_ASSIST_MODE to live, then back.
       - key: CALL_ASSIST_MODE
@@ -40,3 +41,29 @@ services:
       # Optional family login / cloud sync (Neon); without it only /v1/auth and /v1/sync fail
       - key: DATABASE_URL
         sync: false
+
+  # Web build of the Expo app (the link for the jury). Static site: free and never sleeps.
+  - type: web
+    name: naczas-web
+    runtime: static
+    # pnpm version is pinned by packageManager in package.json
+    buildCommand: npm install -g pnpm@12.8.1 && pnpm install --frozen-lockfile && pnpm build:web
+    staticPublishPath: ./apps/mobile/dist
+    autoDeploy: true
+    # Deep links like /plan must load the SPA; existing files (JS, fonts) are served as-is.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /_expo/static/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    envVars:
+      - key: NODE_VERSION
+        value: '24'
+      # EXPO_PUBLIC_* is inlined at build time — change it, then redeploy.
+      - key: EXPO_PUBLIC_API_URL
+        value: https://naczas-api.onrender.com
+      - key: EXPO_PUBLIC_USE_MOCKS
+        value: '0'

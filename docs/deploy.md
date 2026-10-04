@@ -1,4 +1,6 @@
-# Deploy — API (Render) + web (Vercel)
+# Deploy — API + web (Render)
+
+> **Zmiana 2026-10-04:** web też jest na Renderze (`naczas-web`, static site w `render.yaml`) — Vercel niepotrzebny. Blueprint → **Sync** tworzy obie usługi; `CORS_ORIGINS` API wskazuje już `https://naczas-web.onrender.com`. Sekcja „Web na Vercel” zostaje jako alternatywa.
 
 Konfiguracja jest w repo: `Dockerfile`, `.dockerignore`, `render.yaml` (API) oraz `vercel.json` (web).
 Logowanie do serwisów i klikanie w panelach robi **człowiek**. Agent przygotował tylko pliki i przetestował je lokalnie.
