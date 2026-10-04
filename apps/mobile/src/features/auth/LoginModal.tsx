@@ -131,7 +131,12 @@ export function LoginModal() {
                 onPress={() => setMode(mode === 'login' ? 'register' : 'login')}
                 fullWidth
               />
-              <Button variant="ghost" label="Zamknij" onPress={() => router.back()} fullWidth />
+              <Button
+                variant="ghost"
+                label="Zamknij"
+                onPress={() => (router.canGoBack() ? router.back() : router.replace('/plan'))}
+                fullWidth
+              />
             </View>
           )}
         </View>
