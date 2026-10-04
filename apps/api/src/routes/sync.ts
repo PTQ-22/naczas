@@ -1,7 +1,9 @@
 import { zValidator } from '@hono/zod-validator';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
+
+import { ProfileSchema, ExamRecordSchema } from '@naczas/shared';
 
 import { db } from '../db';
 import { errorResponse } from './common';
@@ -15,24 +17,8 @@ export function syncRoutes() {
         'json',
         z.object({
           familyCode: z.string().min(1),
-          profiles: z.array(
-            z.object({
-              id: z.string(),
-              encryptedName: z.string(),
-              gender: z.enum(['M', 'F']),
-              birthYear: z.number(),
-              updatedAt: z.string(),
-            }),
-          ),
-          records: z.array(
-            z.object({
-              id: z.string(),
-              profileId: z.string(),
-              examId: z.string(),
-              status: z.string(),
-              updatedAt: z.string(),
-            }),
-          ),
+          profiles: z.array(ProfileSchema),
+          records: z.array(ExamRecordSchema),
           bets: z.array(
             z.object({
               id: z.string(),
@@ -59,15 +45,15 @@ export function syncRoutes() {
             .insert(profiles)
             .values(
               data.profiles.map((p) => ({
-                ...p,
+                id: p.id,
                 familyCode: data.familyCode,
+                payload: JSON.stringify(p),
               })),
             )
             .onConflictDoUpdate({
               target: profiles.id,
               set: {
-                encryptedName: data.profiles.map((p) => p.encryptedName)[0], // Simplified update for SQLite/Neon onConflict
-                updatedAt: now,
+                payload: sql`EXCLUDED.payload`,
               },
             });
         }
@@ -76,10 +62,21 @@ export function syncRoutes() {
         if (data.records.length > 0) {
           await db
             .insert(records)
-            .values(data.records)
+            .values(
+              data.records.map((r) => ({
+                ...r,
+                id: `${r.profileId}|${r.examId}`,
+              })),
+            )
             .onConflictDoUpdate({
               target: records.id,
-              set: { status: 'status', updatedAt: now }, // This syntax varies by DB, but we'll overwrite in bulk safely
+              set: {
+                status: sql`EXCLUDED.status`,
+                lastDone: sql`EXCLUDED.last_done`,
+                bookedFor: sql`EXCLUDED.booked_for`,
+                bookedTime: sql`EXCLUDED.booked_time`,
+                updatedAt: sql`EXCLUDED.updated_at`,
+              },
             });
         }
 
@@ -95,7 +92,11 @@ export function syncRoutes() {
             )
             .onConflictDoUpdate({
               target: bets.id,
-              set: { status: 'status' },
+              set: {
+                status: sql`EXCLUDED.status`,
+                amountPln: sql`EXCLUDED.amount_pln`,
+                examIds: sql`EXCLUDED.exam_ids`,
+              },
             });
         }
 
@@ -122,8 +123,13 @@ export function syncRoutes() {
       const familyBets = await db.select().from(bets).where(inArray(bets.profileId, profileIds));
 
       return c.json({
-        profiles: familyProfiles,
-        records: familyRecords,
+        profiles: familyProfiles.map(
+          (p) => JSON.parse(p.payload) as import('@naczas/shared').Profile,
+        ),
+        records: familyRecords.map((r) => {
+          const { id: _, ...rest } = r;
+          return rest;
+        }),
         bets: familyBets.map((b) => ({
           ...b,
           examIds: JSON.parse(b.examIds) as string[],

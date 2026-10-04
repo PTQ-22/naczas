@@ -36,7 +36,7 @@ export default function WelcomeScreen() {
 
   const loadDemo = () => {
     loadDemoPreset(today);
-    router.replace('/plan');
+    router.replace('/(tabs)/plan');
   };
 
   if (forRelative) return null;
