@@ -34,7 +34,7 @@ Inne:
 | 5 | Nasz wyróżnik | Algorytm lead time: `dueDate − p75(kolejki w okolicy) − bufor na skierowanie`; porównanie z konkurencją (tabela: przypomnienia ✓/✓, dane NFZ ✗/✓, opiekun ✗/✓, umawia wizytę za Ciebie — tylko NaCzas) | Innowacja |
 | 6 | Opiekun + przygotowanie do wizyty | Profile rodzinne, PDF dla lekarza POZ, karta aktywności | Kategoria |
 | 7 | Design & dostępność | Tryb senior, dark mode, duże cele dotyku; screeny | Design |
-| 8 | Technologia | Diagram architektury, prawdziwe dane NFZ, privacy by design (dane zdrowotne domyślnie tylko na telefonie; do API świadczenie + lokalizacja ≈ 1 km; agent dostaje tylko to, co potrzebne do rozmowy), 1018 testów, otwarte reguły ze źródłami | Completeness |
+| 8 | Technologia | Diagram architektury, prawdziwe dane NFZ, privacy by design (dane zdrowotne domyślnie tylko na telefonie; do API świadczenie + lokalizacja ≈ 1 km; agent dostaje tylko to, co potrzebne do rozmowy), 1013 testów, otwarte reguły ze źródłami | Completeness |
 | 9 | Wdrożenie i roadmap | Kolejne kroki: integracja z IKP, synchronizacja E2E opiekun–rodzic, agent z e-rejestracją zamiast telefonu, mammobusy, współpraca z NFZ/samorządami; model: open source / partner publiczny | Completeness |
 | 10 | Demo + linki | QR do web demo, repo, ujawnienie AI i źródeł | — |
 

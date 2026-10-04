@@ -34,7 +34,7 @@ Ludzie odkładają badania profilaktyczne, bo nie pamiętają, kiedy je robili, 
 - **Domyślnie:** profil, historia badań i czynniki ryzyka są zapisane tylko na urządzeniu. Plan liczy się lokalnie.
 - **Wyszukiwanie placówek i kolejek:** nasze API dostaje nazwę świadczenia NFZ, województwo i współrzędne zaokrąglone do ok. 1 km (bez danych zdrowotnych); logi API nie zawierają współrzędnych.
 - **„Umów za mnie” (tylko gdy użytkownik zleci rozmowę):** do usługi telefonicznej trafia wyłącznie to, co potrzebne do rozmowy — dla kogo w formie relacji („mamę”, „tatę”, „ją” — bez imienia i nazwiska pacjenta), imię osoby zlecającej („w imieniu Kasi”), nazwa badania, nazwa placówki, termin „najpóźniej do” z planu i zaznaczone wolne godziny. Agent nie zna i nie podaje PESEL, nazwiska, adresu ani numeru telefonu. Przetwarzają to: **Vapi** (orkiestracja rozmowy), **OpenAI** (model rozmowy gpt-4o), **Deepgram** (transkrypcja mowy), **ElevenLabs** lub — gdy nie skonfigurowano głosu ElevenLabs — **Microsoft Azure** (synteza głosu), **Twilio** (telefonia). Status i transkrypcję rozmowy nasze API trzyma tylko w pamięci, do 6 h.
-- **Synchronizacja rodzinna (logowanie, chmura):** ten sam plan na telefonie opiekuna i rodzica. W demo działa na testowej bazie (włączane `EXPO_PUBLIC_ENABLE_SYNC=1`); w wersji produkcyjnej dane byłyby szyfrowane end-to-end.
+- **Synchronizacja rodzinna (logowanie, chmura):** ten sam plan na telefonie opiekuna i rodzica. W demo działa na testowej bazie (API z `DATABASE_URL`); w wersji produkcyjnej dane byłyby szyfrowane end-to-end.
 
 ## Architektura
 
@@ -113,7 +113,7 @@ Na telefonie: `corepack pnpm dev:mobile` i zeskanuj QR w Expo Go. Wszystko naraz
 
 > Skrypty w `package.json` wołają `pnpm` bezpośrednio. Jeśli `pnpm` nie jest w `PATH`, uruchom raz `corepack enable` (zmienia globalną konfigurację Node — instaluje shim `pnpm`).
 
-Testy i lint (to samo co CI) — 1018 testów: silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 584, kontrakty 54 (stan na 2026-10-04):
+Testy i lint (to samo co CI) — 1013 testów: silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 579, kontrakty 54 (stan na 2026-10-04):
 
 ```bash
 corepack pnpm check

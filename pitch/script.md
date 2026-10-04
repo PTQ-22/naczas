@@ -53,7 +53,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 
 **P:**
 > Co jest nowe? Są aplikacje, które przypominają o badaniach, i jest IKP, w którym znajdziesz termin. My liczymy, **kiedy zacząć**: termin badania minus szacowany czas czekania w Twojej okolicy z kolejek NFZ, plus zapas na skierowanie.
-> Technicznie: iOS, Android i web, prawdziwe dane NFZ z zapasową kopią, 1018 testów. Dane zdrowotne domyślnie zostają na telefonie, a agent dostaje tylko to, co potrzebne do rozmowy. Reguły badań są otwarte, każda ze źródłem.
+> Technicznie: iOS, Android i web, prawdziwe dane NFZ z zapasową kopią, 1013 testów. Dane zdrowotne domyślnie zostają na telefonie, a agent dostaje tylko to, co potrzebne do rozmowy. Reguły badań są otwarte, każda ze źródłem.
 
 (~60 słów)
 
