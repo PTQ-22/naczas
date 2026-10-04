@@ -25,6 +25,10 @@ jest.mock('../FacilitiesMap', () => ({
   FacilitiesMap: () => null,
 }));
 
+// The first render in this file loads the facilities feature cold (map, formatters) and took
+// 5–12 s under a full parallel `pnpm check` — over Jest's 5 s default, so it failed at random.
+jest.setTimeout(20_000);
+
 let openURL: jest.SpyInstance;
 
 describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
@@ -46,7 +50,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     render(<FacilitiesScreen />);
     expect(screen.getAllByTestId('facility-skeleton')).toHaveLength(3);
     expect(await screen.findByText('Kolonoskopia — gdzie na NFZ')).toBeTruthy();
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
     expect(screen.getByText('Dane z kopii NFZ, stan na 09.2026.')).toBeTruthy();
     expect(screen.queryByTestId('facility-skeleton')).toBeNull();
   });
@@ -60,9 +64,26 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     expect(openURL).toHaveBeenLastCalledWith(expect.stringContaining('maps.apple.com'));
   });
 
+  it('every facility offers "Zadzwoń za mnie", not only the first', async () => {
+    render(<FacilitiesScreen />);
+    const more = await screen.findAllByRole('button', { name: /^Więcej działań: / });
+    expect(screen.getAllByRole('button', { name: /^Zadzwoń za mnie do: / })).toHaveLength(
+      more.length,
+    );
+  });
+
+  it('less frequent actions sit behind "⋯"', async () => {
+    render(<FacilitiesScreen />);
+    const more = (await screen.findAllByRole('button', { name: /^Więcej działań: / }))[0]!;
+    expect(screen.queryByText('Ustaw jako moją przychodnię')).toBeNull();
+    fireEvent.press(more);
+    expect(screen.getByText('Ustaw jako moją przychodnię')).toBeOnTheScreen();
+    expect(screen.getByText('Umówiłem/am się')).toBeOnTheScreen();
+  });
+
   it('sort and view toggles are radio groups', async () => {
     render(<FacilitiesScreen />);
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
     const nearest = screen.getByRole('radio', { name: 'Najbliżej' });
     fireEvent.press(nearest);
     await waitFor(() =>
@@ -97,7 +118,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
 
   it('asks without radiusKm and shows how many are shown and how far they reach (M3)', async () => {
     render(<FacilitiesScreen />);
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
     const [params] = mockGetFacilities.mock.calls[0] as [Record<string, unknown>];
     expect(params).not.toHaveProperty('radiusKm');
     expect(
@@ -119,7 +140,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     );
     expect(openURL).toHaveBeenCalledWith('https://gsl.nfz.gov.pl/GSL/GSL/ProgramyProfilaktyczne');
     // Let the list load so no state update lands after the test ends.
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
   });
 
   it('queue exams without a programme get no programme note', async () => {
@@ -127,7 +148,7 @@ describe('FacilitiesScreen (no active profile → mock mama, Warszawa)', () => {
     render(<FacilitiesScreen />);
     await screen.findByText('Badanie u okulisty — gdzie na NFZ');
     expect(screen.queryByText(/^To kolejki NFZ do poradni/)).toBeNull();
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
   });
 
   it('exams without an NFZ queue show an explanation instead of a list', () => {

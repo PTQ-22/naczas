@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 
 import { Button, Disclaimer, OptionTile, Plate, Screen, Text } from '@/components';
+import { AccountSection } from '@/features/auth/AccountSection';
 import { DefaultFacilityCard } from '@/features/facilities/DefaultFacilityCard';
 import { t } from '@/i18n';
 import {
@@ -14,7 +15,6 @@ import {
   type TestNotificationResult,
 } from '@/notifications';
 import { usePlan } from '@/services';
-import { useCloudSync } from '@/services/cloud-sync';
 import {
   DISCLOSURE_FIELDS,
   resetAllData,
@@ -58,14 +58,11 @@ export default function SettingsScreen() {
   const palette = usePaletteStore((s) => s.palette);
   const setPalette = usePaletteStore((s) => s.setPalette);
   const setTodayOverride = useSettingsStore((s) => s.setTodayOverride);
-  const familyCode = useSettingsStore((s) => s.familyCode);
-  const setFamilyCode = useSettingsStore((s) => s.setFamilyCode);
   const callDisclosure = useSettingsStore((s) => s.callDisclosure);
   const setCallDisclosure = useSettingsStore((s) => s.setCallDisclosure);
   const activeProfile = useProfilesStore((s) => s.profiles.find((p) => p.id === s.activeProfileId));
   const today = useToday();
   const { plan } = usePlan(activeProfile?.id ?? '');
-  const { lastSync, error } = useCloudSync();
 
   const [testStatus, setTestStatus] = useState<string | null>(null);
   const [sending, setSending] = useState(false);
@@ -205,33 +202,8 @@ export default function SettingsScreen() {
           ))}
         </SettingsSection>
 
-        <SettingsSection title="Konto Rodzinne">
-          {familyCode ? (
-            <View style={{ gap: space.sm }}>
-              <Text tone="textMuted">Jesteś zalogowany do Konta Rodzinnego.</Text>
-              <Text tone="textSubtle">
-                Twoje dane są bezpieczne i synchronizują się automatycznie w tle.
-              </Text>
-              {lastSync && (
-                <Text tone="textSubtle">
-                  Ostatnia synchronizacja: {lastSync.toLocaleTimeString()}
-                </Text>
-              )}
-              {error && <Text tone="danger">{error}</Text>}
-              <Button
-                variant="secondary"
-                label="Wyloguj"
-                onPress={() => {
-                  setFamilyCode(null);
-                  router.replace('/onboarding/login');
-                }}
-              />
-            </View>
-          ) : (
-            <Text tone="textMuted">
-              Brak kodu rodziny. Zaloguj się w ekranie powitalnym, aby uaktywnić chmurę.
-            </Text>
-          )}
+        <SettingsSection title={t('auth.title')}>
+          <AccountSection />
         </SettingsSection>
 
         <SettingsSection title={t('settings.data.header')}>

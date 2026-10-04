@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 import { Button, Disclaimer, Plate, Screen, Text } from '@/components';
 import { t } from '@/i18n';
-import { useOnboardingDraftStore, useToday } from '@/store';
+import { useOnboardingDraftStore, useSettingsStore, useToday } from '@/store';
 
 import { loadDemoPreset } from './demo-preset';
 import { isForRelative } from './survey';
@@ -20,6 +20,7 @@ export default function WelcomeScreen() {
   const hasDraft = useOnboardingDraftStore((s) => s.draft !== null);
   const start = useOnboardingDraftStore((s) => s.start);
   const today = useToday();
+  const loggedIn = useSettingsStore((s) => s.familyCode !== null);
 
   useEffect(() => {
     if (!forRelative) return;
@@ -36,7 +37,7 @@ export default function WelcomeScreen() {
 
   const loadDemo = () => {
     loadDemoPreset(today);
-    router.replace('/(tabs)/plan');
+    router.replace('/(tabs)/agent');
   };
 
   if (forRelative) return null;
@@ -57,12 +58,15 @@ export default function WelcomeScreen() {
             onPress={loadDemo}
             fullWidth
           />
-          <Button
-            variant="secondary"
-            label="Masz już Konto Rodzinne? Zaloguj się"
-            onPress={() => router.push('/login')}
-            fullWidth
-          />
+          {/* Logged in already (empty family): no second login — that was the "login loop". */}
+          {!loggedIn && (
+            <Button
+              variant="secondary"
+              label={t('onboarding.welcome.login')}
+              onPress={() => router.push('/login')}
+              fullWidth
+            />
+          )}
         </>
       }
     >
@@ -72,6 +76,11 @@ export default function WelcomeScreen() {
         </Text>
         <Text variant="bodyLarge">{t('onboarding.welcome.subtitle')}</Text>
         <Text tone="textMuted">{t('onboarding.welcome.privacy')}</Text>
+        {loggedIn && (
+          <Text tone="primary" testID="welcome-logged-in">
+            {t('auth.welcomeLoggedIn')}
+          </Text>
+        )}
         <Disclaimer text={t('onboarding.welcome.disclaimer')} />
       </Plate>
     </Screen>

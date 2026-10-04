@@ -1,53 +1,44 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
-import { useProfilesStore, useRecordsStore } from '@/store';
+import { useProfilesStore, useRecordsStore, useStoresHydrated } from '@/store';
 import { useSettingsStore } from '@/store/settings-store';
 
-import { useCloudSync } from './cloud-sync';
+import { isApplyingPull, pushNow, syncFamily, useSyncStatus } from './cloud-sync';
 
+/** Local edits are pushed after this much quiet, so a burst of taps is one request. */
+const PUSH_DEBOUNCE_MS = 2000;
+
+/**
+ * Keeps the Konto Rodzinne in sync: one full sync per app start (after the local stores are
+ * loaded — earlier, hydration could overwrite the pulled data), then a debounced push on every
+ * change of profiles or records. Login runs its own full sync and marks it done.
+ */
 export function AutoSync() {
-  const { push } = useCloudSync();
+  const hydrated = useStoresHydrated();
   const familyCode = useSettingsStore((s) => s.familyCode);
 
-  // Keep track of the timeout for debouncing
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  // Track previous states to avoid initial push
-  const initialRender = useRef(true);
-
   useEffect(() => {
-    // If user is not logged in, don't do anything
-    if (!familyCode) return;
+    if (!hydrated || !familyCode) return;
+    const status = useSyncStatus.getState();
+    if (status.initialSyncFor !== familyCode && !status.syncing) {
+      void syncFamily(familyCode).catch(() => undefined);
+    }
 
-    const handleChange = () => {
-      // Avoid pushing during the very first hydration/render
-      if (initialRender.current) return;
-
-      // Debounce the push to avoid spamming the server on rapid state changes
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        void push();
-      }, 2000); // Wait 2 seconds of inactivity before pushing
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const schedule = () => {
+      // Data written by a pull is the cloud's own copy — pushing it back is pointless.
+      if (isApplyingPull()) return;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => void pushNow(familyCode), PUSH_DEBOUNCE_MS);
     };
-
-    // Subscribe to all relevant stores
-    const unsubProfiles = useProfilesStore.subscribe(handleChange);
-    const unsubRecords = useRecordsStore.subscribe(handleChange);
-
-    // Mark initial render as done after a tiny delay so pull() has time to finish
-    setTimeout(() => {
-      initialRender.current = false;
-    }, 1000);
-
+    const unsubProfiles = useProfilesStore.subscribe(schedule);
+    const unsubRecords = useRecordsStore.subscribe(schedule);
     return () => {
       unsubProfiles();
       unsubRecords();
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (timer) clearTimeout(timer);
     };
-  }, [familyCode, push]);
+  }, [hydrated, familyCode]);
 
   return null;
 }

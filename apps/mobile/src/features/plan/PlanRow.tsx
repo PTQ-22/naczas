@@ -2,7 +2,7 @@ import { Pressable, View } from 'react-native';
 
 import type { ExamRule, PlanItem, WaitTimeSummary } from '@naczas/shared';
 
-import { Button } from '@/components/Button';
+import { Icon } from '@/components/Icon';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
 import { useTheme } from '@/theme';
@@ -11,8 +11,7 @@ import { dateMessage, queueRange, rowDate, whyNowMessage, type Message } from '.
 
 const msg = (m: Message) => t(m.key, m.params);
 
-export interface PlanRowCta {
-  label: string;
+export interface PlanRowMarkDone {
   accessibilityLabel: string;
   onPress: () => void;
 }
@@ -23,15 +22,16 @@ interface PlanRowProps {
   today: string;
   waitTime?: WaitTimeSummary;
   onOpen: (examId: string) => void;
-  cta?: PlanRowCta;
+  /** Booked rows: a round check at the row start marks the exam done (undo via toast). */
+  onMarkDone?: PlanRowMarkDone;
 }
 
 /**
  * One exam as a list row on the plate: name left, date (or queue weeks) right in mono. No card,
  * no chip — the section eyebrow already says the status (redesign §4).
  */
-export function PlanRow({ item, rule, today, waitTime, onOpen, cta }: PlanRowProps) {
-  const { colors, layout, space, seniorMode } = useTheme();
+export function PlanRow({ item, rule, today, waitTime, onOpen, onMarkDone }: PlanRowProps) {
+  const { colors, layout, space, radius, borderWidth, seniorMode } = useTheme();
   const date = msg(dateMessage(item));
   const whyNow = whyNowMessage(item, rule.booking, waitTime);
   const range = item.urgency === 'act_now' ? queueRange(waitTime) : null;
@@ -47,13 +47,53 @@ export function PlanRow({ item, rule, today, waitTime, onOpen, cta }: PlanRowPro
   const muted = item.urgency === 'later' || item.urgency === 'done';
 
   return (
-    <View style={{ gap: space.sm, paddingVertical: space.sm }}>
+    <View
+      style={{
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: space.md,
+        paddingVertical: space.sm,
+      }}
+    >
+      {/* A check in the row instead of a full button under it, so the list keeps its rhythm. */}
+      {onMarkDone && (
+        // Checkbox-sized circle inside a full touch target: the row stays a list row, not a
+        // button bar. The negative margin lines the circle up with the list's left edge.
+        <Pressable
+          onPress={onMarkDone.onPress}
+          accessibilityRole="button"
+          accessibilityLabel={onMarkDone.accessibilityLabel}
+          style={({ pressed }) => ({
+            width: layout.minTouch,
+            height: layout.minTouch,
+            marginHorizontal: -(layout.minTouch - layout.icon.lg) / 2,
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: pressed ? 0.6 : 1,
+          })}
+        >
+          <View
+            style={{
+              width: layout.icon.lg,
+              height: layout.icon.lg,
+              borderRadius: radius.full,
+              borderWidth: borderWidth.strong,
+              borderColor: colors.borderStrong,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon name="check" size="sm" color={colors.textMuted} />
+          </View>
+        </Pressable>
+      )}
       <Pressable
         onPress={() => onOpen(item.examId)}
         accessibilityRole="button"
         accessibilityLabel={[rule.name, date, whyNow && msg(whyNow)].filter(Boolean).join(', ')}
         accessibilityHint={t('plan.card.a11yHint')}
         style={({ pressed }) => ({
+          flex: 1,
           minHeight: layout.minTouch,
           flexDirection: 'row',
           alignItems: 'center',
@@ -76,15 +116,6 @@ export function PlanRow({ item, rule, today, waitTime, onOpen, cta }: PlanRowPro
           {right}
         </Text>
       </Pressable>
-      {cta && (
-        <Button
-          variant="secondary"
-          label={cta.label}
-          accessibilityLabel={cta.accessibilityLabel}
-          fullWidth={seniorMode}
-          onPress={cta.onPress}
-        />
-      )}
     </View>
   );
 }

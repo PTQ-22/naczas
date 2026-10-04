@@ -9,6 +9,7 @@ export const onboarding = {
     start: 'Zaczynamy',
     resume: 'Dokończ rozpoczętą ankietę',
     loadDemo: 'Wczytaj profil demo',
+    login: 'Masz już Konto Rodzinne? Zaloguj się',
   },
   nav: {
     back: 'Wstecz',
@@ -203,8 +204,6 @@ export const onboarding = {
         never: 'Nigdy',
         unknown: 'Nie pamiętam',
       },
-      axisRecent: '← niedawno',
-      axisLongAgo: 'dawniej →',
       unanswered: 'Nie pamiętasz? Zostaw puste — zaplanujemy to badanie od dziś.',
       clear: 'Wyczyść — nie pamiętam',
       clearA11y: '{{exam}}: wyczyść odpowiedź, nie pamiętam',

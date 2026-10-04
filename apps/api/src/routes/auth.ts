@@ -1,11 +1,14 @@
 import { zValidator } from '@hono/zod-validator';
-import { eq } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
 import { db } from '../db';
-import { errorResponse } from './common';
+import { errorResponse, validationMessage } from './common';
 import { users } from '../db/schema';
+
+// Phone keyboards capitalise the first letter; "Ala@x.pl" and "ala@x.pl" are one account.
+const EmailSchema = z.string().trim().toLowerCase().pipe(z.email());
 
 export function authRoutes() {
   return new Hono()
@@ -14,11 +17,13 @@ export function authRoutes() {
       zValidator(
         'json',
         z.object({
-          email: z.string().email(),
+          email: EmailSchema,
           password: z.string().min(6),
         }),
         (result, c) => {
-          if (!result.success) return errorResponse(c, 400, 'validation_error', 'Invalid payload');
+          if (!result.success) {
+            return errorResponse(c, 400, 'validation_error', validationMessage(result.error));
+          }
         },
       ),
       async (c) => {
@@ -26,7 +31,11 @@ export function authRoutes() {
         const now = new Date().toISOString();
 
         // Very basic hackathon-level auth
-        const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        const existing = await db
+          .select()
+          .from(users)
+          .where(sql`lower(${users.email}) = ${email}`)
+          .limit(1);
         if (existing.length > 0) {
           return errorResponse(c, 400, 'already_exists', 'User already exists');
         }
@@ -51,17 +60,23 @@ export function authRoutes() {
       zValidator(
         'json',
         z.object({
-          email: z.string().email(),
+          email: EmailSchema,
           password: z.string(),
         }),
         (result, c) => {
-          if (!result.success) return errorResponse(c, 400, 'validation_error', 'Invalid payload');
+          if (!result.success) {
+            return errorResponse(c, 400, 'validation_error', validationMessage(result.error));
+          }
         },
       ),
       async (c) => {
         const { email, password } = c.req.valid('json');
 
-        const existing = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        const existing = await db
+          .select()
+          .from(users)
+          .where(sql`lower(${users.email}) = ${email}`)
+          .limit(1);
         const user = existing[0];
         if (!user || user.passwordHash !== password) {
           return errorResponse(c, 401, 'unauthorized', 'Invalid credentials');

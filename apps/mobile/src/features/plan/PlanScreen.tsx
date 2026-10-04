@@ -206,10 +206,9 @@ export default function PlanScreen() {
             today={today}
             waitTime={waitTimes[item.examId]}
             onOpen={openExam}
-            cta={
-              cta
+            onMarkDone={
+              cta?.action === 'markDone'
                 ? {
-                    label: msg(cta.label),
                     accessibilityLabel: t('plan.cta.a11ySuffix', {
                       label: msg(cta.label),
                       name: rule.name,

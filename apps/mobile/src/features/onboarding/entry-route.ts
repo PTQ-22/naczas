@@ -1,4 +1,4 @@
-export type EntryRoute = '/onboarding/login' | '/onboarding/welcome' | '/(tabs)/plan';
+export type EntryRoute = '/onboarding/login' | '/onboarding/welcome' | '/(tabs)/agent';
 
 /**
  * Where app start should land. Returns null until persisted state is loaded —
@@ -10,6 +10,6 @@ export function resolveEntryRoute(state: {
   familyCode: string | null;
 }): EntryRoute | null {
   if (!state.hydrated) return null;
-  if (state.profileCount > 0 || state.familyCode) return '/(tabs)/plan';
+  if (state.profileCount > 0 || state.familyCode) return '/(tabs)/agent';
   return '/onboarding/welcome';
 }

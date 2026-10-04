@@ -10,12 +10,16 @@ export class VapiError extends Error {
 const VapiMessageSchema = z.object({
   role: z.string(),
   message: z.string().optional(),
+  /** Seconds since the call started — the first clinic line ends the "on hold" part */
+  secondsFromStart: z.number().nullish(),
 });
 
 export const VapiCallSchema = z.object({
   id: z.string(),
   status: z.string(),
   endedReason: z.string().nullish(),
+  startedAt: z.string().nullish(),
+  endedAt: z.string().nullish(),
   messages: z.array(VapiMessageSchema).nullish(),
   artifact: z.object({ messages: z.array(VapiMessageSchema).nullish() }).nullish(),
   analysis: z.object({ structuredData: z.unknown().optional() }).nullish(),

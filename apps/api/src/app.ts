@@ -9,6 +9,7 @@ import {
   callAssistRoutes,
   callAssistWebhookRoutes,
   createCallStore,
+  startCallTicker,
   type CallAssistConfig,
 } from './routes/call-assist';
 import { errorResponse } from './routes/common';
@@ -47,6 +48,8 @@ export interface AppDeps {
   /** "Zadzwoń za mnie": null/absent = scripted simulation instead of a real phone call */
   callAssist?: CallAssistConfig | null;
   callAssistWebhookSecret?: string | undefined;
+  /** Live calls: how often retries are checked with no app polling (off in tests). */
+  callTickMs?: number;
 }
 
 const LOCALHOST = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
@@ -64,6 +67,7 @@ export function createApp({
   communes = createUldkResolver(),
   callAssist = null,
   callAssistWebhookSecret,
+  callTickMs,
 }: AppDeps) {
   loader ??= createQueueLoader({ nfz, snapshot, now, geoIndex });
 
@@ -82,6 +86,7 @@ export function createApp({
   );
   app.route('/', healthRoutes(loader, snapshot)); // before the limiter: platform health checks
   const calls = createCallStore(() => now().getTime());
+  if (callTickMs) startCallTicker(calls, callAssist, now, callTickMs);
   app.route('/', callAssistWebhookRoutes({ store: calls, secret: callAssistWebhookSecret }));
   app.use(
     '*',

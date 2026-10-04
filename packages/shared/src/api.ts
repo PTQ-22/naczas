@@ -69,6 +69,15 @@ export const HealthResponseSchema = z.object({
 });
 export type HealthResponse = z.infer<typeof HealthResponseSchema>;
 
+/** Re-dial policy when nobody answers (no answer, busy, voicemail). */
+export const CallRetrySchema = z.object({
+  maxAttempts: z.number().int().min(1).max(5),
+  /** Minutes between attempts; attempts happen only in clinic hours (Mon–Fri 7:30–18:00). */
+  intervalMin: z.number().int().min(1).max(120),
+});
+export type CallRetry = z.infer<typeof CallRetrySchema>;
+export const DEFAULT_CALL_RETRY: CallRetry = { maxAttempts: 3, intervalMin: 10 };
+
 /** POST /v1/call-assist — demo: an AI voice agent phones the clinic and asks for a visit */
 export const CallAssistRequestSchema = z.object({
   examName: z.string().trim().min(1).max(80),
@@ -77,6 +86,7 @@ export const CallAssistRequestSchema = z.object({
   callerName: z.string().trim().min(1).max(40), // caregiver's first name, genitive ("Kasi")
   bookBy: ISODateSchema.optional(), // latest acceptable date from the plan
   availability: CallAvailabilitySchema.optional(), // when the patient can come; absent = any time
+  retry: CallRetrySchema.optional(), // absent = DEFAULT_CALL_RETRY
 });
 export type CallAssistRequest = z.infer<typeof CallAssistRequestSchema>;
 
@@ -100,8 +110,40 @@ export type CallAssistResult = z.infer<typeof CallAssistResultSchema>;
 /** GET /v1/call-assist/:callId */
 export const CallAssistStatusSchema = z.object({
   callId: z.string(),
-  status: z.enum(['queued', 'ringing', 'in_progress', 'ended', 'failed']),
+  /**
+   * on_hold = answered, waiting on the line (IVR / hold music) until the clinic speaks;
+   * retry_scheduled = nobody answered, the next attempt is at `attempt.nextAt`.
+   */
+  status: z.enum([
+    'queued',
+    'ringing',
+    'on_hold',
+    'in_progress',
+    'retry_scheduled',
+    'ended',
+    'failed',
+    'cancelled',
+  ]),
   transcript: z.array(z.object({ role: z.enum(['agent', 'clinic']), text: z.string() })),
   result: CallAssistResultSchema.nullable(),
+  /** Which attempt this is; optional for older API versions. */
+  attempt: z
+    .object({
+      number: z.number().int().min(1),
+      max: z.number().int().min(1),
+      /** ISO date-time of the next attempt while `retry_scheduled`, else null */
+      nextAt: z.string().nullable(),
+    })
+    .optional(),
+  /** Phone time the agent spent instead of the user, over all attempts so far. */
+  stats: z
+    .object({
+      attempts: z.number().int().min(0),
+      /** Ringing + waiting on the line until the clinic spoke */
+      waitedSec: z.number().min(0),
+      /** Talking with the clinic */
+      talkedSec: z.number().min(0),
+    })
+    .optional(),
 });
 export type CallAssistStatus = z.infer<typeof CallAssistStatusSchema>;

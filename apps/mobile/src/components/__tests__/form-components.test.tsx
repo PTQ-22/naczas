@@ -84,8 +84,6 @@ describe('TimelineScale', () => {
         ]}
         selected="recent"
         onSelect={onSelect}
-        startLabel="← niedawno"
-        endLabel="dawniej →"
       />,
     );
     expect(
@@ -110,13 +108,10 @@ describe('TimelineScale', () => {
         ]}
         selected={undefined}
         onSelect={jest.fn()}
-        startLabel="← niedawno"
-        endLabel="dawniej →"
       />,
     );
     expect(screen.getByText('Do 6 mies.')).toBeOnTheScreen();
     fireEvent(screen.getByTestId('scale'), 'layout', { nativeEvent: { layout: { width: 80 } } });
     expect(screen.getByText('W ciągu ostatnich 6 miesięcy')).toBeOnTheScreen();
-    expect(screen.queryByText('← niedawno')).toBeNull();
   });
 });

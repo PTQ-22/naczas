@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react';
 
+import { useCallTasksStore } from './call-tasks-store';
 import { useDefaultFacilityStore } from './default-facility-store';
 import { useOnboardingDraftStore } from './onboarding-draft-store';
 import { useProfilesStore } from './profiles-store';
@@ -12,6 +13,7 @@ const persistedStores = [
   useSettingsStore,
   useOnboardingDraftStore,
   useDefaultFacilityStore,
+  useCallTasksStore,
 ];
 
 const allHydrated = () => persistedStores.every((store) => store.persist.hasHydrated());

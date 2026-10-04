@@ -80,7 +80,51 @@ describe('POST /v1/call-assist', () => {
     );
     expect(ended.status).toBe('ended');
     expect(ended.result).toEqual({ booked: true, date: '2026-10-19', time: '10:30', note: null });
-    expect(ended.transcript[0]?.text).toContain('asystentem AI');
+    expect(ended.transcript[0]?.text).toBe('Rejestracja, słucham.');
+    expect(ended.transcript[1]?.text).toContain('asystentem AI');
+  });
+
+  it('simulated: first attempt rings out, retry-now dials again, stats add up', async () => {
+    const { app, advance, post } = makeApp();
+    const { callId } = CallAssistStartResponseSchema.parse(await (await post(body)).json());
+    const get = async (path = '') =>
+      CallAssistStatusSchema.parse(
+        await (await app.request(`/v1/call-assist/${callId}${path}`)).json(),
+      );
+    const postTo = (action: string) =>
+      app.request(`/v1/call-assist/${callId}/${action}`, { method: 'POST' });
+
+    // Not waiting yet → 409.
+    expect((await postTo('retry-now')).status).toBe(409);
+    advance(7000);
+    const waiting = await get();
+    expect(waiting).toMatchObject({ status: 'retry_scheduled', attempt: { number: 1, max: 3 } });
+    expect(waiting.attempt?.nextAt).not.toBeNull();
+
+    const redial = CallAssistStatusSchema.parse(await (await postTo('retry-now')).json());
+    expect(redial).toMatchObject({ status: 'ringing', attempt: { number: 2 } });
+    advance(60_000);
+    const done = await get();
+    expect(done).toMatchObject({
+      status: 'ended',
+      result: { booked: true },
+      stats: { attempts: 2 },
+    });
+    expect(done.stats!.waitedSec).toBeGreaterThan(6);
+    expect(done.stats!.talkedSec).toBeGreaterThan(15);
+  });
+
+  it('simulated: cancel stops the task', async () => {
+    const { app, advance, post } = makeApp();
+    const { callId } = CallAssistStartResponseSchema.parse(await (await post(body)).json());
+    advance(7000);
+    const res = await app.request(`/v1/call-assist/${callId}/cancel`, { method: 'POST' });
+    expect(CallAssistStatusSchema.parse(await res.json()).status).toBe('cancelled');
+    advance(120_000);
+    const later = CallAssistStatusSchema.parse(
+      await (await app.request(`/v1/call-assist/${callId}`)).json(),
+    );
+    expect(later.status).toBe('cancelled');
   });
 
   it('dials only the configured demo number, whatever the body says', async () => {
@@ -136,9 +180,11 @@ describe('GET /v1/call-assist/:id (live)', () => {
     const status = CallAssistStatusSchema.parse(
       await (await app.request('/v1/call-assist/call_1')).json(),
     );
-    expect(status).toEqual({
+    expect(status).toMatchObject({
       callId: 'call_1',
       status: 'ended',
+      attempt: { number: 1, max: 3, nextAt: null },
+      stats: { attempts: 1 },
       transcript: [
         { role: 'agent', text: 'Dzień dobry, jestem asystentem AI' },
         { role: 'clinic', text: 'Mam 18 października o 9:15' },
@@ -191,7 +237,13 @@ describe('Vapi mapping', () => {
     expect(mapVapiStatus(call({ endedReason: 'customer-did-not-answer' }))).toBe('failed');
     expect(mapVapiStatus(call({ endedReason: 'customer-busy' }))).toBe('failed');
     expect(mapVapiStatus(call({ endedReason: 'customer-ended-call' }))).toBe('ended');
-    expect(mapVapiStatus(call({ status: 'in-progress' }))).toBe('in_progress');
+    // Connected but nobody spoke yet: the agent is on hold.
+    expect(mapVapiStatus(call({ status: 'in-progress' }))).toBe('on_hold');
+    expect(
+      mapVapiStatus(
+        call({ status: 'in-progress', messages: [{ role: 'user', message: 'Rejestracja' }] }),
+      ),
+    ).toBe('in_progress');
   });
 
   it('drops malformed structured data', () => {
@@ -278,12 +330,15 @@ describe('twilio-sip (verified caller ID → Vapi SIP)', () => {
   const SIP = 'sip:naczas-test@sip.vapi.ai';
 
   function makeSipApp(opts: { vapiCalls: () => unknown[]; twilioStatus: string }) {
+    let t = new Date('2026-10-04T10:00:00Z');
+    const advance = (ms: number) => (t = new Date(t.getTime() + ms));
     const vapiFetch = vi.fn<typeof fetch>((url, init) => {
       const u = urlOf(url);
       const method = init?.method ?? 'GET';
       if (u.endsWith('/assistant') && method === 'POST') return json({ id: 'asst_1' });
       if (u.endsWith('/phone-number') && method === 'GET') return json([]);
       if (u.endsWith('/phone-number') && method === 'POST') return json({ id: 'pn_sip' });
+      if (u.includes('/phone-number/') && method === 'PATCH') return json({ id: 'pn_sip' });
       if (u.includes('/call?assistantId=asst_1')) return json(opts.vapiCalls());
       if (u.endsWith('/call/vapi_1'))
         return json({ id: 'vapi_1', status: 'in-progress', artifact: { messages: [] } });
@@ -295,7 +350,7 @@ describe('twilio-sip (verified caller ID → Vapi SIP)', () => {
     const app = createApp({
       nfz: createNfzClient({ fetch: vi.fn<typeof fetch>(), minIntervalMs: 0 }),
       snapshot: createSnapshotStore('/nonexistent'),
-      now: () => new Date('2026-10-04T10:00:00'),
+      now: () => t,
       callAssist: {
         via: 'twilio-sip',
         vapi: createVapiClient({ apiKey: 'test', fetch: vapiFetch }),
@@ -305,7 +360,7 @@ describe('twilio-sip (verified caller ID → Vapi SIP)', () => {
         callTo: CALL_TO,
       },
     });
-    return { app, vapiFetch, twilioFetch };
+    return { app, vapiFetch, twilioFetch, advance };
   }
 
   it('creates an assistant, points the SIP URI at it and has Twilio dial the demo number', async () => {
@@ -346,6 +401,27 @@ describe('twilio-sip (verified caller ID → Vapi SIP)', () => {
     let answered = false;
     const { app } = makeSipApp({
       vapiCalls: () => (answered ? [{ id: 'vapi_1', status: 'in-progress' }] : []),
+      twilioStatus: 'ringing',
+    });
+    await app.request('/v1/call-assist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const ringing = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/CA1')).json(),
+    );
+    expect(ringing.status).toBe('ringing');
+    answered = true;
+    const live = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/CA1')).json(),
+    );
+    expect(live.status).toBe('on_hold'); // connected, the clinic hasn't spoken yet
+  });
+
+  it('nobody answers: schedules a retry in clinic hours and dials again when it is due', async () => {
+    const { app, twilioFetch, advance } = makeSipApp({
+      vapiCalls: () => [],
       twilioStatus: 'no-answer',
     });
     await app.request('/v1/call-assist', {
@@ -356,11 +432,17 @@ describe('twilio-sip (verified caller ID → Vapi SIP)', () => {
     const missed = CallAssistStatusSchema.parse(
       await (await app.request('/v1/call-assist/CA1')).json(),
     );
-    expect(missed.status).toBe('failed');
-    answered = true;
-    const live = CallAssistStatusSchema.parse(
+    expect(missed).toMatchObject({ status: 'retry_scheduled', attempt: { number: 1, max: 3 } });
+    // Sun 4.10 10:00 local → next opening is Mon 5.10 7:30 Polish time.
+    expect(missed.attempt?.nextAt).toBe('2026-10-05T05:30:00.000Z');
+    const dials = () => twilioFetch.mock.calls.filter(([, i]) => i?.method === 'POST').length;
+    expect(dials()).toBe(1);
+
+    advance(24 * 60 * 60_000);
+    const second = CallAssistStatusSchema.parse(
       await (await app.request('/v1/call-assist/CA1')).json(),
     );
-    expect(live.status).toBe('in_progress');
+    expect(dials()).toBe(2);
+    expect(second.attempt?.number).toBe(2);
   });
 });

@@ -16,40 +16,16 @@ import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
 import { t } from '@/i18n';
-import { selectActiveProfile, useProfilesStore, useRecordsStore, useToday } from '@/store';
+import { selectActiveProfile, useCallTasksStore, useProfilesStore, useToday } from '@/store';
 import { selectSlots, useAvailabilityStore } from '@/store/availability-store';
 import { fonts, useTheme } from '@/theme';
 
 import { toCallAvailability } from './availability';
 import { AvailabilityCard } from './AvailabilityCard';
 import { buildCallRequest, inSentence } from './call-request';
-import { useCallAssist, type CallAssistState } from './use-call-assist';
-
-const clock = (ms: number) => {
-  const s = Math.max(0, Math.floor(ms / 1000));
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-};
-
-/** Seconds since the call was answered — local, only for the on-screen timer. */
-function useTalkTimer(talking: boolean) {
-  const [elapsed, setElapsed] = useState(0);
-  useEffect(() => {
-    if (!talking) return;
-    const startedAt = Date.now();
-    const id = setInterval(() => setElapsed(Date.now() - startedAt), 500);
-    return () => clearInterval(id);
-  }, [talking]);
-  return elapsed;
-}
-
-function statusLine(state: CallAssistState, elapsedMs: number): string {
-  if (state.analysing) return t('callAssist.status.analysing');
-  const s = state.status?.status;
-  if (!s) return t('callAssist.status.starting');
-  if (s === 'in_progress') return t('callAssist.status.in_progress', { time: clock(elapsedMs) });
-  if (s === 'failed') return t('callAssist.status.ended');
-  return t(`callAssist.status.${s}`);
-}
+import { cancelTask, retryTaskNow, startCallTask } from './call-tasks';
+import { CallStats } from './CallStats';
+import { taskStatusLine } from './task-status';
 
 function Point({ icon, text }: { icon: IconName; text: string }) {
   const { space, colors } = useTheme();
@@ -63,9 +39,7 @@ function Point({ icon, text }: { icon: IconName; text: string }) {
 
 function Transcript({ lines }: { lines: CallAssistStatus['transcript'] }) {
   const { space, colors, radius, motion } = useTheme();
-  if (lines.length === 0) {
-    return <Text tone="textMuted">{t('callAssist.waitingForWords')}</Text>;
-  }
+  if (lines.length === 0) return null;
   return (
     <View style={{ gap: space.sm }} accessibilityLiveRegion="polite">
       {lines.map((line, i) => {
@@ -97,38 +71,61 @@ function Transcript({ lines }: { lines: CallAssistStatus['transcript'] }) {
   );
 }
 
+/** Re-renders every second while `on` — for the "ponowię za 7:42" countdown. */
+function useNow(on: boolean) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!on) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [on]);
+  return now;
+}
+
+type StartState = 'idle' | 'starting' | 'error';
+
+/**
+ * "Zadzwoń za mnie": consent + calendar, then the live view of the agent's task. The task itself
+ * lives in the call-tasks store and is polled app-wide (CallTasksSync), so closing this screen
+ * doesn't stop the agent — it keeps calling, re-dialling and books the plan.
+ */
 export default function CallAssistScreen() {
-  const { examId, facility, firstDate } = useLocalSearchParams<{
+  const params = useLocalSearchParams<{
     examId: string;
     facility?: string;
     firstDate?: string;
+    taskId?: string;
   }>();
+  const { examId } = params;
   const { space, colors, type } = useTheme();
   const today = useToday();
   const patient = useProfilesStore(selectActiveProfile);
   const slots = useAvailabilityStore(selectSlots(patient?.id));
   // URL params are external input (AGENTS.md §3).
-  const parsedFirstDate = ISODateSchema.safeParse(firstDate);
+  const parsedFirstDate = ISODateSchema.safeParse(params.firstDate);
   const nearest =
     parsedFirstDate.success && parsedFirstDate.data >= today ? parsedFirstDate.data : null;
   const profiles = useProfilesStore((s) => s.profiles);
-  const markBooked = useRecordsStore((s) => s.markBooked);
   const rule = rules.find((r) => r.id === examId);
-  const { state, start, reset } = useCallAssist();
-  const elapsed = useTalkTimer(state.status?.status === 'in_progress');
 
-  const result = state.phase === 'finished' ? state.status?.result : null;
-  const bookedDate = result?.booked ? result.date : null;
-  const bookedTime = result?.booked ? (result.time ?? undefined) : undefined;
+  const [taskId, setTaskId] = useState<string | undefined>(params.taskId);
+  const [start, setStart] = useState<StartState>('idle');
+  const [busy, setBusy] = useState(false);
+  const task = useCallTasksStore((s) =>
+    taskId ? s.tasks.find((x) => x.id === taskId) : undefined,
+  );
+  const now = useNow(task?.status === 'retry_scheduled');
 
-  // The whole point of the demo: the phone call ends and the plan updates itself.
-  const saved = useRef(false);
+  const facilityName = task?.facilityName ?? params.facility ?? '';
+  const bookedDate = task?.result?.booked ? task.result.date : null;
+
+  const celebrated = useRef(false);
   useEffect(() => {
-    if (!bookedDate || !patient || !rule || saved.current) return;
-    saved.current = true;
-    markBooked(patient.id, rule.id, bookedDate, bookedTime);
-    successHaptic();
-  }, [bookedDate, bookedTime, patient, rule, markBooked]);
+    if (bookedDate && !celebrated.current) {
+      celebrated.current = true;
+      successHaptic();
+    }
+  }, [bookedDate]);
 
   if (!rule || !patient) {
     return (
@@ -138,32 +135,51 @@ export default function CallAssistScreen() {
     );
   }
 
-  const facilityName = facility ?? '';
-  const call = () => {
-    saved.current = false;
-    void start(
-      buildCallRequest({
-        patient,
-        profiles,
-        rule,
+  const call = async () => {
+    setStart('starting');
+    try {
+      const id = await startCallTask({
+        request: buildCallRequest({
+          patient,
+          profiles,
+          rule,
+          facilityName,
+          availability: toCallAvailability(slots, today),
+        }),
+        profileId: patient.id,
+        examId: rule.id,
         facilityName,
-        availability: toCallAvailability(slots, today),
-      }),
-    );
+      });
+      celebrated.current = false;
+      setTaskId(id);
+      setStart('idle');
+    } catch {
+      setStart('error');
+    }
+  };
+  // Button handlers are sync; the async work runs detached and only toggles `busy`.
+  const act = (run: () => Promise<void>) => () => {
+    setBusy(true);
+    run()
+      .catch(() => undefined) // the status stays as it was; the poller keeps it fresh
+      .finally(() => setBusy(false));
   };
   const toManual = () =>
     router.replace({ pathname: '/exam/[examId]/book', params: { examId, facility: facilityName } });
 
   const footer = (() => {
-    if (state.phase === 'idle') {
+    if (!task) {
       return (
-        <Button
-          label={t('callAssist.start')}
-          accessibilityLabel={t('callAssist.startA11y')}
-          icon="phone"
-          fullWidth
-          onPress={call}
-        />
+        <View style={{ gap: space.xs }}>
+          <Button
+            label={start === 'error' ? t('callAssist.retry') : t('callAssist.start')}
+            accessibilityLabel={t('callAssist.startA11y')}
+            icon="phone"
+            fullWidth
+            loading={start === 'starting'}
+            onPress={() => void call()}
+          />
+        </View>
       );
     }
     if (bookedDate) {
@@ -174,7 +190,29 @@ export default function CallAssistScreen() {
         </View>
       );
     }
-    if (state.phase === 'finished' || state.phase === 'error') {
+    if (task.status === 'retry_scheduled') {
+      return (
+        <View style={{ gap: space.xs }}>
+          <Button
+            testID="call-retry-now"
+            label={t('callAssist.retryNow')}
+            icon="phone"
+            fullWidth
+            loading={busy}
+            onPress={act(() => retryTaskNow(task.id))}
+          />
+          <Button
+            testID="call-cancel"
+            label={t('callAssist.cancel')}
+            variant="ghost"
+            fullWidth
+            disabled={busy}
+            onPress={act(() => cancelTask(task.id))}
+          />
+        </View>
+      );
+    }
+    if (task.closed) {
       return (
         <View style={{ gap: space.xs }}>
           <Button
@@ -182,20 +220,33 @@ export default function CallAssistScreen() {
             icon="phone"
             fullWidth
             onPress={() => {
-              reset();
-              call();
+              setTaskId(undefined);
+              void call();
             }}
           />
           <Button label={t('callAssist.manual')} variant="ghost" fullWidth onPress={toManual} />
         </View>
       );
     }
-    return undefined;
+    // Ringing / on hold / talking: the agent works in the background, the user can leave.
+    return (
+      <View style={{ gap: space.xs }}>
+        <Button label={t('callAssist.background')} fullWidth onPress={() => router.back()} />
+        <Button
+          testID="call-cancel"
+          label={t('callAssist.cancel')}
+          variant="ghost"
+          fullWidth
+          disabled={busy}
+          onPress={act(() => cancelTask(task.id))}
+        />
+      </View>
+    );
   })();
 
   return (
     <Screen edges={['left', 'right', 'bottom']} footer={footer}>
-      {state.phase === 'idle' ? (
+      {!task ? (
         <View style={{ gap: space.lg }}>
           <View style={{ gap: space.xs }}>
             <Text variant="eyebrow" tone="textMuted">
@@ -210,9 +261,15 @@ export default function CallAssistScreen() {
           </Text>
           <View style={{ gap: space.md }}>
             <Point icon="info" text={t('callAssist.points.disclosure')} />
+            <Point icon="time" text={t('callAssist.points.retry')} />
             <Point icon="check" text={t('callAssist.points.privacy')} />
             <Point icon="phone" text={t('callAssist.points.demo')} />
           </View>
+          {start === 'error' && (
+            <Text tone="danger" accessibilityRole="alert">
+              {t('callAssist.error')}
+            </Text>
+          )}
           <AvailabilityCard examId={examId} slots={slots} today={today} nearest={nearest} />
         </View>
       ) : (
@@ -238,10 +295,10 @@ export default function CallAssistScreen() {
                   {format(parseISO(bookedDate), 'dd.MM')}
                 </Text>
                 <Text variant="label">
-                  {result?.time
+                  {task.result?.time
                     ? t('callAssist.booked.when', {
                         weekday: format(parseISO(bookedDate), 'EEEE', { locale: pl }),
-                        time: result.time,
+                        time: task.result.time,
                       })
                     : t('callAssist.booked.whenNoTime', {
                         weekday: format(parseISO(bookedDate), 'EEEE', { locale: pl }),
@@ -250,28 +307,27 @@ export default function CallAssistScreen() {
                 <Text tone="textMuted">{`${rule.name} · ${facilityName}`}</Text>
               </View>
               <Text>{t('callAssist.booked.saved')}</Text>
-              {result?.note ? <Text tone="textMuted">{result.note}</Text> : null}
+              {task.result?.note ? <Text tone="textMuted">{task.result.note}</Text> : null}
+              <CallStats stats={task.stats} />
             </Plate>
           ) : (
             <View style={{ gap: space.xs }} accessibilityLiveRegion="polite">
               <Text
                 variant="heading"
+                testID="call-status"
                 style={{ fontFamily: fonts.monoBold, fontSize: type.heading.fontSize }}
               >
-                {state.phase === 'error'
-                  ? t('callAssist.failed.title')
-                  : statusLine(state, elapsed).toUpperCase()}
+                {taskStatusLine(task, now).toUpperCase()}
               </Text>
-              {state.mode === 'simulated' && (
+              {task.mode === 'simulated' && (
                 <Text variant="caption" tone="textMuted">
                   {t('callAssist.simulated')}
                 </Text>
               )}
-              {state.phase === 'error' && <Text>{t('callAssist.error')}</Text>}
-              {state.phase === 'finished' && state.status?.status === 'failed' && (
-                <Text>{t('callAssist.failed.body')}</Text>
-              )}
-              {state.phase === 'finished' && state.status?.status === 'ended' && (
+              <CallStats stats={task.stats} />
+              {task.status === 'failed' && <Text>{t('callAssist.failed.body')}</Text>}
+              {task.status === 'cancelled' && <Text>{t('callAssist.cancelledBody')}</Text>}
+              {task.closed && task.status === 'ended' && (
                 <>
                   <Text variant="label">{t('callAssist.notBooked.title')}</Text>
                   <Text>{t('callAssist.notBooked.body')}</Text>
@@ -279,7 +335,7 @@ export default function CallAssistScreen() {
               )}
             </View>
           )}
-          <Transcript lines={state.status?.transcript ?? []} />
+          <Transcript lines={task.transcript} />
         </View>
       )}
     </Screen>

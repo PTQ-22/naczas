@@ -45,7 +45,7 @@ describe('DoctorsScreen (no active profile → mock mama, Warszawa)', () => {
 
   it('map starts compact and expands on demand', async () => {
     render(<DoctorsScreen />);
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
     expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 130 });
     fireEvent.press(screen.getByRole('button', { name: 'Rozwiń mapę' }));
     expect(screen.getByTestId('doctors-map')).toHaveStyle({ height: 420 });
@@ -55,7 +55,7 @@ describe('DoctorsScreen (no active profile → mock mama, Warszawa)', () => {
 
   it('switching the specialty queries that exam, regardless of the plan', async () => {
     render(<DoctorsScreen />);
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
     fireEvent.press(screen.getByTestId('doctors-filters-button'));
     fireEvent.press(screen.getByRole('radio', { name: 'Specjalista: Neurolog' }));
     // Only the request matters here: the recorded fixtures don't cover every specialty.
@@ -69,7 +69,7 @@ describe('DoctorsScreen (no active profile → mock mama, Warszawa)', () => {
 
   it('filters narrow the list; an empty result offers to clear them', async () => {
     render(<DoctorsScreen />);
-    await screen.findAllByText('tyg.');
+    await screen.findAllByText('tyg.', { includeHiddenElements: true });
     expect(screen.getByText(/^Dentysta · pasuje: (\d+) z \1$/)).toBeTruthy();
     fireEvent.press(screen.getByTestId('doctors-filters-button'));
     fireEvent.press(screen.getByRole('radio', { name: 'Odległość: do 10 km' }));

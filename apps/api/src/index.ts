@@ -87,6 +87,7 @@ const app = createApp({
   log: (line) => console.log(line),
   callAssist,
   callAssistWebhookSecret: env.VAPI_WEBHOOK_SECRET,
+  callTickMs: 15_000,
 });
 
 // Warm-up before listening: the first request is answered from the snapshot immediately.

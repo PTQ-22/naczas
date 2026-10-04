@@ -42,6 +42,8 @@ function fakeApi(getWaitTimes: ApiClient['getWaitTimes']): ApiClient {
     getCoverage: jest.fn(),
     startCallAssist: jest.fn(),
     getCallAssist: jest.fn(),
+    retryCallAssistNow: jest.fn(),
+    cancelCallAssist: jest.fn(),
   };
 }
 

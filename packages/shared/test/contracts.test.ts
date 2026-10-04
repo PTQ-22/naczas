@@ -287,9 +287,11 @@ describe('simulateCallAssist', () => {
 
   it('rings, talks, then ends with a booked weekday slot two weeks out', () => {
     expect(simulateCallAssist('s', req, '2026-10-04', 0).status).toBe('ringing');
-    const mid = simulateCallAssist('s', req, '2026-10-04', 8000);
+    expect(simulateCallAssist('s', req, '2026-10-04', 4000).status).toBe('on_hold');
+    const mid = simulateCallAssist('s', req, '2026-10-04', 10_000);
     expect(mid.status).toBe('in_progress');
-    expect(mid.transcript[0]?.text).toMatch(/asystentem AI.*w imieniu Kasi/);
+    expect(mid.transcript[0]?.text).toBe('Rejestracja, słucham.');
+    expect(mid.transcript[1]?.text).toMatch(/asystentem AI.*w imieniu Kasi/);
     const end = simulateCallAssist('s', req, '2026-10-04', 60_000);
     expect(end).toMatchObject({ status: 'ended', result: { booked: true, date: '2026-10-19' } });
     expect(end.transcript.at(-2)?.text).toContain('19 października o 10:30');
@@ -351,12 +353,12 @@ describe('availability', () => {
     // agent declines and counter-proposes the first fitting time from the calendar.
     expect(end.result).toMatchObject({ booked: true, date: '2026-10-19', time: '17:00' });
     const lines = end.transcript.map((l) => l.text);
-    expect(lines[3]).toBe('Mam wolne 19 października o 10:30.');
-    expect(lines[4]).toMatch(
+    expect(lines[4]).toBe('Mam wolne 19 października o 10:30.');
+    expect(lines[5]).toMatch(
       /^Niestety to poza godzinami.*czy byłoby możliwe 19 października o 17:00\?/,
     );
-    expect(lines[5]).toContain('19 października o 17:00 jest wolne');
-    expect(lines[6]).toContain('potwierdzam: 19 października o 17:00');
+    expect(lines[6]).toContain('19 października o 17:00 jest wolne');
+    expect(lines[7]).toContain('potwierdzam: 19 października o 17:00');
   });
 
   it('negotiation takes longer; a fitting offer is accepted straight away', () => {
@@ -434,8 +436,8 @@ describe('availability', () => {
         60_000,
       );
       expect(end.result).toMatchObject({ booked: true, date: '2026-10-20', time: '10:30' });
-      expect(end.transcript[4]?.text).toMatch(/^Niestety wtedy na pewno nie damy rady/);
-      expect(end.transcript[4]?.text).toContain('Na pewno nie możemy: 19 października 08:00–12:00');
+      expect(end.transcript[5]?.text).toMatch(/^Niestety wtedy na pewno nie damy rady/);
+      expect(end.transcript[5]?.text).toContain('Na pewno nie możemy: 19 października 08:00–12:00');
     });
 
     it('slotFits checks free hours and blocked hours', () => {

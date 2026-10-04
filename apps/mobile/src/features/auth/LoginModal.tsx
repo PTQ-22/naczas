@@ -1,140 +1,166 @@
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { View, Alert, ActivityIndicator } from 'react-native';
+import { router, type Href } from 'expo-router';
+import { useState } from 'react';
+import { View } from 'react-native';
 
 import { Button, Plate, Screen, Text, TextField } from '@/components';
-import { API_BASE_URL } from '@/services/api';
+import { t } from '@/i18n';
+import { AuthError, authenticate, type AuthErrorKind } from '@/services/auth';
+import { syncFamily } from '@/services/cloud-sync';
 import { useSettingsStore } from '@/store/settings-store';
 import { useTheme } from '@/theme';
 
+type Phase = 'form' | 'auth' | 'sync' | 'syncFailed';
+
+const ERROR_KEY: Record<AuthErrorKind, Parameters<typeof t>[0]> = {
+  invalid: 'auth.errors.invalid',
+  exists: 'auth.errors.exists',
+  validation: 'auth.errors.shortPassword',
+  network: 'auth.errors.network',
+  unknown: 'auth.errors.unknown',
+};
+
+/** Leaves the modal for `href` — dismissing first, so the target isn't stacked under it. */
+function leaveTo(href: Href) {
+  if (router.canDismiss()) router.dismissAll();
+  router.replace(href);
+}
+
+/**
+ * Konto Rodzinne login. The app moves on only after the family's data is down: going to the plan
+ * straight away showed "Nie ma jeszcze profilu" while the (sleepy) server was still answering,
+ * which looked like a failed login and sent people round the login loop again.
+ */
 export function LoginModal() {
+  const { space } = useTheme();
+  const setFamilyCode = useSettingsStore((s) => s.setFamilyCode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [mode, setMode] = useState<'login' | 'register'>('login');
-  const [isLoading, setIsLoading] = useState(false);
-  const [mObywatelLoading, setMObywatelLoading] = useState(false);
-  const router = useRouter();
-  const setFamilyCode = useSettingsStore((s) => s.setFamilyCode);
-  const { space, colors } = useTheme();
+  const [phase, setPhase] = useState<Phase>('form');
+  const [error, setError] = useState<string | null>(null);
+  const [familyCode, setCode] = useState<string | null>(null);
 
-  const handleAuth = async (type: 'login' | 'register') => {
-    if (!email || !password) {
-      Alert.alert('Błąd', 'Podaj email i hasło.');
+  const finishSync = async (code: string) => {
+    setPhase('sync');
+    try {
+      const { profileCount } = await syncFamily(code);
+      // No profile in the cloud yet: the welcome screen (now showing "zalogowano") starts one.
+      leaveTo(profileCount > 0 ? '/(tabs)/agent' : '/onboarding/welcome');
+    } catch {
+      setPhase('syncFailed');
+    }
+  };
+
+  const submit = async () => {
+    setError(null);
+    if (!email.trim() || !password) {
+      setError(t('auth.errors.missing'));
       return;
     }
-
-    setIsLoading(true);
+    if (mode === 'register' && password.length < 6) {
+      setError(t('auth.errors.shortPassword'));
+      return;
+    }
+    setPhase('auth');
     try {
-      const res = await fetch(`${API_BASE_URL}/v1/auth/${type}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = (await res.json()) as {
-        user?: { id: string; email: string; familyCode: string };
-        error?: { message: string };
-      };
-
-      if (!res.ok || !data.user) {
-        throw new Error(data.error?.message ?? 'Nie udało się zalogować.');
-      }
-
-      setFamilyCode(data.user.familyCode);
-
-      // Always redirect to plan on successful login
-      router.replace('/(tabs)/plan');
-    } catch (e: unknown) {
-      if (e instanceof Error) {
-        Alert.alert('Błąd', e.message);
-      } else {
-        Alert.alert('Błąd', 'Wystąpił nieznany błąd.');
-      }
-    } finally {
-      setIsLoading(false);
+      const account = await authenticate(mode, email, password);
+      setFamilyCode(account.familyCode);
+      setCode(account.familyCode);
+      await finishSync(account.familyCode);
+    } catch (e) {
+      setPhase('form');
+      setError(t(e instanceof AuthError ? ERROR_KEY[e.kind] : 'auth.errors.unknown'));
     }
   };
 
-  const handleMObywatel = () => {
-    setMObywatelLoading(true);
-    setTimeout(() => {
-      setMObywatelLoading(false);
-      setFamilyCode('MOBY24'); // Mock successful family code
-      router.replace('/(tabs)/plan');
-    }, 2000);
-  };
+  const busy = phase === 'auth' || phase === 'sync';
 
   return (
     <Screen wall>
       <Plate>
-        <View style={{ gap: space.sm, paddingBottom: space.md }}>
-          <Text variant="heading" style={{ fontSize: 24 }}>
-            Witaj w naCzas
+        <View style={{ gap: space.sm }}>
+          <Text variant="heading" accessibilityRole="header">
+            {t('auth.title')}
           </Text>
-          <Text tone="textMuted">
-            Zaloguj się na Konto Rodzinne, aby zsynchronizować zdrowie Twojej rodziny.
-          </Text>
+          <Text tone="textMuted">{t('auth.intro')}</Text>
         </View>
 
-        <View style={{ gap: space.md, paddingBottom: space.md }}>
-          {mObywatelLoading ? (
-            <ActivityIndicator size="small" color={colors.primary} />
-          ) : (
+        {phase === 'syncFailed' && familyCode ? (
+          <View accessibilityRole="alert" style={{ gap: space.sm }}>
+            <Text tone="danger">{t('auth.syncFailed')}</Text>
+            <Button label={t('auth.retry')} onPress={() => void finishSync(familyCode)} fullWidth />
             <Button
-              label="Zaloguj przez mObywatel"
-              variant="secondary"
-              onPress={handleMObywatel}
-              disabled={true}
+              variant="ghost"
+              label={t('auth.continue')}
+              onPress={() => leaveTo('/')}
               fullWidth
             />
-          )}
-          <View style={{ alignItems: 'center' }}>
-            <Text tone="textSubtle">lub podaj adres email</Text>
           </View>
-        </View>
-
-        <View style={{ gap: space.md }}>
-          <TextField
-            label="Adres email"
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          <TextField label="Hasło" value={password} onChangeText={setPassword} secureTextEntry />
-
-          {isLoading ? (
-            <ActivityIndicator
-              size="large"
-              color={colors.primary}
-              style={{ marginVertical: space.md }}
+        ) : (
+          <View style={{ gap: space.md }}>
+            <Button
+              label={t('auth.mObywatel')}
+              variant="secondary"
+              onPress={() => undefined}
+              disabled
+              fullWidth
             />
-          ) : (
-            <View style={{ gap: space.sm, marginTop: space.sm }}>
-              <Button
-                label={mode === 'login' ? 'Zaloguj się' : 'Utwórz konto'}
-                onPress={() => void handleAuth(mode)}
-                fullWidth
-              />
-              <Button
-                variant="ghost"
-                label={
-                  mode === 'login'
-                    ? 'Nie masz konta? Zarejestruj się'
-                    : 'Masz już konto? Zaloguj się'
-                }
-                onPress={() => setMode(mode === 'login' ? 'register' : 'login')}
-                fullWidth
-              />
-              <Button
-                variant="ghost"
-                label="Zamknij"
-                onPress={() => (router.canGoBack() ? router.back() : router.replace('/plan'))}
-                fullWidth
-              />
-            </View>
-          )}
-        </View>
+            <Text tone="textSubtle" style={{ textAlign: 'center' }}>
+              {t('auth.orEmail')}
+            </Text>
+            <TextField
+              label={t('auth.email')}
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoComplete="email"
+              keyboardType="email-address"
+              testID="auth-email"
+            />
+            <TextField
+              label={t('auth.password')}
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              testID="auth-password"
+            />
+            {error && (
+              <Text tone="danger" accessibilityRole="alert" testID="auth-error">
+                {error}
+              </Text>
+            )}
+            {busy && (
+              <Text tone="textMuted" accessibilityLiveRegion="polite" testID="auth-progress">
+                {phase === 'sync' ? t('auth.syncing') : t('auth.waking')}
+              </Text>
+            )}
+            <Button
+              testID="auth-submit"
+              label={mode === 'login' ? t('auth.login') : t('auth.register')}
+              loading={busy}
+              onPress={() => void submit()}
+              fullWidth
+            />
+            <Button
+              variant="ghost"
+              label={mode === 'login' ? t('auth.toRegister') : t('auth.toLogin')}
+              disabled={busy}
+              onPress={() => {
+                setError(null);
+                setMode(mode === 'login' ? 'register' : 'login');
+              }}
+              fullWidth
+            />
+            <Button
+              variant="ghost"
+              label={t('auth.close')}
+              disabled={busy}
+              onPress={() => (router.canGoBack() ? router.back() : router.replace('/'))}
+              fullWidth
+            />
+          </View>
+        )}
       </Plate>
     </Screen>
   );

@@ -134,9 +134,11 @@ describe('PlanScreen (mockPlan)', () => {
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
   });
 
-  it('booked card: "Oznacz jako zrobione" marks done here, with undo (M3 M6)', () => {
+  it('booked row: the check marks done here, with undo (M3 M6)', () => {
     useRecordsStore.getState().reset();
     renderPlan();
+    // An icon in the row, not a text button under it.
+    expect(screen.queryByText('Oznacz jako zrobione')).toBeNull();
     fireEvent.press(screen.getByRole('button', { name: 'Oznacz jako zrobione: Mammografia' }));
     expect(useRecordsStore.getState().records).toEqual([
       expect.objectContaining({ examId: 'mammography', status: 'done' }),

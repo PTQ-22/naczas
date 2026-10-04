@@ -67,6 +67,9 @@ export interface ApiClient {
     options?: RequestOptions,
   ) => Promise<CallAssistStartResponse>;
   getCallAssist: (callId: string, options?: RequestOptions) => Promise<CallAssistStatus>;
+  /** "Zadzwoń teraz" while a retry is scheduled (409 `not_waiting` otherwise) */
+  retryCallAssistNow: (callId: string, options?: RequestOptions) => Promise<CallAssistStatus>;
+  cancelCallAssist: (callId: string, options?: RequestOptions) => Promise<CallAssistStatus>;
 }
 
 export type ApiErrorKind = 'timeout' | 'network' | 'http' | 'invalid_response' | 'aborted';
@@ -200,6 +203,22 @@ export function createHttpApi(fetchImpl: typeof fetch = (...args) => fetch(...ar
         CallAssistStatusSchema,
         options,
         fetchImpl,
+      ),
+    retryCallAssistNow: (callId, options = {}) =>
+      requestJson(
+        `/v1/call-assist/${encodeURIComponent(callId)}/retry-now`,
+        CallAssistStatusSchema,
+        options,
+        fetchImpl,
+        {},
+      ),
+    cancelCallAssist: (callId, options = {}) =>
+      requestJson(
+        `/v1/call-assist/${encodeURIComponent(callId)}/cancel`,
+        CallAssistStatusSchema,
+        options,
+        fetchImpl,
+        {},
       ),
     getCoverage: (params, options = {}) =>
       requestJson(`/v1/coverage?${buildCoverageQuery(params)}`, CoverageSchema, options, fetchImpl),
