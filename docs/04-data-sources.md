@@ -1,9 +1,10 @@
 # 04 — Źródła danych
 
-## A. API NFZ „Terminy leczenia” (ITL) — zweryfikowane 2026-10-03
+## A. API NFZ „Terminy leczenia” (ITL) — zweryfikowane 2026-10-03, v1.4 od 2026-10-04
 
-- Base URL: `https://api.nfz.gov.pl/app-itl-api`
-- Bez klucza. Parametry wspólne: `format=json`, `api-version=1.3`, `page`, `limit` (max 25).
+- Base URL (v1.4, używane): `https://apinfz.nfz.gov.pl/app-itl-api-pcus` (`/version` → 1.4.0). Konfigurowalne: `NFZ_BASE_URL` + `NFZ_API_VERSION` (zmieniać razem — v1.4 odrzuca `api-version=1.3`).
+- Stare v1.3: `https://api.nfz.gov.pl/app-itl-api` — używane już tylko do współrzędnych (patrz Pułapki).
+- Bez klucza. Parametry wspólne: `format=json`, `api-version=1.4`, `page`, `limit` (max 25). v1.4: `benefitForAdultsChildren=2` = tylko dla dorosłych (1 wszyscy, 3 dzieci).
 - **Rate limit:** przy kilku szybkich zapytaniach z rzędu API zwraca odpowiedź nie-JSON. → klient z kolejką (≤ 1 req/s), retry z backoffem, cache.
 
 ### Endpointy
@@ -28,21 +29,33 @@
     "latitude": 52.148315, "longitude": 21.2191719,
     "toilet": "N", "ramp": "N", "car-park": "N", "elevator": "N",
     "statistics": { "provider-data": { "awaiting": 0, "removed": 0, "average-period": 0, "update": "2026-09" } },
-    "dates": null            // lub { "date": "2026-11-20", "date-situation-as-at": "2026-09-30", ... }
+    "anesthesia": "Y",       // v1.4: Y/N (np. kolonoskopia w znieczuleniu)
+    "dates": { "applicable": true, "pcus": "1 mies. 3 tyg.", "date-situation-as-at": "2026-10-02" } // v1.4; v1.3: null
   }
 }
 ```
 
 ### Pułapki
-- **`dates` = null w 100% rekordów** (WS2-1, 1867 rekordów, api-version 1.2/1.3). Jedyny sygnał czasu: `statistics.provider-data.average-period` (wypełnione w 61–98% rekordów). Mediany: kolonoskopia ~137–158 dni, okulistyka 73–200 dni, stomatolog 22–29 dni.
+- **v1.4: `dates.pcus`** („Prognozowany czas udzielenia świadczenia”) — tekst typu `0 dni`, `1 dzień`, `13 dni`, `2 mies.`, `1 mies. 3 tyg.`, `13 mies. 1 tydz.`, aktualizowany codziennie (`date-situation-as-at`). Obecny w ~98% rekordów fixtures (2026-10-04). Parser `apps/api/src/aggregate/pcus.ts` (mies. = 30 dni, tydz./tyg. = 7). `waitDays` = pcus, gdy `applicable`; inaczej `average-period` > 0; `average-period: 0` przy `awaiting: 0` = brak kolejki (0 dni); reszta = brak danych. `Facility.asOf` = `date-situation-as-at`.
+- **v1.4 nie zwraca lat/lng dla ~95% rekordów** (2026-10-04), v1.3 ma je nadal. Współrzędne uzupełniamy z `apps/api/data/geo/places.json` (adres → lat/lng z v1.3, klucz `MIEJSCOWOŚĆ|ADRES`; id kolejek różnią się między wersjami). Odświeżenie: `pnpm --filter @naczas/api geo-index`. Nowa placówka spoza indeksu nie trafi na listę/mapę, ale liczy się w agregacie wojewódzkim.
+- `links.next` w v1.4 to `/queues?page=2…` **bez** prefiksu `/app-itl-api-pcus` i bez `api-version`/`benefitForAdultsChildren` → rozwiązywać względem base path i dopisywać parametry.
+- v1.3 (historycznie): `dates` = null w 100% rekordów (WS2-1); jedynym sygnałem był miesięczny `average-period`.
 - Filtr `benefit` działa jak prefiks (`PORADNIA STOMATOLOGICZNA` zwraca też `… DLA DZIECI`) → filtrować po dokładnej nazwie. Okulistyka ambulatoryjna: `ŚWIADCZENIA Z ZAKRESU OKULISTYKI`. 1–17% rekordów bez lat/lng.
 - `dates` bywa `null`, statystyki bywają zerowe → takie rekordy pokazujemy na liście („brak danych o terminie”), ale **wykluczamy z agregatu** p50/p75.
-- Dane raportowane przez placówki, aktualizacja ~miesięczna → w UI zawsze „stan na: …”.
+- Statystyki (`average-period`, `awaiting`) aktualizowane ~miesięcznie, `pcus` codziennie → w UI zawsze „stan na: …”.
+- Nazwy świadczeń AOS w ITL to „ŚWIADCZENIA Z ZAKRESU …” (okulistyki, neurologii, endokrynologii), nie „PORADNIA …”. **Brak ogólnej poradni kardiologicznej w ITL** (`/benefits?name=KARDIOLOG` zwraca tylko oddziały i rehabilitację) → `kardiolog` ma `booking: walk_in`, bez kolejki NFZ.
 - **Badań programowych (mammografia, cytologia) nie ma w ITL** (`/benefits?name=mammo` → `[]`). Obsługa przez `booking: 'program'`.
 - Kody województw NFZ: `01` dolnośląskie, `02` kujawsko-pomorskie, `03` lubelskie, `04` lubuskie, `05` łódzkie, `06` małopolskie, `07` mazowieckie, `08` opolskie, `09` podkarpackie, `10` podlaskie, `11` pomorskie, `12` śląskie, `13` świętokrzyskie, `14` warmińsko-mazurskie, `15` wielkopolskie, `16` zachodniopomorskie.
 
 ## B. API NFZ „Umowy” (opcjonalnie)
 - `https://api.nfz.gov.pl/app-umw-api` — kto ma kontrakt na dany zakres. Potencjalnie do listy placówek realizujących programy profilaktyczne. **Stretch**, nie blokuje MVP.
+
+## E. NFZ „Dane o realizacji programów” (objęcie populacji) — zweryfikowane 2026-10-04
+- Strona: https://www.nfz.gov.pl/dla-pacjenta/programy-profilaktyczne/dane-o-realizacji-programow/ — co miesiąc 3 pliki xlsx (podział na gminy). Użyty stan na **2026-10-01**: `.../defaultstronaopisowa/483/144/1/mammografia_1.10.2026_r..xlsx`, `hpv_hr_1.10.2026_r..xlsx` (szyjka macicy), `kolonoskopia_1.10.2026_r..xlsx` (prefiks `https://www.nfz.gov.pl/download/gfx/nfz/pl`). Nazwy plików zmieniają się między miesiącami (np. `cytologia_hpv_` do 08.2026) — sprawdzać na stronie.
+- Kolumny: OW NFZ, województwo, ID/nazwa powiatu, ID/nazwa gminy (TERYT bez wiodącego zera, gminy miejsko-wiejskie rozbite na miasto `4` i obszar wiejski `5`), kwalifikujący się, wyłączeni ogółem (= badani w programie + leczeni), „Procent objęcia populacji [%]” = wyłączeni / kwalifikujący się. Wiersze `BRAK DANYCH` (tylko w sumie krajowej) i `RAZEM`.
+- Konwersja: `pnpm --filter @naczas/api coverage` (`apps/api/scripts/coverage.ts`, parser xlsx bez zależności) → `apps/api/data/screening/coverage.json`. Sumy powiatów/województw liczone z liczebności (nie średnia procentów); skrypt sprawdza formułę NFZ w każdym wierszu i zgodność z `RAZEM`. Przy nowym miesiącu: zmienić `ISSUE`/`AS_OF`/`FILES` w skrypcie.
+- Warszawa, Kraków (i inne miasta podzielone w pliku na dzielnice/delegatury): brak wiersza gminy, ULDK zwraca całe miasto → pokazujemy powiat (= miasto).
+- GUGiK ULDK `https://uldk.gugik.gov.pl/?request=GetCommuneByXY&xy=lon,lat,4326&result=teryt,commune,county,voivodeship` → `0\n146501_1|Warszawa (miasto)|powiat Warszawa|mazowieckie`; poza Polską `-1 brak wyników`. Bez klucza.
 
 ## C. Reguły profilaktyki — źródła do weryfikacji (WS1)
 

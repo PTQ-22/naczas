@@ -61,6 +61,10 @@ function ThemedStack() {
         <Stack.Screen name="onboarding/[step]" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen
+          name="login"
+          options={{ presentation: 'modal', title: 'Konto Rodzinne', headerShown: true }}
+        />
+        <Stack.Screen
           name="exam/[examId]/index"
           options={{ headerShown: true, title: t('exam.title') }}
         />
@@ -74,6 +78,10 @@ function ThemedStack() {
         />
         {/* Not a tab: an optional motivator, reached from the plan (docs/ux-review-first-run.md #8). */}
         <Stack.Screen name="bet" options={{ headerShown: true, title: t('bet.tabs.bet') }} />
+        <Stack.Screen
+          name="exam/[examId]/call"
+          options={{ headerShown: true, title: t('callAssist.title'), presentation: 'modal' }}
+        />
         <Stack.Screen
           name="visit-prep"
           options={{ headerShown: true, title: t('visitPrep.title') }}

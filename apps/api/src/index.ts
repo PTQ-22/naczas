@@ -1,10 +1,14 @@
+import 'dotenv/config';
+
 import path from 'node:path';
 
 import { serve } from '@hono/node-server';
 
 import { createApp } from './app';
+import { createVapiClient } from './call-assist/vapi-client';
 import { loadEnv } from './env';
 import { createNfzClient } from './nfz/client';
+import { GEO_INDEX_FILE, loadGeoIndex } from './nfz/geo-index';
 import { createSnapshotStore } from './nfz/snapshot';
 import { createQueueLoader } from './queues';
 
@@ -30,9 +34,26 @@ const REFRESH_ORDER = [
 
 const env = loadEnv();
 
-const nfz = createNfzClient();
+const callAssist =
+  env.VAPI_API_KEY && env.VAPI_PHONE_NUMBER_ID && env.DEMO_CALL_TO
+    ? {
+        vapi: createVapiClient({ apiKey: env.VAPI_API_KEY }),
+        phoneNumberId: env.VAPI_PHONE_NUMBER_ID,
+        callTo: env.DEMO_CALL_TO,
+        assistant: {
+          voiceId: env.VAPI_VOICE_ID,
+          publicUrl: env.PUBLIC_URL,
+          webhookSecret: env.VAPI_WEBHOOK_SECRET,
+        },
+      }
+    : null;
+console.log(`Call assist: ${callAssist ? 'live (Vapi)' : 'simulated'}`);
+
+const nfz = createNfzClient({ baseUrl: env.NFZ_BASE_URL, apiVersion: env.NFZ_API_VERSION });
 const snapshot = createSnapshotStore(path.resolve(import.meta.dirname, '../data/snapshot'));
-const loader = createQueueLoader({ nfz, snapshot, now: () => new Date() });
+const geoIndex = loadGeoIndex(GEO_INDEX_FILE);
+console.log(`Geo index: ${Object.keys(geoIndex).length} places`);
+const loader = createQueueLoader({ nfz, snapshot, now: () => new Date(), geoIndex });
 const app = createApp({
   nfz,
   snapshot,
@@ -40,6 +61,8 @@ const app = createApp({
   cors: { origins: env.CORS_ORIGINS, allowLocalhost: env.NODE_ENV !== 'production' },
   rateLimit: { perMinute: env.RATE_LIMIT_PER_MIN, trustProxy: env.TRUST_PROXY },
   log: (line) => console.log(line),
+  callAssist,
+  callAssistWebhookSecret: env.VAPI_WEBHOOK_SECRET,
 });
 
 // Warm-up before listening: the first request is answered from the snapshot immediately.

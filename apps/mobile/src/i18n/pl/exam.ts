@@ -28,6 +28,23 @@ export const exam = {
     programLinkA11y: 'Program przesiewowy bez skierowania, otwiera wyszukiwarkę NFZ',
     noData: 'Nie mamy aktualnych danych o kolejce — zacznij szukać terminu z wyprzedzeniem.',
   },
+  // Regional statistic from NFZ's programme reports — about the area, never about the person (§7).
+  coverage: {
+    title: 'W Twojej okolicy',
+    area: {
+      gmina: 'Gmina {{name}}',
+      powiat: '{{name}}',
+      voivodeship: 'Województwo {{name}}',
+      country: 'Polska',
+    },
+    body: {
+      mammography: 'uprawnionych kobiet jest objętych programem badań mammograficznych NFZ.',
+      cervical: 'uprawnionych kobiet jest objętych programem badań szyjki macicy (test HPV) NFZ.',
+      colonoscopy: 'uprawnionych osób jest objętych programem badań kolonoskopowych NFZ.',
+    },
+    a11y: '{{area}}: {{percent}} procent {{body}}',
+    asOf: 'Dane NFZ, stan na {{date}}',
+  },
   section: {
     about: 'O badaniu',
     why: 'Dlaczego',

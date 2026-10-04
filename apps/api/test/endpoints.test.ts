@@ -11,6 +11,7 @@ import { createApp } from '../src/app';
 import { fixtureFetch, loadAllFixtures, rateLimitedResponse } from './helpers/nfz-fixtures';
 import { buildSnapshotFromFixtures } from './helpers/snapshot-from-fixtures';
 import { createNfzClient } from '../src/nfz/client';
+import { GEO_INDEX_FILE, loadGeoIndex } from '../src/nfz/geo-index';
 import { createSnapshotStore } from '../src/nfz/snapshot';
 
 // Expected numbers computed independently (Python) from the recorded fixtures,
@@ -19,6 +20,7 @@ const WARSAW = 'lat=52.23&lng=21.01';
 const FIXTURES_AS_SNAPSHOT = await buildSnapshotFromFixtures();
 const noWait = () => Promise.resolve();
 const now = () => new Date('2026-10-04T10:00:00Z');
+const geoIndex = loadGeoIndex(GEO_INDEX_FILE);
 
 function makeApp(nfz: 'up' | 'down', snapshotDir = FIXTURES_AS_SNAPSHOT) {
   const fetch =
@@ -29,6 +31,7 @@ function makeApp(nfz: 'up' | 'down', snapshotDir = FIXTURES_AS_SNAPSHOT) {
     nfz: createNfzClient({ fetch, minIntervalMs: 0, sleep: noWait }),
     snapshot: createSnapshotStore(snapshotDir),
     now,
+    geoIndex,
   });
 }
 
@@ -75,11 +78,11 @@ describe('GET /v1/wait-times', () => {
       examId: 'colonoscopy_screening',
       province: '07',
       radiusKm: 15,
-      facilitiesCount: 35,
-      p50Days: 141,
-      p75Days: 200,
-      minDays: 23,
-      asOf: '2026-09',
+      facilitiesCount: 36,
+      p50Days: 138,
+      p75Days: 187,
+      minDays: 17,
+      asOf: '2026-10',
       source: 'nfz_live',
     });
   });
@@ -89,13 +92,13 @@ describe('GET /v1/wait-times', () => {
       makeApp('up'),
       '/v1/wait-times?examId=colonoscopy_screening&province=07',
     );
-    expect(body).toMatchObject({ radiusKm: 0, facilitiesCount: 96, p50Days: 138, p75Days: 213 });
+    expect(body).toMatchObject({ radiusKm: 0, facilitiesCount: 98, p50Days: 136, p75Days: 187 });
   });
 
   it('falls back to the snapshot when NFZ is down', async () => {
     const { status, body } = await get(makeApp('down'), url);
     expect(status).toBe(200);
-    expect(body).toMatchObject({ source: 'nfz_snapshot', facilitiesCount: 35, p75Days: 200 });
+    expect(body).toMatchObject({ source: 'nfz_snapshot', facilitiesCount: 36, p75Days: 187 });
   });
 
   it('returns 503 when NFZ is down and there is no snapshot', async () => {
@@ -143,7 +146,7 @@ it('serves skin_check from PORADNIA DERMATOLOGICZNA', async () => {
     `/v1/wait-times?examId=skin_check&province=07&${WARSAW}`,
   );
   expect(status).toBe(200);
-  expect(body).toMatchObject({ facilitiesCount: 48, p50Days: 92, p75Days: 142, minDays: 10 });
+  expect(body).toMatchObject({ facilitiesCount: 49, p50Days: 111, p75Days: 157, minDays: 10 });
 });
 
 describe('GET /v1/facilities', () => {
@@ -156,13 +159,14 @@ describe('GET /v1/facilities', () => {
     expect(res.source).toBe('nfz_live');
     expect(res.items).toHaveLength(36);
     expect(res.items.slice(0, 5).map((f) => [f.waitDays, f.distanceKm])).toEqual([
+      [17, 9.5],
       [23, 4.4],
-      [40, 9.5],
-      [49, 2.9],
-      [55, 0.8],
-      [61, 3.3],
+      [27, 2.9],
+      [60, 0.8],
+      [60, 2.9], // equal waits → nearer first
     ]);
-    expect(res.items.at(-1)?.waitDays).toBeNull();
+    // v1.4: every facility here has a pcus forecast, so no unknown waits trail the list
+    expect(res.items.at(-1)?.waitDays).toBe(314);
     expect(res.items.every((f) => f.firstAvailableDate === null)).toBe(true);
   });
 
@@ -171,9 +175,9 @@ describe('GET /v1/facilities', () => {
     const res = FacilitiesResponseSchema.parse(body);
     expect(res.items).toHaveLength(20);
     expect(res.items.slice(0, 3).map((f) => [f.waitDays, f.distanceKm])).toEqual([
-      [55, 0.8],
-      [null, 1.5],
-      [156, 1.6],
+      [60, 0.8],
+      [97, 1.5],
+      [141, 1.6],
     ]);
   });
 

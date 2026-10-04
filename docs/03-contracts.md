@@ -156,7 +156,7 @@ export interface WaitTimeSummary {
   p50Days: number | null;
   p75Days: number | null;         // używany do leadTime
   minDays: number | null;
-  asOf: string;                   // 'YYYY-MM' z NFZ statistics.update
+  asOf: string;                   // 'YYYY-MM' najnowszego rekordu (dates.date-situation-as-at, inaczej statistics.update)
   source: 'nfz_live' | 'nfz_snapshot';
 }
 ```
@@ -164,6 +164,8 @@ export interface WaitTimeSummary {
 ### `GET /v1/facilities?examId=&province=&lat=&lng=&radiusKm=&sort=soonest|nearest&limit=20`
 
 > **Zmiana 2026-10-03 (WS2-1):** NFZ zwraca `dates: null` w 100% rekordów. Źródłem czasu oczekiwania jest `statistics.provider-data.average-period` (średni czas oczekiwania w dniach, raportowany przez placówkę). `sort=soonest` = rosnąco po `waitDays`, nulle na końcu. Typy bez zmian.
+
+> **Zmiana 2026-10-04 (ITL v1.4):** `waitDays` = prognoza NFZ `dates.pcus` w dniach (gdy `applicable`), inaczej `average-period`; `average-period: 0` przy `awaiting: 0` = 0 (brak kolejki). `asOf` = `dates.date-situation-as-at` (dzienna). Nowe pole `anesthesia` (NFZ `anesthesia` Y/N; brak → `null`, Zod `.default(null)` dla starszego API). Szczegóły: `docs/04-data-sources.md` §A.
 
 ```ts
 export interface Facility {
@@ -177,11 +179,12 @@ export interface Facility {
   lat: number;
   lng: number;
   distanceKm: number;
-  firstAvailableDate: ISODate | null; // obecnie zawsze null — NFZ nie zwraca `dates` (stan 2026-10)
-  waitDays: number | null;        // average-period z NFZ (dni); null gdy brak lub 0
+  firstAvailableDate: ISODate | null; // zawsze null — ITL nie podaje pierwszego wolnego terminu
+  waitDays: number | null;        // dates.pcus (dni), inaczej average-period; null = brak danych
   awaiting: number | null;        // statistics.provider-data.awaiting
+  anesthesia: boolean | null;     // NFZ anesthesia Y/N; null = brak informacji
   accessibility: { ramp: boolean; elevator: boolean; parking: boolean; toilet: boolean };
-  asOf: ISODate;                  // statistics.update 'YYYY-MM' → 'YYYY-MM-01'
+  asOf: ISODate;                  // dates.date-situation-as-at; bez niego statistics.update → 'YYYY-MM-01'
 }
 
 export interface FacilitiesResponse {
@@ -192,6 +195,62 @@ export interface FacilitiesResponse {
 ```
 
 ### `GET /v1/health` → `{ ok: true, nfz: 'up' | 'down', snapshotAsOf: string }`
+
+### `GET /v1/coverage?program=mammography|cervical|colonoscopy&province=&lat=&lng=`
+
+Odsetek uprawnionych objętych programem przesiewowym NFZ w okolicy (statystyka regionalna, nie dotyczy osoby). `province`, `lat`/`lng` opcjonalne (`lat` i `lng` razem); serwer zaokrągla współrzędne do 2 miejsc i ich nie loguje (§8). Obszar: współrzędne → TERYT gminy przez GUGiK ULDK (timeout 3 s, cache w pamięci); kolejno gmina (jeśli ≥ 1000 uprawnionych) → powiat → województwo z `province` → cały kraj. Dane statyczne z `apps/api/data/screening/coverage.json` (źródło: 04-data-sources §E). Błędy: 400 `invalid_query`, 404 `no_data`.
+
+```ts
+// packages/shared/src/coverage.ts
+export interface Coverage {
+  program: 'mammography' | 'cervical' | 'colonoscopy';
+  level: 'gmina' | 'powiat' | 'voivodeship' | 'country';
+  areaName: string; // mianownik: 'Zielonki' | 'powiat krakowski' | 'Warszawa' | 'mazowieckie' | 'Polska'
+  percent: number; // 0–100, 1 miejsce po przecinku
+  eligible: number; // liczba kwalifikujących się
+  covered?: number; // „wyłączonych – ogółem” wg NFZ
+  asOf: string; // 'YYYY-MM-DD' — data raportu NFZ
+  source: string; // URL pliku xlsx NFZ
+}
+```
+
+Mapowanie w aplikacji: `mammography` → `mammography`, `cervical_screening` → `cervical`, `colonoscopy_screening` → `colonoscopy` (`apps/mobile/src/services/coverage.ts`).
+
+### `POST /v1/call-assist` (demo „Zadzwoń za mnie”)
+Agent głosowy AI (Vapi) dzwoni i prosi o termin. **Dzwoni wyłącznie na numer z env `DEMO_CALL_TO`** (nigdy na numer z requestu ani placówki); bez konfiguracji Vapi zwraca `mode: 'simulated'` (skryptowana rozmowa). Agent w pierwszym zdaniu mówi, że jest AI i w czyim imieniu dzwoni (AI Act art. 50). Body nie zawiera PESEL ani nazwiska.
+
+```ts
+export interface CallAssistRequest {
+  examName: string;               // mianownik, agent mówi „na badanie: <examName>”
+  facilityName: string;
+  forWhom: string;                // np. „mamę” (biernik, mówione przez agenta)
+  callerName: string;             // imię opiekuna w dopełniaczu („Kasi”)
+  bookBy?: ISODate;               // najpóźniejszy akceptowalny termin
+}
+
+export interface CallAssistStartResponse {
+  callId: string;
+  mode: 'live' | 'simulated';
+}
+```
+
+### `GET /v1/call-assist/:callId`
+
+```ts
+export interface CallAssistResult {
+  booked: boolean;
+  date: ISODate | null;
+  time: string | null;            // 'HH:MM'
+  note: string | null;
+}
+
+export interface CallAssistStatus {
+  callId: string;
+  status: 'queued' | 'ringing' | 'in_progress' | 'ended' | 'failed';
+  transcript: { role: 'agent' | 'clinic'; text: string }[];
+  result: CallAssistResult | null;   // po zakończeniu rozmowy
+}
+```
 
 ## Mapowanie examId → świadczenia NFZ
 Trzymane w `ExamRule.nfzBenefits` (pakiet `rules`), API importuje `@naczas/rules` żeby rozwiązać `examId` → nazwy świadczeń. Klient nigdy nie wysyła surowej nazwy świadczenia.

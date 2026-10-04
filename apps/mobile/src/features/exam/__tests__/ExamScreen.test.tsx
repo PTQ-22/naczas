@@ -5,6 +5,7 @@ import { getExamRule } from '@naczas/rules';
 
 import { mockPlanData } from '@/features/plan/__fixtures__/mock-plan-data';
 import { usePlanData } from '@/features/plan/use-plan-data';
+import { useCoverage } from '@/services/coverage';
 import { useRecordsStore } from '@/store';
 import { ThemeProvider } from '@/theme';
 
@@ -28,6 +29,10 @@ jest.mock('expo-router', () => ({
 }));
 
 jest.mock('../add-to-calendar', () => ({ addToCalendar: jest.fn() }));
+jest.mock('@/services/coverage', () => ({
+  useCoverage: jest.fn(() => null),
+  coverageProgramFor: jest.fn(),
+}));
 jest.mock('expo-linking', () => ({ createURL: (path: string) => `naczas://${path}` }));
 
 const mockParams = useLocalSearchParams as jest.Mock;
@@ -45,6 +50,7 @@ describe('ExamScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (usePlanData as jest.Mock).mockReturnValue(mockPlanData());
+    (useCoverage as jest.Mock).mockReturnValue(null);
     useRecordsStore.getState().reset();
   });
 
@@ -103,6 +109,29 @@ describe('ExamScreen', () => {
     fireEvent.press(screen.getByRole('button', { name: 'O badaniu' }));
     expect(screen.getByRole('button', { name: 'O badaniu' })).toBeExpanded();
     expect(screen.getByText(getExamRule('colonoscopy_screening').description)).toBeOnTheScreen();
+  });
+
+  it('shows regional NFZ coverage as a quiet statistic when the API has it', () => {
+    (useCoverage as jest.Mock).mockReturnValue({
+      program: 'mammography',
+      level: 'powiat',
+      areaName: 'Warszawa',
+      percent: 31.2,
+      eligible: 417773,
+      covered: 130551,
+      asOf: '2026-10-01',
+      source: 'https://www.nfz.gov.pl/x.xlsx',
+    });
+    renderExam('mammography');
+    expect(useCoverage).toHaveBeenCalledWith('mammography', expect.anything());
+    expect(screen.getByText('31,2%')).toBeOnTheScreen();
+    expect(screen.getByText('Warszawa')).toBeOnTheScreen();
+    expect(screen.getByText('Dane NFZ, stan na 1.10.2026')).toBeOnTheScreen();
+  });
+
+  it('hides the coverage card without data', () => {
+    renderExam('mammography');
+    expect(screen.queryByTestId('coverage-card')).toBeNull();
   });
 
   it('links to visit prep even when no referral is needed (M3 H2)', () => {

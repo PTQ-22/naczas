@@ -1,6 +1,7 @@
 import type { Facility } from '@naczas/shared';
 
 import { haversineKm, type LatLng } from './geo';
+import { parsePcusDays } from './pcus';
 
 import type { NfzQueue } from '../nfz/schemas';
 
@@ -40,16 +41,48 @@ export function selectAdultQueues(queues: NfzQueue[], benefits: readonly string[
   return filterExactBenefits(queues, benefits).filter((q) => !isChildrenOnlyPlace(q));
 }
 
-/** average-period in days when > 0 (docs/03 change 2026-10-03), else null */
-export function averageWaitDays(queue: NfzQueue): number | null {
-  const days = queue.attributes.statistics?.['provider-data']?.['average-period'];
-  return days != null && days > 0 ? days : null;
+/**
+ * One facility's wait in days, best source first:
+ * 1. v1.4 `dates.pcus` — NFZ's daily forecast for a new patient (when `applicable`);
+ * 2. monthly `average-period` (days) when > 0;
+ * 3. `average-period: 0` with `awaiting: 0` — nobody waits, so no queue (0 days).
+ * Otherwise null: `average-period: 0` with people waiting means NFZ has no statistic.
+ */
+export function waitDaysOf(queue: NfzQueue): number | null {
+  const dates = queue.attributes.dates;
+  if (dates?.applicable === true) {
+    const pcus = parsePcusDays(dates.pcus);
+    if (pcus !== null) return pcus;
+  }
+  const stats = queue.attributes.statistics?.['provider-data'];
+  const average = stats?.['average-period'];
+  if (average != null && average > 0) return average;
+  if (average === 0 && stats?.awaiting === 0) return 0;
+  return null;
+}
+
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** v1.4 `dates.date-situation-as-at` ('YYYY-MM-DD') when well-formed */
+export function situationDate(queue: NfzQueue): string | null {
+  const date = queue.attributes.dates?.['date-situation-as-at'];
+  return date && ISO_DATE.test(date) ? date : null;
 }
 
 /** statistics.update ('YYYY-MM') when well-formed */
-export function dataMonth(queue: NfzQueue): string | null {
+export function statisticsMonth(queue: NfzQueue): string | null {
   const month = queue.attributes.statistics?.['provider-data']?.update;
   return month && monthToIsoDate(month) ? month : null;
+}
+
+/** 'YYYY-MM' of the record's data: the daily situation date, else the statistics month. */
+export function dataMonth(queue: NfzQueue): string | null {
+  return situationDate(queue)?.slice(0, 7) ?? statisticsMonth(queue);
+}
+
+/** NFZ 'Y'/'N' → boolean; anything else (missing, '') → null */
+function yesNo(value: string | null | undefined): boolean | null {
+  return value === 'Y' ? true : value === 'N' ? false : null;
 }
 
 /**
@@ -61,7 +94,7 @@ export function normalizeQueue(queue: NfzQueue, options: NormalizeOptions): Faci
   if (a.latitude == null || a.longitude == null) return null;
 
   const stats = a.statistics?.['provider-data'];
-  const month = dataMonth(queue);
+  const month = statisticsMonth(queue);
   const position = { lat: a.latitude, lng: a.longitude };
 
   return {
@@ -75,17 +108,18 @@ export function normalizeQueue(queue: NfzQueue, options: NormalizeOptions): Faci
     lat: position.lat,
     lng: position.lng,
     distanceKm: options.origin ? round1(haversineKm(options.origin, position)) : 0,
-    // NFZ returns dates: null for every record (WS2-1) — docs/03 change 2026-10-03.
+    // ITL gives no first free date (v1.3: dates null, v1.4: only a pcus forecast) — docs/03.
     firstAvailableDate: null,
-    waitDays: averageWaitDays(queue),
+    waitDays: waitDaysOf(queue),
     awaiting: stats?.awaiting ?? null,
+    anesthesia: yesNo(a.anesthesia),
     accessibility: {
       ramp: a.ramp === 'Y',
       elevator: a.elevator === 'Y',
       parking: a['car-park'] === 'Y',
       toilet: a.toilet === 'Y',
     },
-    asOf: month ? `${month}-01` : options.fallbackAsOf,
+    asOf: situationDate(queue) ?? (month ? `${month}-01` : options.fallbackAsOf),
   };
 }
 

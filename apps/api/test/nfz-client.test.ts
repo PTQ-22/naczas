@@ -6,7 +6,7 @@ import {
   loadFixture,
   rateLimitedResponse,
 } from './helpers/nfz-fixtures';
-import { createNfzClient, NfzUnavailableError } from '../src/nfz/client';
+import { createNfzClient, NfzUnavailableError, resolveNfzLink } from '../src/nfz/client';
 
 const colonoscopy07 = loadFixture('07', 'kolonoskopia');
 const noWait = () => Promise.resolve();
@@ -20,9 +20,44 @@ describe('NFZ client', () => {
 
     expect(queues).toHaveLength(98);
     expect(calls).toHaveLength(4);
-    // Every page, including the ones built from links.next, stays on the same API version.
-    for (const call of calls) expect(new URL(call).searchParams.get('api-version')).toBe('1.3');
+    // Every page, including the ones built from links.next, stays on the same API version,
+    // adult filter and v1.4 base path (links.next lacks the /app-itl-api-pcus prefix).
+    for (const call of calls) {
+      const u = new URL(call);
+      expect(u.origin + u.pathname).toBe('https://apinfz.nfz.gov.pl/app-itl-api-pcus/queues');
+      expect(u.searchParams.get('api-version')).toBe('1.4');
+      expect(u.searchParams.get('benefitForAdultsChildren')).toBe('2');
+    }
     expect(new URL(calls[0]!).searchParams.get('case')).toBe('1');
+    expect(calls.map((c) => new URL(c).searchParams.get('page'))).toEqual(['1', '2', '3', '4']);
+  });
+
+  it('uses a configured base URL and API version', async () => {
+    const { fetch, calls } = fixtureFetch([colonoscopy07]);
+    const client = createNfzClient({
+      fetch,
+      baseUrl: 'https://api.nfz.gov.pl/app-itl-api',
+      apiVersion: '1.3',
+      minIntervalMs: 0,
+      sleep: noWait,
+    });
+
+    await client.getQueues({ benefit: 'KOLONOSKOPIA', province: '07' });
+
+    const u = new URL(calls[0]!);
+    expect(u.origin + u.pathname).toBe('https://api.nfz.gov.pl/app-itl-api/queues');
+    expect(u.searchParams.get('api-version')).toBe('1.3');
+  });
+
+  it.each([
+    ['/queues?page=2', 'https://apinfz.nfz.gov.pl/app-itl-api-pcus/queues?page=2'],
+    ['queues?page=2', 'https://apinfz.nfz.gov.pl/app-itl-api-pcus/queues?page=2'],
+    ['/app-itl-api-pcus/queues?page=2', 'https://apinfz.nfz.gov.pl/app-itl-api-pcus/queues?page=2'],
+    ['https://example.org/queues?page=2', 'https://example.org/queues?page=2'],
+  ])('resolves NFZ link %s against the base path', (link, expected) => {
+    expect(resolveNfzLink(link, 'https://apinfz.nfz.gov.pl/app-itl-api-pcus').toString()).toBe(
+      expected,
+    );
   });
 
   it('parses records tolerantly (unknown fields, empty statistics)', async () => {

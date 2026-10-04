@@ -33,7 +33,13 @@ const colonoscopyWait: WaitTimeSummary = {
 };
 
 function loaderWith(getWaitTimes: ApiClient['getWaitTimes']) {
-  const api: ApiClient = { getWaitTimes: jest.fn(getWaitTimes), getFacilities: jest.fn() };
+  const api: ApiClient = {
+    getWaitTimes: jest.fn(getWaitTimes),
+    getFacilities: jest.fn(),
+    getCoverage: jest.fn(),
+    startCallAssist: jest.fn(),
+    getCallAssist: jest.fn(),
+  };
   return { api, loader: createWaitTimesLoader({ api, storage: AsyncStorage }) };
 }
 

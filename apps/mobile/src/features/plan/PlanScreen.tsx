@@ -8,6 +8,7 @@ import { Button } from '@/components/Button';
 import { Disclaimer } from '@/components/Disclaimer';
 import { EmptyState } from '@/components/EmptyState';
 import { successHaptic } from '@/components/haptics';
+import { IconButton } from '@/components/IconButton';
 import { Plate } from '@/components/Plate';
 import { ProfileSwitcher } from '@/components/ProfileSwitcher';
 import { QueueNumber } from '@/components/QueueNumber';
@@ -242,18 +243,27 @@ export default function PlanScreen() {
           <UrgentCountProbe key={p.id} profileId={p.id} onCount={reportUrgent} />
         ))}
 
-      <View style={{ gap: space.xs }}>
-        <Text
-          variant="display"
-          color={colors.onWall}
-          accessibilityRole="header"
-          accessibilityLabel={t('plan.titleFor', { name: activeProfile.name })}
-        >
-          {t('plan.title')}
-        </Text>
-        {actNow === 0 && unknown.length === 0 && (
-          <Text color={colors.onWall}>{t('plan.summary.none')}</Text>
-        )}
+      <View
+        style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}
+      >
+        <View style={{ gap: space.xs }}>
+          <Text
+            variant="display"
+            color={colors.onWall}
+            accessibilityRole="header"
+            accessibilityLabel={t('plan.titleFor', { name: activeProfile.name })}
+          >
+            {t('plan.title')}
+          </Text>
+          {actNow === 0 && unknown.length === 0 && (
+            <Text color={colors.onWall}>{t('plan.summary.none')}</Text>
+          )}
+        </View>
+        <IconButton
+          icon="people"
+          accessibilityLabel="Konto rodzinne i logowanie"
+          onPress={() => router.push('/login')}
+        />
       </View>
 
       <View>

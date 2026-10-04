@@ -111,3 +111,27 @@ describe('createHttpApi', () => {
     expect(isOfflineError(error)).toBe(true);
   });
 });
+
+describe('call assist', () => {
+  const req = { examName: 'kolonoskopia', facilityName: 'X', forWhom: 'mamę', callerName: 'Kasi' };
+
+  it('POSTs the request as JSON and parses the start response', async () => {
+    const fetchImpl = respond(200, { callId: 'c1', mode: 'live' });
+    await expect(createHttpApi(fetchImpl).startCallAssist(req)).resolves.toEqual({
+      callId: 'c1',
+      mode: 'live',
+    });
+    const [url, init] = jest.mocked(fetchImpl).mock.calls[0]!;
+    expect(url).toMatch(/\/v1\/call-assist$/);
+    expect(init).toMatchObject({ method: 'POST', body: JSON.stringify(req) });
+  });
+
+  it('surfaces the API error code (e.g. rate limit)', async () => {
+    const error = await createHttpApi(
+      respond(429, { error: { code: 'rate_limited', message: 'slow down' } }),
+    )
+      .getCallAssist('c1')
+      .catch((e: unknown) => e);
+    expect(error).toMatchObject({ kind: 'http', status: 429, code: 'rate_limited' });
+  });
+});

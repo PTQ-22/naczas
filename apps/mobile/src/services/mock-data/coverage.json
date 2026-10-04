@@ -1,0 +1,32 @@
+[
+  {
+    "program": "mammography",
+    "level": "powiat",
+    "areaName": "Warszawa",
+    "percent": 31.2,
+    "eligible": 417773,
+    "covered": 130551,
+    "asOf": "2026-10-01",
+    "source": "https://www.nfz.gov.pl/download/gfx/nfz/pl/defaultstronaopisowa/483/144/1/mammografia_1.10.2026_r..xlsx"
+  },
+  {
+    "program": "cervical",
+    "level": "powiat",
+    "areaName": "Warszawa",
+    "percent": 11.9,
+    "eligible": 682448,
+    "covered": 81420,
+    "asOf": "2026-10-01",
+    "source": "https://www.nfz.gov.pl/download/gfx/nfz/pl/defaultstronaopisowa/483/144/1/hpv_hr_1.10.2026_r..xlsx"
+  },
+  {
+    "program": "colonoscopy",
+    "level": "powiat",
+    "areaName": "Warszawa",
+    "percent": 16.9,
+    "eligible": 387982,
+    "covered": 65378,
+    "asOf": "2026-10-01",
+    "source": "https://www.nfz.gov.pl/download/gfx/nfz/pl/defaultstronaopisowa/483/144/1/kolonoskopia_1.10.2026_r..xlsx"
+  }
+]

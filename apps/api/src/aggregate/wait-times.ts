@@ -1,7 +1,7 @@
 import type { ProvinceCode, WaitTimeSummary } from '@naczas/shared';
 
 import { haversineKm, MIN_FACILITIES, radiusSteps, type LatLng } from './geo';
-import { averageWaitDays, dataMonth } from './normalize';
+import { dataMonth, waitDaysOf } from './normalize';
 
 import type { NfzQueue } from '../nfz/schemas';
 
@@ -24,10 +24,10 @@ export interface WaitSample {
   month: string | null;
 }
 
-/** Queues → samples; facilities without a known wait (average-period ≤ 0 / null) are left out. */
+/** Queues → samples; facilities without a known wait (waitDaysOf → null) are left out. */
 export function toWaitSamples(queues: NfzQueue[], origin?: LatLng): WaitSample[] {
   return queues.flatMap((q) => {
-    const waitDays = averageWaitDays(q);
+    const waitDays = waitDaysOf(q);
     if (waitDays === null) return [];
     const { latitude, longitude } = q.attributes;
     const distanceKm =

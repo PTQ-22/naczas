@@ -32,3 +32,10 @@ export const bets = pgTable('bets', {
   status: text('status').notNull(),
   examIds: text('exam_ids').notNull(), // Stored as JSON string
 });
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  email: text('email').notNull().unique(),
+  passwordHash: text('password_hash').notNull(),
+  familyCode: text('family_code').notNull(),
+  createdAt: text('created_at').notNull(),
+});

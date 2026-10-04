@@ -27,6 +27,7 @@ const facility: Facility = {
   firstAvailableDate: null,
   waitDays: 23,
   awaiting: 10,
+  anesthesia: null,
   accessibility: { ramp: true, elevator: true, parking: false, toilet: true },
   asOf: '2026-09-01',
 };
@@ -63,8 +64,9 @@ describe('labels', () => {
   });
 
   it('builds one screen-reader sentence', () => {
-    expect(facilityA11yLabel(facility)).toBe(
-      'Szpital Testowy, średnio około 3 tyg. oczekiwania, 3,2 km',
+    expect(facilityA11yLabel(facility)).toBe('Szpital Testowy, około 3 tyg. oczekiwania, 3,2 km');
+    expect(facilityA11yLabel({ ...facility, anesthesia: true })).toBe(
+      'Szpital Testowy, około 3 tyg. oczekiwania, 3,2 km, Możliwe znieczulenie',
     );
     expect(facilityA11yLabel({ ...facility, waitDays: null })).toContain(
       'brak danych o czasie oczekiwania',

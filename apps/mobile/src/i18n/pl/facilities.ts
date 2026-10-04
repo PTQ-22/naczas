@@ -29,10 +29,13 @@ export const facilities = {
     weeks: 'ok. {{weeks}} tyg.',
     unit: 'tyg.',
     unknown: 'Brak danych o terminie',
-    a11yWeeks: 'średnio około {{weeks}} tyg. oczekiwania',
+    // NFZ forecast (pcus) or monthly average — "około" fits both.
+    a11yWeeks: 'około {{weeks}} tyg. oczekiwania',
     a11yUnknown: 'brak danych o czasie oczekiwania',
   },
   distance: '{{km}} km',
+  // NFZ `anesthesia` flag — shown only when the facility offers it (e.g. colonoscopy).
+  anesthesia: 'Możliwe znieczulenie',
   accessibility: {
     elevator: 'winda',
     ramp: 'podjazd',
@@ -49,6 +52,8 @@ export const facilities = {
     navigateA11y: 'Nawiguj do: {{name}}, otwiera mapy',
     booked: 'Umówiłem/am się',
     bookedA11y: 'Umówiłem/am się w: {{name}}, zapisz datę wizyty',
+    callForMe: 'Zadzwoń za mnie',
+    callForMeA11y: 'Zadzwoń za mnie do: {{name}}, asystent AI poprosi o termin',
   },
   map: {
     a11y: 'Mapa placówek. Te same placówki są na liście.',

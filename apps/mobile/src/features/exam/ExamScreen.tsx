@@ -20,11 +20,13 @@ import { Toast } from '@/components/Toast';
 import { pluralForm, queueRangeA11y } from '@/features/plan/plan-view-model';
 import { usePlanData } from '@/features/plan/use-plan-data';
 import { t } from '@/i18n';
+import { useCoverage } from '@/services';
 import { useRecordsStore } from '@/store';
 import { useTheme } from '@/theme';
 
 import { addToCalendar } from './add-to-calendar';
 import { buildCalendarEvent } from './calendar-event';
+import { CoverageCard } from './CoverageCard';
 import {
   examCtas,
   examStep,
@@ -112,6 +114,8 @@ export default function ExamScreen() {
 
   const examId = params.success ? params.data.examId : undefined;
   const rule = rules.find((r) => r.id === examId);
+  // Before the early return: hooks must run on every render. No-op for non-programme exams.
+  const coverage = useCoverage(rule?.id ?? '', activeProfile?.location);
 
   if (!rule) {
     return (
@@ -293,6 +297,8 @@ export default function ExamScreen() {
             onPress={() => void Linking.openURL(programUrl)}
           />
         )}
+
+        {coverage && !notRecommended && <CoverageCard coverage={coverage} />}
 
         {item && item.reasons.length > 0 && (
           <Section title={t('exam.section.why')}>

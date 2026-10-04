@@ -18,6 +18,8 @@ export interface TextFieldProps {
   keyboardType?: KeyboardTypeOptions;
   maxLength?: number;
   autoComplete?: TextInputProps['autoComplete'];
+  autoCapitalize?: TextInputProps['autoCapitalize'];
+  secureTextEntry?: boolean;
   /** Defaults to `label`. */
   accessibilityLabel?: string;
   testID?: string;
@@ -34,6 +36,8 @@ export function TextField({
   keyboardType,
   maxLength,
   autoComplete,
+  autoCapitalize,
+  secureTextEntry,
   accessibilityLabel,
   testID,
 }: TextFieldProps) {
@@ -53,6 +57,8 @@ export function TextField({
         keyboardType={keyboardType}
         maxLength={maxLength}
         autoComplete={autoComplete}
+        autoCapitalize={autoCapitalize}
+        secureTextEntry={secureTextEntry}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         accessibilityLabel={accessibilityLabel ?? label}

@@ -57,6 +57,14 @@ export function slimQueue(queue: NfzQueue): NfzQueue {
       ramp: a.ramp ?? null,
       'car-park': a['car-park'] ?? null,
       elevator: a.elevator ?? null,
+      anesthesia: a.anesthesia ?? null,
+      dates: a.dates
+        ? {
+            applicable: a.dates.applicable ?? null,
+            pcus: a.dates.pcus ?? null,
+            'date-situation-as-at': a.dates['date-situation-as-at'] ?? null,
+          }
+        : null,
       statistics: stats
         ? {
             'provider-data': {

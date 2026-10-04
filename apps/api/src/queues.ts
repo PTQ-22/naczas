@@ -1,5 +1,6 @@
 import { LruCache } from './nfz/cache';
 import { NfzUnavailableError, type NfzClient } from './nfz/client';
+import { type GeoIndex, withCoordinates } from './nfz/geo-index';
 
 import type { NfzQueue } from './nfz/schemas';
 import type { SnapshotEntry, SnapshotStore } from './nfz/snapshot';
@@ -35,6 +36,8 @@ export interface QueueLoaderOptions {
   /** After a failed live call, wait this long before trying NFZ again for the same key. */
   retryAfterMs?: number;
   maxEntries?: number;
+  /** Fills coordinates NFZ v1.4 leaves out (nfz/geo-index.ts); empty = records as NFZ sent them */
+  geoIndex?: GeoIndex;
   onBackgroundError?: (err: unknown) => void;
 }
 
@@ -64,6 +67,7 @@ export function createQueueLoader(options: QueueLoaderOptions): QueueLoader {
     liveTtlMs = 24 * HOUR,
     retryAfterMs = HOUR / 6,
     maxEntries = 500,
+    geoIndex = {},
     onBackgroundError = (err) => console.error('Background NFZ refresh failed', err),
   } = options;
   const cache = new LruCache<QueueEntry>(maxEntries, () => now().getTime());
@@ -131,7 +135,10 @@ export function createQueueLoader(options: QueueLoaderOptions): QueueLoader {
       const entries = await Promise.all(benefits.map((b) => getEntry(province, b)));
       const oldest = entries.map((e) => e.fetchedAt).sort()[0] ?? now().toISOString();
       return {
-        queues: entries.flatMap((e) => e.queues),
+        queues: withCoordinates(
+          entries.flatMap((e) => e.queues),
+          geoIndex,
+        ),
         // Any snapshot part makes the whole answer "snapshot" — the UI shows a data-age hint.
         source: entries.some((e) => e.source === 'nfz_snapshot') ? 'nfz_snapshot' : 'nfz_live',
         fallbackMonth: oldest.slice(0, 7),

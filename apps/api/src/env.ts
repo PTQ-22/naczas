@@ -1,9 +1,15 @@
 import { z } from 'zod';
 
+import { NFZ_API_VERSION, NFZ_DEFAULT_BASE_URL } from './nfz/client';
+
 const bool = (name: string) =>
   z
     .enum(['true', 'false'], { message: `${name} must be "true" or "false"` })
     .transform((v) => v === 'true');
+
+/** `KEY=` in .env means "not set" */
+const optional = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((v) => (v === '' ? undefined : v), schema.optional());
 
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -22,6 +28,24 @@ const EnvSchema = z.object({
   RATE_LIMIT_PER_MIN: z.coerce.number().int().positive().default(60),
   /** Only behind a reverse proxy (Render, Railway): trust its X-Forwarded-For for client IPs */
   TRUST_PROXY: bool('TRUST_PROXY').default(false),
+  /** "Zadzwoń za mnie" demo — without the first three the endpoint runs a scripted simulation */
+  VAPI_API_KEY: optional(z.string()),
+  VAPI_PHONE_NUMBER_ID: optional(z.string()),
+  /** The ONLY number the agent ever dials (a team member's phone), never a clinic */
+  DEMO_CALL_TO: optional(
+    z.string().regex(/^\+48\d{9}$/, 'DEMO_CALL_TO must look like +48XXXXXXXXX'),
+  ),
+  /** ElevenLabs voice id; default is Azure's native Polish voice */
+  VAPI_VOICE_ID: optional(z.string()),
+  /** Public https URL of this API — enables the live-transcript webhook */
+  PUBLIC_URL: optional(z.url()),
+  VAPI_WEBHOOK_SECRET: optional(z.string()),
+  /** NFZ ITL API root and its api-version — change together (v1.4 rejects api-version=1.3) */
+  NFZ_BASE_URL: z.url().default(NFZ_DEFAULT_BASE_URL),
+  NFZ_API_VERSION: z
+    .string()
+    .regex(/^\d+\.\d+$/)
+    .default(NFZ_API_VERSION),
 });
 export type Env = z.infer<typeof EnvSchema>;
 
