@@ -5,7 +5,7 @@
 
 **Demo (web):** {LINK DO DEMO} · **Expo Go:** {QR / LINK} · **Wideo:** {LINK DO WIDEO}
 
-*Wiesz co, kiedy i gdzie — zanim będzie za późno.*
+*Wiesz co, kiedy i gdzie — i zdążysz na czas.*
 
 
 ## Problem i rozwiązanie

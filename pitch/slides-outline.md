@@ -9,7 +9,7 @@
 
 ## 1. Tytuł
 - **Nazwa** + logo
-- Claim: *„Wiesz co, kiedy i gdzie — zanim będzie za późno.”*
+- Claim: *„Wiesz co, kiedy i gdzie — i zdążysz na czas.”*
 - Nazwa zespołu · członkowie (imiona) · kategoria hackathonu
 - Tło: fragment osi czasu z czerwoną kartą „Kolonoskopia — zacznij szukać teraz”
 

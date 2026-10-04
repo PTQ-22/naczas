@@ -61,7 +61,7 @@ Role: **P** = prowadzący (mówi), **D** = osoba przy demo (klika). Jeśli jest 
 
 **P:**
 > Następne kroki: szyfrowany wspólny plan opiekuna i rodzica, agent umawiający przez e-rejestrację zamiast telefonu i współpraca z NFZ i samorządami — to może być publiczne, otwarte narzędzie.
-> NaCzas: wiesz co, kiedy i gdzie — zanim będzie za późno. Dziękujemy.
+> NaCzas: wiesz co, kiedy i gdzie — i zdążysz na czas. Dziękujemy.
 
 (~40 słów)
 

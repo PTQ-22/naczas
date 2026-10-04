@@ -27,7 +27,7 @@ Inne:
 
 | # | Slajd | Treść | Kryterium |
 |---|---|---|---|
-| 1 | Tytuł | Nazwa, claim: *„Wiesz co, kiedy i gdzie — zanim będzie za późno”*, zespół | — |
+| 1 | Tytuł | Nazwa, claim: *„Wiesz co, kiedy i gdzie — i zdążysz na czas”*, zespół | — |
 | 2 | Problem | Kasia i mama. Ludzie nie robią badań, bo zapominają i nie wiedzą, że trzeba planować z wyprzedzeniem (kolejki NFZ). 1–2 liczby z wiarygodnym źródłem. | Kategoria |
 | 3 | Rozwiązanie | Jedno zdanie + 4 filary: plan → kiedy zacząć → gdzie na NFZ → umówimy za Ciebie (agent AI) | Innowacja |
 | 4 | Jak to działa | Ścieżka: ankieta → plan → placówki → agent dzwoni (transkrypcja na żywo) → termin w kalendarzu | Usability |
