@@ -107,43 +107,48 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
             </Text>
           )}
         </View>
-        {/* The number itself is the call button, so people see what they are dialling. */}
-        {tel && phone && (
-          // Ghost padding would indent the number; pull it back to the text edge.
-          <View
-            style={seniorMode ? undefined : { marginLeft: -space.sm, alignItems: 'flex-start' }}
-          >
+        {/* Both ways to call side by side (they wrap on narrow screens); stacked in senior mode. */}
+        <View
+          style={{
+            flexDirection: seniorMode ? 'column' : 'row',
+            flexWrap: 'wrap',
+            alignItems: seniorMode ? 'stretch' : 'center',
+            gap: space.sm,
+          }}
+        >
+          {/* The number itself is the call button, so people see what they are dialling. */}
+          {tel && phone && (
             <Button
               label={phone}
               accessibilityLabel={t('facilities.actions.callA11y', { name: f.providerName })}
               accessibilityRole="link"
-              variant={seniorMode ? 'secondary' : 'ghost'}
+              variant="secondary"
               icon="phone"
               fullWidth={seniorMode}
               onPress={() => void Linking.openURL(tel)}
             />
-          </View>
-        )}
-        {/* Every facility can be called by the AI agent; only the first gets the filled button
-            (one primary per screen, tokens.md §6.3). */}
-        <Button
-          label={t('facilities.actions.callForMe')}
-          accessibilityLabel={t('facilities.actions.callForMeA11y', { name: f.providerName })}
-          variant={primary ? 'primary' : 'secondary'}
-          icon="phone"
-          fullWidth={seniorMode}
-          onPress={() =>
-            router.push({
-              pathname: '/exam/[examId]/call',
-              params: {
-                examId,
-                facility: nfzTitleCase(f.providerName),
-                // Lets the availability calendar open on the day the clinic can take the patient.
-                ...(f.firstAvailableDate && { firstDate: f.firstAvailableDate }),
-              },
-            })
-          }
-        />
+          )}
+          {/* Every facility can be called by the AI agent; only the first gets the filled button
+              (one primary per screen, tokens.md §6.3). */}
+          <Button
+            label={t('facilities.actions.callForMe')}
+            accessibilityLabel={t('facilities.actions.callForMeA11y', { name: f.providerName })}
+            variant={primary ? 'primary' : 'secondary'}
+            icon="phone"
+            fullWidth={seniorMode}
+            onPress={() =>
+              router.push({
+                pathname: '/exam/[examId]/call',
+                params: {
+                  examId,
+                  facility: nfzTitleCase(f.providerName),
+                  // Lets the availability calendar open on the day the clinic can take the patient.
+                  ...(f.firstAvailableDate && { firstDate: f.firstAvailableDate }),
+                },
+              })
+            }
+          />
+        </View>
         {/* Less frequent actions behind "⋯", inline rather than a native sheet (works on web too). */}
         {moreOpen && (
           <View style={{ alignItems: seniorMode ? 'stretch' : 'flex-start', gap: space.xs }}>
@@ -178,19 +183,20 @@ export function FacilityRow({ facility: f, examId, primary = false }: FacilityRo
           </View>
         )}
       </View>
-      {/* Quiet icons on the right: navigate, and "⋯" for the less frequent actions. */}
-      <View style={{ gap: space.xs }}>
+      {/* Top corner: a bare "⋯" for the less frequent actions, then the map icon. */}
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: space.xs }}>
+        <IconButton
+          icon="more"
+          bare
+          accessibilityLabel={t('facilities.actions.more', { name: f.providerName })}
+          expanded={moreOpen}
+          onPress={() => setMoreOpen((open) => !open)}
+        />
         <IconButton
           icon="map"
           accessibilityRole="link"
           accessibilityLabel={t('facilities.actions.navigateA11y', { name: f.providerName })}
           onPress={() => void Linking.openURL(mapsUrl(f, Platform.OS))}
-        />
-        <IconButton
-          icon="more"
-          accessibilityLabel={t('facilities.actions.more', { name: f.providerName })}
-          expanded={moreOpen}
-          onPress={() => setMoreOpen((open) => !open)}
         />
       </View>
     </View>

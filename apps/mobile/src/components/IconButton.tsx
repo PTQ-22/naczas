@@ -15,6 +15,8 @@ interface IconButtonProps {
   filled?: boolean;
   /** For disclosure buttons (e.g. "⋯"): announced as expanded / collapsed. */
   expanded?: boolean;
+  /** No circle, larger glyph: for low-key controls like "⋯". Touch target stays the same. */
+  bare?: boolean;
   testID?: string;
 }
 
@@ -27,6 +29,7 @@ export function IconButton({
   onPress,
   filled = false,
   expanded,
+  bare = false,
   testID,
 }: IconButtonProps) {
   const { colors, layout, radius, borderWidth } = useTheme();
@@ -44,7 +47,7 @@ export function IconButton({
         borderRadius: radius.full,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: borderWidth.strong,
+        borderWidth: bare ? 0 : borderWidth.strong,
         borderColor: colors.primary,
         backgroundColor: filled
           ? pressed
@@ -55,7 +58,11 @@ export function IconButton({
             : 'transparent',
       })}
     >
-      <Icon name={icon} color={filled ? colors.onPrimary : colors.primary} />
+      <Icon
+        name={icon}
+        size={bare ? 'lg' : 'md'}
+        color={filled ? colors.onPrimary : colors.primary}
+      />
     </Pressable>
   );
 }
