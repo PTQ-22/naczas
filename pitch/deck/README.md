@@ -20,7 +20,7 @@ Ręcznie: otwórz `deck.html` w Chrome → Drukuj (⌘P / Ctrl+P) → *Zapisz ja
 |---|---|
 | Nazwa produktu (obecnie „NaCzas”) | tylko jeśli zespół wybierze inną: **jedno miejsce** — `--app-name` w `:root` na górze `deck.html` (wszystkie slajdy czytają ją przez klasę `.app-name`); poza deckiem także `README.md` (repo) i `pitch/script.md` |
 | Nazwa zespołu, imiona | slajd 1 — elementy `.todo` |
-| Screenshoty | slajdy 4, 6, 7: `<img class="shot-img">` z `../screenshots/v3/` (zestaw v3 z agentem, JPEG 780 px; nazwy: onboarding-light, plan-light, plan-senior, plan-dark, facilities-light, call-light, calendar-light, family-light — dopóki plików nie ma, ramki są puste); strona 1 PDF dla lekarza → `screens/visit-prep-pdf.png` (`pdftoppm -r 150 -f 1 -l 1 -singlefile -png pitch/screenshots/m3/pdf-web-fixed.pdf pitch/deck/screens/visit-prep-pdf`). Podmiana = zmiana `src` |
+| Screenshoty | slajdy 4, 6, 7: `<img class="shot-img">` z `../screenshots/v3/` (zestaw v3 z agentem, JPEG 780 px; nazwy: onboarding-light, plan-light, plan-senior, plan-dark, facilities-light, agent-light, calendar-light, family-light — dopóki plików nie ma, ramki są puste); strona 1 PDF dla lekarza → `screens/visit-prep-pdf.png` (`pdftoppm -r 150 -f 1 -l 1 -singlefile -png pitch/screenshots/m3/pdf-web-fixed.pdf pitch/deck/screens/visit-prep-pdf`). Podmiana = zmiana `src` |
 | Wartości z demo | **wpisane:** slajd 5 „29” / „ok. 29 tyg.” (z ekranu planu), slajd 8 testy (stan 2026-10-04: 1018 = rules 206 / 100% linii, API 174, mobile 584, shared 54 — przy zmianie zaktualizować z `pnpm test`) |
 | Kody QR | slajd 10 — ramki `.qr` (web demo, Expo Go, repo) |
 
