@@ -35,6 +35,31 @@ describe('settings store', () => {
     });
   });
 
+  it('lets the call agent say no personal data until the user allows each field', () => {
+    expect(Object.values(store().callDisclosure).every((allowed) => !allowed)).toBe(true);
+
+    store().setCallDisclosure('pesel', true);
+    expect(store().callDisclosure).toMatchObject({ pesel: true, lastName: false });
+
+    store().setCallDisclosure('pesel', false);
+    expect(store().callDisclosure.pesel).toBe(false);
+  });
+
+  it('restores settings saved before call disclosure existed with everything off', async () => {
+    await AsyncStorage.setItem(
+      `${STORAGE_PREFIX}settings`,
+      JSON.stringify({
+        state: { seniorMode: true, darkMode: 'dark', todayOverride: null, familyCode: null },
+        version: 1,
+      }),
+    );
+    await useSettingsStore.persist.rehydrate();
+
+    expect(store().seniorMode).toBe(true);
+    expect(Object.values(store().callDisclosure).every((allowed) => !allowed)).toBe(true);
+    expect(useRestoreStatus.getState().failedStores).toHaveLength(0);
+  });
+
   it('rejects a malformed todayOverride from storage', async () => {
     await AsyncStorage.setItem(
       `${STORAGE_PREFIX}settings`,

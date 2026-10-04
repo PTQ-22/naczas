@@ -20,8 +20,8 @@ Ręcznie: otwórz `deck.html` w Chrome → Drukuj (⌘P / Ctrl+P) → *Zapisz ja
 |---|---|
 | Nazwa produktu (obecnie „NaCzas”) | tylko jeśli zespół wybierze inną: **jedno miejsce** — `--app-name` w `:root` na górze `deck.html` (wszystkie slajdy czytają ją przez klasę `.app-name`); poza deckiem także `README.md` (repo) i `pitch/script.md` |
 | Nazwa zespołu, imiona | slajd 1 — elementy `.todo` |
-| Screenshoty | **wstawione** (slajdy 4, 6, 7): `<img class="shot-img">` z `../screenshots/` (finalne WS4, JPEG 780 px); strona 1 PDF dla lekarza → `screens/visit-prep-pdf.png` (`pdftoppm -r 150 -f 1 -l 1 -singlefile -png pitch/screenshots/m3/pdf-web-fixed.pdf pitch/deck/screens/visit-prep-pdf`). Podmiana = zmiana `src` |
-| Wartości z demo | **wpisane:** slajd 5 „29” / „ok. 29 tyg.” (z ekranu planu), slajd 8 testy (stan 2026-10-03: rules 154 / 100% linii, API 93, mobile 337, shared 25 — przy zmianie zaktualizować z `pnpm test`) |
+| Screenshoty | slajdy 4, 6, 7: `<img class="shot-img">` z `../screenshots/v3/` (zestaw v3 z agentem, JPEG 780 px; nazwy: onboarding-light, plan-light, plan-senior, plan-dark, facilities-light, agent-light, calendar-light, family-light — dopóki plików nie ma, ramki są puste); strona 1 PDF dla lekarza → `screens/visit-prep-pdf.png` (`pdftoppm -r 150 -f 1 -l 1 -singlefile -png pitch/screenshots/m3/pdf-web-fixed.pdf pitch/deck/screens/visit-prep-pdf`). Podmiana = zmiana `src` |
+| Wartości z demo | **wpisane:** slajd 5 „29” / „ok. 29 tyg.” (z ekranu planu), slajd 8 testy (stan 2026-10-04: 1016 = rules 206 / 100% linii, API 174, mobile 582, shared 54 — przy zmianie zaktualizować z `pnpm test`) |
 | Kody QR | slajd 10 — ramki `.qr` (web demo, Expo Go, repo) |
 
 Pozostałe placeholdery (zespół, kody QR) mają klasę `.todo` lub `.qr` — przed eksportem finalnym nie powinno ich być:
@@ -35,3 +35,10 @@ grep -nE 'class="(todo|qr)"' pitch/deck/deck.html
 - 10 stron, 1440×810 pt (= 1920×1080 px); PDF ok. 2,7 MB (screenshoty).
 - Najmniejszy tekst na slajdzie: 28 px (czytelny z ok. 3 m); żaden element nie wychodzi poza slajd — zmierzone w headless Chrome.
 - Liczby na slajdzie 2 i tabela na slajdzie 5 — źródła w `slides-outline.md` (S2, S10, tabela konkurencji).
+
+## Zmiany 2026-10-04 (agent AI, uczciwa prywatność)
+
+- Slajd 3: 4. filar „Umówimy za Ciebie”; slajd 4: 5 kroków (ankieta → plan → placówki → rozmowa agenta → kalendarz); slajd 5: wiersz „Umawia wizytę za Ciebie” (wiersze tabeli ciaśniej, żeby 7 wierszy zmieściło się nad stopką przy 28 px).
+- Slajd 8: zamiast „zero danych zdrowotnych na serwerze” — co faktycznie wychodzi z telefonu (API: świadczenie + lokalizacja; agent: dla kogo, badanie, placówka, wolne godziny — zgodnie z `apps/api/src/call-assist/assistant.ts`). Punkt „Otwarte reguły” usunięty z braku miejsca.
+- Slajd 10: ujawnienie AI w aplikacji (Vapi, OpenAI gpt-4o, ElevenLabs, Deepgram, Twilio). Synchronizacja rodzinna wyłączona w demo — tylko roadmapa.
+- Sprawdzone w headless Chrome: 10 stron, min. tekst 28 px, nic nie wychodzi poza slajd ani nie wchodzi na stopkę.

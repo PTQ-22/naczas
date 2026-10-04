@@ -65,6 +65,22 @@ export const settings = {
     header: 'Prywatność',
     body: 'Profile i historia badań są zapisane tylko na tym urządzeniu. Do serwera wysyłamy wyłącznie nazwę badania, województwo i przybliżoną lokalizację (ok. 1 km), żeby znaleźć placówki NFZ.',
   },
+  callDisclosure: {
+    header: 'Dane w rozmowach AI',
+    intro:
+      'Wybierz, które dane asystent może podać rejestracji, gdy dzwoni za Ciebie. Poda je tylko wtedy, gdy rejestracja o nie poprosi. Domyślnie wszystko jest wyłączone.',
+    fields: {
+      firstName: 'Imię',
+      lastName: 'Nazwisko',
+      pesel: 'PESEL',
+      birthDate: 'Data urodzenia',
+      phone: 'Numer telefonu',
+      address: 'Adres zamieszkania',
+    },
+    hints: {
+      pesel: 'Rejestracja często prosi o PESEL, żeby potwierdzić, kim jest pacjent.',
+    },
+  },
   data: {
     header: 'Dane',
     reset: 'Usuń wszystkie dane',

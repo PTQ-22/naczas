@@ -9,7 +9,7 @@
     "userInterfaceStyle": "automatic",
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#1B7A3E",
+        "backgroundColor": "#1565C0",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -23,7 +23,7 @@
       "name": "NaCzas",
       "shortName": "NaCzas",
       "description": "Plan badań profilaktycznych na czas — dla Ciebie i bliskich.",
-      "themeColor": "#1B7A3E",
+      "themeColor": "#1565C0",
       "backgroundColor": "#FFFFFF"
     },
     "plugins": [
@@ -31,11 +31,11 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#1B7A3E",
+          "backgroundColor": "#1565C0",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "dark": {
-            "backgroundColor": "#0C1A12"
+            "backgroundColor": "#0B1628"
           }
         }
       ],
