@@ -21,7 +21,12 @@ services:
         value: '60'
       - key: CORS_ORIGINS
         sync: false # entered by a human in the dashboard
-      # "Zadzwoń za mnie" — empty = scripted simulation (apps/api/src/env.ts)
+      # "Zadzwoń za mnie": public demo = scripted call + transcript, never a real phone call.
+      # To test a real call set the Vapi keys and flip CALL_ASSIST_MODE to live, then back.
+      - key: CALL_ASSIST_MODE
+        value: simulated
+      - key: CALL_ASSIST_DAILY_LIMIT
+        value: '20'
       - key: VAPI_API_KEY
         sync: false
       - key: VAPI_PHONE_NUMBER_ID

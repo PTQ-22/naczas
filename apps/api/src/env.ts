@@ -35,6 +35,16 @@ const EnvSchema = z.object({
   DEMO_CALL_TO: optional(
     z.string().regex(/^\+48\d{9}$/, 'DEMO_CALL_TO must look like +48XXXXXXXXX'),
   ),
+  /**
+   * Explicit switch for real phone calls. 'simulated' (default) never dials, even with Vapi keys
+   * set — the public demo shows the scripted call and transcript. 'live' dials DEMO_CALL_TO.
+   */
+  CALL_ASSIST_MODE: z.preprocess(
+    (v) => (v === '' ? undefined : v),
+    z.enum(['simulated', 'live']).default('simulated'),
+  ),
+  /** Live calls started per day (server time); beyond it new calls run the simulation */
+  CALL_ASSIST_DAILY_LIMIT: z.coerce.number().int().min(0).default(20),
   /** ElevenLabs voice id; default is Azure's native Polish voice */
   VAPI_VOICE_ID: optional(z.string()),
   /** Public https URL of this API — enables the live-transcript webhook */

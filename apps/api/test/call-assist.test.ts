@@ -28,7 +28,7 @@ const body: CallAssistRequest = {
 };
 const CALL_TO = '+48500600700';
 
-function makeApp(vapiFetch?: typeof fetch) {
+function makeApp(vapiFetch?: typeof fetch, dailyLimit?: number) {
   let t = new Date('2026-10-04T10:00:00');
   const app = createApp({
     nfz: createNfzClient({ fetch: vi.fn<typeof fetch>(), minIntervalMs: 0 }),
@@ -43,6 +43,7 @@ function makeApp(vapiFetch?: typeof fetch) {
         }
       : null,
     callAssistWebhookSecret: 'shh',
+    ...(dailyLimit !== undefined && { callAssistDailyLimit: dailyLimit }),
   });
   const advance = (ms: number) => (t = new Date(t.getTime() + ms));
   const post = (payload: unknown) =>
@@ -139,6 +140,20 @@ describe('POST /v1/call-assist', () => {
     expect(url).toBe('https://api.vapi.ai/call');
     const sent = JSON.parse(init!.body as string) as { customer: { number: string } };
     expect(sent.customer.number).toBe(CALL_TO);
+  });
+
+  it('falls back to the simulation once the daily live budget is spent', async () => {
+    const vapiFetch = vi.fn<typeof fetch>(() => json({ id: 'call_1', status: 'queued' }, 201));
+    const { post, advance } = makeApp(vapiFetch, 2);
+    const modes = [];
+    for (let i = 0; i < 3; i++) {
+      modes.push(CallAssistStartResponseSchema.parse(await (await post(body)).json()).mode);
+    }
+    expect(modes).toEqual(['live', 'live', 'simulated']);
+    expect(vapiFetch).toHaveBeenCalledTimes(2);
+
+    advance(24 * 3600_000); // next day: budget renewed
+    expect(CallAssistStartResponseSchema.parse(await (await post(body)).json()).mode).toBe('live');
   });
 
   it('maps a Vapi failure to 502', async () => {
@@ -320,6 +335,17 @@ describe('env', () => {
     expect(() => loadEnv({ DEMO_CALL_TO: '500600700' })).toThrow(/DEMO_CALL_TO/);
     expect(loadEnv({ DEMO_CALL_TO: '', VAPI_API_KEY: '' }).DEMO_CALL_TO).toBeUndefined();
     expect(loadEnv({ DEMO_CALL_TO: CALL_TO }).DEMO_CALL_TO).toBe(CALL_TO);
+  });
+
+  it('never dials unless CALL_ASSIST_MODE=live is set explicitly', () => {
+    expect(loadEnv({}).CALL_ASSIST_MODE).toBe('simulated');
+    expect(loadEnv({ VAPI_API_KEY: 'k', DEMO_CALL_TO: CALL_TO }).CALL_ASSIST_MODE).toBe(
+      'simulated',
+    );
+    expect(loadEnv({ CALL_ASSIST_MODE: '' }).CALL_ASSIST_MODE).toBe('simulated');
+    expect(loadEnv({ CALL_ASSIST_MODE: 'live' }).CALL_ASSIST_MODE).toBe('live');
+    expect(() => loadEnv({ CALL_ASSIST_MODE: 'on' })).toThrow(/CALL_ASSIST_MODE/);
+    expect(loadEnv({}).CALL_ASSIST_DAILY_LIMIT).toBe(20);
   });
 });
 

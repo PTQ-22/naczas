@@ -48,6 +48,8 @@ export interface AppDeps {
   /** "Zadzwoń za mnie": null/absent = scripted simulation instead of a real phone call */
   callAssist?: CallAssistConfig | null;
   callAssistWebhookSecret?: string | undefined;
+  /** Live calls per day before new ones fall back to the simulation (cost cap on a public demo) */
+  callAssistDailyLimit?: number;
   /** Live calls: how often retries are checked with no app polling (off in tests). */
   callTickMs?: number;
 }
@@ -67,6 +69,7 @@ export function createApp({
   communes = createUldkResolver(),
   callAssist = null,
   callAssistWebhookSecret,
+  callAssistDailyLimit = Infinity,
   callTickMs,
 }: AppDeps) {
   loader ??= createQueueLoader({ nfz, snapshot, now, geoIndex });
@@ -103,6 +106,7 @@ export function createApp({
       config: callAssist,
       store: calls,
       now,
+      dailyLiveLimit: callAssistDailyLimit,
       startLimit: { perMinute: 5, trustProxy: rateLimitOptions.trustProxy },
     }),
   );
