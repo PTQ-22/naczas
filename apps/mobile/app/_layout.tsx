@@ -72,6 +72,8 @@ function ThemedStack() {
           name="exam/[examId]/book"
           options={{ headerShown: true, title: t('exam.bookTitle'), presentation: 'modal' }}
         />
+        {/* Not a tab: an optional motivator, reached from the plan (docs/ux-review-first-run.md #8). */}
+        <Stack.Screen name="bet" options={{ headerShown: true, title: t('bet.tabs.bet') }} />
         <Stack.Screen
           name="visit-prep"
           options={{ headerShown: true, title: t('visitPrep.title') }}

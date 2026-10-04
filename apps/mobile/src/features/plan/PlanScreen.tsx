@@ -19,6 +19,7 @@ import { useRecordsStore } from '@/store';
 import { useTheme } from '@/theme';
 
 import { ActivityCard } from './ActivityCard';
+import { BetEntry } from './BetEntry';
 import { NotificationPrompt } from './NotificationPrompt';
 import {
   isCollapsedByDefault,
@@ -303,6 +304,7 @@ export default function PlanScreen() {
           {(hero || sections.length > 0 || unknown.length > 0) && (
             <View style={[divider, { gap: space.md }]}>
               <VisitPrepCard />
+              <BetEntry profileId={activeProfile.id} />
               <NotificationPrompt />
             </View>
           )}
