@@ -59,7 +59,7 @@ export const callAssist = {
     title: 'Połączenie nie doszło do skutku',
     body: 'Nikt nie odebrał we wszystkich próbach. Spróbuj ponownie później albo zadzwoń sam.',
   },
-  error: 'Nie udało się połączyć z serwerem. Sprawdź internet i spróbuj ponownie.',
+  error: 'Brak połączenia. Sprawdź internet i spróbuj ponownie.',
   done: 'Gotowe',
   fixDate: 'Popraw datę',
   retry: 'Spróbuj ponownie',

@@ -51,7 +51,7 @@ export const settings = {
   },
   privacy: {
     header: 'Prywatność',
-    body: 'Profile i historia badań są zapisane tylko na tym urządzeniu. Do serwera wysyłamy wyłącznie nazwę badania, województwo i przybliżoną lokalizację (ok. 1 km), żeby znaleźć placówki NFZ.',
+    body: 'Profile i historia badań są w pełni prywatne i zapisane tylko na tym urządzeniu. Anonimowo wyszukujemy jedynie dostępne terminy w placówkach NFZ na podstawie wybranych badań i województwa.',
   },
   callDisclosure: {
     header: 'Dane w rozmowach AI',

@@ -151,7 +151,7 @@ describe('CallAssistScreen', () => {
       await jest.advanceTimersByTimeAsync(0);
     });
     expect(screen.getByRole('button', { name: /Zadzwoń za mnie/ })).toBeTruthy();
-    expect(screen.getByText(/Nie udało się połączyć z serwerem/)).toBeTruthy();
+    expect(screen.getByText(/Brak połączenia/)).toBeTruthy();
     expect(useRecordsStore.getState().records).toEqual([]);
   });
 
