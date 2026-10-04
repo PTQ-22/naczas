@@ -1,8 +1,9 @@
 import type { CallAssistRequest, CallAssistStatus } from '@naczas/shared';
 
+import { notifyAgentBooked } from '@/notifications';
 import { api } from '@/services';
 import { ApiRequestError } from '@/services/api';
-import { useCallTasksStore, useRecordsStore, type CallTask } from '@/store';
+import { useCallTasksStore, useProfilesStore, useRecordsStore, type CallTask } from '@/store';
 
 /** Post-call extraction usually lands within seconds; then the task is closed without it. */
 const MAX_ANALYSIS_POLLS = 20;
@@ -28,6 +29,15 @@ export function applyStatus(task: CallTask, status: CallAssistStatus, now: numbe
       .getState()
       .markBooked(task.profileId, task.examId, result.date, result.time ?? undefined);
     store.markApplied(task.id);
+    const profile = useProfilesStore.getState().profiles.find((p) => p.id === task.profileId);
+    notifyAgentBooked({
+      callId: task.id,
+      examId: task.examId,
+      profileName: profile?.name ?? '',
+      facilityName: task.facilityName,
+      date: result.date,
+      time: result.time ?? undefined,
+    }).catch(() => undefined); // a missed banner must never break saving the booking
   }
 }
 

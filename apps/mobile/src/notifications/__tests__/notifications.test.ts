@@ -13,6 +13,7 @@ import {
   sendTestNotification,
   syncNotifications,
 } from '..';
+import { agentBookedContent } from '../booked-notification';
 import { useInAppBannerStore } from '../in-app';
 
 // In-memory stand-in for the OS scheduler.
@@ -228,5 +229,22 @@ describe('dueReminders (in-app, web)', () => {
     ]);
     expect(ids('2026-10-03')).toEqual(['p-mama:colonoscopy_screening:notify']);
     expect(ids('2026-10-06')).toEqual(['p-mama:colonoscopy_screening:notify']);
+  });
+});
+
+describe('agentBookedContent', () => {
+  it('names the exam, person, date with hour and the facility', () => {
+    const c = agentBookedContent({
+      callId: 'c1',
+      examId: 'colonoscopy_screening',
+      profileName: 'Mama',
+      facilityName: 'Szpital Bielański',
+      date: '2026-10-19',
+      time: '10:30',
+    });
+    expect(c.title).toBe('Umówione: Kolonoskopia');
+    expect(c.body).toBe(
+      'Mama — wizyta 19.10.2026, 10:30, Szpital Bielański. Agent załatwił to telefonicznie.',
+    );
   });
 });

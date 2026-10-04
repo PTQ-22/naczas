@@ -12,6 +12,10 @@ jest.mock('@/services', () => ({
     getCallAssist: (...a: unknown[]) => mockGet(...a) as unknown,
   },
 }));
+const mockNotify = jest.fn((_input: unknown) => Promise.resolve());
+jest.mock('@/notifications', () => ({
+  notifyAgentBooked: (input: unknown) => mockNotify(input),
+}));
 jest.mock('@react-native-async-storage/async-storage', () =>
   jest.requireActual<object>('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
@@ -31,6 +35,7 @@ describe('call tasks', () => {
     useCallTasksStore.getState().reset();
     useRecordsStore.setState({ records: [] });
     mockGet.mockReset();
+    mockNotify.mockClear();
     await startCallTask(
       {
         request: { examName: 'x', facilityName: 'Y', forWhom: 'mamę', callerName: 'Kasi' },
@@ -57,6 +62,25 @@ describe('call tasks', () => {
       expect.objectContaining({ profileId: 'p1', examId: 'neurolog', bookedFor: '2026-10-20' }),
     ]);
     expect(task()).toMatchObject({ applied: true, closed: true });
+  });
+
+  it('a booked result notifies once, with the hour and the facility', () => {
+    const booked = status({
+      status: 'ended',
+      result: { booked: true, date: '2026-10-20', time: '17:00', note: null },
+    });
+    applyStatus(task(), booked, 2000);
+    applyStatus(task(), booked, 3000);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        callId: 'c1',
+        examId: 'neurolog',
+        date: '2026-10-20',
+        time: '17:00',
+        facilityName: 'Y',
+      }),
+    );
   });
 
   it('keeps polling while the call is on, closes on failure', () => {

@@ -84,6 +84,8 @@ export const settings = {
     notifyBody: '{{name}}: zacznij szukać terminu, żeby zdążyć do {{due}}.',
     visitTitle: 'Jutro: {{exam}}',
     visitBody: '{{name}}, wizyta {{date}}. Sprawdź, jak się przygotować.',
+    agentBookedTitle: 'Umówione: {{exam}}',
+    agentBookedBody: '{{name}} — wizyta {{when}}, {{facility}}. Agent załatwił to telefonicznie.',
     testTitle: 'Test przypomnień NaCzas',
     testBody: 'Tak będą wyglądać przypomnienia o badaniach.',
   },
