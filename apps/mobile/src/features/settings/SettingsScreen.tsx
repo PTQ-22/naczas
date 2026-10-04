@@ -41,7 +41,7 @@ function testResultText(result: TestNotificationResult, title: string): string {
 }
 
 export default function SettingsScreen() {
-  const { space, colors } = useTheme();
+  const { space } = useTheme();
   const seniorMode = useSettingsStore((s) => s.seniorMode);
   const darkMode = useSettingsStore((s) => s.darkMode);
   const todayOverride = useSettingsStore((s) => s.todayOverride);
@@ -158,13 +158,10 @@ export default function SettingsScreen() {
           <Text>{t('settings.privacy.body')}</Text>
         </SettingsSection>
 
-        <SettingsSection title="Synchronizacja w chmurze (Cloud Sync)">
+        <SettingsSection title="Konto Rodzinne">
           {familyCode ? (
             <View style={{ gap: space.sm }}>
-              <Text tone="textMuted">Zalogowano kodem rodziny:</Text>
-              <Text variant="heading" style={{ color: colors.primary, fontSize: 24 }}>
-                {familyCode}
-              </Text>
+              <Text tone="textMuted">Jesteś zalogowany do Konta Rodzinnego.</Text>
               <Text tone="textSubtle">
                 Twoje dane są bezpieczne i synchronizują się automatycznie w tle.
               </Text>
