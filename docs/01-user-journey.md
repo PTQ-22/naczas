@@ -58,7 +58,7 @@ Tryb demo: `settings → Data demo = 2026-10-04`, preset profili można wczytać
 
 1. **Hook (20 s):** „Kasia wie, że mama powinna się badać. Nie wie, co, kiedy ani gdzie — i że na kolonoskopię w połowie placówek NFZ czeka się średnio ponad 4,5 miesiąca.” *(mediana `average-period` z API NFZ, stan na 2026-09: 137,5 dnia mazowieckie, 158 dni małopolskie — `pitch/slides-outline.md` S10)*
 2. **Onboarding mamy (40 s):** 58 lat, kobieta, rak jelita w rodzinie, nie pamięta ostatnich badań.
-3. **Plan (40 s):** oś czasu. Czerwona karta: *„Kolonoskopia — w Twojej okolicy czeka się ~10 tyg. Zacznij szukać teraz.”* Mammografia: „bez skierowania, program NFZ”.
+3. **Plan (40 s):** oś czasu. Czerwona karta: *„Kolonoskopia — w Twojej okolicy czeka się ok. 29 tyg. Zacznij szukać teraz.”* Mammografia: „bez skierowania, program NFZ”.
 4. **Placówki (15 s):** lista placówek posortowanych po średnim czasie oczekiwania, dane „stan na 2026-09”.
 5. **Agent „Zadzwoń za mnie” (40 s, ok. 1:40 pitchu):** przy placówce „Zadzwoń za mnie” → kalendarz „Kiedy możesz przyjść” (popołudnia zaznaczone przed pitchem) → „Zadzwoń” → pierwsza próba bez odpowiedzi → „Zadzwoń teraz” → transkrypcja na żywo: agent przedstawia się jako asystent AI, odrzuca proponowane 10:30 i proponuje termin z kalendarza → „Umówiono na …” → w planie kolonoskopia „umówione”, „Dodaj do kalendarza”. Na scenie symulacja (API bez kluczy Vapi); prawdziwa rozmowa tylko na numer testowy zespołu (`DEMO_CALL_TO`) — na wideo. Symulacja trwa ok. 45 s.
 6. **Przygotowanie do wizyty (15 s):** „Poproś lekarza rodzinnego o skierowanie na…” + podsumowanie PDF.
