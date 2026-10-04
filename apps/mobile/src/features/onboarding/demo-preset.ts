@@ -12,6 +12,7 @@ import {
   useCallTasksStore,
   useDefaultFacilityStore,
 } from '@/store';
+import { useAvailabilityStore } from '@/store/availability-store';
 
 import { buildDemoCalls } from './demo-calls';
 import { DEMO_KASIA_ID, DEMO_MAMA_ID } from './demo-ids';
@@ -111,6 +112,20 @@ export function loadDemoPreset(today: ISODate): Profile[] {
   const { addProfile, setActiveProfile } = useProfilesStore.getState();
   profiles.forEach(addProfile);
   records.forEach(useRecordsStore.getState().upsertRecord);
+
+  // Kasia works Mon–Tue mornings: the clinic's first (morning) offer clashes, so the demo agent
+  // shows it declines and negotiates — live (e.g. "wtorek 9:00") and in the simulation (Mon 10:30).
+  const { addSlot } = useAvailabilityStore.getState();
+  for (const weekday of [1, 2] as const) {
+    addSlot(DEMO_KASIA_ID, {
+      id: `demo-kasia-busy-${weekday}`,
+      repeat: 'weekly',
+      weekday,
+      from: '08:00',
+      to: '12:00',
+      kind: 'busy',
+    });
+  }
 
   // Set default facility for demo profiles so it's not empty
   profiles.forEach((profile) => {

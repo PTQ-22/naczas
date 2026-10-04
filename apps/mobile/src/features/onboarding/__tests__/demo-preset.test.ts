@@ -10,6 +10,7 @@ import {
   useRecordsStore,
 } from '@/store';
 import { makeProfile } from '@/store/__fixtures__/fixtures';
+import { useAvailabilityStore } from '@/store/availability-store';
 
 import { buildDemoCalls } from '../demo-calls';
 import { buildDemoPreset, DEMO_KASIA_ID, DEMO_MAMA_ID, loadDemoPreset } from '../demo-preset';
@@ -78,6 +79,18 @@ describe('loadDemoPreset', () => {
       .records.filter((r) => r.profileId === DEMO_MAMA_ID && r.examId === 'colonoscopy_screening');
     expect(colonoscopy).toEqual([expect.objectContaining({ status: 'none', lastDone: 'never' })]);
     expect(useProfilesStore.getState().activeProfileId).toBe(DEMO_MAMA_ID);
+  });
+});
+
+describe('demo calendar', () => {
+  it('Kasia cannot come Mon–Tue mornings, so the first morning offer gets declined', () => {
+    loadDemoPreset(TODAY);
+    loadDemoPreset(TODAY); // reload must not duplicate
+    const slots = useAvailabilityStore.getState().byProfile[DEMO_KASIA_ID];
+    expect(slots).toEqual([
+      expect.objectContaining({ weekday: 1, from: '08:00', to: '12:00', kind: 'busy' }),
+      expect.objectContaining({ weekday: 2, from: '08:00', to: '12:00', kind: 'busy' }),
+    ]);
   });
 });
 
