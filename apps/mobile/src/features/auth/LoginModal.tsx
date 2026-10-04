@@ -14,6 +14,7 @@ type Phase = 'form' | 'auth' | 'sync' | 'syncFailed';
 const ERROR_KEY: Record<AuthErrorKind, Parameters<typeof t>[0]> = {
   invalid: 'auth.errors.invalid',
   exists: 'auth.errors.exists',
+  notFound: 'auth.errors.notFound',
   validation: 'auth.errors.shortPassword',
   network: 'auth.errors.network',
   unknown: 'auth.errors.unknown',

@@ -15,6 +15,7 @@ export const auth = {
     shortPassword: 'Hasło musi mieć co najmniej 6 znaków.',
     invalid: 'Nieprawidłowy email lub hasło.',
     exists: 'Konto z tym adresem już istnieje — zaloguj się.',
+    notFound: 'Konto z tym adresem nie istnieje. Zarejestruj się.',
     network: 'Brak połączenia. Sprawdź internet i spróbuj ponownie.',
     unknown: 'Nie udało się zalogować. Spróbuj ponownie.',
   },

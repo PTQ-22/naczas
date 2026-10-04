@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type AuthErrorKind = 'invalid' | 'exists' | 'validation' | 'network' | 'unknown';
+export type AuthErrorKind =
+  'invalid' | 'exists' | 'notFound' | 'validation' | 'network' | 'unknown';
 
 export class AuthError extends Error {
   override name = 'AuthError';
@@ -46,7 +47,10 @@ export async function authenticate(
 
           if (mode === 'login') {
             const user = users[cleanEmail];
-            if (!user || user.passwordHash !== password) {
+            if (!user) {
+              return reject(new AuthError('notFound', 'Account not found'));
+            }
+            if (user.passwordHash !== password) {
               return reject(new AuthError('invalid', 'Invalid credentials'));
             }
             return resolve({ familyCode: user.familyCode, email: cleanEmail });
