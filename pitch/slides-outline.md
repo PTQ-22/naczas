@@ -127,7 +127,7 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
 - Strzałka API → agent podpisana: **„tylko na Twoje zlecenie: dla kogo (»mamę«), badanie, placówka, godziny. Bez nazwiska i PESEL.”**
 - Punkty:
   - **Prawdziwe dane NFZ** (api.nfz.gov.pl), cache + snapshot — demo działa nawet, gdy NFZ nie odpowiada
-  - **Privacy by design:** dane zdrowotne domyślnie tylko na telefonie, bez zakładania konta; synchronizacja rodzinna — prototyp wyłączony w demo
+  - **Privacy by design:** dane zdrowotne domyślnie tylko na telefonie, bez zakładania konta; synchronizacja rodzinna w demo na testowej bazie, docelowo szyfrowana
   - **Otwarte reguły:** każde zalecenie w JSON ze źródłem; reguły niezweryfikowane oznaczone w aplikacji jako „wartość orientacyjna”
   - **1018 testów automatycznych:** silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 584, kontrakty 54 (stan na 2026-10-04)
 
@@ -136,7 +136,7 @@ Tabela pełna (sprawdzone 2026-10-03; ✓ tylko przy stronie potwierdzającej fu
 ## 9. Wdrożenie i roadmap
 - **Teraz (MVP):** plan, „kiedy zacząć”, placówki NFZ, agent „Umów za mnie”, profile rodzinne, PDF dla lekarza, eksport wizyty do kalendarza.
 - **Dalej:**
-  1. Synchronizacja opiekun ↔ rodzic (szyfrowana E2E; dziś prototyp wyłączony w demo)
+  1. Synchronizacja opiekun ↔ rodzic (dziś w demo na testowej bazie; docelowo szyfrowana E2E)
   2. Agent z e-rejestracją zamiast telefonu
   3. Integracja z IKP (import wykonanych badań)
   4. Harmonogram mammobusów

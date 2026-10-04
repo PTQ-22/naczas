@@ -34,7 +34,7 @@ Ludzie odkładają badania profilaktyczne, bo nie pamiętają, kiedy je robili, 
 - **Domyślnie:** profil, historia badań i czynniki ryzyka są zapisane tylko na urządzeniu. Plan liczy się lokalnie.
 - **Wyszukiwanie placówek i kolejek:** nasze API dostaje nazwę świadczenia NFZ, województwo i współrzędne zaokrąglone do ok. 1 km (bez danych zdrowotnych); logi API nie zawierają współrzędnych.
 - **„Umów za mnie” (tylko gdy użytkownik zleci rozmowę):** do usługi telefonicznej trafia wyłącznie to, co potrzebne do rozmowy — dla kogo w formie relacji („mamę”, „tatę”, „ją” — bez imienia i nazwiska pacjenta), imię osoby zlecającej („w imieniu Kasi”), nazwa badania, nazwa placówki, termin „najpóźniej do” z planu i zaznaczone wolne godziny. Agent nie zna i nie podaje PESEL, nazwiska, adresu ani numeru telefonu. Przetwarzają to: **Vapi** (orkiestracja rozmowy), **OpenAI** (model rozmowy gpt-4o), **Deepgram** (transkrypcja mowy), **ElevenLabs** lub — gdy nie skonfigurowano głosu ElevenLabs — **Microsoft Azure** (synteza głosu), **Twilio** (telefonia). Status i transkrypcję rozmowy nasze API trzyma tylko w pamięci, do 6 h.
-- **Synchronizacja rodzinna (logowanie, chmura):** prototyp, **wyłączony w wersji demo**. Docelowo synchronizacja opiekun–rodzic szyfrowana end-to-end.
+- **Synchronizacja rodzinna (logowanie, chmura):** ten sam plan na telefonie opiekuna i rodzica. W demo działa na testowej bazie (włączane `EXPO_PUBLIC_ENABLE_SYNC=1`); w wersji produkcyjnej dane byłyby szyfrowane end-to-end.
 
 ## Architektura
 
@@ -160,7 +160,7 @@ AI w aplikacji **tylko dzwoni i umawia termin** — nie udziela porad medycznych
 - OpenStreetMap (ODbL) — kafelki mapy w wersji web.
 - NFZ, „Dane o realizacji programów profilaktycznych” (XLSX, stan na 1.10.2026) — objęcie programami przesiewowymi (`apps/api/data/screening/`).
 - GUGiK ULDK (`uldk.gugik.gov.pl`) — zamiana współrzędnych (≈ 1 km) na gminę, publiczne, bez klucza.
-- Neon (Postgres) + Drizzle ORM — tylko w prototypie synchronizacji rodzinnej, **wyłączonym w wersji demo**.
+- Neon (Postgres) + Drizzle ORM — synchronizacja rodzinna; w demo baza testowa.
 
 ### Biblioteki open source (główne)
 Expo, React Native, React, react-native-web, expo-router, zustand, Zod, date-fns, Hono (+ `@hono/node-server`), react-native-maps, Leaflet, react-leaflet, react-native-reanimated; narzędzia: TypeScript, ESLint, Prettier, Vitest, Jest (jest-expo), tsx, pnpm. Pełna lista i wersje: pliki `package.json` w repo.

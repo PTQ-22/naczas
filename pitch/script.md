@@ -74,7 +74,7 @@ Pełne odpowiedzi: `docs/07-pitch-and-submission.md` §Q&A. Jedno zdanie na star
 | Pytanie | Pierwsze zdanie |
 |---|---|
 | Skąd zalecenia? | „Z oficjalnych programów MZ i NFZ — każda reguła ma źródło w otwartym pliku, a te jeszcze niezweryfikowane aplikacja oznacza jako orientacyjne.” |
-| RODO? | „Dane zdrowotne domyślnie zostają na telefonie; serwer dostaje tylko nazwę świadczenia i lokalizację z dokładnością do ok. 1 km. Agent — tylko to, co potrzebne do rozmowy, bez nazwiska i PESEL.” Na dopytanie: synchronizacja rodzinna to prototyp, wyłączony w demo; docelowo E2E. |
+| RODO? | „Dane zdrowotne domyślnie zostają na telefonie; serwer dostaje tylko nazwę świadczenia i lokalizację z dokładnością do ok. 1 km. Agent — tylko to, co potrzebne do rozmowy, bez nazwiska i PESEL.” Na dopytanie: synchronizacja rodzinna w demo działa na testowej bazie; docelowo szyfrowana E2E. |
 | Czy agent naprawdę dzwoni do przychodni? | „Połączenie jest prawdziwe, ale w demo tylko na nasz numer testowy ustawiony na serwerze — aplikacja nie może podać innego. Na scenie pokazujemy symulację, prawdziwą rozmowę — na wideo.” |
 | RODO przy rozmowie? | „Agent zna tylko relację (»mamę«), imię zlecającej osoby, badanie, placówkę i wolne godziny. Przetwarzają to Vapi, OpenAI, Deepgram, ElevenLabs i Twilio — wszystko wymieniamy w ujawnieniu.” |
 | Co jeśli rejestracja odmówi / AI się pomyli? | „Agent ponawia w godzinach pracy rejestracji, odrzuca terminy poza kalendarzem i proponuje własne; użytkownik widzi transkrypcję i może jednym przyciskiem poprawić datę albo wpisać ją ręcznie.” |
