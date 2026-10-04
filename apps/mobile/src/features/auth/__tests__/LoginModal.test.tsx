@@ -49,7 +49,7 @@ describe('LoginModal', () => {
     mockSyncFamily.mockReturnValue(new Promise((resolve) => (finish = resolve)));
     render(<LoginModal />);
     fill();
-    expect(await screen.findByText('Zalogowano. Pobieram dane rodziny…')).toBeTruthy();
+    expect(await screen.findByText('Zalogowano. Przygotowuję dane rodziny…')).toBeTruthy();
     expect(mockReplace).not.toHaveBeenCalled(); // no empty plan while data is on its way
     expect(useSettingsStore.getState().familyCode).toBe('ABC');
     finish({ profileCount: 2 });
