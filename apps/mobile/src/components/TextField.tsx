@@ -23,6 +23,8 @@ export interface TextFieldProps {
   /** Defaults to `label`. */
   accessibilityLabel?: string;
   testID?: string;
+  returnKeyType?: TextInputProps['returnKeyType'];
+  onSubmitEditing?: TextInputProps['onSubmitEditing'];
 }
 
 /** Labelled input on tokens: 2 px border, 3 px focus ring, error never by colour alone. */
@@ -40,6 +42,8 @@ export function TextField({
   secureTextEntry,
   accessibilityLabel,
   testID,
+  returnKeyType,
+  onSubmitEditing,
 }: TextFieldProps) {
   const { colors, space, radius, borderWidth, layout, type } = useTheme();
   const [focused, setFocused] = useState(false);
@@ -62,6 +66,8 @@ export function TextField({
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         accessibilityLabel={accessibilityLabel ?? label}
+        returnKeyType={returnKeyType}
+        onSubmitEditing={onSubmitEditing}
         // Screen readers hear the error (or hint) right after the label, not only via colour.
         accessibilityHint={error ?? hint}
         style={[
