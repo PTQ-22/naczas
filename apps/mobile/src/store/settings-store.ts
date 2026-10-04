@@ -45,6 +45,7 @@ export const useSettingsStore = create<SettingsState>()(
     validatedPersist<SettingsState, PersistedSettings>({
       name: 'settings',
       version: 1,
+      migrations: { 0: (state) => state },
       schema: PersistedSettingsSchema,
       partialize: ({ seniorMode, darkMode, todayOverride, familyCode }) => ({
         seniorMode,
