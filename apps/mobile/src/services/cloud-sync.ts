@@ -6,6 +6,7 @@ import { ExamRecordSchema, ProfileSchema, type ExamRecord, type Profile } from '
 import { useProfilesStore, useRecordsStore, useSettingsStore } from '@/store';
 
 import { API_BASE_URL } from './api';
+import { isSyncEnabled } from './feature-flags';
 
 /** The free API host sleeps when idle — a cold start can take ~50 s, so be patient. */
 const SYNC_TIMEOUT_MS = 70_000;
@@ -62,6 +63,8 @@ export function parseFamily(data: unknown): FamilyData {
 }
 
 async function request(path: string, init?: RequestInit): Promise<unknown> {
+  // Last line of defence: with the flag off no profile data may leave the device.
+  if (!isSyncEnabled()) throw new Error('Sync disabled');
   // AbortController + setTimeout: AbortSignal.timeout is missing on some RN engines.
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), SYNC_TIMEOUT_MS);
