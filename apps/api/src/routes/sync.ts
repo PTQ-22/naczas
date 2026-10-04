@@ -7,7 +7,7 @@ import { ProfileSchema, ExamRecordSchema } from '@naczas/shared';
 
 import { db } from '../db';
 import { errorResponse } from './common';
-import { bets, profiles, records } from '../db/schema';
+import { profiles, records } from '../db/schema';
 
 export function syncRoutes() {
   return new Hono()
@@ -19,17 +19,6 @@ export function syncRoutes() {
           familyCode: z.string().min(1),
           profiles: z.array(ProfileSchema),
           records: z.array(ExamRecordSchema),
-          bets: z.array(
-            z.object({
-              id: z.string(),
-              profileId: z.string(),
-              amountPln: z.number(),
-              createdAt: z.string(),
-              expiresAt: z.string(),
-              status: z.string(),
-              examIds: z.array(z.string()),
-            }),
-          ),
         }),
         (result, c) => {
           if (!result.success) return errorResponse(c, 400, 'validation_error', 'Invalid payload');
@@ -80,26 +69,6 @@ export function syncRoutes() {
             });
         }
 
-        // 3. Upsert bets
-        if (data.bets.length > 0) {
-          await db
-            .insert(bets)
-            .values(
-              data.bets.map((b) => ({
-                ...b,
-                examIds: JSON.stringify(b.examIds),
-              })),
-            )
-            .onConflictDoUpdate({
-              target: bets.id,
-              set: {
-                status: sql`EXCLUDED.status`,
-                amountPln: sql`EXCLUDED.amount_pln`,
-                examIds: sql`EXCLUDED.exam_ids`,
-              },
-            });
-        }
-
         return c.json({ success: true, timestamp: now });
       },
     )
@@ -113,14 +82,13 @@ export function syncRoutes() {
       const profileIds = familyProfiles.map((p) => p.id);
 
       if (profileIds.length === 0) {
-        return c.json({ profiles: [], records: [], bets: [] });
+        return c.json({ profiles: [], records: [] });
       }
 
       const familyRecords = await db
         .select()
         .from(records)
         .where(inArray(records.profileId, profileIds));
-      const familyBets = await db.select().from(bets).where(inArray(bets.profileId, profileIds));
 
       return c.json({
         profiles: familyProfiles.map(
@@ -130,10 +98,6 @@ export function syncRoutes() {
           const { id: _, ...rest } = r;
           return rest;
         }),
-        bets: familyBets.map((b) => ({
-          ...b,
-          examIds: JSON.parse(b.examIds) as string[],
-        })),
       });
     });
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { useProfilesStore, useRecordsStore, useBetStore } from '@/store';
+import { useProfilesStore, useRecordsStore } from '@/store';
 import { useSettingsStore } from '@/store/settings-store';
 
 import { useCloudSync } from './cloud-sync';
@@ -36,7 +36,6 @@ export function AutoSync() {
     // Subscribe to all relevant stores
     const unsubProfiles = useProfilesStore.subscribe(handleChange);
     const unsubRecords = useRecordsStore.subscribe(handleChange);
-    const unsubBets = useBetStore.subscribe(handleChange);
 
     // Mark initial render as done after a tiny delay so pull() has time to finish
     setTimeout(() => {
@@ -46,7 +45,6 @@ export function AutoSync() {
     return () => {
       unsubProfiles();
       unsubRecords();
-      unsubBets();
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [familyCode, push]);

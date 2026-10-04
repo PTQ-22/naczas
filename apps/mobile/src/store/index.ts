@@ -1,4 +1,3 @@
-export { activeBetForProfile, betsForProfile, useBetStore } from './bet-store';
 export { deleteProfileWithData, resetAllData } from './actions';
 export {
   facilityKey,

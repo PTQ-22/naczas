@@ -134,12 +134,6 @@ describe('PlanScreen (mockPlan)', () => {
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
   });
 
-  it('reaches "Zakład o zdrowie" from the plan instead of a tab', () => {
-    renderPlan();
-    fireEvent.press(screen.getByRole('button', { name: 'Zakład o zdrowie' }));
-    expect(router.push).toHaveBeenCalledWith('/bet');
-  });
-
   it('booked card: "Oznacz jako zrobione" marks done here, with undo (M3 M6)', () => {
     useRecordsStore.getState().reset();
     renderPlan();

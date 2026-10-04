@@ -1,4 +1,4 @@
-import { pgTable, text, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text } from 'drizzle-orm/pg-core';
 
 export const profiles = pgTable('profiles', {
   id: text('id').primaryKey(),
@@ -19,17 +19,6 @@ export const records = pgTable('records', {
   updatedAt: text('updated_at').notNull(),
 });
 
-export const bets = pgTable('bets', {
-  id: text('id').primaryKey(),
-  profileId: text('profile_id')
-    .notNull()
-    .references(() => profiles.id, { onDelete: 'cascade' }),
-  amountPln: integer('amount_pln').notNull(),
-  createdAt: text('created_at').notNull(),
-  expiresAt: text('expires_at').notNull(),
-  status: text('status').notNull(),
-  examIds: text('exam_ids').notNull(), // Stored as JSON string
-});
 export const users = pgTable('users', {
   id: text('id').primaryKey(),
   email: text('email').notNull().unique(),

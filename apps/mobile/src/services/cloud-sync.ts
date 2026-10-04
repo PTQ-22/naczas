@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import type { Profile, ExamRecord } from '@naczas/shared';
 
-import { useBetStore, useProfilesStore, useRecordsStore, useSettingsStore } from '@/store';
+import { useProfilesStore, useRecordsStore, useSettingsStore } from '@/store';
 
 const envApiUrl: unknown = process.env.EXPO_PUBLIC_API_URL;
 const API_BASE_URL =
@@ -21,7 +21,6 @@ export function useCloudSync() {
     try {
       const profiles = useProfilesStore.getState().profiles;
       const records = useRecordsStore.getState().records;
-      const bets = useBetStore.getState().bets;
 
       const response = await fetch(`${API_BASE_URL}/v1/sync/push`, {
         method: 'POST',
@@ -30,7 +29,6 @@ export function useCloudSync() {
           familyCode,
           profiles,
           records,
-          bets,
         }),
       });
 
@@ -58,7 +56,6 @@ export function useCloudSync() {
       const data = (await response.json()) as {
         profiles?: Profile[];
         records?: ExamRecord[];
-        bets?: unknown[];
       };
 
       if (data.profiles && data.profiles.length > 0) {
@@ -71,7 +68,6 @@ export function useCloudSync() {
           };
         });
         if (data.records) useRecordsStore.setState({ records: data.records });
-        if (data.bets) useBetStore.setState({ bets: data.bets as never[] }); // Casting to never[] as useBetStore types are not fully known here
       }
       setLastSync(new Date());
       setLastSync(new Date());
