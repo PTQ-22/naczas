@@ -9,6 +9,7 @@ import {
 
 import { createApp } from '../src/app';
 import { buildAssistant } from '../src/call-assist/assistant';
+import { buildReceptionist, RECEPTIONIST_PROMPT } from '../src/call-assist/receptionist';
 import { createTwilioClient } from '../src/call-assist/twilio-client';
 import { createVapiClient, type VapiCall } from '../src/call-assist/vapi-client';
 import { loadEnv } from '../src/env';
@@ -28,7 +29,7 @@ const body: CallAssistRequest = {
 };
 const CALL_TO = '+48500600700';
 
-function makeApp(vapiFetch?: typeof fetch) {
+function makeApp(vapiFetch?: typeof fetch, dailyLimit?: number) {
   let t = new Date('2026-10-04T10:00:00');
   const app = createApp({
     nfz: createNfzClient({ fetch: vi.fn<typeof fetch>(), minIntervalMs: 0 }),
@@ -43,6 +44,7 @@ function makeApp(vapiFetch?: typeof fetch) {
         }
       : null,
     callAssistWebhookSecret: 'shh',
+    ...(dailyLimit !== undefined && { callAssistDailyLimit: dailyLimit }),
   });
   const advance = (ms: number) => (t = new Date(t.getTime() + ms));
   const post = (payload: unknown) =>
@@ -139,6 +141,20 @@ describe('POST /v1/call-assist', () => {
     expect(url).toBe('https://api.vapi.ai/call');
     const sent = JSON.parse(init!.body as string) as { customer: { number: string } };
     expect(sent.customer.number).toBe(CALL_TO);
+  });
+
+  it('falls back to the simulation once the daily live budget is spent', async () => {
+    const vapiFetch = vi.fn<typeof fetch>(() => json({ id: 'call_1', status: 'queued' }, 201));
+    const { post, advance } = makeApp(vapiFetch, 2);
+    const modes = [];
+    for (let i = 0; i < 3; i++) {
+      modes.push(CallAssistStartResponseSchema.parse(await (await post(body)).json()).mode);
+    }
+    expect(modes).toEqual(['live', 'live', 'simulated']);
+    expect(vapiFetch).toHaveBeenCalledTimes(2);
+
+    advance(24 * 3600_000); // next day: budget renewed
+    expect(CallAssistStartResponseSchema.parse(await (await post(body)).json()).mode).toBe('live');
   });
 
   it('maps a Vapi failure to 502', async () => {
@@ -309,9 +325,28 @@ describe('buildAssistant', () => {
     expect(content).toContain('odmów i poproś o inny');
   });
 
+  it('caps the call length (shorter for agent-to-agent demos)', () => {
+    expect(buildAssistant(body, '2026-10-04')).toMatchObject({ maxDurationSeconds: 180 });
+    expect(buildAssistant(body, '2026-10-04', { maxDurationSeconds: 90 })).toMatchObject({
+      maxDurationSeconds: 90,
+    });
+  });
+
   it('wires the webhook only with a public URL', () => {
     const a = buildAssistant(body, '2026-10-04', { publicUrl: 'https://x.ngrok.app/' });
     expect(a).toMatchObject({ server: { url: 'https://x.ngrok.app/v1/call-assist/webhook' } });
+  });
+});
+
+describe('buildReceptionist', () => {
+  it('is a short, separate demo agent that never asks for PESEL', () => {
+    expect(buildReceptionist()).toMatchObject({
+      maxDurationSeconds: 90,
+      endCallFunctionEnabled: true,
+      voice: { voiceId: 'pl-PL-MarekNeural' },
+    });
+    expect(RECEPTIONIST_PROMPT).toContain('Nie proś o PESEL');
+    expect(RECEPTIONIST_PROMPT).toContain('Europe/Warsaw');
   });
 });
 
@@ -320,6 +355,20 @@ describe('env', () => {
     expect(() => loadEnv({ DEMO_CALL_TO: '500600700' })).toThrow(/DEMO_CALL_TO/);
     expect(loadEnv({ DEMO_CALL_TO: '', VAPI_API_KEY: '' }).DEMO_CALL_TO).toBeUndefined();
     expect(loadEnv({ DEMO_CALL_TO: CALL_TO }).DEMO_CALL_TO).toBe(CALL_TO);
+  });
+
+  it('dials a person by default; the receptionist agent only behind an explicit flag', () => {
+    expect(loadEnv({}).CALL_TARGET).toBe('phone');
+    expect(() => loadEnv({ CALL_TARGET: 'agent', VAPI_API_KEY: 'k' })).toThrow(
+      /DEMO_RECEPTIONIST_TO/,
+    );
+    // No keys → simulation, nothing to dial: a blueprint with CALL_TARGET=agent still boots.
+    expect(loadEnv({ CALL_TARGET: 'agent' }).CALL_TARGET).toBe('agent');
+    expect(() => loadEnv({ CALL_TARGET: 'agent', DEMO_RECEPTIONIST_TO: '555' })).toThrow(/E\.164/);
+    expect(() => loadEnv({ CALL_TARGET: 'robot' })).toThrow(/CALL_TARGET/);
+    const env = loadEnv({ CALL_TARGET: 'agent', DEMO_RECEPTIONIST_TO: '+14155550123' });
+    expect(env.DEMO_RECEPTIONIST_TO).toBe('+14155550123');
+    expect(env.CALL_ASSIST_DAILY_LIMIT).toBe(20);
   });
 });
 

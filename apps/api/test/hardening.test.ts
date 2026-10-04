@@ -29,6 +29,8 @@ describe('env', () => {
       REFRESH_ON_START: true,
       RATE_LIMIT_PER_MIN: 60,
       TRUST_PROXY: false,
+      CALL_TARGET: 'phone',
+      CALL_ASSIST_DAILY_LIMIT: 20,
       NFZ_BASE_URL: 'https://apinfz.nfz.gov.pl/app-itl-api-pcus',
       NFZ_API_VERSION: '1.4',
     });

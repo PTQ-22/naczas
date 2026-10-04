@@ -361,12 +361,24 @@ export function callAssistRoutes({
   store,
   now,
   startLimit,
+  dailyLiveLimit = Infinity,
 }: {
   config: CallAssistConfig | null;
   store: CallStore;
   now: () => Date;
   startLimit: RateLimitOptions;
+  /** Live calls started per day; beyond it requests get the simulation (never an error) */
+  dailyLiveLimit?: number;
 }) {
+  const liveStarted = { day: '', count: 0 };
+  /** Reserves one live call for today, or false when the daily budget is spent. */
+  const takeLiveSlot = (today: string) => {
+    if (liveStarted.day !== today) Object.assign(liveStarted, { day: today, count: 0 });
+    if (liveStarted.count >= dailyLiveLimit) return false;
+    liveStarted.count += 1;
+    return true;
+  };
+
   const statusOf = async (callId: string, task: CallTask): Promise<CallAssistStatus> =>
     task.mode === 'simulated'
       ? simulatedCallStatus(callId, task.sim, now().getTime())
@@ -403,7 +415,7 @@ export function callAssistRoutes({
         const today = format(now(), 'yyyy-MM-dd');
         const startedAt = now().getTime();
 
-        if (!config) {
+        if (!config || !takeLiveSlot(today)) {
           const callId = `sim-${randomUUID()}`;
           store.add(callId, {
             mode: 'simulated',

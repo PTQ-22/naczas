@@ -11,7 +11,8 @@
     "fixtures": "tsx scripts/fetch-fixtures.ts",
     "snapshot": "tsx scripts/snapshot.ts",
     "coverage": "tsx scripts/coverage.ts",
-    "geo-index": "tsx scripts/geo-index.ts"
+    "geo-index": "tsx scripts/geo-index.ts",
+    "receptionist": "tsx scripts/receptionist.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.3",

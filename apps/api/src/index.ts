@@ -37,23 +37,28 @@ const REFRESH_ORDER = [
 
 const env = loadEnv();
 
+const toAgent = env.CALL_TARGET === 'agent';
 const assistantOptions = {
   voiceId: env.VAPI_VOICE_ID,
   publicUrl: env.PUBLIC_URL,
   webhookSecret: env.VAPI_WEBHOOK_SECRET,
+  // Agent-to-agent: a short leash, so two polite bots can't loop on the meter.
+  ...(toAgent && { maxDurationSeconds: 90 }),
 };
+/** The single number this server ever dials — chosen by the explicit CALL_TARGET flag. */
+const callTo = toAgent ? env.DEMO_RECEPTIONIST_TO : env.DEMO_CALL_TO;
 const vapi = env.VAPI_API_KEY ? createVapiClient({ apiKey: env.VAPI_API_KEY }) : null;
 const callAssist: CallAssistConfig | null =
-  vapi && env.DEMO_CALL_TO && env.VAPI_PHONE_NUMBER_ID
+  vapi && callTo && env.VAPI_PHONE_NUMBER_ID
     ? {
         via: 'vapi-number',
         vapi,
         phoneNumberId: env.VAPI_PHONE_NUMBER_ID,
-        callTo: env.DEMO_CALL_TO,
+        callTo,
         assistant: assistantOptions,
       }
     : vapi &&
-        env.DEMO_CALL_TO &&
+        callTo &&
         env.TWILIO_ACCOUNT_SID &&
         env.TWILIO_AUTH_TOKEN &&
         env.TWILIO_FROM &&
@@ -67,11 +72,18 @@ const callAssist: CallAssistConfig | null =
           }),
           from: env.TWILIO_FROM,
           sipUri: env.VAPI_SIP_URI,
-          callTo: env.DEMO_CALL_TO,
+          callTo,
           assistant: assistantOptions,
         }
       : null;
-console.log(`Call assist: ${callAssist ? `live (${callAssist.via})` : 'simulated'}`);
+console.log(
+  `Call assist: ${
+    callAssist
+      ? `live (${callAssist.via} → ${toAgent ? 'receptionist agent' : 'team phone'}, ` +
+        `${env.CALL_ASSIST_DAILY_LIMIT}/day)`
+      : 'simulated'
+  }`,
+);
 
 const nfz = createNfzClient({ baseUrl: env.NFZ_BASE_URL, apiVersion: env.NFZ_API_VERSION });
 const snapshot = createSnapshotStore(path.resolve(import.meta.dirname, '../data/snapshot'));
@@ -87,6 +99,7 @@ const app = createApp({
   log: (line) => console.log(line),
   callAssist,
   callAssistWebhookSecret: env.VAPI_WEBHOOK_SECRET,
+  callAssistDailyLimit: env.CALL_ASSIST_DAILY_LIMIT,
   callTickMs: 15_000,
 });
 

@@ -27,7 +27,7 @@ Potem w drugim terminalu `curl localhost:8787/v1/health` → `{"ok":true,…}`.
 2. **New → Blueprint**. Połącz GitHub i daj Renderowi dostęp do prywatnego repo `PTQ-22/naczas`.
 3. Wybierz repo i branch `main`. Render wczyta `render.yaml` i pokaże usługę `naczas-api` (Docker, plan Free, Frankfurt).
 4. Render zapyta o zmienną `CORS_ORIGINS`. Na razie wpisz `http://localhost:8081`, docelowy adres uzupełnisz w kroku 3.
-   Zapyta też o klucze „Zadzwoń za mnie” (`VAPI_API_KEY`, `VAPI_PHONE_NUMBER_ID`, `DEMO_CALL_TO`, `VAPI_WEBHOOK_SECRET`) — skopiuj z `apps/api/.env`; puste = symulacja rozmowy. `PUBLIC_URL` = adres usługi z Rendera (`https://naczas-api-….onrender.com`, uzupełnij po pierwszym deployu) — wtedy transkrypcja rozmowy idzie na żywo bez ngroka. `DATABASE_URL` (Neon) tylko jeśli chcecie logowanie rodzinne / sync; bez niego reszta API działa.
+   Zapyta też o klucze „Zadzwoń za mnie” (`VAPI_API_KEY`, `VAPI_PHONE_NUMBER_ID`, `DEMO_RECEPTIONIST_TO`, `VAPI_WEBHOOK_SECRET`) — puste = symulacja rozmowy. Blueprint ustawia `CALL_TARGET=agent`: publiczne demo dzwoni do agenta „Rejestracja”, nigdy do człowieka (`docs/call-assist-receptionist.md`); `DEMO_CALL_TO` zostaw pusty. `PUBLIC_URL` = adres usługi z Rendera (`https://naczas-api-….onrender.com`, uzupełnij po pierwszym deployu) — wtedy transkrypcja rozmowy idzie na żywo bez ngroka. `DATABASE_URL` (Neon) tylko jeśli chcecie logowanie rodzinne / sync; bez niego reszta API działa.
 5. **Apply**. Pierwszy build trwa kilka minut.
 6. Gdy status jest **Live**, skopiuj adres usługi (np. `https://naczas-api.onrender.com`) i sprawdź:
    - `https://<adres>/v1/health` → `{"ok":true,"nfz":"up","snapshotAsOf":"2026-10-03"}`

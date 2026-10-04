@@ -28,6 +28,13 @@ services:
         sync: false
       - key: DEMO_CALL_TO # the ONLY number the agent dials, +48XXXXXXXXX
         sync: false
+      # Public demo: agent-to-agent, never a person (docs/call-assist-receptionist.md)
+      - key: CALL_TARGET
+        value: agent
+      - key: DEMO_RECEPTIONIST_TO # Vapi number answered by the "reception" assistant
+        sync: false
+      - key: CALL_ASSIST_DAILY_LIMIT
+        value: '20'
       - key: PUBLIC_URL # this service's https URL — live call transcript webhook
         sync: false
       - key: VAPI_WEBHOOK_SECRET
