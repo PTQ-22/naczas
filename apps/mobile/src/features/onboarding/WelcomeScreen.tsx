@@ -57,6 +57,12 @@ export default function WelcomeScreen() {
             onPress={loadDemo}
             fullWidth
           />
+          <Button
+            variant="secondary"
+            label="Masz już Konto Rodzinne? Zaloguj się"
+            onPress={() => router.push('/login')}
+            fullWidth
+          />
         </>
       }
     >

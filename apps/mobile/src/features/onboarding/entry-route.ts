@@ -10,5 +10,6 @@ export function resolveEntryRoute(state: {
   familyCode: string | null;
 }): EntryRoute | null {
   if (!state.hydrated) return null;
-  return state.profileCount > 0 ? '/plan' : '/onboarding/welcome';
+  if (state.profileCount > 0 || state.familyCode) return '/plan';
+  return '/onboarding/welcome';
 }

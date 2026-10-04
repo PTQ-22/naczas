@@ -62,7 +62,13 @@ export function useCloudSync() {
       };
 
       if (data.profiles && data.profiles.length > 0) {
-        useProfilesStore.setState({ profiles: data.profiles });
+        useProfilesStore.setState((state) => {
+          const stillExists = data.profiles!.some((p) => p.id === state.activeProfileId);
+          return {
+            profiles: data.profiles,
+            activeProfileId: stillExists ? state.activeProfileId : data.profiles![0].id,
+          };
+        });
         if (data.records) useRecordsStore.setState({ records: data.records });
         if (data.bets) useBetStore.setState({ bets: data.bets as never[] }); // Casting to never[] as useBetStore types are not fully known here
       }
