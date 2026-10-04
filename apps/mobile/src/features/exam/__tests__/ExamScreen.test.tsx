@@ -115,7 +115,7 @@ describe('ExamScreen', () => {
     (useCoverage as jest.Mock).mockReturnValue({
       program: 'mammography',
       level: 'powiat',
-      areaName: 'Warszawa',
+      areaName: 'Poznań',
       percent: 31.2,
       eligible: 417773,
       covered: 130551,
@@ -125,7 +125,7 @@ describe('ExamScreen', () => {
     renderExam('mammography');
     expect(useCoverage).toHaveBeenCalledWith('mammography', expect.anything());
     expect(screen.getByText('31,2%')).toBeOnTheScreen();
-    expect(screen.getByText('Warszawa')).toBeOnTheScreen();
+    expect(screen.getByText('Poznań')).toBeOnTheScreen();
     expect(screen.getByText('Dane NFZ, stan na 1.10.2026')).toBeOnTheScreen();
   });
 

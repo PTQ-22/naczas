@@ -23,8 +23,8 @@ describe('buildDemoPreset', () => {
     profiles.forEach((p) => ProfileSchema.parse(p));
     records.forEach((r) => ExamRecordSchema.parse(r));
     expect(profiles.map((p) => [p.name, 2026 - p.birthYear, p.location?.label])).toEqual([
-      ['Mama', 58, 'Warszawa, woj. mazowieckie'],
-      ['Kasia', 34, 'Warszawa, woj. mazowieckie'],
+      ['Mama', 58, 'Poznań, woj. wielkopolskie'],
+      ['Kasia', 34, 'Poznań, woj. wielkopolskie'],
     ]);
   });
 

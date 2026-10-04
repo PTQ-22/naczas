@@ -18,7 +18,7 @@ export const mockProfileMama: Profile = {
   relation: 'parent',
   birthYear: 1968,
   sex: 'female',
-  location: { province: '07', lat: 52.23, lng: 21.01, label: 'Warszawa' },
+  location: { province: '15', lat: 52.41, lng: 16.93, label: 'Poznań' },
   conditions: [],
   familyHistory: ['colorectal_cancer'],
   smoking: { status: 'never' },

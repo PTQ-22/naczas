@@ -30,12 +30,12 @@ const toISO = (date: Date): ISODate => format(date, 'yyyy-MM-dd');
 export function buildDemoPreset(today: ISODate): { profiles: Profile[]; records: ExamRecord[] } {
   const now = parseISO(today);
   const year = now.getFullYear();
-  const warsaw = postalCodeToLocation('00-950');
-  const location = warsaw && {
-    province: warsaw.province,
-    lat: warsaw.lat,
-    lng: warsaw.lng,
-    label: postalLocationLabel(warsaw),
+  const poznan = postalCodeToLocation('61-001');
+  const location = poznan && {
+    province: poznan.province,
+    lat: poznan.lat,
+    lng: poznan.lng,
+    label: postalLocationLabel(poznan),
   };
 
   const base = { conditions: [], smoking: { status: 'never' as const }, createdAt: today };
@@ -120,7 +120,7 @@ export function loadDemoPreset(today: ISODate): Profile[] {
         providerName: 'Twoja Przychodnia',
         placeName: 'Poradnia Ogólna',
         address: 'ul. Zdrowotna 1',
-        locality: profile.location.label || 'Warszawa',
+        locality: profile.location.label || 'Poznań',
         phone: '111 222 333',
         lat: profile.location.lat,
         lng: profile.location.lng,
