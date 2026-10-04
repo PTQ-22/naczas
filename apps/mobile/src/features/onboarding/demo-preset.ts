@@ -9,14 +9,15 @@ import {
   useOnboardingDraftStore,
   useProfilesStore,
   useRecordsStore,
+  useCallTasksStore,
   useDefaultFacilityStore,
 } from '@/store';
 
+import { buildDemoCalls } from './demo-calls';
+import { DEMO_KASIA_ID, DEMO_MAMA_ID } from './demo-ids';
 import { postalLocationLabel } from './location-label';
 
-/** Fixed ids so loading the preset again replaces it instead of adding duplicates. */
-export const DEMO_MAMA_ID = 'demo-mama';
-export const DEMO_KASIA_ID = 'demo-kasia';
+export { DEMO_KASIA_ID, DEMO_MAMA_ID } from './demo-ids';
 
 const toISO = (date: Date): ISODate => format(date, 'yyyy-MM-dd');
 
@@ -134,6 +135,12 @@ export function loadDemoPreset(today: ISODate): Profile[] {
       });
     }
   });
+
+  // Mock agent calls for now (history, saved time, conversations); the user's own calls stay.
+  const demoCalls = buildDemoCalls(today);
+  useCallTasksStore.setState((s) => ({
+    tasks: [...s.tasks.filter((x) => !x.id.startsWith('demo-call-')), ...demoCalls],
+  }));
 
   setActiveProfile(DEMO_MAMA_ID);
   useOnboardingDraftStore.getState().clear();

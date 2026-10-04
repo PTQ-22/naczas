@@ -1,9 +1,17 @@
 import { computePlan } from '@naczas/rules';
 import { ExamRecordSchema, ProfileSchema } from '@naczas/shared';
 
-import { recordsForProfile, resetAllData, useProfilesStore, useRecordsStore } from '@/store';
+import {
+  recordsForProfile,
+  resetAllData,
+  savedTime,
+  useCallTasksStore,
+  useProfilesStore,
+  useRecordsStore,
+} from '@/store';
 import { makeProfile } from '@/store/__fixtures__/fixtures';
 
+import { buildDemoCalls } from '../demo-calls';
 import { buildDemoPreset, DEMO_KASIA_ID, DEMO_MAMA_ID, loadDemoPreset } from '../demo-preset';
 
 const TODAY = '2026-10-04';
@@ -70,5 +78,44 @@ describe('loadDemoPreset', () => {
       .records.filter((r) => r.profileId === DEMO_MAMA_ID && r.examId === 'colonoscopy_screening');
     expect(colonoscopy).toEqual([expect.objectContaining({ status: 'none', lastDone: 'never' })]);
     expect(useProfilesStore.getState().activeProfileId).toBe(DEMO_MAMA_ID);
+  });
+});
+
+describe('demo agent calls', () => {
+  it('loading the demo fills the Agent history with mock calls, once', () => {
+    loadDemoPreset(TODAY);
+    loadDemoPreset(TODAY);
+    const tasks = useCallTasksStore.getState().tasks;
+    expect(tasks.map((x) => x.id).sort()).toEqual([
+      'demo-call-1',
+      'demo-call-2',
+      'demo-call-3',
+      'demo-call-4',
+    ]);
+    expect(tasks.every((x) => x.closed && x.mode === 'simulated')).toBe(true);
+    const saved = savedTime(tasks);
+    expect(saved.booked).toBe(3);
+    expect(saved.totalSec).toBeGreaterThan(60 * 60); // over an hour of phone time
+  });
+
+  it('booked calls carry a real conversation; the unanswered one has none', () => {
+    const calls = buildDemoCalls(TODAY);
+    const eye = calls.find((x) => x.examId === 'eye_check')!;
+    expect(eye.result).toMatchObject({ booked: true, time: '16:00' }); // fits "afternoons only"
+    expect(eye.transcript.some((l) => l.text.startsWith('Niestety'))).toBe(true);
+    const neuro = calls.find((x) => x.examId === 'neurolog')!;
+    expect(neuro).toMatchObject({ status: 'failed', transcript: [], result: null });
+  });
+
+  it("keeps the user's own calls when the demo is loaded", () => {
+    useCallTasksStore.getState().reset();
+    useCallTasksStore
+      .getState()
+      .add(
+        { id: 'mine', mode: 'live', profileId: 'own', examId: 'neurolog', facilityName: 'X' },
+        1,
+      );
+    loadDemoPreset(TODAY);
+    expect(useCallTasksStore.getState().tasks.some((x) => x.id === 'mine')).toBe(true);
   });
 });
