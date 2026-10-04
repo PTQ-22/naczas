@@ -1,7 +1,6 @@
 # NaCzas — planer profilaktyki z dostępnością NFZ
 
-> HackYeah 2026 · Open Task **SPORT & HEALTHCARE** · zespół **{NAZWA ZESPOŁU}**
-> Nazwa „NaCzas” może się jeszcze zmienić — alternatywy: [pitch/naming.md](pitch/naming.md).
+> HackYeah 2026 · Open Task **SPORT & HEALTHCARE**
 
 **Demo (web):** https://naczas-web.onrender.com · **Wideo:** https://youtu.be/7qw5hh6vLqE · **Prezentacja:** [pitch/deck/deck.pdf](pitch/deck/deck.pdf)
 
@@ -189,13 +188,8 @@ Expo, React Native, React, react-native-web, expo-router, zustand, Zod, date-fns
 | [docs/07-pitch-and-submission.md](docs/07-pitch-and-submission.md) | Slajdy, zgłoszenie, Q&A |
 | [docs/design/](docs/design/) | Tokeny i makiety ekranów |
 | [docs/research/](docs/research/) | Weryfikacja zaleceń i mapowanie świadczeń NFZ |
-| [pitch/](pitch/) | Treść slajdów, skrypt wystąpienia, propozycje nazwy |
+| [pitch/](pitch/) | Treść slajdów, skrypt wystąpienia, prezentacja PDF, okładka |
 
-## Zespół
+## Licencje danych
 
-{IMIĘ NAZWISKO — rola} · {IMIĘ NAZWISKO — rola} · {…}
-
-## Licencja
-
-Proponujemy **MIT** — pozwala NFZ, samorządom i organizacjom pacjentów swobodnie użyć i rozwinąć projekt. {DO DECYZJI ZESPOŁU: po akceptacji dodać plik `LICENSE` z nazwą właściciela praw.}
 Dane NFZ i treści z serwisów rządowych podlegają warunkom ich wydawców; dane mapy — ODbL (OpenStreetMap).
