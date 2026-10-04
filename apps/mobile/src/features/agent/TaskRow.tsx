@@ -40,12 +40,7 @@ export function TaskRow({ task, now, profileName }: TaskRowProps) {
         accessibilityRole="button"
         accessibilityLabel={t('agent.taskA11y', { exam, facility: task.facilityName, status })}
         accessibilityHint={t('agent.open')}
-        onPress={() =>
-          router.push({
-            pathname: '/exam/[examId]/call',
-            params: { examId: task.examId, taskId: task.id },
-          })
-        }
+        onPress={() => router.push({ pathname: '/call/[taskId]', params: { taskId: task.id } })}
         style={{
           flexDirection: 'row',
           alignItems: 'center',

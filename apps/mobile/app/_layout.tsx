@@ -92,6 +92,10 @@ function ThemedStack() {
           }}
         />
         <Stack.Screen
+          name="call/[taskId]"
+          options={{ headerShown: true, title: t('agent.detail.title') }}
+        />
+        <Stack.Screen
           name="visit-prep"
           options={{ headerShown: true, title: t('visitPrep.title') }}
         />

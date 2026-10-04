@@ -3,10 +3,9 @@ import { pl } from 'date-fns/locale';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { FadeInDown, ReduceMotion } from 'react-native-reanimated';
 
 import { rules } from '@naczas/rules';
-import { ISODateSchema, type CallAssistStatus } from '@naczas/shared';
+import { ISODateSchema } from '@naczas/shared';
 
 import { Button } from '@/components/Button';
 import { EmptyState } from '@/components/EmptyState';
@@ -26,6 +25,7 @@ import { buildCallRequest, inSentence } from './call-request';
 import { cancelTask, retryTaskNow, startCallTask } from './call-tasks';
 import { CallStats } from './CallStats';
 import { taskStatusLine } from './task-status';
+import { Transcript } from './Transcript';
 
 function Point({ icon, text }: { icon: IconName; text: string }) {
   const { space, colors } = useTheme();
@@ -33,40 +33,6 @@ function Point({ icon, text }: { icon: IconName; text: string }) {
     <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'flex-start' }}>
       <Icon name={icon} size="sm" color={colors.primary} />
       <Text style={{ flex: 1 }}>{text}</Text>
-    </View>
-  );
-}
-
-function Transcript({ lines }: { lines: CallAssistStatus['transcript'] }) {
-  const { space, colors, radius, motion } = useTheme();
-  if (lines.length === 0) return null;
-  return (
-    <View style={{ gap: space.sm }} accessibilityLiveRegion="polite">
-      {lines.map((line, i) => {
-        const agent = line.role === 'agent';
-        return (
-          <Animated.View
-            // Lines only ever get appended, so the index is a stable key.
-            key={i}
-            entering={FadeInDown.duration(motion.base).reduceMotion(ReduceMotion.System)}
-            style={{
-              alignSelf: agent ? 'flex-start' : 'flex-end',
-              maxWidth: '88%',
-              backgroundColor: agent ? colors.surfaceAlt : colors.primarySoft,
-              borderRadius: radius.md,
-              borderCurve: 'continuous',
-              paddingVertical: space.sm,
-              paddingHorizontal: space.md,
-              gap: space.xs / 2,
-            }}
-          >
-            <Text variant="eyebrow" tone="textMuted">
-              {t(`callAssist.speaker.${line.role}`)}
-            </Text>
-            <Text selectable>{line.text}</Text>
-          </Animated.View>
-        );
-      })}
     </View>
   );
 }
@@ -94,7 +60,6 @@ export default function CallAssistScreen() {
     examId: string;
     facility?: string;
     firstDate?: string;
-    taskId?: string;
   }>();
   const { examId } = params;
   const { space, colors, type } = useTheme();
@@ -108,7 +73,7 @@ export default function CallAssistScreen() {
   const profiles = useProfilesStore((s) => s.profiles);
   const rule = rules.find((r) => r.id === examId);
 
-  const [taskId, setTaskId] = useState<string | undefined>(params.taskId);
+  const [taskId, setTaskId] = useState<string | undefined>();
   const [start, setStart] = useState<StartState>('idle');
   const [busy, setBusy] = useState(false);
   const task = useCallTasksStore((s) =>

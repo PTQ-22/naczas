@@ -6,7 +6,6 @@ import { Button } from '@/components/Button';
 import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
-import { duration } from '@/features/call-assist/task-status';
 import { FacilityRows } from '@/features/facilities/FacilityRows';
 import { t } from '@/i18n';
 import {
@@ -16,8 +15,9 @@ import {
   useCallTasksStore,
   useProfilesStore,
 } from '@/store';
-import { fonts, useTheme } from '@/theme';
+import { useTheme } from '@/theme';
 
+import { SavedTimeRing } from './SavedTimeRing';
 import { TaskRow } from './TaskRow';
 
 /** Ticks once a second while something is counting down / on the line. */
@@ -36,7 +36,7 @@ function useNow(on: boolean) {
  * tasks ("Moje zlecenia") — live while it dials, waits on hold or re-dials.
  */
 export default function AgentScreen() {
-  const { space, colors } = useTheme();
+  const { space } = useTheme();
   const tasks = useCallTasksStore((s) => s.tasks);
   const profiles = useProfilesStore((s) => s.profiles);
   const patient = useProfilesStore(selectActiveProfile);
@@ -50,15 +50,12 @@ export default function AgentScreen() {
   return (
     <Screen wall edges={['top', 'left', 'right']}>
       <Plate>
-        <View style={{ gap: space.xs }}>
-          <Text variant="eyebrow" tone="textMuted">
-            {t('agent.eyebrow')}
-          </Text>
-          <Text variant="title" accessibilityRole="header">
-            {t('agent.title')}
-          </Text>
-          <Text tone="textMuted">{t('agent.body')}</Text>
-        </View>
+        <SavedTimeRing
+          waitedSec={saved.waitedSec}
+          talkedSec={saved.talkedSec}
+          attempts={saved.attempts}
+          booked={saved.booked}
+        />
         {patient ? (
           <Button
             testID="agent-cta"
@@ -86,47 +83,19 @@ export default function AgentScreen() {
         />
       </Plate>
 
-      <Plate testID="agent-saved">
-        <Text variant="eyebrow" tone="textMuted">
-          {t('agent.saved.title')}
-        </Text>
-        {saved.attempts > 0 ? (
-          <View accessible style={{ gap: space.xs }}>
-            <Text
-              variant="display"
-              color={colors.urgency.done.fg}
-              style={{ fontFamily: fonts.monoBold }}
-              testID="agent-saved-total"
-            >
-              {duration(saved.totalSec)}
-            </Text>
-            <Text tone="textMuted">
-              {t('agent.saved.detail', {
-                waited: duration(saved.waitedSec),
-                calls: saved.attempts,
-                booked: saved.booked,
-              })}
-            </Text>
-          </View>
-        ) : (
-          <Text tone="textMuted">{t('agent.saved.none')}</Text>
-        )}
-      </Plate>
-
-      <Plate>
-        <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
-          {t('agent.active')}
-        </Text>
-        {active.length === 0 ? (
-          <Text tone="textMuted">{t('agent.empty')}</Text>
-        ) : (
+      {/* Only while a call is actually on (dialling, on hold, talking, waiting for a retry). */}
+      {active.length > 0 && (
+        <Plate testID="agent-active">
+          <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
+            {t('agent.active')}
+          </Text>
           <FacilityRows>
             {active.map((task) => (
               <TaskRow key={task.id} task={task} now={now} profileName={nameOf(task.profileId)} />
             ))}
           </FacilityRows>
-        )}
-      </Plate>
+        </Plate>
+      )}
 
       {done.length > 0 && (
         <Plate>
