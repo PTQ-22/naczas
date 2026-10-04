@@ -1,5 +1,5 @@
 import { zValidator } from '@hono/zod-validator';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 import { Hono } from 'hono';
 import { z } from 'zod';
 
@@ -66,8 +66,10 @@ export function syncRoutes() {
             .onConflictDoUpdate({
               target: profiles.id,
               set: {
-                encryptedName: data.profiles.map((p) => p.encryptedName)[0], // Simplified update for SQLite/Neon onConflict
-                updatedAt: now,
+                encryptedName: sql`EXCLUDED.encrypted_name`,
+                gender: sql`EXCLUDED.gender`,
+                birthYear: sql`EXCLUDED.birth_year`,
+                updatedAt: sql`EXCLUDED.updated_at`,
               },
             });
         }
@@ -79,7 +81,10 @@ export function syncRoutes() {
             .values(data.records)
             .onConflictDoUpdate({
               target: records.id,
-              set: { status: 'status', updatedAt: now }, // This syntax varies by DB, but we'll overwrite in bulk safely
+              set: {
+                status: sql`EXCLUDED.status`,
+                updatedAt: sql`EXCLUDED.updated_at`,
+              },
             });
         }
 
@@ -95,7 +100,11 @@ export function syncRoutes() {
             )
             .onConflictDoUpdate({
               target: bets.id,
-              set: { status: 'status' },
+              set: {
+                status: sql`EXCLUDED.status`,
+                amountPln: sql`EXCLUDED.amount_pln`,
+                examIds: sql`EXCLUDED.exam_ids`,
+              },
             });
         }
 
