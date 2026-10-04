@@ -82,7 +82,7 @@ is shown; ask on the first "Znajdź placówkę" instead.
 
 1. ☑ Unknown ≠ overdue; ≤ 3 in "Teraz"; hero by queue length (#1)
 2. ☑ One status vocabulary; Szukam/Umówione/Zrobione indicator with one primary per state (#2, #6)
-3. ☐ Exam screen: what-to-do-now on top, rest collapsed (#4)
+3. ☑ Exam screen: what-to-do-now on top, rest collapsed (#4)
 4. ☐ Queue number consistent with the facility list (#3)
 5. ☐ Remove ±1m; Zakład from tab to plan card (#5, #8)
 

@@ -52,6 +52,7 @@ describe('ExamScreen', () => {
     renderExam('colonoscopy_screening');
     const rule = getExamRule('colonoscopy_screening');
     expect(screen.getByRole('header', { name: 'Kolonoskopia' })).toBeOnTheScreen();
+    fireEvent.press(screen.getByRole('button', { name: 'Skierowanie' }));
     expect(screen.getByText(rule.referralNote ?? '')).toBeOnTheScreen();
     expect(screen.getByText(/To informacja edukacyjna/)).toBeOnTheScreen();
     expect(screen.getByText('W promieniu 25 km czeka się')).toBeOnTheScreen();
@@ -87,19 +88,33 @@ describe('ExamScreen', () => {
     expect(screen.queryByText('Zacznij szukać: teraz')).toBeNull();
   });
 
-  it('booked exam is on step 2', () => {
+  it('booked exam is on step 2 and no longer shows the queue', () => {
     renderExam('mammography');
     expect(screen.getByLabelText('Etap 2 z 3: Umówione')).toBeOnTheScreen();
+    expect(screen.queryByText(/czeka się|Nie mamy aktualnych danych o kolejce/)).toBeNull();
+  });
+
+  it('keeps "why" open and the reference sections one tap away', () => {
+    renderExam('colonoscopy_screening');
+    expect(screen.getByText('Dlaczego')).toBeOnTheScreen();
+    for (const name of ['O badaniu', 'Jak często', 'Skierowanie']) {
+      expect(screen.getByRole('button', { name })).toBeCollapsed();
+    }
+    fireEvent.press(screen.getByRole('button', { name: 'O badaniu' }));
+    expect(screen.getByRole('button', { name: 'O badaniu' })).toBeExpanded();
+    expect(screen.getByText(getExamRule('colonoscopy_screening').description)).toBeOnTheScreen();
   });
 
   it('links to visit prep even when no referral is needed (M3 H2)', () => {
     renderExam('colonoscopy_screening');
+    fireEvent.press(screen.getByRole('button', { name: 'Skierowanie' }));
     fireEvent.press(screen.getByRole('button', { name: 'Przygotuj się do wizyty u lekarza' }));
     expect(router.push).toHaveBeenCalledWith('/visit-prep');
   });
 
   it('marks "Wartość orientacyjna" for unverified rules', () => {
     renderExam('eye_exam');
+    fireEvent.press(screen.getByRole('button', { name: 'Jak często' }));
     expect(screen.getByText('Wartość orientacyjna')).toBeOnTheScreen();
   });
 

@@ -1,12 +1,11 @@
 import { createURL } from 'expo-linking';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Linking, View } from 'react-native';
+import { Linking, Pressable, View } from 'react-native';
 import { z } from 'zod';
 
 import { rules } from '@naczas/rules';
 
-import { Accordion } from '@/components/Accordion';
 import { Button } from '@/components/Button';
 import { Chip } from '@/components/Chip';
 import { Disclaimer } from '@/components/Disclaimer';
@@ -45,22 +44,54 @@ const msg = (m: Message) => t(m.key, m.params);
 // URL params are external input (AGENTS.md §3): validate before touching rules.
 const ParamsSchema = z.object({ examId: z.string().min(1) });
 
-/** Plain-text section on the plate: ink rule + mono eyebrow, no card (redesign §4). */
-function Section({ title, children }: { title: string; children: ReactNode }) {
-  const { colors, space, borderWidth } = useTheme();
+/**
+ * Plain-text section on the plate: ink rule + mono eyebrow, no card (redesign §4). `collapsible`
+ * sections start closed: the top of the screen answers "what do I do now", reference material
+ * waits one tap away (docs/ux-review-first-run.md #4).
+ */
+function Section({
+  title,
+  collapsible = false,
+  children,
+}: {
+  title: string;
+  collapsible?: boolean;
+  children: ReactNode;
+}) {
+  const { colors, layout, space, borderWidth } = useTheme();
+  const [open, setOpen] = useState(!collapsible);
+  const frame = {
+    gap: space.sm,
+    paddingTop: collapsible ? space.xs : space.md,
+    borderTopWidth: collapsible ? borderWidth.hairline : borderWidth.strong,
+    borderTopColor: collapsible ? colors.border : colors.text,
+  };
+  if (!collapsible) {
+    return (
+      <View style={frame}>
+        <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
+          {title}
+        </Text>
+        {children}
+      </View>
+    );
+  }
   return (
-    <View
-      style={{
-        gap: space.sm,
-        paddingTop: space.md,
-        borderTopWidth: borderWidth.strong,
-        borderTopColor: colors.text,
-      }}
-    >
-      <Text variant="eyebrow" tone="textMuted" accessibilityRole="header">
-        {title}
-      </Text>
-      {children}
+    <View style={frame}>
+      <Pressable
+        onPress={() => setOpen((o) => !o)}
+        accessibilityRole="button"
+        accessibilityLabel={title}
+        accessibilityHint={t(open ? 'common.components.collapse' : 'common.components.expand')}
+        accessibilityState={{ expanded: open }}
+        style={{ minHeight: layout.minTouch, flexDirection: 'row', alignItems: 'center' }}
+      >
+        <Text variant="eyebrow" tone="textMuted" style={{ flex: 1 }}>
+          {title}
+        </Text>
+        <Icon name={open ? 'chevronUp' : 'chevronDown'} size="sm" color={colors.textMuted} />
+      </Pressable>
+      {open && children}
     </View>
   );
 }
@@ -108,6 +139,8 @@ export default function ExamScreen() {
   const referral = referralText(rule);
   const palette = item ? colors.urgency[item.urgency] : undefined;
   const step = notRecommended ? null : examStep(item);
+  // Once booked or done, "where and how long" is answered — the queue block would only distract.
+  const showQueue = step !== 'booked' && step !== 'done';
 
   const run = (action: ExamAction) => {
     switch (action) {
@@ -223,7 +256,7 @@ export default function ExamScreen() {
           </View>
         )}
 
-        {queue?.weeks !== undefined && queue.lines.label && (
+        {showQueue && queue?.weeks !== undefined && queue.lines.label && (
           <QueueNumber
             size="compact"
             title={msg(queue.lines.label)}
@@ -235,10 +268,10 @@ export default function ExamScreen() {
             })}
           />
         )}
-        {queue && !queue.hasData && queue.lines.label && (
+        {showQueue && queue && !queue.hasData && queue.lines.label && (
           <Text tone="textMuted">{msg(queue.lines.label)}</Text>
         )}
-        {(showProgramNote || queue?.lines.meta) && (
+        {showQueue && (showProgramNote || queue?.lines.meta) && (
           <View style={{ gap: space.xs }}>
             {showProgramNote && (
               <Text variant="caption" tone="textMuted">
@@ -252,7 +285,7 @@ export default function ExamScreen() {
             )}
           </View>
         )}
-        {showProgramNote && programUrl && (
+        {showQueue && showProgramNote && programUrl && (
           <Button
             variant="ghost"
             icon="external"
@@ -271,11 +304,11 @@ export default function ExamScreen() {
           </Section>
         )}
 
-        <Section title={t('exam.section.about')}>
+        <Section title={t('exam.section.about')} collapsible>
           <Text>{rule.description}</Text>
         </Section>
 
-        <Section title={t('exam.section.frequency')}>
+        <Section title={t('exam.section.frequency')} collapsible>
           <Text>{msg(frequencyMessage(currentInterval))}</Text>
           {activeProfile && (
             <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.sm }}>
@@ -305,7 +338,7 @@ export default function ExamScreen() {
           {!rule.verified && <Chip tone="later" icon="info" label={t('exam.approximate')} />}
         </Section>
 
-        <Section title={t('exam.section.referral')}>
+        <Section title={t('exam.section.referral')} collapsible>
           <Text>{typeof referral === 'string' ? referral : msg(referral)}</Text>
           {/* Always reachable (M3 H2): even without a referral the GP visit summary is useful. */}
           <Button
@@ -317,11 +350,11 @@ export default function ExamScreen() {
         </Section>
 
         {rule.prepTips && rule.prepTips.length > 0 && (
-          <Accordion title={t('exam.section.prep')}>
+          <Section title={t('exam.section.prep')} collapsible>
             {rule.prepTips.map((tip) => (
               <Text key={tip}>{`• ${tip}`}</Text>
             ))}
-          </Accordion>
+          </Section>
         )}
 
         <Button
