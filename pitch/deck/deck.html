@@ -345,7 +345,8 @@
 
       table.cmp th,
       table.cmp td {
-        padding: 6px 24px;
+        /* Tight rows: 7 comparison rows must fit above the footer at the 28px floor. */
+        padding: 3px 24px;
         border-bottom: 2px solid var(--border);
         text-align: left;
         vertical-align: middle;
@@ -513,7 +514,7 @@
         Mówimy nie tylko jakie badanie i kiedy, ale <span style="box-shadow: inset 0 -10px 0 var(--marker)">kiedy zacząć je organizować</span> i
         <span style="box-shadow: inset 0 -10px 0 var(--marker)">gdzie zrobić je najszybciej na NFZ</span> — dla Ciebie i Twoich bliskich.
       </h2>
-      <div class="grid" style="grid-template-columns: repeat(3, 1fr); align-content: center">
+      <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 40px; align-content: center">
         <div class="card pillar">
           <span class="idx">1</span>
           <h3>Plan</h3>
@@ -527,7 +528,12 @@
         <div class="card pillar">
           <span class="idx">3</span>
           <h3>Gdzie na NFZ</h3>
-          <p class="muted">Placówki, gdzie czeka się najkrócej, przycisk „Zadzwoń”</p>
+          <p class="muted">Placówki, gdzie czeka się najkrócej</p>
+        </div>
+        <div class="card pillar" style="border-color: var(--primary); box-shadow: inset 0 0 0 4px var(--primary)">
+          <span class="idx">4</span>
+          <h3>Umówimy za Ciebie</h3>
+          <p class="muted">Agent AI dzwoni do rejestracji i umawia termin w godzinach, które Ci pasują</p>
         </div>
       </div>
       <div class="footer"><span class="app-name"></span><span class="page"></span></div>
@@ -536,26 +542,30 @@
     <!-- 4. Jak to działa -->
     <section class="slide">
       <p class="eyebrow">Jak to działa</p>
-      <h2>Od ankiety do „Zadzwoń” w czterech krokach</h2>
-      <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 56px">
+      <h2>Od ankiety do umówionej wizyty — 5 kroków</h2>
+      <div class="grid" style="grid-template-columns: repeat(5, 1fr); gap: 32px">
         <div>
-          <img class="shot-img" src="../screenshots/onboarding-step7-light.jpg" alt="Ankieta: krok historia rodzinna" />
-          <p class="shot-caption">Ankieta: jeden temat na ekran</p>
+          <img class="shot-img" src="../screenshots/v3/onboarding-light.jpg" alt="Ankieta: jeden temat na ekran" />
+          <p class="shot-caption">1. Ankieta</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/plan-light.jpg" alt="Plan badań mamy: kolonoskopia w sekcji Działaj teraz" />
-          <p class="shot-caption">Plan: co teraz, co później</p>
+          <img class="shot-img" src="../screenshots/v3/plan-light.jpg" alt="Plan badań mamy: kolonoskopia w sekcji Działaj teraz" />
+          <p class="shot-caption">2. Plan: co i kiedy</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/exam-light.jpg" alt="Karta badania z czasem oczekiwania w okolicy" />
-          <p class="shot-caption">Ile się czeka w okolicy</p>
+          <img class="shot-img" src="../screenshots/v3/facilities-light.jpg" alt="Lista placówek NFZ posortowana według czasu oczekiwania" />
+          <p class="shot-caption">3. Gdzie najszybciej</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/facilities-list-light.jpg" alt="Lista placówek NFZ posortowana według czasu oczekiwania" />
-          <p class="shot-caption">Gdzie najszybciej + „Zadzwoń”</p>
+          <img class="shot-img" src="../screenshots/v3/call-light.jpg" alt="Agent AI dzwoni do rejestracji, transkrypcja rozmowy na żywo" />
+          <p class="shot-caption">4. Agent AI dzwoni, transkrypcja na żywo</p>
+        </div>
+        <div>
+          <img class="shot-img" src="../screenshots/v3/calendar-light.jpg" alt="Umówiony termin wizyty w kalendarzu" />
+          <p class="shot-caption">5. Termin w kalendarzu</p>
         </div>
       </div>
-      <div class="footer"><span>Działa na iOS, Androidzie i w przeglądarce.</span><span class="page"></span></div>
+      <div class="footer"><span>iOS, Android i przeglądarka · demo agenta dzwoni na numer testowy zespołu</span><span class="page"></span></div>
     </section>
 
     <!-- 5. Wyróżnik -->
@@ -618,6 +628,12 @@
             <td class="ours"><span class="yes">✓</span></td>
           </tr>
           <tr>
+            <td>Umawia wizytę za Ciebie</td>
+            <td><span class="no">✗</span> w planach</td>
+            <td><span class="unk">?</span> tylko samodzielna e-rejestracja</td>
+            <td class="ours"><span class="yes">✓</span> agent AI</td>
+          </tr>
+          <tr>
             <td>„Kiedy zacząć” = plan × kolejka</td>
             <td><span class="no">✗</span></td>
             <td><span class="no">✗</span></td>
@@ -637,12 +653,13 @@
       <h2>Zdrowie mamy i swoje — na jednym telefonie</h2>
       <div class="grid" style="grid-template-columns: 1fr 0.55fr 0.55fr; align-items: stretch">
         <ul class="points" style="justify-content: center">
-          <li><b>Profile rodzinne</b> — przełącznik Ja / Mama, licznik pilnych badań przy profilu mamy</li>
-          <li><b>Przygotowanie do wizyty</b> — podsumowanie dla lekarza rodzinnego: „Proszę o skierowanie na…”, czynniki ryzyka, lista badań (ekran lub PDF)</li>
-          <li><b>Karta aktywności</b> — mały, osiągalny krok ruchu dopasowany do odpowiedzi z ankiety</li>
+          <li><b>Profile rodzinne</b> — przełącznik Ja / Mama, licznik pilnych badań mamy</li>
+          <li><b>Agent umawia też mamę</b> — dzwoni w imieniu Kasi, termin trafia do planu mamy</li>
+          <li><b>Przygotowanie do wizyty</b> — dla lekarza rodzinnego: „Proszę o skierowanie na…”, czynniki ryzyka, lista badań (PDF)</li>
+          <li><b>Karta aktywności</b> — mały krok ruchu dopasowany do ankiety</li>
         </ul>
         <div>
-          <img class="shot-img" src="../screenshots/family-light.jpg" alt="Ekran Rodzina: profile Kasi i mamy z liczbą pilnych badań" />
+          <img class="shot-img" src="../screenshots/v3/family-light.jpg" alt="Ekran Rodzina: profile Kasi i mamy z liczbą pilnych badań" />
         </div>
         <div>
           <img class="shot-img doc" src="screens/visit-prep-pdf.png" alt="PDF dla lekarza rodzinnego: czynniki ryzyka i lista badań" />
@@ -664,15 +681,15 @@
           <li>Systemowe powiększenie czcionki i czytnik ekranu</li>
         </ul>
         <div>
-          <img class="shot-img" src="../screenshots/plan-light.jpg" alt="Plan w trybie standardowym" />
+          <img class="shot-img" src="../screenshots/v3/plan-light.jpg" alt="Plan w trybie standardowym" />
           <p class="shot-caption">Standard</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/plan-senior.jpg" alt="Plan w trybie senior" />
+          <img class="shot-img" src="../screenshots/v3/plan-senior.jpg" alt="Plan w trybie senior" />
           <p class="shot-caption">Tryb senior</p>
         </div>
         <div>
-          <img class="shot-img" src="../screenshots/plan-dark.jpg" alt="Plan w trybie ciemnym" />
+          <img class="shot-img" src="../screenshots/v3/plan-dark.jpg" alt="Plan w trybie ciemnym" />
           <p class="shot-caption">Dark mode</p>
         </div>
       </div>
@@ -682,14 +699,14 @@
     <!-- 8. Technologia -->
     <section class="slide">
       <p class="eyebrow">Technologia</p>
-      <h2 style="margin-bottom: 32px">Prawdziwe dane NFZ. Zero danych zdrowotnych na serwerze.</h2>
+      <h2 style="margin-bottom: 32px; max-width: 1680px">Prawdziwe dane NFZ. Dane zdrowotne zostają na telefonie.</h2>
       <div class="grid" style="grid-template-columns: 1.25fr 1fr; gap: 64px; align-items: center">
         <svg
           viewBox="0 0 960 620"
           width="960"
           height="620"
           role="img"
-          aria-label="Architektura: telefon, API, API NFZ"
+          aria-label="Architektura: telefon, API, API NFZ i agent głosowy"
           font-family="Atkinson Hyperlegible Next, system-ui, sans-serif"
         >
           <defs>
@@ -709,18 +726,18 @@
           <!-- API -->
           <rect x="10" y="270" width="940" height="150" rx="24" fill="#fbf9f3" stroke="#0e1b2c" stroke-width="4" />
           <text x="40" y="326" font-size="36" font-weight="700" fill="#0e1b2c">Cienkie API (Hono)</text>
-          <text x="40" y="374" font-size="28" fill="#4a5160">agregacja kolejek · cache · zapasowa kopia danych</text>
+          <text x="40" y="374" font-size="28" fill="#4a5160">kolejki · cache · kopia zapasowa · zlecenia agenta</text>
           <!-- Arrow API -> NFZ -->
           <line x1="480" y1="424" x2="480" y2="492" stroke="#ffffff" stroke-width="5" marker-end="url(#arrow)" />
           <!-- NFZ -->
           <rect x="10" y="500" width="940" height="110" rx="24" fill="#ece7db" stroke="#0e1b2c" stroke-width="4" />
-          <text x="40" y="568" font-size="36" font-weight="700" fill="#0e1b2c">API NFZ „Terminy leczenia”</text>
+          <text x="40" y="568" font-size="36" font-weight="700" fill="#0e1b2c">API NFZ „Terminy leczenia” · Vapi + Twilio</text>
         </svg>
         <ul class="points">
-          <li><b>Privacy by design</b> — bez kont, dane zdrowotne nie opuszczają telefonu</li>
-          <li><b>Demo odporne na awarię NFZ</b> — cache i zapasowa kopia danych</li>
-          <li><b>Otwarte reguły</b> — każde zalecenie ze źródłem; niezweryfikowane oznaczone jako orientacyjne</li>
-          <li><b>Testy</b> — 609: silnik reguł 154 (100% pokrycia linii), API 93, aplikacja 337, kontrakty 25</li>
+          <li><b>Privacy by design</b> — profil, historia i czynniki ryzyka tylko na telefonie, bez kont</li>
+          <li><b>Agent AI</b> dostaje tylko to, co potrzebne do rozmowy: dla kogo, jakie badanie, która placówka, kiedy pasuje — bez PESEL i nazwiska</li>
+          <li><b>Odporne na awarię NFZ</b> — cache i kopia zapasowa danych</li>
+          <li><b>Testy</b> — 1013: silnik reguł 206 (100% pokrycia linii), API 174, aplikacja 579, kontrakty 54</li>
         </ul>
       </div>
       <div class="footer"><span>TypeScript · Expo · Hono · Zod · Vitest</span><span class="page"></span></div>
@@ -737,6 +754,7 @@
             <li>Plan badań</li>
             <li>„Kiedy zacząć szukać”</li>
             <li>Placówki NFZ</li>
+            <li>Agent AI umawia wizytę</li>
             <li>Profile rodzinne</li>
             <li>PDF dla lekarza</li>
           </ul>
@@ -746,8 +764,9 @@
           <ul class="points" style="margin-top: 8px; gap: 14px; font-size: 32px">
             <li>Wspólny plan opiekuna i rodzica (szyfrowany E2E)</li>
             <li>Integracja z IKP</li>
-            <li>Realizatorzy programów przesiewowych z API NFZ „Umowy”: mammografia, HPV, kolonoskopia w programie</li>
-            <li>Harmonogram mammobusów, eksport do kalendarza</li>
+            <li>Agent z e-rejestracją zamiast telefonu</li>
+            <li>Realizatorzy programów przesiewowych z API NFZ „Umowy”</li>
+            <li>Harmonogram mammobusów</li>
           </ul>
         </div>
         <div class="card">
@@ -782,7 +801,8 @@
         <div class="card" style="padding: 32px 40px">
           <h3 style="font-size: var(--fs-body); margin-bottom: 16px">Ujawnienie AI i zasobów</h3>
           <ul class="points small" style="gap: 14px">
-            <li><b>AI:</b> Claude Code (Claude Opus 5.5) — kod, testy, research źródeł, dokumentacja. Zalecenia medyczne nie pochodzą od AI.</li>
+            <li><b>AI w pracy:</b> Claude Code (Claude Opus 5.5) — kod, testy, research, dokumentacja. Zalecenia medyczne nie pochodzą od AI.</li>
+            <li><b>AI w aplikacji:</b> Vapi + OpenAI gpt-4o + ElevenLabs + Deepgram (agent głosowy), Twilio (telefonia)</li>
             <li><b>Dane:</b> API NFZ „Terminy leczenia”, pacjent.gov.pl, nfz.gov.pl</li>
             <li><b>Open source:</b> Expo, React Native, Hono, Zod, Leaflet + OpenStreetMap</li>
           </ul>
