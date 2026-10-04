@@ -79,6 +79,23 @@ export type CallRetry = z.infer<typeof CallRetrySchema>;
 export const DEFAULT_CALL_RETRY: CallRetry = { maxAttempts: 3, intervalMin: 10 };
 
 /** POST /v1/call-assist — demo: an AI voice agent phones the clinic and asks for a visit */
+/**
+ * Personal data the patient explicitly allowed the agent to say (Settings → "Dane w rozmowach AI",
+ * every field off by default). The agent gives a field only when the clinic asks for it.
+ */
+export const CallPatientDetailsSchema = z.object({
+  firstName: z.string().trim().min(1).max(40).optional(),
+  lastName: z.string().trim().min(1).max(60).optional(),
+  pesel: z
+    .string()
+    .regex(/^\d{11}$/)
+    .optional(),
+  birthDate: ISODateSchema.optional(),
+  phone: z.string().trim().min(5).max(20).optional(),
+  address: z.string().trim().min(3).max(120).optional(),
+});
+export type CallPatientDetails = z.infer<typeof CallPatientDetailsSchema>;
+
 export const CallAssistRequestSchema = z.object({
   examName: z.string().trim().min(1).max(80),
   facilityName: z.string().trim().min(1).max(120),
@@ -87,6 +104,7 @@ export const CallAssistRequestSchema = z.object({
   bookBy: ISODateSchema.optional(), // latest acceptable date from the plan
   availability: CallAvailabilitySchema.optional(), // when the patient can come; absent = any time
   retry: CallRetrySchema.optional(), // absent = DEFAULT_CALL_RETRY
+  patientDetails: CallPatientDetailsSchema.optional(), // only fields the user opted in to
 });
 export type CallAssistRequest = z.infer<typeof CallAssistRequestSchema>;
 

@@ -9,6 +9,8 @@ export const callAssist = {
     retry:
       'Jeśli nikt nie odbierze, zadzwoni ponownie — do 3 razy co 10 minut, w godzinach pracy rejestracji.',
     privacy: 'Przekażemy tylko nazwę badania, placówkę i imię. Bez PESEL i nazwiska.',
+    privacyWithDetails:
+      'Przekażemy nazwę badania i placówkę, a gdy rejestracja zapyta — także: {{fields}} (wg Ustawień).',
     demo: 'Wersja demo: dzwoni na numer testowy zespołu, nie do placówki.',
   },
   start: 'Zadzwoń',

@@ -54,6 +54,41 @@ function availabilityLines(req: CallAssistRequest, today: ISODate): string[] {
   ];
 }
 
+const DETAIL_LABELS: Record<keyof NonNullable<CallAssistRequest['patientDetails']>, string> = {
+  firstName: 'imię',
+  lastName: 'nazwisko',
+  pesel: 'PESEL',
+  birthDate: 'data urodzenia',
+  phone: 'telefon kontaktowy',
+  address: 'adres',
+};
+
+/** PESEL read digit by digit, so the clinic can write it down. */
+const spokenValue = (key: string, value: string) =>
+  key === 'pesel' ? value.split('').join(' ') : value;
+
+/** Only fields the patient opted in to; anything else the agent must not know or invent. */
+function detailsLines(req: CallAssistRequest): string[] {
+  const entries = Object.entries(req.patientDetails ?? {}).filter(
+    (e): e is [keyof typeof DETAIL_LABELS, string] => typeof e[1] === 'string' && e[1] !== '',
+  );
+  const refuse =
+    '  powiedz, że pacjent poda je osobiście przy rejestracji lub oddzwoni. Niczego nie wymyślaj.';
+  if (entries.length === 0) {
+    return [
+      '- Nie znasz i nie podajesz PESEL, nazwiska, adresu ani numeru telefonu. Jeśli rejestracja ich potrzebuje,',
+      refuse,
+    ];
+  }
+  return [
+    '- Pacjent zgodził się podać rejestracji te dane — podawaj je TYLKO wtedy, gdy rejestracja o nie zapyta,',
+    '  i tylko te, o które zapyta:',
+    ...entries.map(([k, v]) => `  • ${DETAIL_LABELS[k]}: ${spokenValue(k, v)}`),
+    '- Innych danych osobowych nie znasz i nie podajesz. Jeśli rejestracja ich potrzebuje,',
+    refuse,
+  ];
+}
+
 function systemPrompt(req: CallAssistRequest, today: ISODate): string {
   return [
     'Jesteś asystentem głosowym AI aplikacji NaCzas. Dzwonisz do rejestracji placówki medycznej,',
@@ -67,8 +102,7 @@ function systemPrompt(req: CallAssistRequest, today: ISODate): string {
     'Zasady:',
     '- Mów krótko, uprzejmie, naturalnie, po polsku. Jedno-dwa zdania na raz.',
     '- Już się przedstawiłeś jako AI. Jeśli ktoś zapyta, potwierdź, że jesteś asystentem AI.',
-    '- Nie znasz i nie podajesz PESEL, nazwiska, adresu ani numeru telefonu. Jeśli rejestracja ich potrzebuje,',
-    '  powiedz, że pacjent poda je osobiście przy rejestracji lub oddzwoni. Niczego nie wymyślaj.',
+    ...detailsLines(req),
     '- Skierowanie: pacjent ma e-skierowanie (jeśli badanie go wymaga).',
     '- Gdy padnie termin: powtórz datę i godzinę, żeby potwierdzić, podziękuj, pożegnaj się i zakończ rozmowę.',
     '- Gdy nie ma terminów: zapytaj, kiedy zadzwonić ponownie, podziękuj i zakończ rozmowę.',

@@ -325,6 +325,21 @@ describe('buildAssistant', () => {
     expect(content).toContain('odmów i poproś o inny');
   });
 
+  it('gives only opted-in personal data, and only when asked; none = refuses', () => {
+    const prompt = (req: CallAssistRequest) =>
+      (buildAssistant(req, '2026-10-04') as { model: { messages: { content: string }[] } }).model
+        .messages[0]!.content;
+    expect(prompt(body)).toContain('Nie znasz i nie podajesz PESEL');
+    const withDetails = prompt({
+      ...body,
+      patientDetails: { lastName: 'Nowak', pesel: '68031504820' },
+    });
+    expect(withDetails).toContain('TYLKO wtedy, gdy rejestracja o nie zapyta');
+    expect(withDetails).toContain('• nazwisko: Nowak');
+    expect(withDetails).toContain('• PESEL: 6 8 0 3 1 5 0 4 8 2 0');
+    expect(withDetails).not.toContain('adres:');
+  });
+
   it('wires the webhook only with a public URL', () => {
     const a = buildAssistant(body, '2026-10-04', { publicUrl: 'https://x.ngrok.app/' });
     expect(a).toMatchObject({ server: { url: 'https://x.ngrok.app/v1/call-assist/webhook' } });

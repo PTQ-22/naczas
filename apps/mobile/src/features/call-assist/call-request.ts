@@ -1,6 +1,7 @@
 import type {
   CallAssistRequest,
   CallAvailability,
+  CallPatientDetails,
   ExamRule,
   ISODate,
   Profile,
@@ -36,10 +37,23 @@ export function inSentence(examName: string): string {
     : examName.charAt(0).toLowerCase() + examName.slice(1);
 }
 
+/** Keeps only the fields the user switched on in Settings ("Dane w rozmowach AI"). */
+export function disclosedDetails(
+  details: CallPatientDetails | undefined,
+  allowed: Record<keyof CallPatientDetails, boolean>,
+): CallPatientDetails | undefined {
+  if (!details) return undefined;
+  const picked = Object.fromEntries(
+    Object.entries(details).filter(([k]) => allowed[k as keyof CallPatientDetails]),
+  ) as CallPatientDetails;
+  return Object.keys(picked).length > 0 ? picked : undefined;
+}
+
 /**
- * Everything the agent will say about the patient — deliberately no surname, PESEL or birth
- * year (AGENTS.md §8); free hours are just days and times, not health data. The caregiver is
- * the "self" profile; without one we say "rodziny".
+ * Everything the agent will say about the patient. Surname, PESEL, birth date, phone or address
+ * only when the user switched that field on in Settings (AGENTS.md §8: opt-in per field); free
+ * hours are just days and times, not health data. The caregiver is the "self" profile; without
+ * one we say "rodziny".
  */
 export function buildCallRequest({
   patient,
@@ -48,6 +62,7 @@ export function buildCallRequest({
   facilityName,
   bookBy,
   availability,
+  patientDetails,
 }: {
   patient: Profile;
   profiles: readonly Profile[];
@@ -56,6 +71,8 @@ export function buildCallRequest({
   bookBy?: ISODate | undefined;
   /** Free days and hours marked in the calendar; undefined = any slot */
   availability?: CallAvailability | undefined;
+  /** Already filtered by the user's consent (disclosedDetails) */
+  patientDetails?: CallPatientDetails | undefined;
 }): CallAssistRequest {
   const caller =
     patient.relation === 'self' ? patient : profiles.find((p) => p.relation === 'self');
@@ -73,5 +90,6 @@ export function buildCallRequest({
     callerName: named ?? fallback,
     ...(bookBy && { bookBy }),
     ...(availability && { availability }),
+    ...(patientDetails && { patientDetails }),
   };
 }

@@ -1,8 +1,10 @@
 import { rules } from '@naczas/rules';
 
+import { DEMO_MAMA_ID } from '@/features/onboarding/demo-ids';
+import { demoPersonDetails, demoPesel } from '@/features/onboarding/demo-person';
 import { makeProfile } from '@/store/__fixtures__/fixtures';
 
-import { buildCallRequest, inSentence, polishGenitive } from '../call-request';
+import { buildCallRequest, disclosedDetails, inSentence, polishGenitive } from '../call-request';
 
 describe('polishGenitive', () => {
   it.each([
@@ -65,5 +67,49 @@ describe('buildCallRequest', () => {
     expect(
       buildCallRequest({ patient: mama, profiles: [mama, me], rule, facilityName: 'X' }).callerName,
     ).toBe('rodziny');
+  });
+});
+
+describe('personal data for the agent', () => {
+  const none = {
+    firstName: false,
+    lastName: false,
+    pesel: false,
+    birthDate: false,
+    phone: false,
+    address: false,
+  };
+  const mamaDemo = makeProfile({ id: DEMO_MAMA_ID, birthYear: 1968 });
+
+  it('demo profiles have checksum-valid mock data; real profiles none', () => {
+    const d = demoPersonDetails(mamaDemo)!;
+    expect(d).toMatchObject({ lastName: 'Nowak', birthDate: '1968-03-15' });
+    expect(d.pesel).toMatch(/^680315\d{5}$/);
+    const w = [1, 3, 7, 9, 1, 3, 7, 9, 1, 3];
+    const sum = d.pesel
+      .split('')
+      .slice(0, 10)
+      .reduce((s, c, i) => s + Number(c) * w[i]!, 0);
+    expect(Number(d.pesel[10])).toBe((10 - (sum % 10)) % 10);
+    expect(demoPesel('2001-02-03', '0000').slice(0, 6)).toBe('012203'); // 2000s: month + 20
+    expect(demoPersonDetails(makeProfile({ id: 'real-1' }))).toBeUndefined();
+  });
+
+  it('sends only the fields switched on in Settings', () => {
+    const d = demoPersonDetails(mamaDemo);
+    expect(disclosedDetails(d, none)).toBeUndefined();
+    expect(disclosedDetails(d, { ...none, pesel: true, lastName: true })).toEqual({
+      lastName: 'Nowak',
+      pesel: d!.pesel,
+    });
+    const rule = rules.find((r) => r.id === 'colonoscopy_screening')!;
+    const req = buildCallRequest({
+      patient: mamaDemo,
+      profiles: [mamaDemo],
+      rule,
+      facilityName: 'X',
+      patientDetails: disclosedDetails(d, { ...none, phone: true }),
+    });
+    expect(req.patientDetails).toEqual({ phone: '600 100 200' });
   });
 });

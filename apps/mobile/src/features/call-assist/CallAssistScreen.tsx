@@ -14,14 +14,21 @@ import { Icon, type IconName } from '@/components/Icon';
 import { Plate } from '@/components/Plate';
 import { Screen } from '@/components/Screen';
 import { Text } from '@/components/Text';
+import { demoPersonDetails } from '@/features/onboarding/demo-person';
 import { t } from '@/i18n';
-import { selectActiveProfile, useCallTasksStore, useProfilesStore, useToday } from '@/store';
+import {
+  selectActiveProfile,
+  useCallTasksStore,
+  useProfilesStore,
+  useSettingsStore,
+  useToday,
+} from '@/store';
 import { selectSlots, useAvailabilityStore } from '@/store/availability-store';
 import { fonts, useTheme } from '@/theme';
 
 import { toCallAvailability } from './availability';
 import { AvailabilityCard } from './AvailabilityCard';
-import { buildCallRequest, inSentence } from './call-request';
+import { buildCallRequest, disclosedDetails, inSentence } from './call-request';
 import { cancelTask, retryTaskNow, startCallTask } from './call-tasks';
 import { CallStats } from './CallStats';
 import { taskStatusLine } from './task-status';
@@ -71,6 +78,7 @@ export default function CallAssistScreen() {
   const nearest =
     parsedFirstDate.success && parsedFirstDate.data >= today ? parsedFirstDate.data : null;
   const profiles = useProfilesStore((s) => s.profiles);
+  const callDisclosure = useSettingsStore((s) => s.callDisclosure);
   const rule = rules.find((r) => r.id === examId);
 
   const [taskId, setTaskId] = useState<string | undefined>();
@@ -100,6 +108,15 @@ export default function CallAssistScreen() {
     );
   }
 
+  const shared = disclosedDetails(demoPersonDetails(patient), callDisclosure);
+  const privacyPoint = shared
+    ? t('callAssist.points.privacyWithDetails', {
+        fields: Object.keys(shared)
+          .map((k) => t(`settings.callDisclosure.fields.${k as keyof typeof shared}`).toLowerCase())
+          .join(', '),
+      })
+    : t('callAssist.points.privacy');
+
   const call = async () => {
     setStart('starting');
     try {
@@ -110,6 +127,7 @@ export default function CallAssistScreen() {
           rule,
           facilityName,
           availability: toCallAvailability(slots, today),
+          patientDetails: shared,
         }),
         profileId: patient.id,
         examId: rule.id,
@@ -227,7 +245,7 @@ export default function CallAssistScreen() {
           <View style={{ gap: space.md }}>
             <Point icon="info" text={t('callAssist.points.disclosure')} />
             <Point icon="time" text={t('callAssist.points.retry')} />
-            <Point icon="check" text={t('callAssist.points.privacy')} />
+            <Point icon="check" text={privacyPoint} />
             <Point icon="phone" text={t('callAssist.points.demo')} />
           </View>
           {start === 'error' && (

@@ -64,6 +64,8 @@ export interface ExamRecord {
 
 ## Reguły badań (format `packages/rules/data/exams.json`)
 
+> **Zmiana 2026-10-04 (dane w rozmowach AI):** `CallAssistRequest.patientDetails?` (`CallPatientDetailsSchema`: imię, nazwisko, PESEL, data urodzenia, telefon, adres — wszystko opcjonalne). Aplikacja wysyła wyłącznie pola włączone przez użytkownika w Ustawieniach (domyślnie wszystkie wyłączone); agent podaje je tylko na prośbę rejestracji. W demo dane mają tylko profile demo (zmyślone).
+
 > **Zmiana 2026-10-04 (godzina wizyty):** opcjonalne `ExamRecord.bookedTime` (`HH:mm`); brak = wizyta całodniowa. Bez migracji (pole opcjonalne).
 
 > **Zmiana 2026-10-04 (przedziały „kiedy ostatnio”):** `LastDoneAnswer` liczone od interwału badania; `ExamRecord.lastDone` to data albo `UndatedLastDone`. Rekordy migrowane v1 → v2.
@@ -232,6 +234,10 @@ export interface CallAssistRequest {
   availability?: CallAvailability; // kiedy pacjent może przyjść; brak = dowolny termin
   retry?: { maxAttempts: number; intervalMin: number }; // ponowne próby gdy nikt nie odbierze;
                                   // brak = 3 próby co 10 min; tylko pn–pt 7:30–18:00 (czas PL)
+  patientDetails?: {              // tylko pola włączone w Ustawieniach; agent podaje na prośbę rejestracji
+    firstName?: string; lastName?: string; pesel?: string;
+    birthDate?: ISODate; phone?: string; address?: string;
+  };
 }
 
 // Zaznaczone przez użytkownika przed telefonem (ekran „Kiedy możesz?”, widok tygodnia jak w

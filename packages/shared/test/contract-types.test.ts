@@ -183,6 +183,15 @@ namespace Doc {
     bookBy?: ISODate;
     availability?: CallAvailability;
     retry?: { maxAttempts: number; intervalMin: number };
+    /** Only fields the user opted in to in Settings; given by the agent only when the clinic asks. */
+    patientDetails?: {
+      firstName?: string;
+      lastName?: string;
+      pesel?: string;
+      birthDate?: ISODate;
+      phone?: string;
+      address?: string;
+    };
   }
 
   export type Weekday = 1 | 2 | 3 | 4 | 5 | 6 | 7;
