@@ -40,6 +40,23 @@ const EnvSchema = z.object({
   /** Public https URL of this API — enables the live-transcript webhook */
   PUBLIC_URL: optional(z.url()),
   VAPI_WEBHOOK_SECRET: optional(z.string()),
+  /**
+   * Alternative to VAPI_PHONE_NUMBER_ID: Twilio places the call from a verified caller ID (no
+   * purchased number) and bridges it to Vapi over SIP.
+   */
+  TWILIO_ACCOUNT_SID: optional(z.string()),
+  TWILIO_AUTH_TOKEN: optional(z.string()),
+  /** Verified caller ID in Twilio — shown to the callee; must differ from DEMO_CALL_TO */
+  TWILIO_FROM: optional(z.string().regex(/^\+\d{8,15}$/, 'TWILIO_FROM must be E.164, e.g. +48…')),
+  /** Free Vapi SIP URI, e.g. sip:naczas-demo-<something-unique>@sip.vapi.ai */
+  VAPI_SIP_URI: optional(
+    z
+      .string()
+      .regex(
+        /^sip:[^@\s]+@sip(\.eu)?\.vapi\.ai$/,
+        'VAPI_SIP_URI must look like sip:name@sip.vapi.ai',
+      ),
+  ),
   /** NFZ ITL API root and its api-version — change together (v1.4 rejects api-version=1.3) */
   NFZ_BASE_URL: z.url().default(NFZ_DEFAULT_BASE_URL),
   NFZ_API_VERSION: z

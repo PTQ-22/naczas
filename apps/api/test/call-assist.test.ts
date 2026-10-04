@@ -8,6 +8,7 @@ import {
 
 import { createApp } from '../src/app';
 import { buildAssistant } from '../src/call-assist/assistant';
+import { createTwilioClient } from '../src/call-assist/twilio-client';
 import { createVapiClient, type VapiCall } from '../src/call-assist/vapi-client';
 import { loadEnv } from '../src/env';
 import { createNfzClient } from '../src/nfz/client';
@@ -35,6 +36,7 @@ function makeApp(vapiFetch?: typeof fetch) {
     callAssist: vapiFetch
       ? {
           vapi: createVapiClient({ apiKey: 'test', fetch: vapiFetch }),
+          via: 'vapi-number',
           phoneNumberId: 'pn_1',
           callTo: CALL_TO,
         }
@@ -226,5 +228,99 @@ describe('env', () => {
     expect(() => loadEnv({ DEMO_CALL_TO: '500600700' })).toThrow(/DEMO_CALL_TO/);
     expect(loadEnv({ DEMO_CALL_TO: '', VAPI_API_KEY: '' }).DEMO_CALL_TO).toBeUndefined();
     expect(loadEnv({ DEMO_CALL_TO: CALL_TO }).DEMO_CALL_TO).toBe(CALL_TO);
+  });
+});
+
+const urlOf = (input: string | URL | Request) =>
+  typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+
+describe('twilio-sip (verified caller ID → Vapi SIP)', () => {
+  const SIP = 'sip:naczas-test@sip.vapi.ai';
+
+  function makeSipApp(opts: { vapiCalls: () => unknown[]; twilioStatus: string }) {
+    const vapiFetch = vi.fn<typeof fetch>((url, init) => {
+      const u = urlOf(url);
+      const method = init?.method ?? 'GET';
+      if (u.endsWith('/assistant') && method === 'POST') return json({ id: 'asst_1' });
+      if (u.endsWith('/phone-number') && method === 'GET') return json([]);
+      if (u.endsWith('/phone-number') && method === 'POST') return json({ id: 'pn_sip' });
+      if (u.includes('/call?assistantId=asst_1')) return json(opts.vapiCalls());
+      if (u.endsWith('/call/vapi_1'))
+        return json({ id: 'vapi_1', status: 'in-progress', artifact: { messages: [] } });
+      return json({ message: 'unexpected' }, 404);
+    });
+    const twilioFetch = vi.fn<typeof fetch>((_url, init) =>
+      json({ sid: 'CA1', status: init?.method === 'POST' ? 'queued' : opts.twilioStatus }, 201),
+    );
+    const app = createApp({
+      nfz: createNfzClient({ fetch: vi.fn<typeof fetch>(), minIntervalMs: 0 }),
+      snapshot: createSnapshotStore('/nonexistent'),
+      now: () => new Date('2026-10-04T10:00:00'),
+      callAssist: {
+        via: 'twilio-sip',
+        vapi: createVapiClient({ apiKey: 'test', fetch: vapiFetch }),
+        twilio: createTwilioClient({ accountSid: 'AC1', authToken: 't', fetch: twilioFetch }),
+        from: '+48111222333',
+        sipUri: SIP,
+        callTo: CALL_TO,
+      },
+    });
+    return { app, vapiFetch, twilioFetch };
+  }
+
+  it('creates an assistant, points the SIP URI at it and has Twilio dial the demo number', async () => {
+    const { app, vapiFetch, twilioFetch } = makeSipApp({
+      vapiCalls: () => [],
+      twilioStatus: 'ringing',
+    });
+    const res = await app.request('/v1/call-assist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    expect(CallAssistStartResponseSchema.parse(await res.json())).toEqual({
+      callId: 'CA1',
+      mode: 'live',
+    });
+
+    const sipCreate = vapiFetch.mock.calls.find(
+      ([u, i]) => urlOf(u).endsWith('/phone-number') && i?.method === 'POST',
+    )!;
+    expect(JSON.parse(sipCreate[1]!.body as string)).toEqual({
+      provider: 'vapi',
+      sipUri: SIP,
+      assistantId: 'asst_1',
+    });
+    const form = new URLSearchParams(twilioFetch.mock.calls[0]![1]!.body as string);
+    expect(form.get('From')).toBe('+48111222333');
+    expect(form.get('To')).toBe(CALL_TO);
+    expect(form.get('Twiml')).toBe(`<Response><Dial><Sip>${SIP}</Sip></Dial></Response>`);
+
+    const ringing = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/CA1')).json(),
+    );
+    expect(ringing.status).toBe('ringing');
+  });
+
+  it('switches to the Vapi call once the SIP leg reaches the assistant', async () => {
+    let answered = false;
+    const { app } = makeSipApp({
+      vapiCalls: () => (answered ? [{ id: 'vapi_1', status: 'in-progress' }] : []),
+      twilioStatus: 'no-answer',
+    });
+    await app.request('/v1/call-assist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const missed = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/CA1')).json(),
+    );
+    expect(missed.status).toBe('failed');
+    answered = true;
+    const live = CallAssistStatusSchema.parse(
+      await (await app.request('/v1/call-assist/CA1')).json(),
+    );
+    expect(live.status).toBe('in_progress');
   });
 });

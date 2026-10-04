@@ -5,12 +5,15 @@ import path from 'node:path';
 import { serve } from '@hono/node-server';
 
 import { createApp } from './app';
+import { createTwilioClient } from './call-assist/twilio-client';
 import { createVapiClient } from './call-assist/vapi-client';
 import { loadEnv } from './env';
 import { createNfzClient } from './nfz/client';
 import { GEO_INDEX_FILE, loadGeoIndex } from './nfz/geo-index';
 import { createSnapshotStore } from './nfz/snapshot';
 import { createQueueLoader } from './queues';
+
+import type { CallAssistConfig } from './routes/call-assist';
 
 // Most populous provinces first: their cache gets live NFZ data soonest after a restart.
 const REFRESH_ORDER = [
@@ -34,20 +37,41 @@ const REFRESH_ORDER = [
 
 const env = loadEnv();
 
-const callAssist =
-  env.VAPI_API_KEY && env.VAPI_PHONE_NUMBER_ID && env.DEMO_CALL_TO
+const assistantOptions = {
+  voiceId: env.VAPI_VOICE_ID,
+  publicUrl: env.PUBLIC_URL,
+  webhookSecret: env.VAPI_WEBHOOK_SECRET,
+};
+const vapi = env.VAPI_API_KEY ? createVapiClient({ apiKey: env.VAPI_API_KEY }) : null;
+const callAssist: CallAssistConfig | null =
+  vapi && env.DEMO_CALL_TO && env.VAPI_PHONE_NUMBER_ID
     ? {
-        vapi: createVapiClient({ apiKey: env.VAPI_API_KEY }),
+        via: 'vapi-number',
+        vapi,
         phoneNumberId: env.VAPI_PHONE_NUMBER_ID,
         callTo: env.DEMO_CALL_TO,
-        assistant: {
-          voiceId: env.VAPI_VOICE_ID,
-          publicUrl: env.PUBLIC_URL,
-          webhookSecret: env.VAPI_WEBHOOK_SECRET,
-        },
+        assistant: assistantOptions,
       }
-    : null;
-console.log(`Call assist: ${callAssist ? 'live (Vapi)' : 'simulated'}`);
+    : vapi &&
+        env.DEMO_CALL_TO &&
+        env.TWILIO_ACCOUNT_SID &&
+        env.TWILIO_AUTH_TOKEN &&
+        env.TWILIO_FROM &&
+        env.VAPI_SIP_URI
+      ? {
+          via: 'twilio-sip',
+          vapi,
+          twilio: createTwilioClient({
+            accountSid: env.TWILIO_ACCOUNT_SID,
+            authToken: env.TWILIO_AUTH_TOKEN,
+          }),
+          from: env.TWILIO_FROM,
+          sipUri: env.VAPI_SIP_URI,
+          callTo: env.DEMO_CALL_TO,
+          assistant: assistantOptions,
+        }
+      : null;
+console.log(`Call assist: ${callAssist ? `live (${callAssist.via})` : 'simulated'}`);
 
 const nfz = createNfzClient({ baseUrl: env.NFZ_BASE_URL, apiVersion: env.NFZ_API_VERSION });
 const snapshot = createSnapshotStore(path.resolve(import.meta.dirname, '../data/snapshot'));
