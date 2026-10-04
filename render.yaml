@@ -46,8 +46,8 @@ services:
   - type: web
     name: naczas-web
     runtime: static
-    # pnpm version is pinned by packageManager in package.json
-    buildCommand: npm install -g pnpm@12.8.1 && pnpm install --frozen-lockfile && pnpm build:web
+    # Render provides pnpm itself (version from packageManager); global npm installs are read-only.
+    buildCommand: pnpm install --frozen-lockfile && pnpm build:web
     staticPublishPath: ./apps/mobile/dist
     autoDeploy: true
     # Deep links like /plan must load the SPA; existing files (JS, fonts) are served as-is.
