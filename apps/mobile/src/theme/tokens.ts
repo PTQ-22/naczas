@@ -44,6 +44,8 @@ export interface ColorTokens {
   onWall: string;
   /** Urgent count on the wall / inactive folder tabs — act_now.fg is too dark on light cobalt. */
   urgentOnWall: string;
+  /** Big date on the agent's "Umówiono" ticket — a celebratory light green; large text only (≥ 3:1). */
+  bookedTicket: string;
   urgency: Record<Urgency, UrgencyColor>;
 }
 
@@ -62,6 +64,7 @@ const lightBase = {
   danger: '#C62828',
   onWall: '#0E1B2C',
   urgentOnWall: '#A11B1B',
+  bookedTicket: '#22A35A',
 } as const;
 
 const lightUrgency = (neutralBg: string): ColorTokens['urgency'] => ({

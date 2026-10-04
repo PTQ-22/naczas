@@ -248,13 +248,13 @@ export default function CallAssistScreen() {
                 })}
                 style={{ gap: space.xs }}
               >
-                <Text variant="eyebrow" color={colors.urgency.booked.fg}>
+                <Text variant="eyebrow" color={colors.urgency.done.fg}>
                   {t('callAssist.booked.eyebrow')}
                 </Text>
                 <Text
                   variant="ticket"
                   tabular
-                  color={colors.urgency.booked.fg}
+                  color={colors.bookedTicket}
                   style={{ fontFamily: fonts.monoBold }}
                 >
                   {format(parseISO(bookedDate), 'dd.MM')}

@@ -67,6 +67,8 @@ describe('palette contrast', () => {
     expect(contrastRatio(c.onWall, c.wallGrout)).toBeGreaterThanOrEqual(AA_TEXT);
     expect(contrastRatio(c.urgentOnWall, c.wall)).toBeGreaterThanOrEqual(AA_TEXT);
     expect(contrastRatio(c.urgentOnWall, c.wallGrout)).toBeGreaterThanOrEqual(AA_TEXT);
+    // Display-size date on the agent's ticket: AA for large text.
+    expect(contrastRatio(c.bookedTicket, c.surface)).toBeGreaterThanOrEqual(3);
     // A plate's edge is its fill or its 3 px ink frame — one of the two must be a >= 3:1 UI
     // boundary against the wall.
     const edge = Math.max(contrastRatio(c.surface, c.wall), contrastRatio(c.text, c.wall));
